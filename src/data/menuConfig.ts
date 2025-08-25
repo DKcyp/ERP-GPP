@@ -1,4 +1,53 @@
-import { MenuSection } from '../types';
+import { MenuSection, MenuSubSection, MenuItem } from '../types';
+
+// Helper to create the General menu section with sub-sections
+const createGeneralMenu = (role: string): MenuSection => ({
+  title: 'General',
+  icon: 'Settings',
+  subSections: [
+    {
+      title: 'KPI',
+      icon: 'BarChart',
+      items: [
+        { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: `/${role}/general/kpi/dashboard` },
+        { title: 'Master KPI', icon: 'Database', path: `/${role}/general/kpi/master` },
+        { title: 'List KPI', icon: 'List', path: `/${role}/general/kpi/list` },
+      ]
+    },
+    {
+      title: 'Voucher',
+      icon: 'Ticket',
+      items: [
+        { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: `/${role}/general/voucher/dashboard` },
+        { title: 'Proses Voucher', icon: 'Workflow', path: `/${role}/general/voucher/proses` },
+      ]
+    },
+    {
+      title: 'Reimburse',
+      icon: 'Wallet',
+      items: [
+        { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: `/${role}/general/reimburse/dashboard` },
+        { title: 'Proses Reimburse', icon: 'FileEdit', path: `/${role}/general/reimburse/proses` },
+      ]
+    },
+    {
+      title: 'Cash Advance',
+      icon: 'Banknote',
+      items: [
+        { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: `/${role}/general/cash-advance/dashboard` },
+        { title: 'Proses Cash Advance', icon: 'Send', path: `/${role}/general/cash-advance/proses` },
+      ]
+    },
+    {
+      title: 'Purchase Request',
+      icon: 'ShoppingCart',
+      items: [
+        { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: `/${role}/general/purchase-request/dashboard` },
+        { title: 'Proses Purchasing Request', icon: 'FilePlus', path: `/${role}/general/purchase-request/proses` },
+      ]
+    }
+  ]
+});
 
 export const marketingMenu: MenuSection[] = [
   {
@@ -39,23 +88,7 @@ export const marketingMenu: MenuSection[] = [
     items: [],
     directPath: '/marketing/sales-order/dashboard'
   },
-   {
-    title: 'General',
-    icon: 'Settings',
-    items: [
-      { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: '/marketing/general/kpi/dashboard' },
-      { title: 'Master KPI', icon: 'Database', path: '/marketing/general/kpi/master' },
-      { title: 'List KPI', icon: 'List', path: '/marketing/general/kpi/list' },
-      { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: '/marketing/general/voucher/dashboard' },
-      { title: 'Proses Voucher', icon: 'Workflow', path: '/marketing/general/voucher/proses' },
-      { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: '/marketing/general/reimburse/dashboard' },
-      { title: 'Proses Reimburse', icon: 'FileEdit', path: '/marketing/general/reimburse/proses' },
-      { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: '/marketing/general/cash-advance/dashboard' },
-      { title: 'Proses Cash Advance', icon: 'Send', path: '/marketing/general/cash-advance/proses' },
-      { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: '/marketing/general/purchase-request/dashboard' },
-      { title: 'Proses Purchasing Request', icon: 'FilePlus', path: '/marketing/general/purchase-request/proses' }
-    ]
-  }
+  createGeneralMenu('marketing')
 ];
 
 export const operationalMenu: MenuSection[] = [
@@ -118,23 +151,7 @@ export const operationalMenu: MenuSection[] = [
     items: [],
     directPath: '/operational/pbg/dashboard'
   },
-  {
-    title: 'General',
-    icon: 'Settings',
-    items: [
-      { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: '/operational/general/kpi/dashboard' },
-      { title: 'Master KPI', icon: 'Database', path: '/operational/general/kpi/master' },
-      { title: 'List KPI', icon: 'List', path: '/operational/general/kpi/list' },
-      { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: '/operational/general/voucher/dashboard' },
-      { title: 'Proses Voucher', icon: 'Workflow', path: '/operational/general/voucher/proses' },
-      { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: '/operational/general/reimburse/dashboard' },
-      { title: 'Proses Reimburse', icon: 'FileEdit', path: '/operational/general/reimburse/proses' },
-      { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: '/operational/general/cash-advance/dashboard' },
-      { title: 'Proses Cash Advance', icon: 'Send', path: '/operational/general/cash-advance/proses' },
-      { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: '/operational/general/purchase-request/dashboard' },
-      { title: 'Proses Purchasing Request', icon: 'FilePlus', path: '/operational/general/purchase-request/proses' }
-    ]
-  },
+  createGeneralMenu('operational')
 ];
 
 export const hrdMenu: MenuSection[] = [
@@ -213,7 +230,8 @@ export const hrdMenu: MenuSection[] = [
       { title: 'Master KPI', icon: 'BarChart', path: '/hrd/penilaian/master-kpi' },
       { title: 'Master Indikator', icon: 'Target', path: '/hrd/penilaian/master-indikator' }
     ]
-  }
+  },
+  createGeneralMenu('hrd')
 ];
 
 export const pengadaanMenu: MenuSection[] = [
@@ -253,27 +271,11 @@ export const pengadaanMenu: MenuSection[] = [
       { title: 'Daftar Penerimaan Barang', icon: 'ListChecks', path: '/pengadaan/penerimaan/daftar' },
       { title: 'Purchasing', icon: 'ShoppingCart', path: '/pengadaan/penerimaan/purchasing' },
       { title: 'Invoice', icon: 'FileInvoice', path: '/pengadaan/penerimaan/invoice' },
-      { title: 'Gudang', icon: 'Warehouse', path: '/pengadaan/penerimaan/gudang' }, // Updated menu item
+      { title: 'Gudang', icon: 'Warehouse', path: '/pengadaan/penerimaan/gudang' },
       { title: 'Laporan', icon: 'BarChart2', path: '/pengadaan/penerimaan/laporan' }
     ]
   },
-  {
-    title: 'General',
-    icon: 'Settings',
-    items: [
-      { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: '/pengadaan/general/kpi/dashboard' },
-      { title: 'Master KPI', icon: 'Database', path: '/pengadaan/general/kpi/master' },
-      { title: 'List KPI', icon: 'List', path: '/pengadaan/general/kpi/list' },
-      { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: '/pengadaan/general/voucher/dashboard' },
-      { title: 'Proses Voucher', icon: 'Workflow', path: '/pengadaan/general/voucher/proses' },
-      { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: '/pengadaan/general/reimburse/dashboard' },
-      { title: 'Proses Reimburse', icon: 'FileEdit', path: '/pengadaan/general/reimburse/proses' },
-      { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: '/pengadaan/general/cash-advance/dashboard' },
-      { title: 'Proses Cash Advance', icon: 'Send', path: '/pengadaan/general/cash-advance/proses' },
-      { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: '/pengadaan/general/purchase-request/dashboard' },
-      { title: 'Proses Purchasing Request', icon: 'FilePlus', path: '/pengadaan/general/purchase-request/proses' }
-    ]
-  }
+  createGeneralMenu('pengadaan')
 ];
 
 export const financeMenu: MenuSection[] = [
@@ -298,7 +300,7 @@ export const financeMenu: MenuSection[] = [
     title: 'Voucher',
     icon: 'Wallet',
     items: [
-      { title: 'Daftar Pembayaran', icon: 'ClipboardList', path: '/finance/voucher/daftar-pembayaran' }, // New menu item
+      { title: 'Daftar Pembayaran', icon: 'ClipboardList', path: '/finance/voucher/daftar-pembayaran' },
       { title: 'Daftar Voucher', icon: 'FileInvoice', path: '/finance/voucher/daftar-voucher' },
       { title: 'Laporan Hutang Usaha', icon: 'BarChart', path: '/finance/voucher/laporan-hutang-usaha' }
     ]
@@ -317,7 +319,7 @@ export const gudangMenu: MenuSection[] = [
     icon: 'Box',
     items: [
       { title: 'Master Barang', icon: 'List', path: '/gudang/barang/master' },
-      { title: 'Kategori Barang', icon: 'Tag', path: '/gudang/barang/kategori' }, // New menu item
+      { title: 'Kategori Barang', icon: 'Tag', path: '/gudang/barang/kategori' },
       { title: 'Satuan Barang', icon: 'Grid', path: '/gudang/barang/satuan' },
       { title: 'Expired Barang', icon: 'AlertTriangle', path: '/gudang/barang/expired' },
       { title: 'Restock Expired Barang', icon: 'RotateCw', path: '/gudang/barang/restock-expired' },
@@ -373,21 +375,5 @@ export const gudangMenu: MenuSection[] = [
     items: [],
     directPath: '/gudang/permintaan-barang-gudang/dashboard'
   },
-  {
-    title: 'General',
-    icon: 'Settings',
-    items: [
-      { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: '/gudang/general/kpi/dashboard' },
-      { title: 'Master KPI', icon: 'Database', path: '/gudang/general/kpi/master' },
-      { title: 'List KPI', icon: 'List', path: '/gudang/general/kpi/list' },
-      { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: '/gudang/general/voucher/dashboard' },
-      { title: 'Proses Voucher', icon: 'Workflow', path: '/gudang/general/voucher/proses' },
-      { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: '/gudang/general/reimburse/dashboard' },
-      { title: 'Proses Reimburse', icon: 'FileEdit', path: '/gudang/general/reimburse/proses' },
-      { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: '/gudang/general/cash-advance/dashboard' },
-      { title: 'Proses Cash Advance', icon: 'Send', path: '/gudang/general/cash-advance/proses' },
-      { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: '/gudang/general/purchase-request/dashboard' },
-      { title: 'Proses Purchasing Request', icon: 'FilePlus', path: '/gudang/general/purchase-request/proses' }
-    ]
-  }
+  createGeneralMenu('gudang')
 ];

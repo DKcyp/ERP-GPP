@@ -1,4 +1,4 @@
-export type UserRole = 'marketing' | 'operational' | 'hrd' | 'pengadaan' | 'finance';
+export type UserRole = 'marketing' | 'operational' | 'hrd' | 'pengadaan' | 'finance' | 'gudang';
 
 export interface User {
   username: string;
@@ -18,9 +18,16 @@ export interface MenuItem {
   path: string;
 }
 
-export interface MenuSection {
+export interface MenuSubSection { // New interface for nested groups
   title: string;
   icon: string;
   items: MenuItem[];
+}
+
+export interface MenuSection {
+  title: string;
+  icon: string;
+  items?: MenuItem[]; // Optional for directPath or subSections
   directPath?: string;
+  subSections?: MenuSubSection[]; // New: for nested groups
 }

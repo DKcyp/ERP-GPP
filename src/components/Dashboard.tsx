@@ -80,11 +80,24 @@ import StockOpnameDashboard from './StockOpnameDashboard';
 import VerifikasiStockOpnameDashboard from './VerifikasiStockOpnameDashboard';
 import LaporanSemuaStockDashboard from './LaporanSemuaStockDashboard';
 import MonitoringAlatProyekDashboard from './MonitoringAlatProyekDashboard';
-import PermintaanBarangGudangDashboard from './PermintaanBarangGudangDashboard'; // New import
+import PermintaanBarangGudangDashboard from './PermintaanBarangGudangDashboard';
 import GudangMainDashboard from './GudangMainDashboard';
+import DashboardKPIDashboard from './DashboardKPIDashboard'; // New import for KPI Dashboard
+import GeneralMasterKPIDashboard from './GeneralMasterKPIDashboard'; // Import the new Master KPI component
+import GeneralListKPIDashboard from './GeneralListKPIDashboard'; // Import the new List KPI component
+import GeneralVoucherDashboard from './GeneralVoucherDashboard'; // Corrected: Import the actual GeneralVoucherDashboard
+import GeneralProsesVoucherDashboard from './GeneralProsesVoucherDashboard'; // Import the new Proses Voucher component
+import GeneralReimburseDashboard from './GeneralReimburseDashboard'; // Import the new GeneralReimburseDashboard
+import GeneralProsesReimburseDashboard from './GeneralProsesReimburseDashboard'; // Import the new Proses Reimburse component
 
+import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award, Clock, Menu } from 'lucide-react'; // Added Clock and Menu
 
-import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award } from 'lucide-react';
+// Placeholder components for new General paths (excluding GeneralVoucherDashboard as it's now imported)
+const GeneralCashAdvanceDashboard = () => <div className="p-8 text-gray-700">General Cash Advance Dashboard Content</div>;
+const GeneralProsesCashAdvance = () => <div className="p-8 text-gray-700">General Proses Cash Advance Content</div>;
+const GeneralPurchasingRequestDashboard = () => <div className="p-8 text-gray-700">General Purchasing Request Dashboard Content</div>;
+const GeneralProsesPurchasingRequest = () => <div className="p-8 text-gray-700">General Proses Purchasing Request Content</div>;
+
 
 interface DashboardProps {
   currentPage: string;
@@ -380,6 +393,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
   // Route to specific pages based on currentPage
   const renderPageContent = () => {
+    console.log('Dashboard: Current page received:', currentPage); // Added console log
     // Gudang Routes
     if (currentPage === '/gudang/dashboard') {
       return <GudangMainDashboard />; // Render GudangMainDashboard for the specific path
@@ -438,39 +452,40 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/gudang/permintaan-barang-gudang/dashboard') {
       return <PermintaanBarangGudangDashboard />;
     }
-    // General Gudang Routes
+    // NEW General Gudang Routes
     if (currentPage === '/gudang/general/kpi/dashboard') {
-      return <div className="p-8 text-gray-700">Gudang General KPI Dashboard Content</div>;
+      console.log('Dashboard: Rendering DashboardKPIDashboard for path:', currentPage);
+      return <DashboardKPIDashboard />;
     }
     if (currentPage === '/gudang/general/kpi/master') {
-      return <div className="p-8 text-gray-700">Gudang General Master KPI Content</div>;
+      return <GeneralMasterKPIDashboard />;
     }
     if (currentPage === '/gudang/general/kpi/list') {
-      return <div className="p-8 text-gray-700">Gudang General List KPI Content</div>;
+      return <GeneralListKPIDashboard />;
     }
     if (currentPage === '/gudang/general/voucher/dashboard') {
-      return <div className="p-8 text-gray-700">Gudang General Voucher Dashboard Content</div>;
+      return <GeneralVoucherDashboard />; // Corrected: Render the imported component
     }
     if (currentPage === '/gudang/general/voucher/proses') {
-      return <div className="p-8 text-gray-700">Gudang General Proses Voucher Content</div>;
+      return <GeneralProsesVoucherDashboard />; // Render the actual component
     }
     if (currentPage === '/gudang/general/reimburse/dashboard') {
-      return <div className="p-8 text-gray-700">Gudang General Reimburse Dashboard Content</div>;
+      return <GeneralReimburseDashboard />;
     }
     if (currentPage === '/gudang/general/reimburse/proses') {
-      return <div className="p-8 text-gray-700">Gudang General Proses Reimburse Content</div>;
+      return <GeneralProsesReimburseDashboard />; // Render the actual component
     }
     if (currentPage === '/gudang/general/cash-advance/dashboard') {
-      return <div className="p-8 text-gray-700">Gudang General Cash Advance Dashboard Content</div>;
+      return <GeneralCashAdvanceDashboard />;
     }
     if (currentPage === '/gudang/general/cash-advance/proses') {
-      return <div className="p-8 text-gray-700">Gudang General Proses Cash Advance Content</div>;
+      return <GeneralProsesCashAdvance />;
     }
     if (currentPage === '/gudang/general/purchase-request/dashboard') {
-      return <div className="p-8 text-gray-700">Gudang General Purchasing Request Dashboard Content</div>;
+      return <GeneralPurchasingRequestDashboard />;
     }
     if (currentPage === '/gudang/general/purchase-request/proses') {
-      return <div className="p-8 text-gray-700">Gudang General Proses Purchasing Request Content</div>;
+      return <GeneralProsesPurchasingRequest />;
     }
 
 
@@ -510,6 +525,40 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/pengadaan/penerimaan/gudang') {
       return <GudangDashboard />;
+    }
+    // Pengadaan General Routes
+    if (currentPage === '/pengadaan/general/kpi/dashboard') {
+      return <DashboardKPIDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/kpi/master') {
+      return <GeneralMasterKPIDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/kpi/list') {
+      return <GeneralListKPIDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/voucher/dashboard') {
+      return <GeneralVoucherDashboard />; // Corrected: Render the imported component
+    }
+    if (currentPage === '/pengadaan/general/voucher/proses') {
+      return <GeneralProsesVoucherDashboard />; // Render the actual component
+    }
+    if (currentPage === '/pengadaan/general/reimburse/dashboard') {
+      return <GeneralReimburseDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/reimburse/proses') {
+      return <GeneralProsesReimburseDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/cash-advance/dashboard') {
+      return <GeneralCashAdvanceDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/cash-advance/proses') {
+      return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === '/pengadaan/general/purchase-request/dashboard') {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === '/pengadaan/general/purchase-request/proses') {
+      return <GeneralProsesPurchasingRequest />;
     }
 
     // HRD Routes
@@ -570,6 +619,40 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/hrd/penilaian/daftar') {
       return <DaftarPenilaianDashboard />;
     }
+    // HRD General Routes
+    if (currentPage === '/hrd/general/kpi/dashboard') {
+      return <DashboardKPIDashboard />;
+    }
+    if (currentPage === '/hrd/general/kpi/master') {
+      return <GeneralMasterKPIDashboard />;
+    }
+    if (currentPage === '/hrd/general/kpi/list') {
+      return <GeneralListKPIDashboard />;
+    }
+    if (currentPage === '/hrd/general/voucher/dashboard') {
+      return <GeneralVoucherDashboard />; // Corrected: Render the imported component
+    }
+    if (currentPage === '/hrd/general/voucher/proses') {
+      return <GeneralProsesVoucherDashboard />; // Render the actual component
+    }
+    if (currentPage === '/hrd/general/reimburse/dashboard') {
+      return <GeneralReimburseDashboard />;
+    }
+    if (currentPage === '/hrd/general/reimburse/proses') {
+      return <GeneralProsesReimburseDashboard />;
+    }
+    if (currentPage === '/hrd/general/cash-advance/dashboard') {
+      return <GeneralCashAdvanceDashboard />;
+    }
+    if (currentPage === '/hrd/general/cash-advance/proses') {
+      return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === '/hrd/general/purchase-request/dashboard') {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === '/hrd/general/purchase-request/proses') {
+      return <GeneralProsesPurchasingRequest />;
+    }
 
     // Marketing Routes
     if (currentPage === '/marketing/suspect/dashboard') {
@@ -592,6 +675,40 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/marketing/sales-order/dashboard') {
       return <SalesOrderDashboard />;
+    }
+    // Marketing General Routes
+    if (currentPage === '/marketing/general/kpi/dashboard') {
+      return <DashboardKPIDashboard />;
+    }
+    if (currentPage === '/marketing/general/kpi/master') {
+      return <GeneralMasterKPIDashboard />;
+    }
+    if (currentPage === '/marketing/general/kpi/list') {
+      return <GeneralListKPIDashboard />;
+    }
+    if (currentPage === '/marketing/general/voucher/dashboard') {
+      return <GeneralVoucherDashboard />; // Corrected: Render the imported component
+    }
+    if (currentPage === '/marketing/general/voucher/proses') {
+      return <GeneralProsesVoucherDashboard />; // Render the actual component
+    }
+    if (currentPage === '/marketing/general/reimburse/dashboard') {
+      return <GeneralReimburseDashboard />;
+    }
+    if (currentPage === '/marketing/general/reimburse/proses') {
+      return <GeneralProsesReimburseDashboard />;
+    }
+    if (currentPage === '/marketing/general/cash-advance/dashboard') {
+      return <GeneralCashAdvanceDashboard />;
+    }
+    if (currentPage === '/marketing/general/cash-advance/proses') {
+      return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === '/marketing/general/purchase-request/dashboard') {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === '/marketing/general/purchase-request/proses') {
+      return <GeneralProsesPurchasingRequest />;
     }
 
     // Operational Routes
@@ -636,6 +753,40 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/operational/pbg/dashboard') {
       return <PBGDashboard />;
+    }
+    // Operational General Routes
+    if (currentPage === '/operational/general/kpi/dashboard') {
+      return <DashboardKPIDashboard />;
+    }
+    if (currentPage === '/operational/general/kpi/master') {
+      return <GeneralMasterKPIDashboard />;
+    }
+    if (currentPage === '/operational/general/kpi/list') {
+      return <GeneralListKPIDashboard />;
+    }
+    if (currentPage === '/operational/general/voucher/dashboard') {
+      return <GeneralVoucherDashboard />; // Corrected: Render the imported component
+    }
+    if (currentPage === '/operational/general/voucher/proses') {
+      return <GeneralProsesVoucherDashboard />; // Render the actual component
+    }
+    if (currentPage === '/operational/general/reimburse/dashboard') {
+      return <GeneralReimburseDashboard />;
+    }
+    if (currentPage === '/operational/general/reimburse/proses') {
+      return <GeneralProsesReimburseDashboard />;
+    }
+    if (currentPage === '/operational/general/cash-advance/dashboard') {
+      return <GeneralCashAdvanceDashboard />;
+    }
+    if (currentPage === '/operational/general/cash-advance/proses') {
+      return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === '/operational/general/purchase-request/dashboard') {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === '/operational/general/purchase-request/proses') {
+      return <GeneralProsesPurchasingRequest />;
     }
 
     // Finance Routes

@@ -1,34 +1,38 @@
-import React from 'react';
-import { Clock, Search, CalendarDays, FileSpreadsheet, FileText, FileBarChart, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Search, Filter, ChevronDown, Edit, Trash2, Eye, Clock } from 'lucide-react'; // Added ChevronDown import
 
 const PermintaanBarangGudangDashboard: React.FC = () => {
-  const permintaanData = [
-    { no: 1, noPbg: 'PBG001', noSo: 'SO0001', soTurunan: 'SO0001.1', namaUser: 'John Doe', tanggalPengajuan: '01-01-2025', status: 'Siap Dikirim' },
-    { no: 2, noPbg: 'PBG002', noSo: '-', soTurunan: '-', namaUser: 'John Doe', tanggalPengajuan: '01-01-2025', status: 'Belum Siap' },
-    { no: 3, noPbg: 'PBG003', noSo: 'SO0003', soTurunan: 'SO0003.3', namaUser: 'John Doe', tanggalPengajuan: '01-01-2025', status: 'Belum Siap' },
-    { no: 4, noPbg: 'PBG004', noSo: '-', soTurunan: '-', namaUser: 'John Doe', tanggalPengajuan: '01-01-2025', status: 'Siap Dikirim' },
-    { no: 5, noPbg: 'PBG005', noSo: 'SO0005', soTurunan: 'SO0005.5', namaUser: 'John Doe', tanggalPengajuan: '01-01-2025', status: 'Siap Dikirim' },
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const requests = [
+    { id: 'PR001', item: 'Kabel UTP Cat6', quantity: 100, unit: 'meter', project: 'Proyek A', status: 'Pending', date: '2024-07-20' },
+    { id: 'PR002', item: 'Switch Cisco 24 Port', quantity: 2, unit: 'unit', project: 'Proyek B', status: 'Approved', date: '2024-07-19' },
+    { id: 'PR003', item: 'Hard Disk 1TB', quantity: 5, unit: 'unit', project: 'Proyek C', status: 'Rejected', date: '2024-07-18' },
+    { id: 'PR004', item: 'Monitor LED 24 inch', quantity: 3, unit: 'unit', project: 'Proyek A', status: 'Pending', date: '2024-07-17' },
   ];
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Siap Dikirim':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Siap Dikirim</span>;
-      case 'Belum Siap':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Belum Siap</span>;
-      default:
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{status}</span>;
-    }
-  };
+  const filteredRequests = requests.filter(request => {
+    const matchesSearch = request.item.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          request.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          request.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || request.status.toLowerCase() === filterStatus.toLowerCase();
+    return matchesSearch && matchesStatus;
+  });
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+      {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                PERMINTAAN BARANG GUDANG
+                Permintaan Barang Gudang
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
@@ -43,184 +47,178 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          {/* Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        {/* Action Bar */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex space-x-4">
             <div className="relative">
-              <label htmlFor="cariNoPBG" className="block text-sm font-medium text-gray-700 mb-1">Cari No PBG</label>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
-                id="cariNoPBG"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="PBG001"
+                placeholder="Cari permintaan..."
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="cariNoSO" className="block text-sm font-medium text-gray-700 mb-1">Cari No SO</label>
-              <input
-                type="text"
-                id="cariNoSO"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="SO001"
-              />
-              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
-            </div>
-            <div className="relative">
-              <label htmlFor="cariNoSOTurunan" className="block text-sm font-medium text-gray-700 mb-1">Cari No SO Turunan</label>
-              <input
-                type="text"
-                id="cariNoSOTurunan"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="SO001.12"
-              />
-              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
-            </div>
-            <div className="relative">
-              <label htmlFor="pilihStatus" className="block text-sm font-medium text-gray-700 mb-1">Pilih Status</label>
               <select
-                id="pilihStatus"
-                className="pl-4 pr-10 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none"
+                className="appearance-none bg-white border border-gray-300 rounded-xl shadow-sm py-2 pl-3 pr-10 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
               >
-                <option>--Pilih Status--</option>
-                <option>Siap Dikirim</option>
-                <option>Belum Siap</option>
+                <option value="all">Semua Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
           </div>
+          <button
+            onClick={openModal}
+            className="bg-blue-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Buat Permintaan Baru</span>
+          </button>
+        </div>
 
-          {/* Periode and Search Button */}
-          <div className="flex items-end space-x-4 mb-6">
-            <div className="relative flex-1">
-              <label htmlFor="periodeStart" className="block text-sm font-medium text-gray-700 mb-1">Periode</label>
-              <div className="flex items-center space-x-2">
-                <div className="relative w-1/2">
-                  <input
-                    type="date"
-                    id="periodeStart"
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    defaultValue="2025-03-03"
-                  />
-                  <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                </div>
-                <span className="text-gray-500">s.d</span>
-                <div className="relative w-1/2">
-                  <input
-                    type="date"
-                    id="periodeEnd"
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    defaultValue="2025-03-03"
-                  />
-                  <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                </div>
-              </div>
-            </div>
-            <button className="px-6 py-2 bg-cyan-500 text-white rounded-xl hover:bg-cyan-600 transition-colors duration-200 text-sm shadow-md">
-              Search
-            </button>
-          </div>
-
-          {/* Export Buttons */}
-          <div className="flex justify-end items-center mb-6 space-x-3">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-200 text-sm shadow-md">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export Excel</span>
-            </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm shadow-md">
-              <FileText className="h-4 w-4" />
-              <span>Export CSV</span>
-            </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-200 text-sm shadow-md">
-              <FileBarChart className="h-4 w-4" />
-              <span>Export PDF</span>
-            </button>
-          </div>
-
-          {/* Data Table */}
-          <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>Show</span>
-                <select className="border border-gray-300 rounded-md px-2 py-1">
-                  <option>10</option>
-                  <option>25</option>
-                  <option>50</option>
-                </select>
-                <span>entries</span>
-              </div>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search:"
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              </div>
-            </div>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No PBG</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SO Turunan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pengajuan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {permintaanData.map((item) => (
-                  <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noPbg}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noSo}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.soTurunan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaUser}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalPengajuan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {getStatusBadge(item.status)}
+        {/* Requests Table */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID Permintaan
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Item
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Jumlah
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Proyek
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal
+                </th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredRequests.length > 0 ? (
+                filteredRequests.map((request) => (
+                  <tr key={request.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.item}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.quantity} {request.unit}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.project}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        request.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                        request.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {request.status}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-2 rounded-full bg-blue-100 hover:bg-blue-200">
-                        <Eye className="h-4 w-4" />
-                      </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.date}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <button className="text-blue-600 hover:text-blue-900 transition-colors">
+                          <Eye className="h-5 w-5" />
+                        </button>
+                        <button className="text-indigo-600 hover:text-indigo-900 transition-colors">
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        <button className="text-red-600 hover:text-red-900 transition-colors">
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex justify-between items-center mt-6">
-            <div className="text-sm text-gray-600">
-              Showing 1 to {permintaanData.length} of {permintaanData.length} entries
-            </div>
-            <div className="flex items-center space-x-2">
-              <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">
-                Previous
-              </button>
-              <button className="px-4 py-2 border border-blue-500 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm">
-                1
-              </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">
-                Next
-              </button>
-            </div>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                    Tidak ada permintaan barang yang ditemukan.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
-      {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500 flex justify-between items-center">
-        <span>2023 © Mazer</span>
-        <span>
-          Crafted with <span className="text-red-500">❤️</span> by Saugi
-        </span>
-      </footer>
+
+      {/* Entry Permintaan Barang Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-8 m-4 max-w-md w-full">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Buat Permintaan Barang Baru</h3>
+            <form>
+              <div className="mb-4">
+                <label htmlFor="item" className="block text-sm font-medium text-gray-700 mb-1">Nama Barang</label>
+                <input
+                  type="text"
+                  id="item"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="Masukkan nama barang"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
+                <input
+                  type="number"
+                  id="quantity"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="Masukkan jumlah"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="unit" className="block text-sm font-medium text-gray-700 mb-1">Satuan</label>
+                <input
+                  type="text"
+                  id="unit"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="Contoh: meter, unit, pcs"
+                />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="project" className="block text-sm font-medium text-gray-700 mb-1">Proyek</label>
+                <input
+                  type="text"
+                  id="project"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="Masukkan nama proyek"
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-5 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-colors duration-200"
+                >
+                  Simpan Permintaan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
