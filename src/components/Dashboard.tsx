@@ -59,10 +59,32 @@ import ApprovalInvoiceDashboard from './ApprovalInvoiceDashboard';
 import ApprovalPenggajianDashboard from './ApprovalPenggajianDashboard';
 import ApprovalPOTrainingDashboard from './ApprovalPOTrainingDashboard';
 import ApprovalVoucherDashboard from './ApprovalVoucherDashboard';
-import DaftarPembayaranDashboard from './DaftarPembayaranDashboard'; // New import
+import DaftarPembayaranDashboard from './DaftarPembayaranDashboard';
 import DaftarVoucherDashboard from './DaftarVoucherDashboard';
 import LaporanHutangUsahaDashboard from './LaporanHutangUsahaDashboard';
-import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Clock, Target, Award } from 'lucide-react';
+// Gudang Dashboards
+import MasterBarangDashboard from './MasterBarangDashboard';
+import KategoriBarangDashboard from './KategoriBarangDashboard';
+import SatuanBarangDashboard from './SatuanBarangDashboard';
+import ExpiredBarangDashboard from './ExpiredBarangDashboard';
+import RestockExpiredBarangDashboard from './RestockExpiredBarangDashboard';
+import StockBarangDashboard from './StockBarangDashboard';
+import GudangProyekDashboard from './GudangProyekDashboard';
+import PenerimaanBarangMasukDashboard from './PenerimaanBarangMasukDashboard';
+import MutasiBarangDashboard from './MutasiBarangDashboard';
+import PengembalianBarangDashboard from './PengembalianBarangDashboard';
+import BarangKarantinaDashboard from './BarangKarantinaDashboard';
+import BarangDibuangDashboard from './BarangDibuangDashboard';
+import TimesheetBarangGudangDashboard from './TimesheetBarangGudangDashboard';
+import StockOpnameDashboard from './StockOpnameDashboard';
+import VerifikasiStockOpnameDashboard from './VerifikasiStockOpnameDashboard';
+import LaporanSemuaStockDashboard from './LaporanSemuaStockDashboard';
+import MonitoringAlatProyekDashboard from './MonitoringAlatProyekDashboard';
+import PermintaanBarangGudangDashboard from './PermintaanBarangGudangDashboard'; // New import
+import GudangMainDashboard from './GudangMainDashboard';
+
+
+import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award } from 'lucide-react';
 
 interface DashboardProps {
   currentPage: string;
@@ -83,6 +105,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     if (user?.role === 'finance') {
       return <FinanceDashboard />;
+    }
+
+    if (user?.role === 'gudang') {
+      return <GudangMainDashboard />; // Render GudangMainDashboard for gudang role
     }
 
     // Marketing Dashboard
@@ -354,14 +380,108 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
   // Route to specific pages based on currentPage
   const renderPageContent = () => {
+    // Gudang Routes
+    if (currentPage === '/gudang/dashboard') {
+      return <GudangMainDashboard />; // Render GudangMainDashboard for the specific path
+    }
+    if (currentPage === '/gudang/barang/master') {
+      return <MasterBarangDashboard />;
+    }
+    if (currentPage === '/gudang/barang/kategori') { // New route
+      return <KategoriBarangDashboard />;
+    }
+    if (currentPage === '/gudang/barang/satuan') {
+      return <SatuanBarangDashboard />;
+    }
+    if (currentPage === '/gudang/barang/expired') {
+      return <ExpiredBarangDashboard />;
+    }
+    if (currentPage === '/gudang/barang/restock-expired') {
+      return <RestockExpiredBarangDashboard />;
+    }
+    if (currentPage === '/gudang/barang/stock') {
+      return <StockBarangDashboard />;
+    }
+    if (currentPage === '/gudang/gudang-proyek/dashboard') {
+      return <GudangProyekDashboard />;
+    }
+    if (currentPage === '/gudang/penerimaan-barang-masuk/dashboard') {
+      return <PenerimaanBarangMasukDashboard />;
+    }
+    if (currentPage === '/gudang/mutasi-barang/dashboard') {
+      return <MutasiBarangDashboard />;
+    }
+    if (currentPage === '/gudang/pengembalian-barang/pengembalian') {
+      return <PengembalianBarangDashboard />;
+    }
+    if (currentPage === '/gudang/pengembalian-barang/karantina') {
+      return <BarangKarantinaDashboard />;
+    }
+    if (currentPage === '/gudang/pengembalian-barang/dibuang') {
+      return <BarangDibuangDashboard />;
+    }
+    if (currentPage === '/gudang/pengembalian-barang/timesheet') {
+      return <TimesheetBarangGudangDashboard />;
+    }
+    if (currentPage === '/gudang/stock-opname/stock-opname') {
+      return <StockOpnameDashboard />;
+    }
+    if (currentPage === '/gudang/stock-opname/verifikasi') {
+      return <VerifikasiStockOpnameDashboard />;
+    }
+    if (currentPage === '/gudang/stock-opname/laporan') {
+      return <LaporanSemuaStockDashboard />;
+    }
+    if (currentPage === '/gudang/monitoring-alat-proyek/dashboard') {
+      return <MonitoringAlatProyekDashboard />;
+    }
+    if (currentPage === '/gudang/permintaan-barang-gudang/dashboard') {
+      return <PermintaanBarangGudangDashboard />;
+    }
+    // General Gudang Routes
+    if (currentPage === '/gudang/general/kpi/dashboard') {
+      return <div className="p-8 text-gray-700">Gudang General KPI Dashboard Content</div>;
+    }
+    if (currentPage === '/gudang/general/kpi/master') {
+      return <div className="p-8 text-gray-700">Gudang General Master KPI Content</div>;
+    }
+    if (currentPage === '/gudang/general/kpi/list') {
+      return <div className="p-8 text-gray-700">Gudang General List KPI Content</div>;
+    }
+    if (currentPage === '/gudang/general/voucher/dashboard') {
+      return <div className="p-8 text-gray-700">Gudang General Voucher Dashboard Content</div>;
+    }
+    if (currentPage === '/gudang/general/voucher/proses') {
+      return <div className="p-8 text-gray-700">Gudang General Proses Voucher Content</div>;
+    }
+    if (currentPage === '/gudang/general/reimburse/dashboard') {
+      return <div className="p-8 text-gray-700">Gudang General Reimburse Dashboard Content</div>;
+    }
+    if (currentPage === '/gudang/general/reimburse/proses') {
+      return <div className="p-8 text-gray-700">Gudang General Proses Reimburse Content</div>;
+    }
+    if (currentPage === '/gudang/general/cash-advance/dashboard') {
+      return <div className="p-8 text-gray-700">Gudang General Cash Advance Dashboard Content</div>;
+    }
+    if (currentPage === '/gudang/general/cash-advance/proses') {
+      return <div className="p-8 text-gray-700">Gudang General Proses Cash Advance Content</div>;
+    }
+    if (currentPage === '/gudang/general/purchase-request/dashboard') {
+      return <div className="p-8 text-gray-700">Gudang General Purchasing Request Dashboard Content</div>;
+    }
+    if (currentPage === '/gudang/general/purchase-request/proses') {
+      return <div className="p-8 text-gray-700">Gudang General Proses Purchasing Request Content</div>;
+    }
+
+
     // Pengadaan Routes
     if (currentPage === '/pengadaan/dashboard') {
       return <PengadaanDashboard />;
     }
     if (currentPage === '/pengadaan/po/dashboard') {
       return <PODashboard />;
-    }
-		if (currentPage === '/pengadaan/seleksi/daftar') {
+    } {/* Corrected: Added closing brace here */}
+    if (currentPage === '/pengadaan/seleksi/daftar') {
       return <SeleksiSupplierDashboard />;
     }
     if (currentPage === '/pengadaan/vendor/list') {

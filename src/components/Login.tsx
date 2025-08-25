@@ -101,6 +101,9 @@ const Login: React.FC = () => {
               <div className="bg-gray-50 p-3 rounded-lg">
                 <p><span className="font-medium">Finance:</span> finance / 12345</p>
               </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p><span className="font-medium">Gudang:</span> gudang / 12345</p>
+              </div>
             </div>
           </div>
         </div>

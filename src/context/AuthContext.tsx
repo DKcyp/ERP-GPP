@@ -51,6 +51,13 @@ const mockUsers = [
     role: 'finance' as const,
     fullName: 'Finance Manager',
     profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+  },
+  {
+    username: 'gudang',
+    password: '12345',
+    role: 'gudang' as const,
+    fullName: 'Gudang Manager',
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   }
 ];
 

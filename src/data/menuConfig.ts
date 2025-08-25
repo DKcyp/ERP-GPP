@@ -304,3 +304,90 @@ export const financeMenu: MenuSection[] = [
     ]
   }
 ];
+
+export const gudangMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/gudang/dashboard'
+  },
+  {
+    title: 'Barang',
+    icon: 'Box',
+    items: [
+      { title: 'Master Barang', icon: 'List', path: '/gudang/barang/master' },
+      { title: 'Kategori Barang', icon: 'Tag', path: '/gudang/barang/kategori' }, // New menu item
+      { title: 'Satuan Barang', icon: 'Grid', path: '/gudang/barang/satuan' },
+      { title: 'Expired Barang', icon: 'AlertTriangle', path: '/gudang/barang/expired' },
+      { title: 'Restock Expired Barang', icon: 'RotateCw', path: '/gudang/barang/restock-expired' },
+      { title: 'Stock Barang', icon: 'Layers', path: '/gudang/barang/stock' }
+    ]
+  },
+  {
+    title: 'Gudang Proyek',
+    icon: 'Building',
+    items: [],
+    directPath: '/gudang/gudang-proyek/dashboard'
+  },
+  {
+    title: 'Penerimaan Barang Masuk',
+    icon: 'Download',
+    items: [],
+    directPath: '/gudang/penerimaan-barang-masuk/dashboard'
+  },
+  {
+    title: 'Mutasi Barang',
+    icon: 'Shuffle',
+    items: [],
+    directPath: '/gudang/mutasi-barang/dashboard'
+  },
+  {
+    title: 'Pengembalian Barang',
+    icon: 'RotateCcw',
+    items: [
+      { title: 'Pengembalian Barang', icon: 'RotateCcw', path: '/gudang/pengembalian-barang/pengembalian' },
+      { title: 'Barang Karantina', icon: 'Shield', path: '/gudang/pengembalian-barang/karantina' },
+      { title: 'Barang Dibuang', icon: 'Trash', path: '/gudang/pengembalian-barang/dibuang' },
+      { title: 'Timesheet Barang', icon: 'Clock', path: '/gudang/pengembalian-barang/timesheet' }
+    ]
+  },
+  {
+    title: 'Stock Opname',
+    icon: 'ClipboardCheck',
+    items: [
+      { title: 'Stock Opname', icon: 'ClipboardCheck', path: '/gudang/stock-opname/stock-opname' },
+      { title: 'Verifikasi Stock Opname', icon: 'CheckCircle', path: '/gudang/stock-opname/verifikasi' },
+      { title: 'Laporan Semua Stock', icon: 'FileText', path: '/gudang/stock-opname/laporan' }
+    ]
+  },
+  {
+    title: 'Monitoring Alat Proyek',
+    icon: 'Monitor',
+    items: [],
+    directPath: '/gudang/monitoring-alat-proyek/dashboard'
+  },
+  {
+    title: 'Permintaan Barang Gudang',
+    icon: 'ShoppingCart',
+    items: [],
+    directPath: '/gudang/permintaan-barang-gudang/dashboard'
+  },
+  {
+    title: 'General',
+    icon: 'Settings',
+    items: [
+      { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: '/gudang/general/kpi/dashboard' },
+      { title: 'Master KPI', icon: 'Database', path: '/gudang/general/kpi/master' },
+      { title: 'List KPI', icon: 'List', path: '/gudang/general/kpi/list' },
+      { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: '/gudang/general/voucher/dashboard' },
+      { title: 'Proses Voucher', icon: 'Workflow', path: '/gudang/general/voucher/proses' },
+      { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: '/gudang/general/reimburse/dashboard' },
+      { title: 'Proses Reimburse', icon: 'FileEdit', path: '/gudang/general/reimburse/proses' },
+      { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: '/gudang/general/cash-advance/dashboard' },
+      { title: 'Proses Cash Advance', icon: 'Send', path: '/gudang/general/cash-advance/proses' },
+      { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: '/gudang/general/purchase-request/dashboard' },
+      { title: 'Proses Purchasing Request', icon: 'FilePlus', path: '/gudang/general/purchase-request/proses' }
+    ]
+  }
+];

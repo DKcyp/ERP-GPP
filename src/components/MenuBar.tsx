@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu } from '../data/menuConfig'; // Added financeMenu
+import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu } from '../data/menuConfig'; // Added gudangMenu
 import { ChevronDown, BarChart3, Zap } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
@@ -18,7 +18,8 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       user?.role === 'operational' ? operationalMenu : 
                       user?.role === 'hrd' ? hrdMenu : 
                       user?.role === 'pengadaan' ? pengadaanMenu : 
-                      user?.role === 'finance' ? financeMenu : // Added financeMenu
+                      user?.role === 'finance' ? financeMenu : 
+                      user?.role === 'gudang' ? gudangMenu : // Added gudangMenu
                       marketingMenu; // Default to marketingMenu if role is not recognized
 
   useEffect(() => {
@@ -106,10 +107,10 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
               {/* Dropdown Menu */}
               {activeDropdown === section.title && !section.directPath && section.items.length > 0 && (
                 <div className={`absolute top-full left-0 mt-2 bg-white shadow-2xl border border-gray-200 rounded-2xl z-50 animate-in fade-in-0 slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
-                  section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
+                  section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
                 }`}>
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' ? 'py-2' : 'py-3'}>
+                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' ? 'py-2' : 'py-3'}>
                     {section.title === 'General' ? (
                       // Special layout for General menu with grouped items
                       <div className="space-y-1">
@@ -285,6 +286,28 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                           </button>
                         ))}
                       </div>
+                    ) : (section.title === 'Pengembalian Barang' || section.title === 'Stock Opname') ? (
+                      // Special layout for Gudang Pengembalian Barang and Stock Opname menus
+                      <div className="space-y-1">
+                        {section.items.map((item) => (
+                          <button
+                            key={item.path}
+                            onClick={() => handleItemClick(item.path)}
+                            className={`w-full flex items-center space-x-2 px-3 py-2 text-left transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:translate-x-1 transform group rounded-lg ${
+                              currentPage === item.path 
+                                ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-r-2 border-blue-500 font-semibold shadow-sm' 
+                                : 'text-gray-700 hover:text-blue-700'
+                            }`}
+                          >
+                            <div className={`p-1 rounded-md transition-all duration-300 group-hover:scale-110 ${
+                              currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100 shadow-sm' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
+                            }`}>
+                              <div className="h-3 w-3">{getIconComponent(item.icon)}</div>
+                            </div>
+                            <span className="text-xs font-medium">{item.title}</span>
+                          </button>
+                        ))}
+                      </div>
                     ) : (
                       // Regular layout for other menus
                     section.items.map((item, index) => (
@@ -365,7 +388,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
           {/* Mobile Dropdown */}
           {activeDropdown && !menuSections.find(s => s.title === activeDropdown)?.directPath && (
             <div className={`mt-3 bg-white rounded-2xl shadow-2xl border border-gray-200 animate-in slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
-              activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' ? 'max-h-96 overflow-y-auto' : ''
+              activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' ? 'max-h-96 overflow-y-auto' : ''
             }`}>
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
               <div className="py-2">
@@ -522,8 +545,8 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       </div>
                     </div>
                   </div>
-                ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher') ? (
-                  // Special mobile layout for Finance Approval and Voucher menus
+                ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname') ? (
+                  // Special mobile layout for Finance Approval, Voucher, Gudang Pengembalian Barang and Stock Opname menus
                   <div className="space-y-3">
                     {menuSections.find(s => s.title === activeDropdown)?.items.map((item) => (
                       <div className="px-4 py-2" key={item.path}>
