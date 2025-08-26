@@ -95,6 +95,31 @@ import GeneralPurchasingRequestDashboard from './GeneralPurchasingRequestDashboa
 import GeneralProsesPurchasingRequest from './GeneralProsesPurchasingRequest'; // Import the new Proses Purchasing Request component
 import PengajianActiveDashboard from './PengajianActiveDashboard'; // Import the new PengajianActiveDashboard
 
+// QHSE Dashboards
+import QHSENewDashboard from './QHSENewDashboard';
+import PerizinanAlatDashboard from './PerizinanAlatDashboard';
+import MonitoringMCUDashboard from './MonitoringMCUDashboard';
+import MonitoringTrainingDashboard from './MonitoringTrainingDashboard';
+import AuditDashboard from './AuditDashboard';
+import MonitoringISOTOPDashboard from './MonitoringISOTOPDashboard';
+import MonitoringPTIDashboard from './MonitoringPTIDashboard';
+import MonitoringAlatSafetyDashboard from './MonitoringAlatSafetyDashboard';
+import JadwalRealisasiProgramDashboard from './JadwalRealisasiProgramDashboard';
+
+// Accounting Dashboards
+import AccountingMainDashboard from './AccountingMainDashboard';
+import MasterCOADashboard from './MasterCOADashboard';
+import KasMasukDashboard from './KasMasukDashboard';
+import KasKeluarDashboard from './KasKeluarDashboard';
+import BankMasukDashboard from './BankMasukDashboard';
+import BankKeluarDashboard from './BankKeluarDashboard';
+import PostingJurnalDashboard from './PostingJurnalDashboard';
+import LaporanJurnalDashboard from './LaporanJurnalDashboard';
+import TutupBukuDashboard from './TutupBukuDashboard';
+import LabaRugiDashboard from './LabaRugiDashboard';
+import NeracaDashboard from './NeracaDashboard';
+
+
 import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award, Clock, Menu } from 'lucide-react'; // Added Clock and Menu
 
 
@@ -135,6 +160,14 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     if (user?.role === 'management') {
       return <ManagementDashboard />; // Render ManagementDashboard for management role
+    }
+
+    if (user?.role === 'qhse') {
+      return <QHSENewDashboard />; // Render QHSENewDashboard for qhse role
+    }
+
+    if (user?.role === 'accounting') {
+      return <AccountingMainDashboard />; // Render AccountingMainDashboard for accounting role
     }
 
     // Marketing Dashboard
@@ -843,6 +876,70 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/management/penggajian') {
       return <PengajianActiveDashboard role="management" />; // Pass role prop
+    }
+
+    // QHSE Routes
+    if (currentPage === '/qhse/dashboard') {
+      return <QHSENewDashboard />;
+    }
+    if (currentPage === '/qhse/perizinan-alat') {
+      return <PerizinanAlatDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-mcu') {
+      return <MonitoringMCUDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-training') {
+      return <MonitoringTrainingDashboard />;
+    }
+    if (currentPage === '/qhse/audit') {
+      return <AuditDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-isotop') {
+      return <MonitoringISOTOPDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-pti') {
+      return <MonitoringPTIDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-alat-safety') {
+      return <MonitoringAlatSafetyDashboard />;
+    }
+    if (currentPage === '/qhse/jadwal-realisasi-program') {
+      return <JadwalRealisasiProgramDashboard />;
+    }
+
+    // Accounting Routes
+    if (currentPage === '/accounting/dashboard') {
+      return <AccountingMainDashboard />;
+    }
+    if (currentPage === '/accounting/master-coa') {
+      return <MasterCOADashboard />;
+    }
+    if (currentPage === '/accounting/kas-masuk') {
+      return <KasMasukDashboard />;
+    }
+    if (currentPage === '/accounting/kas-keluar') {
+      return <KasKeluarDashboard />;
+    }
+    if (currentPage === '/accounting/bank-masuk') {
+      return <BankMasukDashboard />;
+    }
+    if (currentPage === '/accounting/bank-keluar') {
+      return <BankKeluarDashboard />;
+    }
+    if (currentPage === '/accounting/posting-jurnal') {
+      return <PostingJurnalDashboard />;
+    }
+    if (currentPage === '/accounting/laporan-jurnal') {
+      return <LaporanJurnalDashboard />;
+    }
+    if (currentPage === '/accounting/tutup-buku') {
+      return <TutupBukuDashboard />;
+    }
+    if (currentPage === '/accounting/laba-rugi') {
+      return <LabaRugiDashboard />;
+    }
+    if (currentPage === '/accounting/neraca') {
+      return <NeracaDashboard />;
     }
 
     // Default to main dashboard

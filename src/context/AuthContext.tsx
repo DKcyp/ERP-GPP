@@ -29,42 +29,56 @@ const mockUsers = [
     password: '12345',
     role: 'operational' as const,
     fullName: 'Operations Manager',
-    profilePicture: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+    profilePicture: 'https://images.pexels.com/photos/2182970/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   },
   {
     username: 'hrd',
     password: '12345',
     role: 'hrd' as const,
     fullName: 'HRD Manager',
-    profilePicture: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+    profilePicture: 'https://images.pexels.com/photos/1181686/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   },
   {
     username: 'pengadaan',
     password: '12345',
     role: 'pengadaan' as const,
     fullName: 'Procurement Manager',
-    profilePicture: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+    profilePicture: 'https://images.pexels.com/photos/3184291/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   },
   {
     username: 'finance',
     password: '12345',
     role: 'finance' as const,
     fullName: 'Finance Manager',
-    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   },
   {
     username: 'gudang',
     password: '12345',
     role: 'gudang' as const,
     fullName: 'Gudang Manager',
-    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   },
   {
     username: 'management',
     password: '12345',
     role: 'management' as const,
     fullName: 'Management Manager',
-    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+  },
+  {
+    username: 'qhse',
+    password: '12345',
+    role: 'qhse' as const,
+    fullName: 'QHSE Manager',
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+  },
+  {
+    username: 'accounting',
+    password: '12345',
+    role: 'accounting' as const,
+    fullName: 'Accounting Manager',
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   }
 ];
 

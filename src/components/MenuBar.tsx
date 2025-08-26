@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu, managementMenu, MenuSection, MenuSubSection } from '../data/menuConfig'; // Import managementMenu
-import { ChevronDown, BarChart3, Zap, Home, FileSignature, Wallet } from 'lucide-react'; // Add Home, FileSignature, Wallet for management icons
+import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu, managementMenu, qhseMenu, accountingMenu, MenuSection, MenuSubSection } from '../data/menuConfig'; // Import accountingMenu
+import { ChevronDown, BarChart3, Zap, Home, FileSignature, Wallet, Tool, HeartPulse, GraduationCap, ClipboardCheck, Atom, ShieldCheck, HardHat, CalendarCheck } from 'lucide-react'; // Add QHSE icons
 import * as LucideIcons from 'lucide-react';
 
 interface MenuBarProps {
@@ -20,7 +20,9 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       user?.role === 'pengadaan' ? pengadaanMenu :
                       user?.role === 'finance' ? financeMenu :
                       user?.role === 'gudang' ? gudangMenu :
-                      user?.role === 'management' ? managementMenu : // Add managementMenu
+                      user?.role === 'management' ? managementMenu :
+                      user?.role === 'qhse' ? qhseMenu :
+                      user?.role === 'accounting' ? accountingMenu : // Add accountingMenu
                       marketingMenu; // Default to marketingMenu if role is not recognized
 
   // Add these logs to diagnose which menu is being loaded

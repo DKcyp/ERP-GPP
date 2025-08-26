@@ -25,6 +25,41 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+      {/* Floating Demo Credentials Note */}
+      <div className="fixed top-4 right-4 z-50 bg-white p-4 rounded-lg shadow-xl max-w-xs border border-gray-200">
+        <p className="text-sm font-semibold text-gray-800 mb-3 text-center">Demo Credentials</p>
+        <div className="space-y-2 text-xs">
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Marketing:</span> marketing / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Operational:</span> operational / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">HRD:</span> hrd / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Pengadaan:</span> pengadaan / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Finance:</span> finance / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Gudang:</span> gudang / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Management:</span> management / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">QHSE:</span> qhse / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Accounting:</span> accounting / 12345</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Original Login Form Card */}
       <div className="max-w-md w-full space-y-8">
         <div className="bg-white rounded-xl shadow-lg px-8 py-12">
           <div className="text-center mb-8">
@@ -82,33 +117,6 @@ const Login: React.FC = () => {
               Sign In
             </button>
           </form>
-
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 text-center mb-3">Demo Credentials:</p>
-            <div className="space-y-2 text-sm">
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">Marketing:</span> marketing / 12345</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">Operational:</span> operational / 12345</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">HRD:</span> hrd / 12345</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">Pengadaan:</span> pengadaan / 12345</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">Finance:</span> finance / 12345</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">Gudang:</span> gudang / 12345</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p><span className="font-medium">Management:</span> management / 12345</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

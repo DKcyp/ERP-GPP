@@ -1,11 +1,11 @@
-export type UserRole = 'marketing' | 'operational' | 'hrd' | 'pengadaan' | 'finance' | 'gudang';
-
 export interface User {
   username: string;
   role: UserRole;
   fullName: string;
   profilePicture: string;
 }
+
+export type UserRole = 'marketing' | 'operational' | 'hrd' | 'pengadaan' | 'finance' | 'gudang' | 'management' | 'qhse';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -18,7 +18,7 @@ export interface MenuItem {
   path: string;
 }
 
-export interface MenuSubSection { // New interface for nested groups
+export interface MenuSubSection {
   title: string;
   icon: string;
   items: MenuItem[];
@@ -27,7 +27,7 @@ export interface MenuSubSection { // New interface for nested groups
 export interface MenuSection {
   title: string;
   icon: string;
-  items?: MenuItem[]; // Optional for directPath or subSections
-  directPath?: string;
-  subSections?: MenuSubSection[]; // New: for nested groups
+  items?: MenuItem[];
+  subSections?: MenuSubSection[];
+  directPath?: string; // For sections that directly link to a page without a dropdown
 }

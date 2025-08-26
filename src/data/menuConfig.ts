@@ -398,3 +398,136 @@ export const managementMenu: MenuSection[] = [
     directPath: '/management/penggajian'
   }
 ];
+
+export const qhseMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/qhse/dashboard'
+  },
+  {
+    title: 'Perizinan Alat',
+    icon: 'Tool',
+    items: [],
+    directPath: '/qhse/perizinan-alat'
+  },
+  {
+    title: 'Monitoring MCU',
+    icon: 'HeartPulse',
+    items: [],
+    directPath: '/qhse/monitoring-mcu'
+  },
+  {
+    title: 'Monitoring Training',
+    icon: 'GraduationCap',
+    items: [],
+    directPath: '/qhse/monitoring-training'
+  },
+  {
+    title: 'Audit',
+    icon: 'ClipboardCheck',
+    items: [],
+    directPath: '/qhse/audit'
+  },
+  {
+    title: 'Monitoring ISOTOP',
+    icon: 'Atom',
+    items: [],
+    directPath: '/qhse/monitoring-isotop'
+  },
+  {
+    title: 'Monitoring PTI',
+    icon: 'ShieldCheck',
+    items: [],
+    directPath: '/qhse/monitoring-pti'
+  },
+  {
+    title: 'Monitoring Alat Safety',
+    icon: 'HardHat',
+    items: [],
+    directPath: '/qhse/monitoring-alat-safety'
+  },
+  {
+    title: 'Jadwal & Realisasi Program',
+    icon: 'CalendarCheck',
+    items: [],
+    directPath: '/qhse/jadwal-realisasi-program'
+  }
+];
+
+export const accountingMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/accounting/dashboard'
+  },
+  {
+    title: 'Master COA',
+    icon: 'BookText',
+    items: [],
+    directPath: '/accounting/master-coa'
+  },
+  {
+    title: 'Kas',
+    icon: 'Wallet',
+    subSections: [
+      {
+        title: 'Kas',
+        icon: 'Wallet',
+        items: [
+          { title: 'Kas Masuk', icon: 'Wallet', path: '/accounting/kas-masuk' },
+          { title: 'Kas Keluar', icon: 'CreditCard', path: '/accounting/kas-keluar' },
+        ]
+      }
+    ]
+  },
+  {
+    title: 'Bank',
+    icon: 'Banknote',
+    subSections: [
+      {
+        title: 'Bank',
+        icon: 'Banknote',
+        items: [
+          { title: 'Bank Masuk', icon: 'Banknote', path: '/accounting/bank-masuk' },
+          { title: 'Bank Keluar', icon: 'Landmark', path: '/accounting/bank-keluar' },
+        ]
+      }
+    ]
+  },
+  {
+    title: 'Jurnal',
+    icon: 'ClipboardList',
+    subSections: [
+      {
+        title: 'Jurnal',
+        icon: 'ClipboardList',
+        items: [
+          { title: 'Posting Jurnal', icon: 'ClipboardList', path: '/accounting/posting-jurnal' },
+          { title: 'Laporan Jurnal', icon: 'FileText', path: '/accounting/laporan-jurnal' },
+        ]
+      }
+    ]
+  },
+  {
+    title: 'Tutup Buku',
+    icon: 'BookX', // Icon for closing books
+    items: [],
+    directPath: '/accounting/tutup-buku'
+  },
+  {
+    title: 'Laba Rugi',
+    icon: 'TrendingUp', // Icon for profit/loss
+    items: [],
+    directPath: '/accounting/laba-rugi'
+  },
+  {
+    title: 'Neraca',
+    icon: 'Scale', // Icon for balance sheet
+    items: [],
+    directPath: '/accounting/neraca'
+  },
+  createGeneralMenu('accounting') // Retain createGeneralMenu
+];
