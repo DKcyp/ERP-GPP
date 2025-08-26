@@ -89,19 +89,28 @@ import GeneralVoucherDashboard from './GeneralVoucherDashboard'; // Corrected: I
 import GeneralProsesVoucherDashboard from './GeneralProsesVoucherDashboard'; // Import the new Proses Voucher component
 import GeneralReimburseDashboard from './GeneralReimburseDashboard'; // Import the new GeneralReimburseDashboard
 import GeneralProsesReimburseDashboard from './GeneralProsesReimburseDashboard'; // Import the new Proses Reimburse component
+import GeneralCashAdvanceDashboard from './GeneralCashAdvanceDashboard'; // Import the new GeneralCashAdvanceDashboard
+import GeneralProsesCashAdvance from './GeneralProsesCashAdvance'; // Import the new Proses Cash Advance component
+import GeneralPurchasingRequestDashboard from './GeneralPurchasingRequestDashboard'; // Import the new GeneralPurchasingRequestDashboard
+import GeneralProsesPurchasingRequest from './GeneralProsesPurchasingRequest'; // Import the new Proses Purchasing Request component
+import PengajianActiveDashboard from './PengajianActiveDashboard'; // Import the new PengajianActiveDashboard
 
 import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award, Clock, Menu } from 'lucide-react'; // Added Clock and Menu
-
-// Placeholder components for new General paths (excluding GeneralVoucherDashboard as it's now imported)
-const GeneralCashAdvanceDashboard = () => <div className="p-8 text-gray-700">General Cash Advance Dashboard Content</div>;
-const GeneralProsesCashAdvance = () => <div className="p-8 text-gray-700">General Proses Cash Advance Content</div>;
-const GeneralPurchasingRequestDashboard = () => <div className="p-8 text-gray-700">General Purchasing Request Dashboard Content</div>;
-const GeneralProsesPurchasingRequest = () => <div className="p-8 text-gray-700">General Proses Purchasing Request Content</div>;
 
 
 interface DashboardProps {
   currentPage: string;
 }
+
+// Placeholder for Management Dashboard
+const ManagementDashboard: React.FC = () => (
+  <div className="min-h-screen bg-gray-100 p-8">
+    <div className="max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">Management Main Dashboard</h1>
+      <p className="text-gray-600">Welcome to the Management Dashboard. Select an option from the menu to proceed with approvals.</p>
+    </div>
+  </div>
+);
 
 const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
   const { user } = useAuth();
@@ -122,6 +131,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     if (user?.role === 'gudang') {
       return <GudangMainDashboard />; // Render GudangMainDashboard for gudang role
+    }
+
+    if (user?.role === 'management') {
+      return <ManagementDashboard />; // Render ManagementDashboard for management role
     }
 
     // Marketing Dashboard
@@ -476,7 +489,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <GeneralProsesReimburseDashboard />; // Render the actual component
     }
     if (currentPage === '/gudang/general/cash-advance/dashboard') {
-      return <GeneralCashAdvanceDashboard />;
+      return <GeneralCashAdvanceDashboard />; // Render the actual component
     }
     if (currentPage === '/gudang/general/cash-advance/proses') {
       return <GeneralProsesCashAdvance />;
@@ -549,7 +562,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <GeneralProsesReimburseDashboard />;
     }
     if (currentPage === '/pengadaan/general/cash-advance/dashboard') {
-      return <GeneralCashAdvanceDashboard />;
+      return <GeneralCashAdvanceDashboard />; // Render the actual component
     }
     if (currentPage === '/pengadaan/general/cash-advance/proses') {
       return <GeneralProsesCashAdvance />;
@@ -601,6 +614,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/hrd/gaji/daftar') {
       return <DaftarGajiDashboard />;
     }
+    if (currentPage === '/hrd/gaji/pengajian') { // New route for PengajianActive
+      return <PengajianActiveDashboard />;
+    }
     if (currentPage === '/hrd/gaji/potongan') {
       return <PotonganGajiDashboard />;
     }
@@ -642,7 +658,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <GeneralProsesReimburseDashboard />;
     }
     if (currentPage === '/hrd/general/cash-advance/dashboard') {
-      return <GeneralCashAdvanceDashboard />;
+      return <GeneralCashAdvanceDashboard />; // Render the actual component
     }
     if (currentPage === '/hrd/general/cash-advance/proses') {
       return <GeneralProsesCashAdvance />;
@@ -699,7 +715,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <GeneralProsesReimburseDashboard />;
     }
     if (currentPage === '/marketing/general/cash-advance/dashboard') {
-      return <GeneralCashAdvanceDashboard />;
+      return <GeneralCashAdvanceDashboard />; // Render the actual component
     }
     if (currentPage === '/marketing/general/cash-advance/proses') {
       return <GeneralProsesCashAdvance />;
@@ -777,7 +793,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <GeneralProsesReimburseDashboard />;
     }
     if (currentPage === '/operational/general/cash-advance/dashboard') {
-      return <GeneralCashAdvanceDashboard />;
+      return <GeneralCashAdvanceDashboard />; // Render the actual component
     }
     if (currentPage === '/operational/general/cash-advance/proses') {
       return <GeneralProsesCashAdvance />;
@@ -816,6 +832,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/finance/voucher/laporan-hutang-usaha') {
       return <LaporanHutangUsahaDashboard />;
+    }
+
+    // Management Routes
+    if (currentPage === '/management/dashboard') {
+      return <ManagementDashboard />;
+    }
+    if (currentPage === '/management/approve-kontrak') {
+      return <KontrakKerjaDashboard role="management" />; // Pass role prop
+    }
+    if (currentPage === '/management/penggajian') {
+      return <PengajianActiveDashboard role="management" />; // Pass role prop
     }
 
     // Default to main dashboard

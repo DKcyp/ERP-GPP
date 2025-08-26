@@ -208,7 +208,7 @@ export const hrdMenu: MenuSection[] = [
     icon: 'Wallet',
     items: [
       { title: 'Daftar Gaji', icon: 'FileText', path: '/hrd/gaji/daftar' },
-      { title: 'Pengajian', icon: 'Calculator', path: '/hrd/gaji/pengajian' },
+      { title: 'Pengajian', icon: 'Calculator', path: '/hrd/gaji/pengajian' }, // Added new menu item
       { title: 'Potongan Gaji', icon: 'Scissors', path: '/hrd/gaji/potongan' },
       { title: 'History Peminjaman', icon: 'History', path: '/hrd/gaji/history-peminjaman' },
       { title: 'Daftar Peminjam Karyawan', icon: 'UsersRound', path: '/hrd/gaji/daftar-peminjam-karyawan' }
@@ -376,4 +376,25 @@ export const gudangMenu: MenuSection[] = [
     directPath: '/gudang/permintaan-barang-gudang/dashboard'
   },
   createGeneralMenu('gudang')
+];
+
+export const managementMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/management/dashboard'
+  },
+  {
+    title: 'Approve Kontrak',
+    icon: 'FileSignature', // Using FileSignature for contract approval
+    items: [],
+    directPath: '/management/approve-kontrak'
+  },
+  {
+    title: 'Penggajian',
+    icon: 'Wallet', // Using Wallet for payroll
+    items: [],
+    directPath: '/management/penggajian'
+  }
 ];

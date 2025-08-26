@@ -16,10 +16,15 @@ import {
   Info,
   ChevronLeft,
   ChevronRight,
-  ArrowUp
+  ArrowUp,
+  CheckCircle // New icon for Approve
 } from 'lucide-react';
 
-const KontrakKerjaDashboard: React.FC = () => {
+interface KontrakKerjaDashboardProps {
+  role?: string; // Add role prop
+}
+
+const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) => {
   const [searchNoKontrak, setSearchNoKontrak] = useState('');
   const [searchPenerimaKontrak, setSearchPenerimaKontrak] = useState('');
   const [dateFrom, setDateFrom] = useState('03/03/2025');
@@ -152,13 +157,15 @@ const KontrakKerjaDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">
               KONTRAK KERJA
             </h1>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah</span>
-            </button>
+            {role !== 'management' && ( // Only show Add button if not management role
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            )}
           </div>
 
           {/* Search and Filter Section */}
@@ -370,19 +377,30 @@ const KontrakKerjaDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
-                          className="p-2 text-cyan-600 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
-                          title="View"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => setIsModalOpen(true)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
+                        {role === 'management' ? (
+                          <button 
+                            className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
+                            title="Approve"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </button>
+                        ) : (
+                          <>
+                            <button 
+                              className="p-2 text-cyan-600 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
+                              title="View"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button 
+                              onClick={() => setIsModalOpen(true)}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Edit"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
