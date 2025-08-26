@@ -59,11 +59,11 @@ const mockUsers = [
     fullName: 'Gudang Manager',
     profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   },
-	  {
-    username: 'management ',
+  {
+    username: 'management',
     password: '12345',
     role: 'management' as const,
-    fullName: 'management Manager',
+    fullName: 'Management Manager',
     profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   }
 ];
