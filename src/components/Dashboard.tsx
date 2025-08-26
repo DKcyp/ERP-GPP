@@ -53,7 +53,7 @@ import PurchasingDashboard from './PurchasingDashboard';
 import InvoiceDashboard from './InvoiceDashboard';
 import GudangDashboard from './GudangDashboard';
 import DaftarSeleksiSupplierBiddingDashboard from './DaftarSeleksiSupplierBiddingDashboard';
-import FinanceDashboard from './FinanceDashboard';
+import FinanceDashboard from './FinanceDashboard'; // Existing Finance Dashboard
 import ApprovalTiketDashboard from './ApprovalTiketDashboard';
 import ApprovalInvoiceDashboard from './ApprovalInvoiceDashboard';
 import ApprovalPenggajianDashboard from './ApprovalPenggajianDashboard';
@@ -119,6 +119,26 @@ import TutupBukuDashboard from './TutupBukuDashboard';
 import LabaRugiDashboard from './LabaRugiDashboard';
 import NeracaDashboard from './NeracaDashboard';
 
+// Tax Dashboards
+import TaxMainDashboard from './TaxMainDashboard';
+import PajakMasukanDashboard from './PajakMasukanDashboard';
+import PajakKeluaranDashboard from './PajakKeluaranDashboard';
+import PPh21Dashboard from './PPh21Dashboard';
+
+// Finance Dashboards
+import FinanceMainDashboard from './FinanceMainDashboard';
+import APDashboard from './APDashboard';
+import LaporanAPDashboard from './LaporanAPDashboard';
+import ReimburseVoucherDashboard from './ReimburseVoucherDashboard';
+import ARDashboard from './ARDashboard';
+import ProsesPembayaranARDashboard from './ProsesPembayaranARDashboard';
+import LaporanARDashboard from './LaporanARDashboard';
+
+// Procon Dashboards
+import ProconMainDashboard from './ProconMainDashboard';
+import ProconInvoiceDashboard from './ProconInvoiceDashboard';
+import ProconOverviewDashboard from './ProconOverviewDashboard';
+
 
 import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award, Clock, Menu } from 'lucide-react'; // Added Clock and Menu
 
@@ -151,7 +171,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
 
     if (user?.role === 'finance') {
-      return <FinanceDashboard />;
+      return <FinanceMainDashboard />; // Render FinanceMainDashboard for finance role
     }
 
     if (user?.role === 'gudang') {
@@ -168,6 +188,14 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     if (user?.role === 'accounting') {
       return <AccountingMainDashboard />; // Render AccountingMainDashboard for accounting role
+    }
+
+    if (user?.role === 'tax') {
+      return <TaxMainDashboard />; // Render TaxMainDashboard for tax role
+    }
+
+    if (user?.role === 'procon') {
+      return <ProconMainDashboard />; // Render ProconMainDashboard for procon role
     }
 
     // Marketing Dashboard
@@ -779,9 +807,6 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/operational/hpp-turunan/dashboard') {
       return <HPPTurunanDashboard />;
     }
-    if (currentPage === '/operational/produksi/dashboard') {
-      return <ProduksiDashboard />;
-    }
     if (currentPage === '/operational/produksi/proses') {
       return <ProsesProduksiDashboard />;
     }
@@ -840,7 +865,25 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     // Finance Routes
     if (currentPage === '/finance/dashboard') {
-      return <FinanceDashboard />;
+      return <FinanceMainDashboard />;
+    }
+    if (currentPage === '/finance/ap/dashboard') {
+      return <APDashboard />;
+    }
+    if (currentPage === '/finance/ap/laporan') {
+      return <LaporanAPDashboard />;
+    }
+    if (currentPage === '/finance/reimburse-voucher') {
+      return <ReimburseVoucherDashboard />;
+    }
+    if (currentPage === '/finance/ar/dashboard') {
+      return <ARDashboard />;
+    }
+    if (currentPage === '/finance/ar/proses-pembayaran') {
+      return <ProsesPembayaranARDashboard />;
+    }
+    if (currentPage === '/finance/ar/laporan') {
+      return <LaporanARDashboard />;
     }
     if (currentPage === '/finance/approval/tiket') {
       return <ApprovalTiketDashboard />;
@@ -940,6 +983,31 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/accounting/neraca') {
       return <NeracaDashboard />;
+    }
+
+    // Tax Routes
+    if (currentPage === '/tax/dashboard') {
+      return <TaxMainDashboard />;
+    }
+    if (currentPage === '/tax/pajak-masukan') {
+      return <PajakMasukanDashboard />;
+    }
+    if (currentPage === '/tax/pajak-keluaran') {
+      return <PajakKeluaranDashboard />;
+    }
+    if (currentPage === '/tax/pph-21') {
+      return <PPh21Dashboard />;
+    }
+
+    // Procon Routes
+    if (currentPage === '/procon/dashboard') {
+      return <ProconMainDashboard />;
+    }
+    if (currentPage === '/procon/invoice') {
+      return <ProconInvoiceDashboard />;
+    }
+    if (currentPage === '/procon/overview') {
+      return <ProconOverviewDashboard />;
     }
 
     // Default to main dashboard

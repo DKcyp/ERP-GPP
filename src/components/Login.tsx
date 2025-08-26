@@ -56,6 +56,12 @@ const Login: React.FC = () => {
           <div className="bg-gray-50 p-2 rounded-md">
             <p><span className="font-medium">Accounting:</span> accounting / 12345</p>
           </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Tax:</span> tax / 12345</p>
+          </div>
+          <div className="bg-gray-50 p-2 rounded-md">
+            <p><span className="font-medium">Procon:</span> procon / 12345</p>
+          </div>
         </div>
       </div>
 

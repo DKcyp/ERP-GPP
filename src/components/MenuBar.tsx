@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu, managementMenu, qhseMenu, accountingMenu, MenuSection, MenuSubSection } from '../data/menuConfig'; // Import accountingMenu
+import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu, managementMenu, qhseMenu, accountingMenu, taxMenu, proconMenu, MenuSection, MenuSubSection } from '../data/menuConfig'; // Import proconMenu
 import { ChevronDown, BarChart3, Zap, Home, FileSignature, Wallet, Tool, HeartPulse, GraduationCap, ClipboardCheck, Atom, ShieldCheck, HardHat, CalendarCheck } from 'lucide-react'; // Add QHSE icons
 import * as LucideIcons from 'lucide-react';
 
@@ -22,7 +22,9 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       user?.role === 'gudang' ? gudangMenu :
                       user?.role === 'management' ? managementMenu :
                       user?.role === 'qhse' ? qhseMenu :
-                      user?.role === 'accounting' ? accountingMenu : // Add accountingMenu
+                      user?.role === 'accounting' ? accountingMenu :
+                      user?.role === 'tax' ? taxMenu :
+                      user?.role === 'procon' ? proconMenu : // Add proconMenu
                       marketingMenu; // Default to marketingMenu if role is not recognized
 
   // Add these logs to diagnose which menu is being loaded
@@ -128,10 +130,10 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
               {/* Dropdown Menu */}
               {activeDropdown === section.title && !section.directPath && (section.items?.length > 0 || section.subSections?.length > 0) && (
                 <div className={`absolute top-full left-0 mt-2 bg-white shadow-2xl border border-gray-200 rounded-2xl z-50 animate-in fade-in-0 slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
-                  section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
+                  section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
                 }`}>
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' ? 'py-2' : 'py-3'}>
+                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'py-2' : 'py-3'}>
                     {section.subSections && section.subSections.length > 0 ? (
                       // New layout for General menu with sub-sections
                       <div className="space-y-1">
@@ -166,7 +168,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                           </div>
                         ))}
                       </div>
-                    ) : (section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname') ? (
+                    ) : (section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR') ? (
                       // Special layout for Finance Approval and Voucher menus
                       <div className="space-y-1">
                         {section.items?.map((item) => (
@@ -268,7 +270,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
           {/* Mobile Dropdown */}
           {activeDropdown && !menuSections.find(s => s.title === activeDropdown)?.directPath && (menuSections.find(s => s.title === activeDropdown)?.items?.length > 0 || menuSections.find(s => s.title === activeDropdown)?.subSections?.length > 0) && (
             <div className={`mt-3 bg-white rounded-2xl shadow-2xl border border-gray-200 animate-in slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
-              activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' ? 'max-h-96 overflow-y-auto' : ''
+              activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR' ? 'max-h-96 overflow-y-auto' : ''
             }`}>
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
               <div className="py-2">
@@ -306,7 +308,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       </div>
                     ))}
                   </div>
-                ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname') ? (
+                ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR') ? (
                   // Special mobile layout for Finance Approval, Voucher, Gudang Pengembalian Barang and Stock Opname menus
                   <div className="space-y-3">
                     {menuSections.find(s => s.title === activeDropdown)?.items?.map((item) => (

@@ -79,6 +79,20 @@ const mockUsers = [
     role: 'accounting' as const,
     fullName: 'Accounting Manager',
     profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+  },
+  {
+    username: 'tax',
+    password: '12345',
+    role: 'tax' as const,
+    fullName: 'Tax Manager',
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
+  },
+  { // New Procon User
+    username: 'procon',
+    password: '12345',
+    role: 'procon' as const,
+    fullName: 'Procon Manager',
+    profilePicture: 'https://images.pexels.com/photos/3184405/pexels-photo-3777931.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop&crop=face'
   }
 ];
 

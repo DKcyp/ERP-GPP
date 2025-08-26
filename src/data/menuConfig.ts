@@ -286,23 +286,59 @@ export const financeMenu: MenuSection[] = [
     directPath: '/finance/dashboard'
   },
   {
+    title: 'AP',
+    icon: 'CreditCard', // Icon for Accounts Payable
+    subSections: [
+      {
+        title: 'AP Management',
+        icon: 'ClipboardList',
+        items: [
+          { title: 'Dashboard AP', icon: 'LayoutDashboard', path: '/finance/ap/dashboard' },
+          { title: 'Laporan AP', icon: 'FileText', path: '/finance/ap/laporan' },
+        ]
+      }
+    ]
+  },
+  {
+    title: 'Reimburse / Voucher',
+    icon: 'Wallet', // Icon for Reimburse / Voucher
+    items: [],
+    directPath: '/finance/reimburse-voucher'
+  },
+  {
+    title: 'AR',
+    icon: 'ReceiptText', // Icon for Accounts Receivable
+    subSections: [
+      {
+        title: 'AR Management',
+        icon: 'ClipboardCheck',
+        items: [
+          { title: 'Dashboard AR', icon: 'LayoutDashboard', path: '/finance/ar/dashboard' },
+          { title: 'Proses Pembayaran AR', icon: 'Handshake', path: '/finance/ar/proses-pembayaran' },
+          { title: 'Laporan AR', icon: 'FileBarChart', path: '/finance/ar/laporan' },
+        ]
+      }
+    ]
+  },
+  // NEW MENUS ADDED BELOW
+  {
     title: 'Approval',
     icon: 'CheckCircle',
     items: [
-      { title: 'Approval Tiket', icon: 'Ticket', path: '/finance/approval/tiket' },
-      { title: 'Approval Invoice', icon: 'FileText', path: '/finance/approval/invoice' },
-      { title: 'Approval Penggajian', icon: 'DollarSign', path: '/finance/approval/penggajian' },
-      { title: 'Approval PO Training', icon: 'BookOpen', path: '/finance/approval/po-training' },
-      { title: 'Approval Voucher', icon: 'CreditCard', path: '/finance/approval/voucher' },
+      { title: 'Approval Tiket', icon: 'TicketCheck', path: '/finance/approval/tiket' },
+      { title: 'Approval Invoice', icon: 'FileCheck', path: '/finance/approval/invoice' },
+      { title: 'Approval Penggajian', icon: 'Wallet', path: '/finance/approval/penggajian' },
+      { title: 'Approval PO Training', icon: 'Award', path: '/finance/approval/po-training' },
+      { title: 'Approval Voucher', icon: 'Ticket', path: '/finance/approval/voucher' },
     ]
   },
   {
     title: 'Voucher',
-    icon: 'Wallet',
+    icon: 'Ticket',
     items: [
-      { title: 'Daftar Pembayaran', icon: 'ClipboardList', path: '/finance/voucher/daftar-pembayaran' },
-      { title: 'Daftar Voucher', icon: 'FileInvoice', path: '/finance/voucher/daftar-voucher' },
-      { title: 'Laporan Hutang Usaha', icon: 'BarChart', path: '/finance/voucher/laporan-hutang-usaha' }
+      { title: 'Daftar Pembayaran', icon: 'CreditCard', path: '/finance/voucher/daftar-pembayaran' },
+      { title: 'Daftar Voucher', icon: 'TicketPercent', path: '/finance/voucher/daftar-voucher' },
+      { title: 'Laporan Hutang Usaha', icon: 'FileText', path: '/finance/voucher/laporan-hutang-usaha' },
     ]
   }
 ];
@@ -530,4 +566,50 @@ export const accountingMenu: MenuSection[] = [
     directPath: '/accounting/neraca'
   },
   createGeneralMenu('accounting') // Retain createGeneralMenu
+];
+
+// Refined Tax Menu
+export const taxMenu: MenuSection[] = [
+  {
+    title: 'Pajak',
+    icon: 'Scale', // Icon for general tax section
+    subSections: [
+      {
+        title: 'Pajak', // Sub-section title, can be same as main section or more specific
+        icon: 'Scale', // Icon for the sub-section
+        items: [
+          { title: 'Pajak Masukan', icon: 'ArrowDownCircle', path: '/tax/pajak-masukan' },
+          { title: 'Pajak Keluaran', icon: 'ArrowUpCircle', path: '/tax/pajak-keluaran' },
+        ]
+      }
+    ]
+  },
+  {
+    title: 'PPh 21',
+    icon: 'FileText',
+    items: [],
+    directPath: '/tax/pph-21'
+  }
+];
+
+// Procon Menu
+export const proconMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/procon/dashboard'
+  },
+  {
+    title: 'Invoice',
+    icon: 'FileInvoice',
+    items: [],
+    directPath: '/procon/invoice'
+  },
+  {
+    title: 'Dashboard', // Renamed to avoid conflict with Main Dashboard, will be ProconOverviewDashboard
+    icon: 'LayoutDashboard',
+    items: [],
+    directPath: '/procon/overview'
+  }
 ];
