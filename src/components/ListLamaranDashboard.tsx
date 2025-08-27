@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  FileSpreadsheet, 
-  FileText, 
+import {
+  Search,
+  FileSpreadsheet,
+  FileText,
   File,
-  ThumbsUp,
+  ThumbsUp, // Changed to ThumbsUp icon
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ArrowUp
 } from 'lucide-react';
-
-interface LamaranData {
-  id: string;
-  no: number;
-  namaPelamar: string;
-  noTelp: string;
-  email: string;
-  kualifikasi: string;
-}
+import { LamaranData } from '../types'; // Import LamaranData from types
 
 const ListLamaranDashboard: React.FC = () => {
   const [searchNamaPelamar, setSearchNamaPelamar] = useState('');
@@ -30,15 +22,17 @@ const ListLamaranDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof LamaranData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Sample data matching the image
-  const [lamaranData] = useState<LamaranData[]>([
+  // Sample data matching the image, now with status and keterangan
+  const [lamaranData, setLamaranData] = useState<LamaranData[]>([
     {
       id: '1',
       no: 1,
       namaPelamar: 'Rahmat Hidayat',
       noTelp: '0812-3456-7890',
       email: 'rahmat.hidayat@email.com',
-      kualifikasi: 'Sarjana Teknik Sipil, pengalaman 4 tahun di bidang konstruksi'
+      kualifikasi: 'Sarjana Teknik Sipil, pengalaman 4 tahun di bidang konstruksi',
+      status: 'Pending',
+      keterangan: 'Menunggu review HRD.'
     },
     {
       id: '2',
@@ -46,7 +40,9 @@ const ListLamaranDashboard: React.FC = () => {
       namaPelamar: 'Siti Aisyah',
       noTelp: '0813-9876-5432',
       email: 'siti.aisyah@email.com',
-      kualifikasi: 'D3 Manajemen, pengalaman 2 tahun sebagai Admin HRD'
+      kualifikasi: 'D3 Manajemen, pengalaman 2 tahun sebagai Admin HRD',
+      status: 'Accepted',
+      keterangan: 'Lolos seleksi administrasi, menunggu jadwal interview.'
     },
     {
       id: '3',
@@ -54,7 +50,9 @@ const ListLamaranDashboard: React.FC = () => {
       namaPelamar: 'Fauzan Alfarizi',
       noTelp: '0857-6543-2109',
       email: 'fauzan.alfarizi@email.com',
-      kualifikasi: 'Sarjana Teknik Sipil, pengalaman 4 tahun di bidang konstruksi'
+      kualifikasi: 'Sarjana Teknik Sipil, pengalaman 4 tahun di bidang konstruksi',
+      status: 'Rejected',
+      keterangan: 'Kualifikasi tidak sesuai.'
     },
     {
       id: '4',
@@ -62,7 +60,9 @@ const ListLamaranDashboard: React.FC = () => {
       namaPelamar: 'Lestari Putri',
       noTelp: '0821-1234-5678',
       email: 'lestari.putri@email.com',
-      kualifikasi: 'Sarjana Akuntansi, pengalaman 5 tahun sebagai Finance Officer'
+      kualifikasi: 'Sarjana Akuntansi, pengalaman 5 tahun sebagai Finance Officer',
+      status: 'Interview',
+      keterangan: 'Jadwal interview tanggal 10 April 2025.'
     }
   ]);
 
@@ -89,17 +89,17 @@ const ListLamaranDashboard: React.FC = () => {
   const filteredData = lamaranData.filter(item => {
     const matchesNamaPelamar = item.namaPelamar.toLowerCase().includes(searchNamaPelamar.toLowerCase());
     const matchesKualifikasi = selectedKualifikasi ? item.kualifikasi === selectedKualifikasi : true;
-    
+
     return matchesNamaPelamar && matchesKualifikasi;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
+
     if (sortDirection === 'asc') {
       return aValue > bValue ? 1 : -1;
     } else {
@@ -119,6 +119,23 @@ const ListLamaranDashboard: React.FC = () => {
 
   const handleSearch = () => {
     setCurrentPage(1);
+  };
+
+  const handleThumbUpClick = (item: LamaranData) => {
+    console.log(`Thumb up clicked for ${item.namaPelamar}`);
+    // Implement your logic for the thumb up button here
+    alert(`Approving application for ${item.namaPelamar}`);
+  };
+
+  const getStatusColor = (status: LamaranData['status']) => {
+    switch (status) {
+      case 'Pending': return 'bg-yellow-100 text-yellow-800';
+      case 'Accepted': return 'bg-green-100 text-green-800';
+      case 'Rejected': return 'bg-red-100 text-red-800';
+      case 'Interview': return 'bg-blue-100 text-blue-800';
+      case 'Hired': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
@@ -147,7 +164,7 @@ const ListLamaranDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Agus"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -171,7 +188,7 @@ const ListLamaranDashboard: React.FC = () => {
                     </span>
                     <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${kualifikasiDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {kualifikasiDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden max-h-60 overflow-y-auto">
                       <button
@@ -244,7 +261,7 @@ const ListLamaranDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('no')}
                   >
@@ -255,7 +272,7 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('namaPelamar')}
                   >
@@ -266,7 +283,7 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('noTelp')}
                   >
@@ -277,7 +294,7 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('email')}
                   >
@@ -288,7 +305,7 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('kualifikasi')}
                   >
@@ -299,17 +316,28 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Status</span>
+                      {sortField === 'status' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
+                    style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
@@ -318,7 +346,7 @@ const ListLamaranDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaPelamar}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.noTelp}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">
-                      <a 
+                      <a
                         href={`mailto:${item.email}`}
                         className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                       >
@@ -331,10 +359,16 @@ const ListLamaranDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center">
-                        <button 
-                          className="p-2 bg-cyan-500 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-cyan-600"
-                          title="Approve"
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => handleThumbUpClick(item)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
+                          title="Approve Application"
                         >
                           <ThumbsUp className="h-4 w-4" />
                         </button>
@@ -360,7 +394,7 @@ const ListLamaranDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
@@ -371,7 +405,7 @@ const ListLamaranDashboard: React.FC = () => {
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

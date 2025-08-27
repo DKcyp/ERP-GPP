@@ -10,7 +10,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
       icon: 'BarChart',
       items: [
         { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: `/${role}/general/kpi/dashboard` },
-        { title: 'Master KPI', icon: 'Database', path: `/${role}/general/kpi/master` },
+        { title: 'Master KPI', icon: 'Database', path: `/${role}/role/general/kpi/master` },
         { title: 'List KPI', icon: 'List', path: `/${role}/general/kpi/list` },
       ]
     },
@@ -208,7 +208,7 @@ export const hrdMenu: MenuSection[] = [
     icon: 'Wallet',
     items: [
       { title: 'Daftar Gaji', icon: 'FileText', path: '/hrd/gaji/daftar' },
-      { title: 'Pengajian', icon: 'Calculator', path: '/hrd/gaji/pengajian' }, // Added new menu item
+      { title: 'Pengajian', icon: 'Calculator', path: '/hrd/gaji/pengajian' },
       { title: 'Potongan Gaji', icon: 'Scissors', path: '/hrd/gaji/potongan' },
       { title: 'History Peminjaman', icon: 'History', path: '/hrd/gaji/history-peminjaman' },
       { title: 'Daftar Peminjam Karyawan', icon: 'UsersRound', path: '/hrd/gaji/daftar-peminjam-karyawan' }
@@ -227,8 +227,8 @@ export const hrdMenu: MenuSection[] = [
     icon: 'Star',
     items: [
       { title: 'Daftar Penilaian', icon: 'ClipboardCheck', path: '/hrd/penilaian/daftar' },
-      { title: 'Master KPI', icon: 'BarChart', path: '/hrd/penilaian/master-kpi' },
-      { title: 'Master Indikator', icon: 'Target', path: '/hrd/penilaian/master-indikator' }
+      { title: 'Master KPI HRD', icon: 'BarChart', path: '/hrd/penilaian/master-kpi-hrd' },
+      { title: 'Master Indikator HRD', icon: 'Target', path: '/hrd/penilaian/master-indikator-hrd' }
     ]
   },
   createGeneralMenu('hrd')
@@ -241,7 +241,7 @@ export const pengadaanMenu: MenuSection[] = [
     items: [
       { title: 'List Vendor', icon: 'List', path: '/pengadaan/vendor/list' },
       { title: 'Master Vendor', icon: 'FileCog', path: '/pengadaan/vendor/master' },
-      { title: 'Evaluasi', icon: 'CheckCircle', path: '/pengadaan/vendor/evaluasi' },
+      { title: 'Evaluasi Vendor', icon: 'CheckCircle', path: '/pengadaan/vendor/evaluasi' }, // NEW: Evaluasi Vendor sub-menu
       { title: 'Laporan', icon: 'BarChart', path: '/pengadaan/vendor/laporan' }
     ]
   },
@@ -320,7 +320,6 @@ export const financeMenu: MenuSection[] = [
       }
     ]
   },
-  // NEW MENUS ADDED BELOW
   {
     title: 'Approval',
     icon: 'CheckCircle',

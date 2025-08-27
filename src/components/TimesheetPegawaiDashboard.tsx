@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  FileSpreadsheet, 
-  FileText, 
+import ApproveTimesheetDetailModal from './ApproveTimesheetDetailModal'; // New import
+import { ApprovalTimesheetPegawaiData } from '../types'; // New import for modal data structure
+import {
+  Search,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -18,23 +20,12 @@ import {
   ChevronDown
 } from 'lucide-react';
 
-interface TimesheetPegawai {
-  id: string;
-  no: number;
-  kualifikasi: string[];
+// Define an extended interface for the dashboard table to include all displayed fields
+interface DashboardTimesheetItem extends ApprovalTimesheetPegawaiData {
   tanggalTimesheet: string;
-  mob: string;
-  demob: string;
-  durasiHari: number;
-  overtimeJam: number;
-  noSO: string;
-  noSOTurunan: string;
-  lokasi: string;
   zona: string;
-  jenisPekerjaan: 'On Call' | 'Tender';
   rate: string;
   pegawai: 'Freelance' | 'Pegawai Tetap';
-  status: 'Approved' | 'Pending' | 'Rejected';
 }
 
 const TimesheetPegawaiDashboard: React.FC = () => {
@@ -50,101 +41,153 @@ const TimesheetPegawaiDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<TimesheetPegawai | null>(null);
-  const [sortField, setSortField] = useState<keyof TimesheetPegawai | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<DashboardTimesheetItem | null>(null); // Changed type
+  const [sortField, setSortField] = useState<keyof DashboardTimesheetItem | null>(null); // Changed type
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Sample data matching the image
-  const [timesheetPegawaiData, setTimesheetPegawaiData] = useState<TimesheetPegawai[]>([
+  // New states for the approval modal
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [selectedTimesheetForApproval, setSelectedTimesheetForApproval] = useState<ApprovalTimesheetPegawaiData | null>(null);
+
+  // Sample data matching the image, now using DashboardTimesheetItem
+  const [timesheetPegawaiData, setTimesheetPegawaiData] = useState<DashboardTimesheetItem[]>([
     {
       id: '1',
       no: 1,
+      nama: 'Budi Santoso', // New field for modal
       kualifikasi: ['Welder', 'Rope Access'],
       tanggalTimesheet: '2024-11-09',
       mob: '2024-11-10',
       demob: '2024-11-15',
-      durasiHari: 5,
-      overtimeJam: 10,
+      durasi: '5 Hari', // Changed from durasiHari: 5
+      overtime: '10 Jam', // Changed from overtimeJam: 10
       noSO: 'SO-001',
-      noSOTurunan: 'SO-001.1',
+      noHPP: 'SO-001.1', // Changed from noSOTurunan
       lokasi: 'Bali',
       zona: 'Zona A',
       jenisPekerjaan: 'On Call',
       rate: '500,000',
       pegawai: 'Freelance',
-      status: 'Approved'
+      status: 'Approved',
+      namaProject: 'Proyek Medco Bali', // New field for modal
+      namaClient: 'Medco Energi', // New field for modal
+      jamAwalKerja: '08:00', // New field for modal
+      jamSelesaiKerja: '17:00', // New field for modal
+      tunjangan: [ // New field for modal
+        { namaTunjangan: 'Makan', rateTunjangan: '50,000', overtime: '' },
+        { namaTunjangan: 'Transport', rateTunjangan: '75,000', overtime: '' },
+      ],
     },
     {
       id: '2',
       no: 2,
+      nama: 'Siti Aminah',
       kualifikasi: ['Engineer', 'Project Manager'],
       tanggalTimesheet: '2024-11-11',
       mob: '2024-11-12',
       demob: '2024-11-18',
-      durasiHari: 6,
-      overtimeJam: 8,
+      durasi: '6 Hari',
+      overtime: '8 Jam',
       noSO: 'SO-002',
-      noSOTurunan: 'SO-001.2',
+      noHPP: 'SO-001.2',
       lokasi: 'Jakarta',
       zona: 'Zona B',
       jenisPekerjaan: 'Tender',
       rate: '750,000',
       pegawai: 'Pegawai Tetap',
-      status: 'Pending'
+      status: 'Pending',
+      namaProject: 'Proyek Pertamina Jakarta',
+      namaClient: 'Pertamina Hulu Energi',
+      jamAwalKerja: '09:00',
+      jamSelesaiKerja: '18:00',
+      overtime: '8 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Makan', rateTunjangan: '60,000', overtime: '' },
+        { namaTunjangan: 'Akomodasi', rateTunjangan: '100,000', overtime: '' },
+      ],
     },
     {
       id: '3',
       no: 3,
+      nama: 'Joko Susilo',
       kualifikasi: ['Safety Officer'],
       tanggalTimesheet: '2024-11-14',
       mob: '2024-11-15',
       demob: '2024-11-20',
-      durasiHari: 5,
-      overtimeJam: 12,
+      durasi: '5 Hari',
+      overtime: '12 Jam',
       noSO: 'SO-003',
-      noSOTurunan: 'SO-001.1',
+      noHPP: 'SO-001.1',
       lokasi: 'Surabaya',
       zona: 'Zona C',
       jenisPekerjaan: 'On Call',
       rate: '600,000',
       pegawai: 'Freelance',
-      status: 'Rejected'
+      status: 'Rejected',
+      namaProject: 'Proyek PLN Surabaya',
+      namaClient: 'PLN (Persero)',
+      jamAwalKerja: '07:00',
+      jamSelesaiKerja: '16:00',
+      overtime: '12 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Makan', rateTunjangan: '55,000', overtime: '' },
+      ],
     },
     {
       id: '4',
       no: 4,
+      nama: 'Dewi Lestari',
       kualifikasi: ['Electrical Technician'],
       tanggalTimesheet: '2024-11-17',
       mob: '2024-11-18',
       demob: '2024-11-23',
-      durasiHari: 5,
-      overtimeJam: 9,
+      durasi: '5 Hari',
+      overtime: '9 Jam',
       noSO: 'SO-004',
-      noSOTurunan: 'SO-001.2',
+      noHPP: 'SO-001.2',
       lokasi: 'Bandung',
       zona: 'Zona A',
       jenisPekerjaan: 'Tender',
       rate: '550,000',
       pegawai: 'Pegawai Tetap',
-      status: 'Approved'
+      status: 'Approved',
+      namaProject: 'Proyek Telkom Bandung',
+      namaClient: 'Telkom Indonesia',
+      jamAwalKerja: '08:30',
+      jamSelesaiKerja: '17:30',
+      overtime: '9 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Makan', rateTunjangan: '50,000', overtime: '' },
+        { namaTunjangan: 'Transport', rateTunjangan: '60,000', overtime: '' },
+      ],
     },
     {
       id: '5',
       no: 5,
+      nama: 'Agus Salim',
       kualifikasi: ['Mechanical Engineer'],
       tanggalTimesheet: '2024-11-19',
       mob: '2024-11-20',
       demob: '2024-11-25',
-      durasiHari: 5,
-      overtimeJam: 11,
+      durasi: '5 Hari',
+      overtime: '11 Jam',
       noSO: 'SO-005',
-      noSOTurunan: 'SO-001.1',
+      noHPP: 'SO-001.1',
       lokasi: 'Yogyakarta',
       zona: 'Zona B',
       jenisPekerjaan: 'On Call',
       rate: '650,000',
       pegawai: 'Freelance',
-      status: 'Pending'
+      status: 'Pending',
+      namaProject: 'Proyek Waskita Karya',
+      namaClient: 'Waskita Karya',
+      jamAwalKerja: '09:00',
+      jamSelesaiKerja: '18:00',
+      overtime: '11 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Makan', rateTunjangan: '65,000', overtime: '' },
+        { namaTunjangan: 'Akomodasi', rateTunjangan: '90,000', overtime: '' },
+      ],
     }
   ]);
 
@@ -155,7 +198,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleDeleteClick = (timesheet: TimesheetPegawai) => {
+  const handleDeleteClick = (timesheet: DashboardTimesheetItem) => {
     setItemToDelete(timesheet);
     setDeleteModalOpen(true);
   };
@@ -167,7 +210,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
     }
   };
 
-  const handleSort = (field: keyof TimesheetPegawai) => {
+  const handleSort = (field: keyof DashboardTimesheetItem) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -201,23 +244,58 @@ const TimesheetPegawaiDashboard: React.FC = () => {
     }
   };
 
+  // New functions for modal actions
+  const handleOpenApproveModal = (timesheet: DashboardTimesheetItem) => {
+    // DashboardTimesheetItem extends ApprovalTimesheetPegawaiData, so direct assignment is safe
+    setSelectedTimesheetForApproval(timesheet);
+    setIsApproveModalOpen(true);
+  };
+
+  const handleCloseApproveModal = () => {
+    setIsApproveModalOpen(false);
+    setSelectedTimesheetForApproval(null);
+  };
+
+  const handleApproveTimesheet = (id: string) => {
+    setTimesheetPegawaiData(prevData =>
+      prevData.map(item =>
+        item.id === id ? { ...item, status: 'Approved' } : item
+      )
+    );
+    handleCloseApproveModal();
+  };
+
+  const handleRejectTimesheet = (id: string) => {
+    setTimesheetPegawaiData(prevData =>
+      prevData.map(item =>
+        item.id === id ? { ...item, status: 'Rejected' } : item
+      )
+    );
+    handleCloseApproveModal();
+  };
+
   // Filter data based on search criteria
   const filteredData = timesheetPegawaiData.filter(item => {
     const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
     const matchesKualifikasi = item.kualifikasi.some(k => k.toLowerCase().includes(searchKualifikasi.toLowerCase()));
-    const matchesSOTurunan = item.noSOTurunan.toLowerCase().includes(searchSOTurunan.toLowerCase());
+    const matchesSOTurunan = item.noHPP.toLowerCase().includes(searchSOTurunan.toLowerCase()); // Changed to noHPP
     const matchesStatus = selectedStatus ? item.status === selectedStatus : true;
-    
+
     return matchesNoSO && matchesKualifikasi && matchesSOTurunan && matchesStatus;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
+
+    // Handle string comparison for all fields, including numbers as strings
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    }
+    // Fallback for other types (though most are strings now)
     if (sortDirection === 'asc') {
       return aValue > bValue ? 1 : -1;
     } else {
@@ -265,7 +343,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="SO001"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -287,7 +365,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="SO001.12"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -309,7 +387,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Proyek Medco"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -331,7 +409,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Welder"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -358,7 +436,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     </span>
                     <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {statusDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
@@ -416,7 +494,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 opacity-0">
                   Search
                 </label>
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
@@ -516,12 +594,12 @@ const TimesheetPegawaiDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
+                    style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
@@ -539,10 +617,10 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalTimesheet}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.mob}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.durasiHari}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.overtimeJam}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.durasi.split(' ')[0]}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.overtime.split(' ')[0]}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.noSOTurunan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.noHPP}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.lokasi}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.zona}</td>
                     <td className="px-4 py-3">
@@ -563,7 +641,8 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center">
-                        <button 
+                        <button
+                          onClick={() => handleOpenApproveModal(item)} // OnClick to open modal
                           className="p-2 text-cyan-500 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
                           title="Approve"
                         >
@@ -591,20 +670,24 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => handlePageChange(1)}
-                    className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-                      currentPage === 1
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    1
-                  </button>
+                  {/* Render page numbers dynamically */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
+                        currentPage === page
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
                 </div>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -617,6 +700,15 @@ const TimesheetPegawaiDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Approve Timesheet Detail Modal */}
+      <ApproveTimesheetDetailModal
+        isOpen={isApproveModalOpen}
+        onClose={handleCloseApproveModal}
+        timesheetData={selectedTimesheetForApproval}
+        onApprove={handleApproveTimesheet}
+        onReject={handleRejectTimesheet}
+      />
 
       {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal

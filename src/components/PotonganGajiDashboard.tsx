@@ -30,7 +30,7 @@ const PotonganGajiDashboard: React.FC = () => {
   const [tanggalAwal, setTanggalAwal] = useState('');
   const [tanggalAkhir, setTanggalAkhir] = useState('');
   const [kodePegawai, setKodePegawai] = useState('');
-  const [namaPegawai, setNamaPegawai] = useState('Mr. White');
+  const [namaPegawai, setNamaPegawai] = useState(''); // Changed from 'Mr. White' to ''
   const [searchQuery, setSearchQuery] = useState('');
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -140,7 +140,8 @@ const PotonganGajiDashboard: React.FC = () => {
   // Filter data based on search criteria
   const filteredData = potonganGajiData.filter(item => {
     const matchesKodePegawai = kodePegawai ? item.kodePegawai === kodePegawai : true;
-    const matchesNamaPegawai = item.namaPegawai.toLowerCase().includes(namaPegawai.toLowerCase());
+    // Filter by namaPegawai only if it's not empty
+    const matchesNamaPegawai = namaPegawai === '' || item.namaPegawai.toLowerCase().includes(namaPegawai.toLowerCase());
     const matchesSearch = searchQuery === '' || 
       item.kodePegawai.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.namaPegawai.toLowerCase().includes(searchQuery.toLowerCase()) ||

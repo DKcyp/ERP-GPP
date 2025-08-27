@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ApproveTimesheetModal, { ApproveTimesheetFormData } from './ApproveTimesheetModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import ApproveTimesheetDetailModal from './ApproveTimesheetDetailModal'; // New import
 import { ApprovalTimesheetPegawaiData } from '../types';
-import { 
-  Search, 
+import {
+  Search,
   Plus,
   Edit,
   Trash2,
   Eye,
-  ThumbsUp,
+  ThumbsUp, // Added ThumbsUp icon
   ThumbsDown,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +19,9 @@ import {
 const ApprovalTimesheetDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [animateRows, setAnimateRows] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed for clarity
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // New state
+  const [selectedTimesheetForDetail, setSelectedTimesheetForDetail] = useState<ApprovalTimesheetPegawaiData | null>(null); // New state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -26,13 +29,13 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof ApprovalTimesheetPegawaiData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Sample data matching the second image
+  // Sample data matching the second image, updated with new fields
   const [approvalTimesheetData, setApprovalTimesheetData] = useState<ApprovalTimesheetPegawaiData[]>([
     {
       id: '1',
       no: 1,
       nama: 'Ahmad',
-      kualifikasi: 'Welder',
+      kualifikasi: ['Welder', 'Fitter'],
       mob: '01-01-2025',
       demob: '05-01-2025',
       durasi: '4 hari',
@@ -40,13 +43,22 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-001.1',
       lokasi: 'Bali',
       jenisPekerjaan: 'On Call',
-      status: 'Approved'
+      status: 'Approved',
+      namaProject: 'Proyek Jembatan A',
+      namaClient: 'PT Konstruksi Sejahtera',
+      jamAwalKerja: '08:00',
+      jamSelesaiKerja: '17:00',
+      overtime: '2 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Team Leader - Daily Rate/', rateTunjangan: 'Rp. 750,000', overtime: 'Rp. 187,500 (3 Jam)' },
+        { namaTunjangan: 'Team Leader-Daily Basic M', rateTunjangan: 'Rp. 500,000', overtime: '' }
+      ]
     },
     {
       id: '2',
       no: 2,
       nama: 'Budi',
-      kualifikasi: 'Electrician',
+      kualifikasi: ['Electrician'],
       mob: '03-02-2025',
       demob: '08-02-2025',
       durasi: '5 hari',
@@ -54,13 +66,21 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-002.1',
       lokasi: 'Jakarta',
       jenisPekerjaan: 'Tender',
-      status: 'Pending'
+      status: 'Pending',
+      namaProject: 'Pembangunan Gedung B',
+      namaClient: 'PT Pembangunan Nasional',
+      jamAwalKerja: '09:00',
+      jamSelesaiKerja: '18:00',
+      overtime: '1 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Electrician Daily Rate', rateTunjangan: 'Rp. 600,000', overtime: 'Rp. 150,000 (1 Jam)' }
+      ]
     },
     {
       id: '3',
       no: 3,
       nama: 'Charlie',
-      kualifikasi: 'Technician',
+      kualifikasi: ['Technician', 'Supervisor'],
       mob: '10-03-2025',
       demob: '15-03-2025',
       durasi: '5 hari',
@@ -68,13 +88,22 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-003.1',
       lokasi: 'Surabaya',
       jenisPekerjaan: 'On Call',
-      status: 'Rejected'
+      status: 'Rejected',
+      namaProject: 'Instalasi Sistem C',
+      namaClient: 'CV Infrastruktur Jaya',
+      jamAwalKerja: '07:00',
+      jamSelesaiKerja: '16:00',
+      overtime: '3 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Technician Daily Rate', rateTunjangan: 'Rp. 700,000', overtime: 'Rp. 175,000 (2 Jam)' },
+        { namaTunjangan: 'Supervisor Allowance', rateTunjangan: 'Rp. 200,000', overtime: '' }
+      ]
     },
     {
       id: '4',
       no: 4,
       nama: 'Dewi',
-      kualifikasi: 'Supervisor',
+      kualifikasi: ['Supervisor'],
       mob: '05-04-2025',
       demob: '10-04-2025',
       durasi: '5 hari',
@@ -82,7 +111,15 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-004.1',
       lokasi: 'Medan',
       jenisPekerjaan: 'Tender',
-      status: 'Approved'
+      status: 'Approved',
+      namaProject: 'Renovasi Kantor D',
+      namaClient: 'PT Teknologi Maju',
+      jamAwalKerja: '08:30',
+      jamSelesaiKerja: '17:30',
+      overtime: '0 Jam',
+      tunjangan: [
+        { namaTunjangan: 'Supervisor Daily Rate', rateTunjangan: 'Rp. 800,000', overtime: '' }
+      ]
     }
   ]);
 
@@ -95,7 +132,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       id: (approvalTimesheetData.length + 1).toString(),
       no: approvalTimesheetData.length + 1,
       nama: formData.nama,
-      kualifikasi: formData.kualifikasi.join(', '),
+      kualifikasi: formData.kualifikasi, // Now an array
       mob: formData.mob,
       demob: formData.demob,
       durasi: formData.durasi,
@@ -103,7 +140,13 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: formData.noHPP,
       lokasi: formData.lokasi,
       jenisPekerjaan: formData.jenisPekerjaan,
-      status: 'Pending'
+      status: 'Pending',
+      namaProject: formData.namaProject,
+      namaClient: formData.namaClient,
+      jamAwalKerja: '08:00', // Default or derive from form
+      jamSelesaiKerja: '17:00', // Default or derive from form
+      overtime: '0 Jam', // Default or derive from form
+      tunjangan: formData.tunjangan,
     };
 
     setApprovalTimesheetData(prev => [newApprovalTimesheet, ...prev.map(a => ({ ...a, no: a.no + 1 }))]);
@@ -131,19 +174,28 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   };
 
   const handleApprove = (id: string) => {
-    setApprovalTimesheetData(prev => 
-      prev.map(item => 
+    setApprovalTimesheetData(prev =>
+      prev.map(item =>
         item.id === id ? { ...item, status: 'Approved' as const } : item
       )
     );
+    setIsDetailModalOpen(false); // Close modal after action
+    setSelectedTimesheetForDetail(null);
   };
 
   const handleReject = (id: string) => {
-    setApprovalTimesheetData(prev => 
-      prev.map(item => 
+    setApprovalTimesheetData(prev =>
+      prev.map(item =>
         item.id === id ? { ...item, status: 'Rejected' as const } : item
       )
     );
+    setIsDetailModalOpen(false); // Close modal after action
+    setSelectedTimesheetForDetail(null);
+  };
+
+  const handleViewOrApproveClick = (item: ApprovalTimesheetPegawaiData) => {
+    setSelectedTimesheetForDetail(item);
+    setIsDetailModalOpen(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -168,7 +220,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     const searchLower = searchQuery.toLowerCase();
     return (
       item.nama.toLowerCase().includes(searchLower) ||
-      item.kualifikasi.toLowerCase().includes(searchLower) ||
+      item.kualifikasi.join(', ').toLowerCase().includes(searchLower) || // Search in joined kualifikasi
       item.noSO.toLowerCase().includes(searchLower) ||
       item.lokasi.toLowerCase().includes(searchLower)
     );
@@ -177,10 +229,21 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
+
+    // Handle string comparison for kualifikasi (array)
+    if (sortField === 'kualifikasi') {
+      const aKualifikasi = (aValue as string[]).join(', ');
+      const bKualifikasi = (bValue as string[]).join(', ');
+      if (sortDirection === 'asc') {
+        return aKualifikasi > bKualifikasi ? 1 : -1;
+      } else {
+        return aKualifikasi < bKualifikasi ? 1 : -1;
+      }
+    }
+
     if (sortDirection === 'asc') {
       return aValue > bValue ? 1 : -1;
     } else {
@@ -211,8 +274,8 @@ const ApprovalTimesheetDashboard: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900">
               Daftar Approval Timesheet Pegawai
             </h2>
-            <button 
-              onClick={() => setIsModalOpen(true)}
+            <button
+              onClick={() => setIsAddModalOpen(true)}
               className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
@@ -260,7 +323,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('no')}
                   >
@@ -271,7 +334,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('nama')}
                   >
@@ -282,7 +345,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('kualifikasi')}
                   >
@@ -293,7 +356,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('mob')}
                   >
@@ -304,7 +367,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('demob')}
                   >
@@ -315,7 +378,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('durasi')}
                   >
@@ -326,7 +389,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('noSO')}
                   >
@@ -337,7 +400,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('noHPP')}
                   >
@@ -348,7 +411,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('lokasi')}
                   >
@@ -359,7 +422,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('jenisPekerjaan')}
                   >
@@ -370,7 +433,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('status')}
                   >
@@ -386,19 +449,19 @@ const ApprovalTimesheetDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
+                    style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
                   >
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nama}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.kualifikasi}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.kualifikasi.join(', ')}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.mob}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.durasi}</td>
@@ -417,27 +480,26 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
+                        <button
+                          onClick={() => handleViewOrApproveClick(item)}
                           className="p-1.5 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
-                          title="View"
+                          title="View Details"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>
-                        <button 
-                          onClick={() => handleApprove(item.id)}
-                          className="p-1.5 bg-green-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-green-700"
+                        <button
+                          onClick={() => handleViewOrApproveClick(item)} // This button now also opens the detail modal
+                          className="p-1.5 text-cyan-500 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
                           title="Approve"
-                          disabled={item.status === 'Approved'}
                         >
                           <ThumbsUp className="h-3.5 w-3.5" />
                         </button>
-                        <button 
-                          onClick={() => handleReject(item.id)}
+                        <button
+                          onClick={() => handleDeleteClick(item)}
                           className="p-1.5 bg-red-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-red-700"
-                          title="Reject"
-                          disabled={item.status === 'Rejected'}
+                          title="Delete"
                         >
-                          <ThumbsDown className="h-3.5 w-3.5" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>
@@ -461,7 +523,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
@@ -472,7 +534,9 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                 >
                   1
                 </button>
-                
+
+                {/* Add more page buttons if needed, similar to the original design */}
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -486,19 +550,28 @@ const ApprovalTimesheetDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Approve Timesheet Modal */}
+      {/* Add Timesheet Modal (existing) */}
       <ApproveTimesheetModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
         onSave={handleAddApprovalTimesheet}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal (existing) */}
       <ConfirmDeleteModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.nama}
+      />
+
+      {/* New Approve Timesheet Detail Modal */}
+      <ApproveTimesheetDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        timesheetData={selectedTimesheetForDetail}
+        onApprove={handleApprove}
+        onReject={handleReject}
       />
     </div>
   );

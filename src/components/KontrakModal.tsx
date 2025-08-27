@@ -292,6 +292,79 @@ const KontrakModal: React.FC<KontrakModalProps> = ({ isOpen, onClose, onSave }) 
                 />
               </div>
             </div>
+
+            {/* New section for Sisa HPP Table */}
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Detail Sisa HPP</h3>
+              <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenaga</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gaji Pokok</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Rate</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hari</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HPP</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Margin</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Penawaran</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sisa HPP</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Inspektur NDT Level II (UT)</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 15.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 500.000/hari</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">20</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 10.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">15%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 11.500.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 1.500.000</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Welder Certified (SMAW, GTAW)</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 13.500.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 450.000/hari</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">25</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 11.250.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">10%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 12.375.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 2.500.000</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Quality Control Engineer</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 18.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 600.000/hari</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">15</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 9.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">20%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 10.800.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 1.800.000</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Site Manager</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 21.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 700.000/hari</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">18</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 12.600.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">18%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 14.868.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 2.268.000</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Helper</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 9.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 300.000/hari</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 9.000.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">5%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 9.450.000</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rp 450.000</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </form>
         </div>
 

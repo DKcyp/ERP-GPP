@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Calendar, Save, Loader2, Plus, Trash2 } from 'lucide-react';
 
 interface HPPIndukModalProps {
@@ -18,12 +18,12 @@ export interface HPPIndukFormData {
   activeTab: string;
   tenagaKerja: Array<{
     tenaga: string;
-    tunjangan: string;
+    tunjangan: string; // Renamed from gajiPokok, now an input
     projectRate: string;
     hari: string;
-    hargaAwal: string;
+    hargaAwal: string; // New input field, replaces hpp
     margin: string;
-    hargaAkhir: string;
+    hargaAkhir: string; // New calculated field, replaces hargaPenawaran
   }>;
   jasa: Array<{
     jasa: string;
@@ -76,6 +76,13 @@ export interface HPPIndukFormData {
   }>;
 }
 
+interface CategorySummary {
+  category: string;
+  totalHargaAwal: number;
+  totalMarginValue: number;
+  totalHargaAkhir: number;
+}
+
 const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState<HPPIndukFormData>({
     noKontrak: '',
@@ -86,7 +93,9 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
     jenisPekerjaan: 'On Call',
     estimasiNilaiKontrak: '',
     activeTab: 'Tenaga Kerja',
-    tenagaKerja: [{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
+    tenagaKerja: [
+      { tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }
+    ],
     jasa: [{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
     alat: [{ alat: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
     barang: [{ namaBarang: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
@@ -127,6 +136,20 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const parseCurrency = (value: string): number => {
+    const cleanedValue = value.replace(/[^0-9,-]+/g, '').replace(',', '.');
+    return parseFloat(cleanedValue) || 0;
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<HPPIndukFormData> = {};
@@ -178,62 +201,94 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
     switch (currentTab) {
       case 'Tenaga Kerja':
         newData = [...formData.tenagaKerja];
-        break;
-      case 'Jasa':
-        newData = [...formData.jasa];
-        break;
-      case 'Alat':
-        newData = [...formData.alat];
-        break;
-      case 'Barang':
-        newData = [...formData.barang];
-        break;
-      case 'MobDemob':
-        newData = [...formData.mobDemob];
-        break;
-      case 'Biaya Lain-lain':
-        newData = [...formData.biayaLainLain];
-        break;
-      default:
-        return;
-    }
-    
-    newData[index] = { ...newData[index], [field]: value };
-    
-    // Auto calculate harga akhir if margin and harga awal are provided
-    if (field === 'margin' || field === 'hargaAwal') {
-      const hargaAwal = parseFloat(field === 'hargaAwal' ? value : newData[index].hargaAwal) || 0;
-      const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
-      const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
-      newData[index].hargaAkhir = hargaAkhir.toString();
-    }
-    
-    // Auto calculate harga satuan for Alat and Barang tabs
-    if ((currentTab === 'Alat' || currentTab === 'Barang') && (field === 'harga' || field === 'jumlah')) {
-      const harga = parseFloat(field === 'harga' ? value : newData[index].harga) || 0;
-      const jumlah = parseFloat(field === 'jumlah' ? value : newData[index].jumlah) || 0;
-      if (jumlah > 0) {
-        newData[index].hargaSatuan = (harga / jumlah).toString();
-      }
-    }
-    
-    switch (currentTab) {
-      case 'Tenaga Kerja':
+        newData[index] = { ...newData[index], [field]: value };
+        // Auto calculate harga akhir if margin and harga awal are provided
+        if (field === 'margin' || field === 'hargaAwal') {
+          const hargaAwal = parseCurrency(field === 'hargaAwal' ? value : newData[index].hargaAwal);
+          const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+          newData[index].hargaAkhir = hargaAkhir.toFixed(0);
+        }
         setFormData(prev => ({ ...prev, tenagaKerja: newData }));
         break;
       case 'Jasa':
+        newData = [...formData.jasa];
+        newData[index] = { ...newData[index], [field]: value };
+        // Auto calculate harga akhir if margin and harga awal are provided
+        if (field === 'margin' || field === 'hargaAwal') {
+          const hargaAwal = parseCurrency(field === 'hargaAwal' ? value : newData[index].hargaAwal);
+          const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+          newData[index].hargaAkhir = hargaAkhir.toFixed(0);
+        }
         setFormData(prev => ({ ...prev, jasa: newData }));
         break;
       case 'Alat':
+        newData = [...formData.alat];
+        newData[index] = { ...newData[index], [field]: value };
+        // Auto calculate harga satuan for Alat and Barang tabs
+        if ((currentTab === 'Alat' || currentTab === 'Barang') && (field === 'harga' || field === 'jumlah')) {
+          const harga = parseCurrency(field === 'harga' ? value : newData[index].harga);
+          const jumlah = parseFloat(field === 'jumlah' ? value : newData[index].jumlah) || 0;
+          if (jumlah > 0) {
+            newData[index].hargaSatuan = (harga / jumlah).toFixed(0);
+          } else {
+            newData[index].hargaSatuan = '0';
+          }
+        }
+        // Auto calculate harga akhir if margin and harga awal are provided
+        if (field === 'margin' || field === 'hargaAwal') {
+          const hargaAwal = parseCurrency(field === 'hargaAwal' ? value : newData[index].hargaAwal);
+          const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+          newData[index].hargaAkhir = hargaAkhir.toFixed(0);
+        }
         setFormData(prev => ({ ...prev, alat: newData }));
         break;
       case 'Barang':
+        newData = [...formData.barang];
+        newData[index] = { ...newData[index], [field]: value };
+        // Auto calculate harga satuan for Alat and Barang tabs
+        if ((currentTab === 'Alat' || currentTab === 'Barang') && (field === 'harga' || field === 'jumlah')) {
+          const harga = parseCurrency(field === 'harga' ? value : newData[index].harga);
+          const jumlah = parseFloat(field === 'jumlah' ? value : newData[index].jumlah) || 0;
+          if (jumlah > 0) {
+            newData[index].hargaSatuan = (harga / jumlah).toFixed(0);
+          } else {
+            newData[index].hargaSatuan = '0';
+          }
+        }
+        // Auto calculate harga akhir if margin and harga awal are provided
+        if (field === 'margin' || field === 'hargaAwal') {
+          const hargaAwal = parseCurrency(field === 'hargaAwal' ? value : newData[index].hargaAwal);
+          const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+          newData[index].hargaAkhir = hargaAkhir.toFixed(0);
+        }
         setFormData(prev => ({ ...prev, barang: newData }));
         break;
       case 'MobDemob':
+        newData = [...formData.mobDemob];
+        newData[index] = { ...newData[index], [field]: value };
+        // Auto calculate harga akhir if margin and harga awal are provided
+        if (field === 'margin' || field === 'hargaAwal') {
+          const hargaAwal = parseCurrency(field === 'hargaAwal' ? value : newData[index].hargaAwal);
+          const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+          newData[index].hargaAkhir = hargaAkhir.toFixed(0);
+        }
         setFormData(prev => ({ ...prev, mobDemob: newData }));
         break;
       case 'Biaya Lain-lain':
+        newData = [...formData.biayaLainLain];
+        newData[index] = { ...newData[index], [field]: value };
+        // Auto calculate harga akhir if margin and harga awal are provided
+        if (field === 'margin' || field === 'hargaAwal') {
+          const hargaAwal = parseCurrency(field === 'hargaAwal' ? value : newData[index].hargaAwal);
+          const margin = parseFloat(field === 'margin' ? value : newData[index].margin) || 0;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+          newData[index].hargaAkhir = hargaAkhir.toFixed(0);
+        }
         setFormData(prev => ({ ...prev, biayaLainLain: newData }));
         break;
     }
@@ -340,6 +395,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    // Data is already updated in formData via handleTabDataChange
     onSave(formData);
     setIsLoading(false);
     
@@ -353,7 +409,9 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
       jenisPekerjaan: 'On Call',
       estimasiNilaiKontrak: '',
       activeTab: 'Tenaga Kerja',
-      tenagaKerja: [{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
+      tenagaKerja: [
+        { tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }
+      ],
       jasa: [{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
       alat: [{ alat: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
       barang: [{ namaBarang: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
@@ -369,6 +427,50 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
       onClose();
     }
   };
+
+  const { summaries, overallTotalHargaAwal, overallTotalHargaAkhir, sisaHPP, estimasiNilaiKontrakParsed } = useMemo(() => {
+    const summaries: CategorySummary[] = [];
+    let overallTotalHargaAwal = 0;
+    let overallTotalHargaAkhir = 0;
+
+    const processCategory = (name: string, items: any[]) => {
+      let totalHargaAwal = 0;
+      let totalHargaAkhir = 0;
+      let totalMarginValue = 0;
+
+      items.forEach(item => {
+        const hargaAwal = parseCurrency(item.hargaAwal);
+        const hargaAkhir = parseCurrency(item.hargaAkhir);
+        const margin = parseFloat(item.margin) || 0;
+
+        totalHargaAwal += hargaAwal;
+        totalHargaAkhir += hargaAkhir;
+        totalMarginValue += (hargaAwal * margin / 100);
+
+        overallTotalHargaAwal += hargaAwal;
+        overallTotalHargaAkhir += hargaAkhir;
+      });
+
+      summaries.push({
+        category: name,
+        totalHargaAwal,
+        totalMarginValue,
+        totalHargaAkhir,
+      });
+    };
+
+    processCategory('Tenaga Kerja', formData.tenagaKerja);
+    processCategory('Jasa', formData.jasa);
+    processCategory('Alat', formData.alat);
+    processCategory('Barang', formData.barang);
+    processCategory('MobDemob', formData.mobDemob);
+    processCategory('Biaya Lain-lain', formData.biayaLainLain);
+
+    const estimasiNilaiKontrakParsed = parseCurrency(formData.estimasiNilaiKontrak);
+    const sisaHPP = estimasiNilaiKontrakParsed - overallTotalHargaAkhir;
+
+    return { summaries, overallTotalHargaAwal, overallTotalHargaAkhir, sisaHPP, estimasiNilaiKontrakParsed };
+  }, [formData]);
 
   if (!isOpen) return null;
 
@@ -579,7 +681,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {formData.tenagaKerja.map((item, index) => (
-                        <tr key={index}>
+                        <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                           <td className="px-4 py-3">
                             <input
                               type="text"
@@ -637,7 +739,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={formatCurrency(parseCurrency(item.hargaAkhir))}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Akhir"
@@ -734,7 +836,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={formatCurrency(parseFloat(item.hargaAkhir) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Akhir"
@@ -824,7 +926,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaSatuan}
+                              value={formatCurrency(parseFloat(item.hargaSatuan) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Satuan"
@@ -851,7 +953,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={formatCurrency(parseFloat(item.hargaAkhir) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Akhir"
@@ -941,7 +1043,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaSatuan}
+                              value={formatCurrency(parseFloat(item.hargaSatuan) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Satuan"
@@ -968,7 +1070,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={formatCurrency(parseFloat(item.hargaAkhir) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Akhir"
@@ -1065,7 +1167,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={formatCurrency(parseFloat(item.hargaAkhir) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Akhir"
@@ -1162,7 +1264,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                           <td className="px-4 py-3">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={formatCurrency(parseFloat(item.hargaAkhir) || 0)}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
                               placeholder="Harga Akhir"
@@ -1184,26 +1286,66 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                   </table>
                 )}
 
-                {/* Sisa HPP Table - Empty placeholder */}
+                {/* Sisa HPP Table */}
                 {formData.activeTab === 'Sisa HPP' && (
-                  <div className="text-center py-12">
-                    <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Plus className="h-8 w-8 text-gray-400" />
+                  <div className="p-4">
+                    <table className="w-full mb-6">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Kategori</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total Harga Awal</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total Margin</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total Harga Akhir</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {summaries.map((summary, index) => (
+                          <tr key={index}>
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">{summary.category}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700">{formatCurrency(summary.totalHargaAwal)}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700">{formatCurrency(summary.totalMarginValue)}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700">{formatCurrency(summary.totalHargaAkhir)}</td>
+                          </tr>
+                        ))}
+                        <tr className="bg-blue-50 font-semibold">
+                          <td className="px-4 py-3 text-sm text-blue-800">Total Keseluruhan</td>
+                          <td className="px-4 py-3 text-sm text-blue-800">{formatCurrency(overallTotalHargaAwal)}</td>
+                          <td className="px-4 py-3 text-sm text-blue-800">{formatCurrency(summaries.reduce((acc, curr) => acc + curr.totalMarginValue, 0))}</td>
+                          <td className="px-4 py-3 text-sm text-blue-800">{formatCurrency(overallTotalHargaAkhir)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">Estimasi Nilai Kontrak:</p>
+                        <p className="text-lg font-bold text-blue-600">{formatCurrency(estimasiNilaiKontrakParsed)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">Total HPP:</p>
+                        <p className="text-lg font-bold text-red-600">{formatCurrency(overallTotalHargaAkhir)}</p>
+                      </div>
+                      <div className="md:col-span-2">
+                        <p className="text-sm font-medium text-gray-700">Sisa HPP:</p>
+                        <p className={`text-2xl font-extrabold ${sisaHPP >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {formatCurrency(sisaHPP)}
+                        </p>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Sisa HPP</h3>
-                    <p className="text-gray-600">Data sisa HPP akan ditampilkan di sini setelah semua tab lain diisi.</p>
                   </div>
                 )}
               </div>
             </div>
-            <button
-                  type="button"
-                  onClick={addTabData}
-                  className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-1"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Tambah Baris</span>
-                </button>
+            {formData.activeTab !== 'Sisa HPP' && (
+              <button
+                type="button"
+                onClick={addTabData}
+                className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-1"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah Baris</span>
+              </button>
+            )}
           </form>
         </div>
 

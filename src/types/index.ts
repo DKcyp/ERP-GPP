@@ -280,3 +280,21 @@ export interface ApproveTimesheetFormData {
     overtime: string;
   }>;
 }
+
+// NEW: Interfaces for Evaluasi Vendor
+export interface EvaluasiVendorData {
+  id: string;
+  no: number;
+  namaVendor: string;
+  onTime: 'Ya' | 'Tidak';
+  sesuaiSpesifikasi: 'Ya' | 'Tidak';
+  jumlahBarangSesuaiPO: number;
+  tanggalEvaluasi: string; // Format: DD/MM/YYYY
+}
+
+export interface EvaluasiVendorFormData {
+  namaVendor: string; // Should be a selected vendor ID or name
+  barangOnTime: 'Ya' | 'Tidak';
+  sesuaiSpesifikasi: 'Ya' | 'Tidak';
+  jumlahBarangSesuaiPO: string; // Input will be string, convert to number
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Save, Loader2 } from 'lucide-react';
+import { KPIPerspective } from '../types'; // Import KPIPerspective from types
 
 interface EntryPenilaianModalProps {
   isOpen: boolean;
@@ -14,8 +15,12 @@ export interface EntryPenilaianFormData {
   jabatanPenilai: string;
   tanggal: string;
   agility: { [key: string]: number };
-  kbi: { [key: string]: number };
-  kpi: { [key: string]: number };
+  kbi: {
+    [sectionIndex: number]: {
+      [questionIndex: number]: number; // Rating for each question in a section
+    };
+  };
+  kpi: KPIPerspective[]; // Array of KPI perspectives
 }
 
 const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -28,7 +33,7 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
     tanggal: '',
     agility: {},
     kbi: {},
-    kpi: {}
+    kpi: [] // Initialize with empty array, will be populated by default data for display
   });
 
   const [errors, setErrors] = useState<Partial<EntryPenilaianFormData>>({});
@@ -36,7 +41,7 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
 
   const tabs = ['Agility', 'KBI', 'KPI'];
 
-  // Sample questions for each tab
+  // Sample questions for Agility tab
   const agilityQuestions = [
     'Memiliki rasa ingin tahu',
     'Dapat menemukan akar permasalahan',
@@ -49,28 +54,66 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
     'Memiliki dorongan yang tinggi untuk menyelesaikan tugas'
   ];
 
-  const kbiQuestions = [
-    'Memiliki rasa ingin tahu',
-    'Dapat menemukan akar permasalahan',
-    'Dapat merasa nyaman dengan ambiguitas dan kompleksitas',
-    'Dapat menemukan kesamaan dan perbedaan dengan mudah',
-    'Menemukan solusi untuk masalah yang sulit',
-    'Melihat secara luas dan memiliki minat yang luas',
-    'Mengikuti kajian rutin',
-    'Dapat mencapai tujuan dan menghadapi rintangan',
-    'Memiliki dorongan yang tinggi untuk menyelesaikan tugas'
+  // KBI Questions and Sections (based on image)
+  const kbiSections = [
+    {
+      title: 'Smart Keep Learning',
+      maxRating: 5,
+      questions: [
+        'Saya selalu mengembangkan kemampuan diri, pengetahuan, dan keterampilan untuk menjadi yang terbaik demi kemajuan diri sendiri dan perusahaan',
+        'Saya selalu mampu bekerja secara tuntas serta bertekad mencapai prestasi melebihi target.'
+      ]
+    },
+    {
+      title: 'Uncompromised integrity',
+      maxRating: 10,
+      questions: [
+        'Saya teguh dalam mempertahankan perilaku jujur pada diri sendiri dan orang lain dengan penuh integritas, sesuai dengan etika dan nilai-nilai perusahaan',
+        'Saya akan merahasiakan data perusahaan yang bersifat rahasia dan penting'
+      ]
+    },
+    {
+      title: 'Communicative',
+      maxRating: 10,
+      questions: [
+        'Saya selalu melakukan komunikasi yang baik untuk memberikan informasi penting kepada departemen terkait',
+        'Saya mampu merespon informasi dari luar dengan baik sehingga menyelesaikan pekerjaan sesuai dengan maksud dan tujuan yang diberikan'
+      ]
+    },
+    {
+      title: 'Commitment & consistent',
+      maxRating: 5, // Assuming 5 based on common practice, not explicitly shown in image for this section
+      questions: [
+        'Saya selalu berkomitmen untuk menyelesaikan tugas dan tanggung jawab yang diberikan',
+        'Saya konsisten dalam menunjukkan kinerja yang baik dan dapat diandalkan'
+      ]
+    }
   ];
 
-  const kpiQuestions = [
-    'Memiliki rasa ingin tahu',
-    'Dapat menemukan akar permasalahan',
-    'Dapat merasa nyaman dengan ambiguitas dan kompleksitas',
-    'Dapat menemukan kesamaan dan perbedaan dengan mudah',
-    'Menemukan solusi untuk masalah yang sulit',
-    'Melihat secara luas dan memiliki minat yang luas',
-    'Mengikuti kajian rutin',
-    'Dapat mencapai tujuan dan menghadapi rintangan',
-    'Memiliki dorongan yang tinggi untuk menyelesaikan tugas'
+  // KPI Perspectives (based on image)
+  const kpiPerspectives: KPIPerspective[] = [
+    {
+      id: 'kpi-1',
+      perspektif: 'Financial',
+      indicator: 'Efisiensi penyerapan kebutuhan budget departemen',
+      responsibility: 'Control Budget departemen 10%',
+      bobot: '10%',
+      target: '1D',
+      realisasi: '1D',
+      polaritas: 'Negative',
+      finalScore: '9.90%'
+    },
+    {
+      id: 'kpi-2',
+      perspektif: 'Customer',
+      indicator: 'Customer satisfaction indeks',
+      responsibility: 'Melakukan survey Penilain kepuasan terhadap kinerja AP minimal 90%',
+      bobot: '10%',
+      target: '9D',
+      realisasi: '7D',
+      polaritas: 'Negative',
+      finalScore: '7.78%'
+    }
   ];
 
   const pegawaiOptions = [
@@ -101,6 +144,8 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Initialize KPI data for display when modal opens
+      setFormData(prev => ({ ...prev, kpi: kpiPerspectives }));
     }
 
     return () => {
@@ -144,14 +189,31 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
     }
   };
 
-  const handleRatingChange = (category: 'agility' | 'kbi' | 'kpi', questionIndex: number, rating: number) => {
-    setFormData(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [questionIndex]: rating
-      }
-    }));
+  const handleRatingChange = (category: 'agility' | 'kbi', key: string | number, rating: number) => {
+    if (category === 'agility') {
+      setFormData(prev => ({
+        ...prev,
+        agility: {
+          ...prev.agility,
+          [key]: rating
+        }
+      }));
+    } else if (category === 'kbi') {
+      const [sectionIndexStr, questionIndexStr] = String(key).split('-');
+      const sectionIndex = parseInt(sectionIndexStr);
+      const questionIndex = parseInt(questionIndexStr);
+
+      setFormData(prev => ({
+        ...prev,
+        kbi: {
+          ...prev.kbi,
+          [sectionIndex]: {
+            ...(prev.kbi[sectionIndex] || {}), // Ensure section object exists
+            [questionIndex]: rating
+          }
+        }
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -178,7 +240,7 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
       tanggal: '',
       agility: {},
       kbi: {},
-      kpi: {}
+      kpi: kpiPerspectives // Reset KPI to default display data
     });
     setActiveTab('Agility');
     setErrors({});
@@ -191,7 +253,8 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
     }
   };
 
-  const renderQuestionTable = (questions: string[], category: 'agility' | 'kbi' | 'kpi') => {
+  // Refactored renderQuestionTable for Agility tab
+  const renderQuestionTable = (questions: string[], category: 'agility', maxRating: number = 5) => {
     return (
       <div className="overflow-x-auto border border-gray-200 rounded-xl">
         <table className="w-full">
@@ -199,11 +262,9 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
             <tr>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Pertanyaan</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">1</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">2</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">3</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">4</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">5</th>
+              {[...Array(maxRating)].map((_, rIdx) => (
+                <th key={rIdx + 1} className="px-4 py-3 text-center text-sm font-medium text-gray-700">{rIdx + 1}</th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -211,14 +272,14 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
               <tr key={index} className="hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm text-gray-900 text-center">{index + 1}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{question}</td>
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <td key={rating} className="px-4 py-3 text-center">
+                {[...Array(maxRating)].map((_, rating) => (
+                  <td key={rating + 1} className="px-4 py-3 text-center">
                     <input
                       type="checkbox"
-                      checked={formData[category][index] === rating}
+                      checked={formData[category][index] === (rating + 1)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          handleRatingChange(category, index, rating);
+                          handleRatingChange(category, index, rating + 1);
                         }
                       }}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
@@ -229,6 +290,119 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
             ))}
           </tbody>
         </table>
+      </div>
+    );
+  };
+
+  // New renderKBITab function
+  const renderKBITab = () => {
+    return (
+      <div className="space-y-8">
+        {kbiSections.map((section, sectionIndex) => (
+          <div key={sectionIndex}>
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">{section.title}</h4>
+            <div className="overflow-x-auto border border-gray-200 rounded-xl">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Pertanyaan</th>
+                    {[...Array(section.maxRating)].map((_, rIdx) => (
+                      <th key={rIdx + 1} className="px-4 py-3 text-center text-sm font-medium text-gray-700">{rIdx + 1}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {section.questions.map((question, questionIndex) => (
+                    <tr key={questionIndex} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900 text-center">{questionIndex + 1}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{question}</td>
+                      {[...Array(section.maxRating)].map((_, rating) => (
+                        <td key={rating + 1} className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.kbi[sectionIndex]?.[questionIndex] === (rating + 1)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                handleRatingChange('kbi', `${sectionIndex}-${questionIndex}`, rating + 1);
+                              }
+                            }}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // New renderKPITab function
+  const renderKPITab = () => {
+    const getPolaritasColor = (polaritas: KPIPerspective['polaritas']) => {
+      switch (polaritas) {
+        case 'Negative': return 'bg-red-100 text-red-800';
+        case 'Positive': return 'bg-green-100 text-green-800';
+        case 'Neutral': return 'bg-gray-100 text-gray-800';
+        default: return 'bg-gray-100 text-gray-800';
+      }
+    };
+
+    const getFinalScoreColor = (score: string) => {
+      const scoreValue = parseFloat(score);
+      if (scoreValue >= 8.0) return 'bg-green-600 text-white';
+      if (scoreValue >= 5.0) return 'bg-yellow-500 text-white';
+      return 'bg-red-600 text-white';
+    };
+
+    return (
+      <div className="space-y-6">
+        {formData.kpi.map((kpi) => (
+          <div key={kpi.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h4 className="text-lg font-semibold text-gray-900 mb-3">Perspektif: {kpi.perspektif}</h4>
+            <p className="text-sm text-gray-700 mb-2">
+              <span className="font-medium">Indicator:</span> {kpi.indicator}
+            </p>
+            <p className="text-sm text-gray-700 mb-4">
+              <span className="font-medium">Responsibility:</span> {kpi.responsibility}
+            </p>
+
+            <div className="grid grid-cols-3 gap-4 text-sm text-gray-700 mb-4">
+              <div>
+                <span className="font-medium block mb-1">Bobot</span>
+                <span className="text-gray-900">{kpi.bobot}</span>
+              </div>
+              <div>
+                <span className="font-medium block mb-1">Target</span>
+                <span className="text-gray-900">{kpi.target}</span>
+              </div>
+              <div>
+                <span className="font-medium block mb-1">Realisasi</span>
+                <span className="text-gray-900">{kpi.realisasi}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-700">Polaritas:</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPolaritasColor(kpi.polaritas)}`}>
+                  {kpi.polaritas}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-700">Final Score:</span>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getFinalScoreColor(kpi.finalScore)}`}>
+                  {kpi.finalScore}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
@@ -391,9 +565,9 @@ const EntryPenilaianModal: React.FC<EntryPenilaianModalProps> = ({ isOpen, onClo
 
               {/* Tab Content */}
               <div className="mb-8">
-                {activeTab === 'Agility' && renderQuestionTable(agilityQuestions, 'agility')}
-                {activeTab === 'KBI' && renderQuestionTable(kbiQuestions, 'kbi')}
-                {activeTab === 'KPI' && renderQuestionTable(kpiQuestions, 'kpi')}
+                {activeTab === 'Agility' && renderQuestionTable(agilityQuestions, 'agility', 5)}
+                {activeTab === 'KBI' && renderKBITab()}
+                {activeTab === 'KPI' && renderKPITab()}
               </div>
             </div>
           </form>

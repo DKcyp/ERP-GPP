@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import ProsesPengajuanTrainingModal, { ProsesPengajuanTrainingFormData } from './ProsesPengajuanTrainingModal';
+import ProsesPengajuanTrainingModal from './ProsesPengajuanTrainingModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  Plus, 
-  FileSpreadsheet, 
-  FileText, 
+import { ProsesPengajuanTrainingFormData } from '../types'; // Import the new FormData type
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -19,36 +20,30 @@ import {
   ChevronDown
 } from 'lucide-react';
 
+// Updated interface for the dashboard's training data
 interface ProsesPengajuanTraining {
   id: string;
   no: number;
   noTraining: string;
   noSO: string;
   soTurunan: string;
-  namaProyek: string;
+  karyawan: string; // From new modal
   jenisTraining: 'New Training' | 'Re-Training';
-  tanggalPelatihan: string;
-  tanggalExpired: string;
-  statusDokumen: 'Open' | 'Closed';
-  statusPembayaran: 'Paid' | 'Unpaid';
-  statusApproval: 'Approved' | 'Rejected';
+  tanggalPelatihan: string; // Combined start - end
+  budget: string; // From new modal
+  keterangan: string; // From new modal
+  // Removed: namaProyek, tanggalExpired, statusDokumen, statusPembayaran, statusApproval
 }
 
 const ProsesPengajuanTrainingDashboard: React.FC = () => {
   const [searchNoTraining, setSearchNoTraining] = useState('');
   const [searchSO, setSearchSO] = useState('');
   const [searchSOTurunan, setSearchSOTurunan] = useState('');
-  const [searchNamaProject, setSearchNamaProject] = useState('');
+  const [searchKaryawan, setSearchKaryawan] = useState(''); // New search field
   const [selectedJenisTraining, setSelectedJenisTraining] = useState('');
-  const [selectedStatusDokumen, setSelectedStatusDokumen] = useState('');
-  const [selectedStatusPembayaran, setSelectedStatusPembayaran] = useState('');
-  const [selectedStatusApproval, setSelectedStatusApproval] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [jenisTrainingDropdownOpen, setJenisTrainingDropdownOpen] = useState(false);
-  const [statusDokumenDropdownOpen, setStatusDokumenDropdownOpen] = useState(false);
-  const [statusPembayaranDropdownOpen, setStatusPembayaranDropdownOpen] = useState(false);
-  const [statusApprovalDropdownOpen, setStatusApprovalDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,7 +53,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof ProsesPengajuanTraining | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Sample data matching the image
+  // Sample data matching the new structure
   const [trainingData, setTrainingData] = useState<ProsesPengajuanTraining[]>([
     {
       id: '1',
@@ -66,13 +61,11 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
       noTraining: 'TRNG001',
       noSO: 'SO001',
       soTurunan: 'SO001.12',
-      namaProyek: 'Project A',
+      karyawan: 'Budi Santoso',
       jenisTraining: 'New Training',
       tanggalPelatihan: '12-01-2025 - 16-01-2025',
-      tanggalExpired: '01-08-2025',
-      statusDokumen: 'Open',
-      statusPembayaran: 'Paid',
-      statusApproval: 'Approved'
+      budget: 'Rp 10.000.000',
+      keterangan: 'Pelatihan dasar untuk karyawan baru di Project A.',
     },
     {
       id: '2',
@@ -80,13 +73,11 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
       noTraining: 'TRNG002',
       noSO: 'SO002',
       soTurunan: 'SO002.2',
-      namaProyek: 'Project B',
+      karyawan: 'Ani Wijaya',
       jenisTraining: 'Re-Training',
       tanggalPelatihan: '15-03-2025 - 19-03-2025',
-      tanggalExpired: '15-09-2025',
-      statusDokumen: 'Closed',
-      statusPembayaran: 'Unpaid',
-      statusApproval: 'Rejected'
+      budget: 'Rp 7.500.000',
+      keterangan: 'Re-training keselamatan kerja untuk Project B.',
     },
     {
       id: '3',
@@ -94,13 +85,11 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
       noTraining: 'TRNG003',
       noSO: 'SO003',
       soTurunan: 'SO003.34',
-      namaProyek: 'Project C',
+      karyawan: 'Citra Dewi',
       jenisTraining: 'New Training',
       tanggalPelatihan: '10-05-2025 - 14-05-2025',
-      tanggalExpired: '10-11-2025',
-      statusDokumen: 'Open',
-      statusPembayaran: 'Unpaid',
-      statusApproval: 'Approved'
+      budget: 'Rp 12.000.000',
+      keterangan: 'Pelatihan manajemen proyek untuk Project C.',
     },
     {
       id: '4',
@@ -108,37 +97,17 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
       noTraining: 'TRNG004',
       noSO: 'SO004',
       soTurunan: 'SO004.25',
-      namaProyek: 'Project D',
+      karyawan: 'Dedi Kurniawan',
       jenisTraining: 'Re-Training',
       tanggalPelatihan: '20-06-2025 - 24-06-2025',
-      tanggalExpired: '20-12-2025',
-      statusDokumen: 'Closed',
-      statusPembayaran: 'Paid',
-      statusApproval: 'Rejected'
+      budget: 'Rp 8.000.000',
+      keterangan: 'Re-training teknis untuk Project D.',
     },
-    {
-      id: '5',
-      no: 5,
-      noTraining: 'TRNG005',
-      noSO: 'SO005',
-      soTurunan: 'SO005.12',
-      namaProyek: 'Project E',
-      jenisTraining: 'New Training',
-      tanggalPelatihan: '05-07-2025 - 09-07-2025',
-      tanggalExpired: '05-01-2026',
-      statusDokumen: 'Open',
-      statusPembayaran: 'Paid',
-      statusApproval: 'Approved'
-    }
   ]);
 
   const jenisTrainingOptions = ['New Training', 'Re-Training'];
-  const statusDokumenOptions = ['Open', 'Closed'];
-  const statusPembayaranOptions = ['Paid', 'Unpaid'];
-  const statusApprovalOptions = ['Approved', 'Rejected'];
 
   useEffect(() => {
-    // Trigger animation on component mount
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
@@ -149,13 +118,11 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
       noTraining: formData.noTraining,
       noSO: formData.noSO,
       soTurunan: formData.soTurunan,
-      namaProyek: formData.namaProyek,
+      karyawan: formData.karyawan,
       jenisTraining: formData.jenisTraining,
       tanggalPelatihan: `${formData.tanggalPelatihanStart} - ${formData.tanggalPelatihanEnd}`,
-      tanggalExpired: formData.tanggalExpired,
-      statusDokumen: formData.statusDokumen,
-      statusPembayaran: formData.statusPembayaran,
-      statusApproval: 'Approved'
+      budget: formData.budget,
+      keterangan: formData.keterangan,
     };
 
     setTrainingData(prev => [newTraining, ...prev.map(t => ({ ...t, no: t.no + 1 }))]);
@@ -182,57 +149,35 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
     }
   };
 
-  const getStatusDokumenColor = (status: string) => {
-    switch (status) {
-      case 'Open': return 'bg-green-600 text-white';
-      case 'Closed': return 'bg-red-600 text-white';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusPembayaranColor = (status: string) => {
-    switch (status) {
-      case 'Paid': return 'bg-blue-600 text-white';
-      case 'Unpaid': return 'bg-yellow-500 text-white';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusApprovalColor = (status: string) => {
-    switch (status) {
-      case 'Approved': return 'bg-green-600 text-white';
-      case 'Rejected': return 'bg-red-600 text-white';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   // Filter data based on search criteria
   const filteredData = trainingData.filter(item => {
     const matchesNoTraining = item.noTraining.toLowerCase().includes(searchNoTraining.toLowerCase());
     const matchesSO = item.noSO.toLowerCase().includes(searchSO.toLowerCase());
     const matchesSOTurunan = item.soTurunan.toLowerCase().includes(searchSOTurunan.toLowerCase());
-    const matchesNamaProject = item.namaProyek.toLowerCase().includes(searchNamaProject.toLowerCase());
+    const matchesKaryawan = item.karyawan.toLowerCase().includes(searchKaryawan.toLowerCase());
     const matchesJenisTraining = selectedJenisTraining ? item.jenisTraining === selectedJenisTraining : true;
-    const matchesStatusDokumen = selectedStatusDokumen ? item.statusDokumen === selectedStatusDokumen : true;
-    const matchesStatusPembayaran = selectedStatusPembayaran ? item.statusPembayaran === selectedStatusPembayaran : true;
-    const matchesStatusApproval = selectedStatusApproval ? item.statusApproval === selectedStatusApproval : true;
-    
-    return matchesNoTraining && matchesSO && matchesSOTurunan && matchesNamaProject && 
-           matchesJenisTraining && matchesStatusDokumen && matchesStatusPembayaran && matchesStatusApproval;
+
+    // Date range filtering (simplified for example, actual implementation might need date parsing)
+    const itemStartDate = item.tanggalPelatihan.split(' - ')[0];
+    const itemEndDate = item.tanggalPelatihan.split(' - ')[1];
+    const matchesDateRange = (!dateFrom || itemStartDate >= dateFrom) && (!dateTo || itemEndDate <= dateTo);
+
+    return matchesNoTraining && matchesSO && matchesSOTurunan && matchesKaryawan &&
+           matchesJenisTraining && matchesDateRange;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
     }
+    // Fallback for other types or if comparison fails
+    return 0;
   });
 
   // Pagination logic
@@ -258,7 +203,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">
               Proses Pengajuan Training
             </h1>
-            <button 
+            <button
               onClick={() => setIsModalOpen(true)}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
             >
@@ -284,7 +229,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="TRNG001"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -306,7 +251,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="SO001"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -328,7 +273,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="SO001.12"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -337,20 +282,20 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Search Nama Project */}
+              {/* Search Karyawan */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Nama Project
+                  Cari Karyawan
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={searchNamaProject}
-                    onChange={(e) => setSearchNamaProject(e.target.value)}
+                    value={searchKaryawan}
+                    onChange={(e) => setSearchKaryawan(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="Proyek Medco"
+                    placeholder="Budi Santoso"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -377,7 +322,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                     </span>
                     <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisTrainingDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {jenisTrainingDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
@@ -406,141 +351,6 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Status Dokumen Dropdown */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Pilih Status Dokumen
-                </label>
-                <div className="relative">
-                  <button
-                    onClick={() => setStatusDokumenDropdownOpen(!statusDokumenDropdownOpen)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
-                  >
-                    <span className={selectedStatusDokumen ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedStatusDokumen || '--Pilih Status Dokumen--'}
-                    </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDokumenDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {statusDokumenDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
-                      <button
-                        onClick={() => {
-                          setSelectedStatusDokumen('');
-                          setStatusDokumenDropdownOpen(false);
-                        }}
-                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
-                      >
-                        --Pilih Status Dokumen--
-                      </button>
-                      {statusDokumenOptions.map((status) => (
-                        <button
-                          key={status}
-                          onClick={() => {
-                            setSelectedStatusDokumen(status);
-                            setStatusDokumenDropdownOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Status Pembayaran Dropdown */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Pilih Status Pembayaran
-                </label>
-                <div className="relative">
-                  <button
-                    onClick={() => setStatusPembayaranDropdownOpen(!statusPembayaranDropdownOpen)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
-                  >
-                    <span className={selectedStatusPembayaran ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedStatusPembayaran || '--Pilih Status Pembayaran--'}
-                    </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusPembayaranDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {statusPembayaranDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
-                      <button
-                        onClick={() => {
-                          setSelectedStatusPembayaran('');
-                          setStatusPembayaranDropdownOpen(false);
-                        }}
-                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
-                      >
-                        --Pilih Status Pembayaran--
-                      </button>
-                      {statusPembayaranOptions.map((status) => (
-                        <button
-                          key={status}
-                          onClick={() => {
-                            setSelectedStatusPembayaran(status);
-                            setStatusPembayaranDropdownOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Status Approval Dropdown */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Pilih Status Approval
-                </label>
-                <div className="relative">
-                  <button
-                    onClick={() => setStatusApprovalDropdownOpen(!statusApprovalDropdownOpen)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
-                  >
-                    <span className={selectedStatusApproval ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedStatusApproval || '--Pilih Status Approval--'}
-                    </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusApprovalDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {statusApprovalDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
-                      <button
-                        onClick={() => {
-                          setSelectedStatusApproval('');
-                          setStatusApprovalDropdownOpen(false);
-                        }}
-                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
-                      >
-                        --Pilih Status Approval--
-                      </button>
-                      {statusApprovalOptions.map((status) => (
-                        <button
-                          key={status}
-                          onClick={() => {
-                            setSelectedStatusApproval(status);
-                            setStatusApprovalDropdownOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Third Row - Date Range and Search Button */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
               {/* Periode */}
               <div className="space-y-2 lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">
@@ -570,7 +380,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 opacity-0">
                   Search
                 </label>
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
@@ -622,7 +432,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('no')}
                   >
@@ -633,7 +443,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('noTraining')}
                   >
@@ -644,7 +454,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('noSO')}
                   >
@@ -655,25 +465,73 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">SO Turunan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Proyek</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Jenis Training</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Pelatihan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Expired</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Dokumen</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Pembayaran</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Approval</th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('soTurunan')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>SO Turunan</span>
+                      {sortField === 'soTurunan' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('karyawan')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Karyawan</span>
+                      {sortField === 'karyawan' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('jenisTraining')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Jenis Training</span>
+                      {sortField === 'jenisTraining' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('tanggalPelatihan')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Tanggal Pelatihan</span>
+                      {sortField === 'tanggalPelatihan' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('budget')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Budget</span>
+                      {sortField === 'budget' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Keterangan</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
+                    style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
@@ -682,29 +540,15 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noTraining}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.noSO}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.soTurunan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaProyek}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.karyawan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.jenisTraining}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalPelatihan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalExpired}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusDokumenColor(item.statusDokumen)}`}>
-                        {item.statusDokumen}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusPembayaranColor(item.statusPembayaran)}`}>
-                        {item.statusPembayaran}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusApprovalColor(item.statusApproval)}`}>
-                        {item.statusApproval}
-                      </span>
-                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.budget}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 truncate max-w-xs">{item.keterangan}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
-                          onClick={() => setIsModalOpen(true)}
+                        <button
+                          onClick={() => setIsModalOpen(true)} // For editing, will need to pass item data
                           className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
                           title="Edit"
                         >
@@ -739,20 +583,23 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => handlePageChange(1)}
-                    className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-                      currentPage === 1
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    1
-                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
+                        currentPage === page
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
                 </div>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -778,7 +625,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaProyek}
+        itemName={itemToDelete?.noTraining}
       />
     </div>
   );

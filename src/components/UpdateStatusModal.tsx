@@ -1,55 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, Loader2, ChevronDown } from 'lucide-react';
+import { UpdateStatusFormData, LamaranData } from '../types';
 
 interface UpdateStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: UpdateStatusFormData) => void;
-  currentItem?: {
-    id: string;
-    namaClient: string;
-    statusPenawaran: string;
-  } | null;
+  onSave: (id: string, data: UpdateStatusFormData) => void;
+  initialData: LamaranData | null;
+  isEditable: boolean;
 }
 
-export interface UpdateStatusFormData {
-  status: string;
-  keterangan: string;
-}
+const statusOptions: Array<UpdateStatusFormData['status']> = ['Pending', 'Accepted', 'Rejected', 'Interview', 'Hired'];
 
-interface StatusHistory {
-  no: number;
-  terakhirUpdate: string;
-  status: 'Deal' | 'Cancel';
-}
-
-const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({ isOpen, onClose, onSave, currentItem }) => {
+const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+  isEditable,
+}) => {
   const [formData, setFormData] = useState<UpdateStatusFormData>({
-    status: '',
-    keterangan: ''
+    status: 'Pending',
+    keterangan: '',
   });
-
-  const [statusHistory] = useState<StatusHistory[]>([
-    {
-      no: 1,
-      terakhirUpdate: '01-01-2025',
-      status: 'Deal'
-    },
-    {
-      no: 2,
-      terakhirUpdate: '01-01-2025',
-      status: 'Deal'
-    },
-    {
-      no: 3,
-      terakhirUpdate: '01-01-2025',
-      status: 'Cancel'
-    }
-  ]);
-
-  const statusOptions = ['Deal', 'Pending', 'Cancel'];
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
   useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData({
+        status: initialData.status,
+        keterangan: initialData.keterangan,
+      });
+    } else if (!isOpen) {
+      // Reset form when modal closes
+      setFormData({
+        status: 'Pending',
+        keterangan: '',
+      });
+    }
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         onClose();
@@ -59,35 +49,28 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({ isOpen, onClose, 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
-      
-      // Set current status when modal opens
-      if (currentItem) {
-        setFormData(prev => ({
-          ...prev,
-          status: currentItem.statusPenawaran
-        }));
-      }
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose, currentItem]);
+  }, [isOpen, onClose, initialData]);
 
-  const handleInputChange = (field: keyof UpdateStatusFormData, value: string) => {
+  const handleInputChange = (field: keyof UpdateStatusFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-    
-    // Reset form
-    setFormData({
-      status: '',
-      keterangan: ''
-    });
+    if (!initialData || !isEditable) return;
+
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+
+    onSave(initialData.id, formData);
+
+    setIsLoading(false);
     onClose();
   };
 
@@ -97,25 +80,17 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({ isOpen, onClose, 
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Deal': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Cancel': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-xl font-bold text-gray-900">Update Status Penawaran</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Update Status</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -125,68 +100,65 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({ isOpen, onClose, 
         </div>
 
         {/* Form Content */}
-        <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
-          <form onSubmit={handleSubmit} className="p-6">
-            <div className="space-y-6">
-              {/* Status Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => handleInputChange('status', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+        <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Status Dropdown */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => isEditable && setStatusDropdownOpen(!statusDropdownOpen)}
+                  className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 flex items-center justify-between bg-white text-sm ${
+                    isEditable
+                      ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
+                  }`}
+                  disabled={!isEditable}
                 >
-                  <option value="">Pilih Status</option>
-                  {statusOptions.map((status) => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
-                </select>
-              </div>
+                  <span className="text-gray-900">{formData.status}</span>
+                  {isEditable && <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />}
+                </button>
 
-              {/* Keterangan */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Keterangan
-                </label>
-                <textarea
-                  value={formData.keterangan}
-                  onChange={(e) => handleInputChange('keterangan', e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                  placeholder="Masukkan keterangan..."
-                />
+                {isEditable && statusDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-50 overflow-hidden">
+                    {statusOptions.map((status) => (
+                      <button
+                        type="button"
+                        key={status}
+                        onClick={() => {
+                          handleInputChange('status', status);
+                          setStatusDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors text-sm"
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
+            </div>
 
-              {/* Status History Table */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Riwayat Status</h3>
-                <div className="overflow-hidden border border-gray-200 rounded-xl">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Terakhir Update</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {statusHistory.map((item) => (
-                        <tr key={item.no} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">{item.terakhirUpdate}</td>
-                          <td className="px-4 py-3">
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
-                              {item.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            {/* Keterangan */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Keterangan
+              </label>
+              <textarea
+                value={formData.keterangan}
+                onChange={(e) => handleInputChange('keterangan', e.target.value)}
+                rows={3}
+                className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
+                  isEditable
+                    ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                    : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
+                }`}
+                placeholder="Tambahkan keterangan..."
+                disabled={!isEditable}
+              ></textarea>
             </div>
           </form>
         </div>
@@ -200,14 +172,26 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({ isOpen, onClose, 
           >
             Close
           </button>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 text-sm"
-          >
-            <Save className="h-3.5 w-3.5" />
-            <span>Simpan</span>
-          </button>
+          {isEditable && (
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Simpan</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

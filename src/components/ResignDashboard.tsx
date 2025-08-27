@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  FileSpreadsheet, 
-  FileText, 
+import ApprovalResignModal from './ApprovalResignModal'; // Import the new modal
+import {
+  Search,
+  FileSpreadsheet,
+  FileText,
   File,
   ThumbsUp,
   ThumbsDown,
@@ -38,6 +39,11 @@ const ResignDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<ResignData | null>(null);
   const [sortField, setSortField] = useState<keyof ResignData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  // State for Approval Resign Modal
+  const [isApprovalResignModalOpen, setIsApprovalResignModalOpen] = useState(false);
+  const [selectedResignForApproval, setSelectedResignForApproval] = useState<ResignData | null>(null);
+
 
   // Sample data matching the image
   const [resignData, setResignData] = useState<ResignData[]>([
@@ -112,6 +118,7 @@ const ResignDashboard: React.FC = () => {
     if (itemToDelete) {
       setResignData(prev => prev.filter(r => r.id !== itemToDelete.id));
       setItemToDelete(null);
+      setDeleteModalOpen(false);
     }
   };
 
@@ -128,17 +135,17 @@ const ResignDashboard: React.FC = () => {
   const filteredData = resignData.filter(item => {
     const matchesNamaPegawai = item.namaPegawai.toLowerCase().includes(searchNamaPegawai.toLowerCase());
     const matchesStatus = selectedStatus ? item.status === selectedStatus : true;
-    
+
     return matchesNamaPegawai && matchesStatus;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
+
     if (sortDirection === 'asc') {
       return aValue > bValue ? 1 : -1;
     } else {
@@ -160,17 +167,32 @@ const ResignDashboard: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleApprove = (id: string) => {
-    setResignData(prev => 
-      prev.map(item => 
+  // --- Approval Resign Modal Handlers ---
+  const handleOpenApprovalResignModal = (item: ResignData) => {
+    setSelectedResignForApproval(item);
+    setIsApprovalResignModalOpen(true);
+  };
+
+  const handleCloseApprovalResignModal = () => {
+    setIsApprovalResignModalOpen(false);
+    setSelectedResignForApproval(null);
+  };
+
+  const handleConfirmApproval = (id: string, approvalDetails: { alasanResign: string; lampiranSurat: File[] }) => {
+    setResignData(prev =>
+      prev.map(item =>
         item.id === id ? { ...item, status: 'Approved' as const } : item
       )
     );
+    // Here you would typically send approvalDetails (alasanResign, lampiranSurat) to your backend
+    console.log(`Resign ID ${id} approved with reason: ${approvalDetails.alasanResign}, files: ${approvalDetails.lampiranSurat.map(f => f.name).join(', ')}`);
+    handleCloseApprovalResignModal();
   };
+  // --- End Approval Resign Modal Handlers ---
 
   const handleReject = (id: string) => {
-    setResignData(prev => 
-      prev.map(item => 
+    setResignData(prev =>
+      prev.map(item =>
         item.id === id ? { ...item, status: 'Rejected' as const } : item
       )
     );
@@ -202,7 +224,7 @@ const ResignDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Agus"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -226,7 +248,7 @@ const ResignDashboard: React.FC = () => {
                     </span>
                     <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {statusDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
@@ -287,7 +309,7 @@ const ResignDashboard: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 opacity-0">
                   Search
                 </label>
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
@@ -338,7 +360,7 @@ const ResignDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('no')}
                   >
@@ -349,7 +371,7 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('nik')}
                   >
@@ -360,7 +382,7 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('namaPegawai')}
                   >
@@ -371,7 +393,7 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('kelurahan')}
                   >
@@ -382,7 +404,7 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('tanggalResign')}
                   >
@@ -393,7 +415,7 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('status')}
                   >
@@ -409,12 +431,12 @@ const ResignDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
+                    style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
@@ -431,15 +453,15 @@ const ResignDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-2">
-                        <button 
-                          onClick={() => handleApprove(item.id)}
+                        <button
+                          onClick={() => handleOpenApprovalResignModal(item)} // Open modal on ThumbsUp click
                           className="p-2 text-cyan-500 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
                           title="Approve"
                           disabled={item.status === 'Approved'}
                         >
                           <ThumbsUp className="h-4 w-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleReject(item.id)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
                           title="Reject"
@@ -469,7 +491,7 @@ const ResignDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
@@ -480,7 +502,7 @@ const ResignDashboard: React.FC = () => {
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -500,6 +522,14 @@ const ResignDashboard: React.FC = () => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaPegawai}
+      />
+
+      {/* Approval Resign Modal */}
+      <ApprovalResignModal
+        isOpen={isApprovalResignModalOpen}
+        onClose={handleCloseApprovalResignModal}
+        onApprove={handleConfirmApproval}
+        initialData={selectedResignForApproval}
       />
     </div>
   );

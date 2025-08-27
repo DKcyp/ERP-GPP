@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  FileSpreadsheet, 
-  FileText, 
+import UpdateStatusModal from './UpdateStatusModal'; // Import the new modal
+import {
+  Search,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
   Eye,
-  Plus,
+  Plus, // Added Plus icon
   Mail,
   Calendar,
   Clock,
@@ -18,13 +19,16 @@ import {
   ArrowUp,
   ChevronDown
 } from 'lucide-react';
+import { LamaranData, UpdateStatusFormData } from '../types'; // Import LamaranData and UpdateStatusFormData from types
 
+// Updated ReqrutmenData interface to be compatible with LamaranData for the modal
 interface ReqrutmenData {
   id: string;
   no: number;
   namaPelamar: string;
   email: string;
-  status: 'Delay' | 'Accept' | 'Decline' | 'Considered';
+  status: 'Pending' | 'Accepted' | 'Rejected' | 'Interview' | 'Hired'; // Aligned with LamaranData status
+  keterangan: string; // Added for modal compatibility
 }
 
 const ReqrutmenDashboard: React.FC = () => {
@@ -39,53 +43,65 @@ const ReqrutmenDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof ReqrutmenData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Sample data matching the image
+  // State for Update Status Modal
+  const [isUpdateStatusModalOpen, setIsUpdateStatusModalOpen] = useState(false);
+  const [selectedReqrutmenForStatusUpdate, setSelectedReqrutmenForStatusUpdate] = useState<ReqrutmenData | null>(null);
+  const [isEditableMode, setIsEditableMode] = useState(false); // To control editable/disabled inputs
+
+  // Sample data matching the image, now with updated status and keterangan
   const [reqrutmenData, setReqrutmenData] = useState<ReqrutmenData[]>([
     {
       id: '1',
       no: 1,
       namaPelamar: 'Farid Maulana',
       email: 'farid.maulana@email.com',
-      status: 'Delay'
+      status: 'Pending',
+      keterangan: 'Menunggu review HRD.'
     },
     {
       id: '2',
       no: 2,
       namaPelamar: 'Rahmat Hidayat',
       email: 'rahmat.hidayat@email.com',
-      status: 'Accept'
+      status: 'Accepted',
+      keterangan: 'Lolos seleksi administrasi, menunggu jadwal interview.'
     },
     {
       id: '3',
       no: 3,
       namaPelamar: 'Fauzan Alfarizi',
       email: 'fauzan.alfarizi@email.com',
-      status: 'Decline'
+      status: 'Rejected',
+      keterangan: 'Kualifikasi tidak sesuai.'
     },
     {
       id: '4',
       no: 4,
       namaPelamar: 'Andini Pratiwi',
       email: 'andini.pratiwi@email.com',
-      status: 'Accept'
+      status: 'Interview',
+      keterangan: 'Jadwal interview tanggal 10 April 2025.'
     },
     {
       id: '5',
       no: 5,
       namaPelamar: 'Joko Santoso',
       email: 'joko.santoso@email.com',
-      status: 'Considered'
+      status: 'Hired',
+      keterangan: 'Telah diterima dan mulai bekerja.'
     },
     {
       id: '6',
       no: 6,
       namaPelamar: 'Siti Aisyah',
       email: 'siti.aisyah@email.com',
-      status: 'Accept'
+      status: 'Accepted',
+      keterangan: 'Lolos seleksi administrasi, menunggu jadwal interview.'
     }
   ]);
 
-  const statusOptions = ['Delay', 'Accept', 'Decline', 'Considered'];
+  // Updated status options to match LamaranData status types
+  const statusOptions: Array<ReqrutmenData['status']> = ['Pending', 'Accepted', 'Rejected', 'Interview', 'Hired'];
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
@@ -112,12 +128,13 @@ const ReqrutmenDashboard: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: ReqrutmenData['status']) => {
     switch (status) {
-      case 'Delay': return 'bg-yellow-500 text-white';
-      case 'Accept': return 'bg-green-600 text-white';
-      case 'Decline': return 'bg-red-600 text-white';
-      case 'Considered': return 'bg-cyan-500 text-white';
+      case 'Pending': return 'bg-yellow-500 text-white';
+      case 'Accepted': return 'bg-green-600 text-white';
+      case 'Rejected': return 'bg-red-600 text-white';
+      case 'Interview': return 'bg-blue-500 text-white';
+      case 'Hired': return 'bg-purple-500 text-white';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -126,17 +143,17 @@ const ReqrutmenDashboard: React.FC = () => {
   const filteredData = reqrutmenData.filter(item => {
     const matchesNamaPelamar = item.namaPelamar.toLowerCase().includes(searchNamaPelamar.toLowerCase());
     const matchesStatus = selectedStatus ? item.status === selectedStatus : true;
-    
+
     return matchesNamaPelamar && matchesStatus;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
+
     if (sortDirection === 'asc') {
       return aValue > bValue ? 1 : -1;
     } else {
@@ -161,6 +178,30 @@ const ReqrutmenDashboard: React.FC = () => {
   const handleSendEmail = (email: string) => {
     window.open(`mailto:${email}`, '_blank');
   };
+
+  // --- Update Status Modal Handlers ---
+  const handleOpenUpdateStatusModal = (item: ReqrutmenData, editable: boolean) => {
+    setSelectedReqrutmenForStatusUpdate(item);
+    setIsEditableMode(editable);
+    setIsUpdateStatusModalOpen(true);
+  };
+
+  const handleCloseUpdateStatusModal = () => {
+    setIsUpdateStatusModalOpen(false);
+    setSelectedReqrutmenForStatusUpdate(null);
+    setIsEditableMode(false);
+  };
+
+  const handleSaveStatus = (id: string, data: UpdateStatusFormData) => {
+    setReqrutmenData(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, status: data.status, keterangan: data.keterangan } : item
+      )
+    );
+    console.log(`Reqrutmen ID ${id} updated to status: ${data.status}, keterangan: ${data.keterangan}`);
+    handleCloseUpdateStatusModal();
+  };
+  // --- End Update Status Modal Handlers ---
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -188,7 +229,7 @@ const ReqrutmenDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Agas"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -212,7 +253,7 @@ const ReqrutmenDashboard: React.FC = () => {
                     </span>
                     <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {statusDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
@@ -284,7 +325,7 @@ const ReqrutmenDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('no')}
                   >
@@ -295,7 +336,7 @@ const ReqrutmenDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('namaPelamar')}
                   >
@@ -306,7 +347,7 @@ const ReqrutmenDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('email')}
                   >
@@ -318,7 +359,7 @@ const ReqrutmenDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Interview</th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('status')}
                   >
@@ -334,12 +375,12 @@ const ReqrutmenDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
+                    style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
@@ -348,7 +389,7 @@ const ReqrutmenDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaPelamar}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.email}</td>
                     <td className="px-4 py-3">
-                      <button 
+                      <button
                         onClick={() => handleSendEmail(item.email)}
                         className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1"
                       >
@@ -363,15 +404,17 @@ const ReqrutmenDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
+                        <button
+                          onClick={() => handleOpenUpdateStatusModal(item, true)} // Plus icon for editable
                           className="p-1.5 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
-                          title="Add"
+                          title="Update Status (Edit)"
                         >
                           <Plus className="h-3 w-3" />
                         </button>
-                        <button 
-                          className="p-1.5 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
-                          title="View"
+                        <button
+                          onClick={() => handleOpenUpdateStatusModal(item, false)} // Eye icon for view-only
+                          className="p-1.5 bg-gray-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-gray-700"
+                          title="View Status"
                         >
                           <Eye className="h-3 w-3" />
                         </button>
@@ -397,7 +440,7 @@ const ReqrutmenDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
@@ -408,7 +451,7 @@ const ReqrutmenDashboard: React.FC = () => {
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -428,6 +471,15 @@ const ReqrutmenDashboard: React.FC = () => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaPelamar}
+      />
+
+      {/* Update Status Modal */}
+      <UpdateStatusModal
+        isOpen={isUpdateStatusModalOpen}
+        onClose={handleCloseUpdateStatusModal}
+        onSave={handleSaveStatus}
+        initialData={selectedReqrutmenForStatusUpdate as LamaranData}
+        isEditable={isEditableMode}
       />
     </div>
   );

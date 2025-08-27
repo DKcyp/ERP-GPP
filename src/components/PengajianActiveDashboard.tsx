@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Calendar, ChevronDown, Search, FileText, FileDown, Printer, Plus, Eye, Edit, Trash2, CheckCircle } from 'lucide-react'; // Add CheckCircle
+import { Calendar, ChevronDown, Search, FileText, FileDown, Printer, Plus, Eye, Edit, Trash2, CheckCircle } from 'lucide-react';
+import GajiModal, { GajiFormData } from './GajiModal'; // Import GajiModal and GajiFormData
 
 interface PenggajianEntry {
   no: number;
@@ -20,6 +21,7 @@ interface PengajianActiveDashboardProps {
 const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ role }) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [isGajiModalOpen, setIsGajiModalOpen] = useState(false); // State for GajiModal
 
   const penggajianData: PenggajianEntry[] = [
     { no: 1, kodePegawai: 'EMP001', namaPegawai: 'Ahmad Fauzi', jenisPegawai: 'Tetap', tanggal: '2024-09-05', gaji: 'Rp 7.500.000', keterangan: 'Bonus' },
@@ -28,6 +30,21 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
     { no: 4, kodePegawai: 'EMP004', namaPegawai: 'Dewi Lestari', jenisPegawai: 'Tetap', tanggal: '2024-09-02', gaji: 'Rp 8.000.000', keterangan: 'Cuti' },
     { no: 5, kodePegawai: 'EMP005', namaPegawai: 'Rizki Pratama', jenisPegawai: 'Kontrak', tanggal: '2024-09-01', gaji: 'Rp 6.200.000', keterangan: 'Tunjangan' },
   ];
+
+  // Handlers for GajiModal
+  const handleOpenGajiModal = () => {
+    setIsGajiModalOpen(true);
+  };
+
+  const handleCloseGajiModal = () => {
+    setIsGajiModalOpen(false);
+  };
+
+  const handleSaveGaji = (data: GajiFormData) => {
+    console.log('Saving Gaji Data:', data);
+    // Here you would typically send this data to your backend API
+    // After successful save, you might want to refresh the table data
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -136,7 +153,10 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
               </button>
             </div>
             {role !== 'management' && ( // Only show Add button if not management role
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+              <button
+                onClick={handleOpenGajiModal} // Connect to GajiModal
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Tambah
               </button>
@@ -220,17 +240,12 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
                           </button>
                         ) : (
                           <>
-                            <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                            <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors">
+                            {/* Removed Eye and Printer buttons as requested */}
+                            <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Edit">
                               <Edit className="h-4 w-4" />
                             </button>
-                            <button className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors">
+                            <button className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Delete">
                               <Trash2 className="h-4 w-4" />
-                            </button>
-                            <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors">
-                              <Printer className="h-4 w-4" />
                             </button>
                           </>
                         )}
@@ -261,6 +276,13 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
           </div>
         </div>
       </div>
+
+      {/* Gaji Entry Modal */}
+      <GajiModal
+        isOpen={isGajiModalOpen}
+        onClose={handleCloseGajiModal}
+        onSave={handleSaveGaji}
+      />
     </div>
   );
 };

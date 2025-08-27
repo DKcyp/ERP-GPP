@@ -35,6 +35,7 @@ const KPITambahModal: React.FC<KPITambahModalProps> = ({ isOpen, onClose }) => {
               <option>--Pilih Nama Pegawai--</option>
               <option>Pegawai A</option>
               <option>Pegawai B</option>
+              <option>Pegawai C</option>
             </select>
           </div>
           {/* Nama Penilai */}
