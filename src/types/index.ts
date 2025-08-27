@@ -298,3 +298,93 @@ export interface EvaluasiVendorFormData {
   sesuaiSpesifikasi: 'Ya' | 'Tidak';
   jumlahBarangSesuaiPO: string; // Input will be string, convert to number
 }
+
+// NEW: Interfaces for Entry Supplier / Bidding Modal
+export interface BiddingItemEntry {
+  id: string; // Unique ID for each item row
+  namaBarang: string;
+  qty: string;
+  namaVendor: string;
+  harga: string;
+  diskon: string;
+  jumlah: string;
+  ppnNonPpn: string;
+  total: string;
+  pengiriman: string;
+  garansi: string;
+  keterangan: string; // Using 'keterangan' for the 'M' column
+}
+
+export interface EntrySupplierBiddingFormData {
+  noBidding: string;
+  noPR: string;
+  tanggalBidding: string;
+  departemen: string;
+  items: BiddingItemEntry[];
+}
+
+// NEW: Interfaces for Entry PO Barang Modal
+export interface POBarangItemEntry {
+  id: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: string;
+  satuan: string;
+  hargaSatuan: string;
+  pajakItem: string; // Renamed to avoid conflict with form-level 'pajak'
+  discRp: string;
+  jumlah: string;
+  keterangan: string;
+}
+
+export interface EntryPOBarangFormData {
+  noPR: string;
+  noSO: string;
+  metodePembayaran: string;
+  tanggalPO: string;
+  kodeVendor: string;
+  tanggalPengiriman: string;
+  noPO: string; // Pre-filled, read-only
+  departemen: string;
+  vendor: string;
+  pajak: string;
+  tandaBukti: File | null;
+  daftarFile: File[]; // For drag & drop files
+  items: POBarangItemEntry[];
+  total: string;
+  discAkhir: string;
+  subTotal: string;
+  ppn: string;
+  ongkosKirim: string;
+  grandTotal: string;
+}
+
+// NEW: Interfaces for Kirim Ke Finance Modal
+export interface KirimKeFinanceItemEntry {
+  id: string;
+  no: number;
+  nama: string;
+  jumlah: string;
+  hargaSatuan: string;
+  total: string;
+}
+
+export interface KirimKeFinanceFormData {
+  noPO: string;
+  tanggalPO: string;
+  namaVendor: string;
+  namaPenyerah: string;
+  items: KirimKeFinanceItemEntry[];
+}
+
+// NEW: Interface for Tanda Terima PO Dari Gudang
+export interface TandaTerimaPODariGudangData {
+  id: string;
+  no: number;
+  noPO: string;
+  noFaktur: string;
+  tglFaktur: string;
+  vendor: string;
+  penerima: string;
+  verifikasi: boolean; // True if verified, false otherwise
+}

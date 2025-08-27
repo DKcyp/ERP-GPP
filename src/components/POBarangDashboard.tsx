@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Calendar, Plus, FileDown, Clock, Eye, Trash2 } from 'lucide-react';
+import EntryPOBarangModal from './EntryPOBarangModal'; // Import the new modal
+import { EntryPOBarangFormData } from '../types'; // Import the new form data type
 
 const poData = [
   {
@@ -65,6 +67,14 @@ const poData = [
 ];
 
 const POBarangDashboard: React.FC = () => {
+  const [isEntryPOModalOpen, setIsEntryPOModalOpen] = useState(false); // State for the new modal
+
+  const handleEntryPOModalSubmit = (formData: EntryPOBarangFormData) => {
+    console.log('Entry PO Barang Form Data:', formData);
+    // Here you would typically send this data to a backend API
+    // For now, we'll just log it.
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -109,7 +119,10 @@ const POBarangDashboard: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm">
+                <button
+                  onClick={() => setIsEntryPOModalOpen(true)} // Open the new modal
+                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
+                >
                     <Plus size={18} />
                     <span>Tambah</span>
                 </button>
@@ -240,6 +253,13 @@ const POBarangDashboard: React.FC = () => {
             </div>
         </div>
       </div>
+
+      {/* Entry PO Barang Modal */}
+      <EntryPOBarangModal
+        isOpen={isEntryPOModalOpen}
+        onClose={() => setIsEntryPOModalOpen(false)}
+        onSubmit={handleEntryPOModalSubmit}
+      />
     </div>
   );
 };

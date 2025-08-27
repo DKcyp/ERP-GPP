@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, CalendarDays, Plus, FileSpreadsheet, FileText, FileDown, Eye, Clock } from 'lucide-react';
+import EntrySupplierBiddingModal from './EntrySupplierBiddingModal'; // Import the new modal
+import { EntrySupplierBiddingFormData } from '../types'; // Import the new form data type
 
 const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
+  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false); // State for the new modal
+
   const data = [
     {
       no: 1,
@@ -37,6 +41,12 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
       namaPemenang: '-'
     },
   ];
+
+  const handleEntryModalSubmit = (formData: EntrySupplierBiddingFormData) => {
+    console.log('Entry Supplier / Bidding Form Data:', formData);
+    // Here you would typically send this data to a backend API
+    // For now, we'll just log it.
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -149,7 +159,10 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-6 justify-end">
-            <button className="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-2 shadow-md">
+            <button
+              onClick={() => setIsEntryModalOpen(true)} // Open the new modal
+              className="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-2 shadow-md"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
             </button>
@@ -345,6 +358,13 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Entry Supplier / Bidding Modal */}
+      <EntrySupplierBiddingModal
+        isOpen={isEntryModalOpen}
+        onClose={() => setIsEntryModalOpen(false)}
+        onSubmit={handleEntryModalSubmit}
+      />
     </div>
   );
 };

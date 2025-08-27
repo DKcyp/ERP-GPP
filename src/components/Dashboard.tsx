@@ -134,6 +134,7 @@ import ProconOverviewDashboard from './ProconOverviewDashboard';
 import MasterKPIHRDDashboard from './MasterKPIHRDDashboard';
 import MasterIndikatorHRDDashboard from './MasterIndikatorHRDDashboard';
 import EvaluasiVendorDashboard from './EvaluasiVendorDashboard'; // NEW: Import EvaluasiVendorDashboard
+import GudangPenerimaanDashboard from './GudangPenerimaanDashboard'; // NEW: Import GudangPenerimaanDashboard
 
 
 import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award, Clock, Menu, Phone, Megaphone, FileText, ArrowRight, ArrowLeft, File } from 'lucide-react';
@@ -327,10 +328,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Awal</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Akhir</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Kontrak</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sudah Ditagihkan</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sisa Penagihan</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimasi Penagihan</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delay Penagihan</th>
+                      <th scope="col" className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Sudah Ditagihkan</th>
+                      <th scope="col" className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Sisa Penagihan</th>
+                      <th scope="col" className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Estimasi Penagihan</th>
+                      <th scope="col" className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Delay Penagihan</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -706,6 +707,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/pengadaan/penerimaan/purchasing') {
       return <PurchasingDashboard />;
+    }
+    if (currentPage === '/pengadaan/penerimaan/gudang') { // NEW: Route for Gudang Penerimaan
+      return <GudangPenerimaanDashboard />;
     }
     if (currentPage === '/pengadaan/penerimaan/invoice') {
       return <InvoiceDashboard />;

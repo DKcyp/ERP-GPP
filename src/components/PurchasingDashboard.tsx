@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Plus, FileSpreadsheet, FileText, FileDown, CalendarDays, Clock } from 'lucide-react';
+import KirimKeFinanceModal from './KirimKeFinanceModal'; // Import the new modal
+import { KirimKeFinanceFormData } from '../types'; // Import the new form data type
 
 const PurchasingDashboard: React.FC = () => {
+  const [isKirimKeFinanceModalOpen, setIsKirimKeFinanceModalOpen] = useState(false); // State for the new modal
+
   const data = [
     { no: 1, noPO: 'PO001', periodePR: 'Januari 2025', tanggalPO: '10-01-2025', namaVendor: 'PT ACE GROUP', namaPenerima: 'Ahmad Kasim', tanggalTerima: '12-01-2025', status: 'Paid' },
     { no: 2, noPO: 'PO002', periodePR: 'Februari 2025', tanggalPO: '15-02-2025', namaVendor: 'PT JoHigh', namaPenerima: 'Rahmat', tanggalTerima: '17-02-2025', status: 'Unpaid' },
     { no: 3, noPO: 'PO003', periodePR: 'Maret 2025', tanggalPO: '05-03-2025', namaVendor: 'PT Ceria Jaya', namaPenerima: 'Budi Santoso', tanggalTerima: '07-03-2025', status: 'Paid' },
     { no: 4, noPO: 'PO004', periodePR: 'April 2025', tanggalPO: '20-04-2025', namaVendor: 'PT Maju Sejahtera', namaPenerima: 'Indra', tanggalTerima: '22-04-2025', status: 'Unpaid' },
   ];
+
+  const handleKirimKeFinanceSubmit = (formData: KirimKeFinanceFormData) => {
+    console.log('Kirim Ke Finance Form Data:', formData);
+    // Here you would typically send this data to a backend API
+    // For now, we'll just log it.
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -78,7 +88,10 @@ const PurchasingDashboard: React.FC = () => {
                   <option>Maret 2025</option>
                 </select>
               </div>
-              <button className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center space-x-1 shadow-md">
+              <button
+                onClick={() => setIsKirimKeFinanceModalOpen(true)} // Open the new modal
+                className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center space-x-1 shadow-md"
+              >
                 <Plus className="h-4 w-4" />
                 <span>Tambah</span>
               </button>
@@ -289,6 +302,13 @@ const PurchasingDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Kirim Ke Finance Modal */}
+      <KirimKeFinanceModal
+        isOpen={isKirimKeFinanceModalOpen}
+        onClose={() => setIsKirimKeFinanceModalOpen(false)}
+        onSubmit={handleKirimKeFinanceSubmit}
+      />
     </div>
   );
 };
