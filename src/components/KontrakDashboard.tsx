@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import KontrakModal, { KontrakFormData } from './KontrakModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import ApprovalActionModal from './ApprovalActionModal'; // Import ApprovalActionModal
+import { ApprovalActionData } from '../types'; // Assuming you have this type defined
 import { 
   Search, 
   Plus, 
@@ -15,7 +17,8 @@ import {
   Info,
   ChevronLeft,
   ChevronRight,
-  ArrowUp
+  ArrowUp,
+  Check // Import Check icon for approve
 } from 'lucide-react';
 
 interface Kontrak {
@@ -45,6 +48,12 @@ const KontrakDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<Kontrak | null>(null);
   const [sortField, setSortField] = useState<keyof Kontrak | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  // State for Approval Modal
+  const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [selectedKontrakIdForApproval, setSelectedKontrakIdForApproval] = useState<string | null>(null);
+  const [approvalActionType, setApprovalActionType] = useState<'approve' | 'reject' | null>(null);
+
 
   // Sample data matching the image
   const [kontrakData, setKontrakData] = useState<Kontrak[]>([
@@ -220,6 +229,23 @@ const KontrakDashboard: React.FC = () => {
 
   const formatCurrency = (amount: number) => {
     return `Rp. ${amount.toLocaleString('id-ID')}`;
+  };
+
+  // Handle Approve Kontrak button click
+  const handleApproveKontrakClick = (kontrakId: string) => {
+    setSelectedKontrakIdForApproval(kontrakId);
+    setApprovalActionType('approve');
+    setIsApprovalModalOpen(true);
+  };
+
+  // Handle confirmation from ApprovalActionModal
+  const handleApprovalConfirm = (data: ApprovalActionData) => {
+    console.log('Kontrak Approved:', data);
+    // Here you would typically update the status of the kontrak in your state or send to API
+    // For demonstration, we'll just log it.
+    setIsApprovalModalOpen(false);
+    setSelectedKontrakIdForApproval(null);
+    setApprovalActionType(null);
   };
 
   return (
@@ -399,6 +425,7 @@ const KontrakDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sisa Penagihan</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Estimasi Penagihan</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Delay Penagihan</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th> {/* New Aksi column */}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -423,6 +450,18 @@ const KontrakDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-600">{item.sisaPenagihan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.estimasiPenagihan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.delayPenagihan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => handleApproveKontrakClick(item.id)}
+                          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-blue-600/30 ring-2 ring-blue-200/50"
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                          <span>Approve Kontrak</span>
+                        </button>
+                        {/* You can add other action buttons here if needed */}
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 
@@ -434,6 +473,7 @@ const KontrakDashboard: React.FC = () => {
                   <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.sisaPenagihan)}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.estimasiPenagihan)}</td>
                   <td className="px-4 py-3 text-sm text-gray-900"></td>
+                  <td className="px-4 py-3 text-sm text-gray-900"></td> {/* Empty cell for Aksi column in total row */}
                 </tr>
               </tbody>
             </table>
@@ -509,6 +549,15 @@ const KontrakDashboard: React.FC = () => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaClient}
+      />
+
+      {/* Approval Action Modal for Kontrak */}
+      <ApprovalActionModal
+        isOpen={isApprovalModalOpen}
+        onClose={() => setIsApprovalModalOpen(false)}
+        onConfirm={handleApprovalConfirm}
+        invoiceId={selectedKontrakIdForApproval} // Renamed to invoiceId in modal, but used for kontrakId here
+        actionType={approvalActionType}
       />
     </div>
   );

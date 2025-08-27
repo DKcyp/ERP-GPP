@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Search, Calendar, FileText, FileSpreadsheet, FileDown, ThumbsUp, ThumbsDown, ChevronUp, ChevronDown } from 'lucide-react';
+import { Clock, Search, Calendar, FileText, FileSpreadsheet, FileDown, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface PembayaranItem {
   no: number;
@@ -208,9 +208,6 @@ const DaftarPembayaranDashboard: React.FC = () => {
                       <ChevronUp className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Aksi
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -225,16 +222,6 @@ const DaftarPembayaranDashboard: React.FC = () => {
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(item.statusPersetujuan)}`}>
                         {item.statusPersetujuan}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors duration-200">
-                          <ThumbsUp className="h-4 w-4" />
-                        </button>
-                        <button className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors duration-200">
-                          <ThumbsDown className="h-4 w-4" />
-                        </button>
-                      </div>
                     </td>
                   </tr>
                 ))}

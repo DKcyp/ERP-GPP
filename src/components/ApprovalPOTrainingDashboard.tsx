@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Clock, Search, Calendar, FileText, FileSpreadsheet, FileDown, Eye, ThumbsUp, ThumbsDown } from 'lucide-react';
+import DetailPOTrainingModal from './DetailPOTrainingModal';
+import ApprovalPOTrainingActionModal from './ApprovalPOTrainingActionModal';
+import { POTrainingDetailData, ApprovalPOTrainingActionData } from '../types';
 
 const ApprovalPOTrainingDashboard: React.FC = () => {
   const [searchKodeBarang, setSearchKodeBarang] = useState('BRG001');
@@ -9,51 +12,108 @@ const ApprovalPOTrainingDashboard: React.FC = () => {
   const [endDate, setEndDate] = useState('03/03/2025');
   const [showEntries, setShowEntries] = useState(10);
 
-  const data = [
+  // State for Detail PO Training Modal
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedPOTrainingDetail, setSelectedPOTrainingDetail] = useState<POTrainingDetailData | null>(null);
+
+  // State for Approval Action Modal
+  const [isApprovalActionModalOpen, setIsApprovalActionModalOpen] = useState(false);
+  const [selectedPOTrainingForAction, setSelectedPOTrainingForAction] = useState<string | null>(null);
+  const [approvalActionType, setApprovalActionType] = useState<'approve' | 'reject' | null>(null);
+
+  const data: POTrainingDetailData[] = [
     {
+      id: 'po-train-001',
       no: 1,
       noSO: 'SO-2025-001',
+      soTurunan: 'SO-T-001',
+      noTraining: 'TRN-WLD-001',
       jenisTraining: 'Welding (SMAW, SAW, TIG)',
-      tanggalPelatihan: '10-01-2025 s.d 10-02-2025',
+      tanggalPelatihanStart: '10-01-2025',
+      tanggalPelatihanEnd: '10-02-2025',
       vendor: 'PT Gamma Buana Persada',
       budget: 5_000_000,
-      status: 'Approved',
+      keterangan: 'Pelatihan dasar pengelasan untuk teknisi baru.',
+      status: 'Pending',
+      approver: 'Manajer Operasional',
+      peserta: [
+        { no: 1, namaPegawai: 'Budi Santoso', nip: 'NIP-001', departemen: 'Produksi', kualifikasi: 'Junior Welder' },
+        { no: 2, namaPegawai: 'Citra Dewi', nip: 'NIP-002', departemen: 'Produksi', kualifikasi: 'Junior Welder' },
+      ],
     },
     {
+      id: 'po-train-002',
       no: 2,
       noSO: 'SO-2025-002',
+      soTurunan: 'SO-T-002',
+      noTraining: 'TRN-CNC-001',
       jenisTraining: 'Operator CNC Milling',
-      tanggalPelatihan: '12-02-2025 s.d 12-03-2025',
+      tanggalPelatihanStart: '12-02-2025',
+      tanggalPelatihanEnd: '12-03-2025',
       vendor: 'PT Boma Bisma Indra',
       budget: 7_500_000,
-      status: 'Pending',
+      keterangan: 'Pelatihan lanjutan untuk operator CNC.',
+      status: 'Approved',
+      approver: 'Manajer Produksi',
+      peserta: [
+        { no: 1, namaPegawai: 'Dian Permata', nip: 'NIP-003', departemen: 'Manufaktur', kualifikasi: 'Operator CNC' },
+      ],
     },
     {
+      id: 'po-train-003',
       no: 3,
       noSO: 'SO-2025-003',
+      soTurunan: 'SO-T-003',
+      noTraining: 'TRN-MEK-001',
       jenisTraining: 'Teknisi Mekanik (Perawatan Mesin)',
-      tanggalPelatihan: '15-03-2025 s.d 15-04-2025',
+      tanggalPelatihanStart: '15-03-2025',
+      tanggalPelatihanEnd: '15-04-2025',
       vendor: 'PT Makmur Jaya',
       budget: 4_000_000,
-      status: 'Approved',
+      keterangan: 'Pelatihan perawatan mesin rutin.',
+      status: 'Rejected',
+      approver: 'Kepala Bengkel',
+      peserta: [
+        { no: 1, namaPegawai: 'Eko Prasetyo', nip: 'NIP-004', departemen: 'Maintenance', kualifikasi: 'Teknisi Mekanik' },
+        { no: 2, namaPegawai: 'Fajar Nugroho', nip: 'NIP-005', departemen: 'Maintenance', kualifikasi: 'Teknisi Mekanik' },
+      ],
     },
     {
+      id: 'po-train-004',
       no: 4,
       noSO: 'SO-2025-004',
+      soTurunan: 'SO-T-004',
+      noTraining: 'TRN-QCW-001',
       jenisTraining: 'QC Welding (Visual & Dimensional Inspection)',
-      tanggalPelatihan: '20-04-2025 s.d 20-05-2025',
+      tanggalPelatihanStart: '20-04-2025',
+      tanggalPelatihanEnd: '20-05-2025',
       vendor: 'PT Pindad (Persero)',
       budget: 6_000_000,
-      status: 'Rejected',
+      keterangan: 'Sertifikasi ulang QC Welding.',
+      status: 'Pending',
+      approver: 'Manajer QA/QC',
+      peserta: [
+        { no: 1, namaPegawai: 'Gita Lestari', nip: 'NIP-006', departemen: 'QA/QC', kualifikasi: 'QC Inspector' },
+      ],
     },
     {
+      id: 'po-train-005',
       no: 5,
       noSO: 'SO-2025-005',
+      soTurunan: 'SO-T-005',
+      noTraining: 'TRN-TRN-001',
       jenisTraining: 'Turning Machine',
-      tanggalPelatihan: '05-05-2025 s.d 05-05-2025',
+      tanggalPelatihanStart: '05-05-2025',
+      tanggalPelatihanEnd: '05-05-2025',
       vendor: 'PT Okuma Indonesia',
       budget: 8_500_000,
+      keterangan: 'Pelatihan penggunaan mesin bubut terbaru.',
       status: 'Approved',
+      approver: 'Manajer Produksi',
+      peserta: [
+        { no: 1, namaPegawai: 'Hadi Wijaya', nip: 'NIP-007', departemen: 'Manufaktur', kualifikasi: 'Operator Bubut' },
+        { no: 2, namaPegawai: 'Indra Kusuma', nip: 'NIP-008', departemen: 'Manufaktur', kualifikasi: 'Operator Bubut' },
+      ],
     },
   ];
 
@@ -72,6 +132,25 @@ const ApprovalPOTrainingDashboard: React.FC = () => {
 
   const formatCurrency = (amount: number) => {
     return `Rp ${amount.toLocaleString('id-ID')}`;
+  };
+
+  const handleViewDetails = (poTraining: POTrainingDetailData) => {
+    setSelectedPOTrainingDetail(poTraining);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleOpenApprovalActionModal = (poTrainingId: string, action: 'approve' | 'reject') => {
+    setSelectedPOTrainingForAction(poTrainingId);
+    setApprovalActionType(action);
+    setIsApprovalActionModalOpen(true);
+  };
+
+  const handleConfirmApprovalAction = (actionData: ApprovalPOTrainingActionData) => {
+    console.log('PO Training Approval Action Confirmed:', actionData);
+    // Here you would typically send this data to your backend
+    // For now, we'll just log it.
+    alert(`PO Training ${actionData.poTrainingId} ${actionData.action}d with comment: "${actionData.keterangan}"`);
+    // You might want to update the local 'data' state here to reflect the change
   };
 
   return (
@@ -278,7 +357,7 @@ const ApprovalPOTrainingDashboard: React.FC = () => {
                       {row.jenisTraining}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {row.tanggalPelatihan}
+                      {`${row.tanggalPelatihanStart} s.d ${row.tanggalPelatihanEnd}`}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {row.vendor}
@@ -295,15 +374,24 @@ const ApprovalPOTrainingDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <button
+                          onClick={() => handleViewDetails(row)}
+                          className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                        >
                           <Eye className="h-4 w-4" />
                         </button>
                         {row.status === 'Pending' && (
                           <>
-                            <button className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors">
+                            <button
+                              onClick={() => handleOpenApprovalActionModal(row.id, 'approve')}
+                              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+                            >
                               <ThumbsUp className="h-4 w-4" />
                             </button>
-                            <button className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors">
+                            <button
+                              onClick={() => handleOpenApprovalActionModal(row.id, 'reject')}
+                              className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                            >
                               <ThumbsDown className="h-4 w-4" />
                             </button>
                           </>
@@ -331,6 +419,22 @@ const ApprovalPOTrainingDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Detail PO Training Modal */}
+      <DetailPOTrainingModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        poTrainingData={selectedPOTrainingDetail}
+      />
+
+      {/* Approval PO Training Action Modal */}
+      <ApprovalPOTrainingActionModal
+        isOpen={isApprovalActionModalOpen}
+        onClose={() => setIsApprovalActionModalOpen(false)}
+        onConfirm={handleConfirmApprovalAction}
+        poTrainingId={selectedPOTrainingForAction}
+        actionType={approvalActionType}
+      />
     </div>
   );
 };

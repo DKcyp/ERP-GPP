@@ -53,7 +53,6 @@ import PurchasingDashboard from './PurchasingDashboard';
 import InvoiceDashboard from './InvoiceDashboard';
 import GudangDashboard from './GudangDashboard';
 import DaftarSeleksiSupplierBiddingDashboard from './DaftarSeleksiSupplierBiddingDashboard';
-import FinanceDashboard from './FinanceDashboard'; // Existing Finance Dashboard
 import ApprovalTiketDashboard from './ApprovalTiketDashboard';
 import ApprovalInvoiceDashboard from './ApprovalInvoiceDashboard';
 import ApprovalPenggajianDashboard from './ApprovalPenggajianDashboard';
@@ -62,6 +61,15 @@ import ApprovalVoucherDashboard from './ApprovalVoucherDashboard';
 import DaftarPembayaranDashboard from './DaftarPembayaranDashboard';
 import DaftarVoucherDashboard from './DaftarVoucherDashboard';
 import LaporanHutangUsahaDashboard from './LaporanHutangUsahaDashboard';
+// Finance Dashboards
+import FinanceMainDashboard from './FinanceDashboard';
+import APDashboard from './APDashboard';
+import LaporanAPDashboard from './LaporanAPDashboard';
+import ReimburseVoucherDashboard from './ReimburseVoucherDashboard';
+import ARDashboard from './ARDashboard';
+import ProsesPembayaranARDashboard from './ProsesPembayaranARDashboard';
+import LaporanARDashboard from './LaporanARDashboard';
+
 // Gudang Dashboards
 import MasterBarangDashboard from './MasterBarangDashboard';
 import KategoriBarangDashboard from './KategoriBarangDashboard';

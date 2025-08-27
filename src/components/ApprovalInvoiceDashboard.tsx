@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Clock, Search, Calendar, FileText, FileSpreadsheet, FileDown, Eye, ThumbsUp, ThumbsDown } from 'lucide-react';
+import DetailInvoiceModal from './DetailInvoiceModal';
+import ApprovalActionModal from './ApprovalActionModal';
+import { InvoiceDetailData, ApprovalActionData } from '../types';
 
 const ApprovalInvoiceDashboard: React.FC = () => {
   const [searchKodeBarang, setSearchKodeBarang] = useState('BRG001');
@@ -9,8 +12,18 @@ const ApprovalInvoiceDashboard: React.FC = () => {
   const [endDate, setEndDate] = useState('03/03/2025');
   const [showEntries, setShowEntries] = useState(10);
 
+  // State for Detail Invoice Modal
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedInvoiceDetail, setSelectedInvoiceDetail] = useState<InvoiceDetailData | null>(null);
+
+  // State for Approval Action Modal
+  const [isApprovalActionModalOpen, setIsApprovalActionModalOpen] = useState(false);
+  const [selectedInvoiceForAction, setSelectedInvoiceForAction] = useState<string | null>(null);
+  const [approvalActionType, setApprovalActionType] = useState<'approve' | 'reject' | null>(null);
+
   const data = [
     {
+      id: 'inv-01',
       no: 1,
       noSO: 'SOO10',
       soTurunan: 'SOO10.1',
@@ -21,8 +34,13 @@ const ApprovalInvoiceDashboard: React.FC = () => {
       status: 'Approved',
       approver: 'Manajer Marketing',
       keterangan: 'Disetujui',
+      items: [
+        { no: 1, kodeBarang: 'EQP001', namaBarang: 'Excavator', jumlah: 3, satuan: 'Unit', harga: 120_000_000 },
+        { no: 2, kodeBarang: 'EQP002', namaBarang: 'Crane 50 Ton', jumlah: 3, satuan: 'Unit', harga: 20_000_000 },
+      ],
     },
     {
+      id: 'inv-111',
       no: 2,
       noSO: 'SOO11',
       soTurunan: 'SOO11.9',
@@ -33,8 +51,12 @@ const ApprovalInvoiceDashboard: React.FC = () => {
       status: 'Rejected',
       approver: 'Manajer Marketing',
       keterangan: 'Data Tidak Lengkap',
+      items: [
+        { no: 1, kodeBarang: 'SRV001', namaBarang: 'Jasa Konsultasi', jumlah: 1, satuan: 'Paket', harga: 5_000_000 },
+      ],
     },
     {
+      id: 'inv-99',
       no: 3,
       noSO: 'SO121',
       soTurunan: 'SO121.21',
@@ -45,6 +67,10 @@ const ApprovalInvoiceDashboard: React.FC = () => {
       status: 'Pending',
       approver: 'Manajer Marketing',
       keterangan: 'Menunggu Persetujuan',
+      items: [
+        { no: 1, kodeBarang: 'MAT001', namaBarang: 'Besi Baja', jumlah: 100, satuan: 'Kg', harga: 15_000 },
+        { no: 2, kodeBarang: 'MAT002', namaBarang: 'Kawat Las', jumlah: 50, satuan: 'Meter', harga: 5_000 },
+      ],
     },
   ];
 
@@ -63,6 +89,37 @@ const ApprovalInvoiceDashboard: React.FC = () => {
 
   const formatCurrency = (amount: number) => {
     return `Rp ${amount.toLocaleString('id-ID')}`;
+  };
+
+  const handleViewDetails = (invoice: typeof data[0]) => {
+    setSelectedInvoiceDetail({
+      id: invoice.id,
+      noSO: invoice.noSO,
+      namaProject: invoice.namaProject,
+      hppSO: invoice.soTurunan, // Mapping soTurunan to hppSO for the modal
+      noInvoice: invoice.noInvoice,
+      tanggalInvoice: invoice.tanggalInvoice,
+      jumlah: invoice.jumlah,
+      status: invoice.status,
+      approver: invoice.approver,
+      keterangan: invoice.keterangan,
+      items: invoice.items,
+    });
+    setIsDetailModalOpen(true);
+  };
+
+  const handleOpenApprovalActionModal = (invoiceId: string, action: 'approve' | 'reject') => {
+    setSelectedInvoiceForAction(invoiceId);
+    setApprovalActionType(action);
+    setIsApprovalActionModalOpen(true);
+  };
+
+  const handleConfirmApprovalAction = (actionData: ApprovalActionData) => {
+    console.log('Approval Action Confirmed:', actionData);
+    // Here you would typically send this data to your backend
+    // For now, we'll just log it.
+    alert(`Invoice ${actionData.invoiceId} ${actionData.action}d with comment: "${actionData.keterangan}"`);
+    // You might want to update the local 'data' state here to reflect the change
   };
 
   return (
@@ -303,15 +360,24 @@ const ApprovalInvoiceDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <button
+                          onClick={() => handleViewDetails(row)}
+                          className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                        >
                           <Eye className="h-4 w-4" />
                         </button>
                         {row.status === 'Pending' && (
                           <>
-                            <button className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors">
+                            <button
+                              onClick={() => handleOpenApprovalActionModal(row.id, 'approve')}
+                              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+                            >
                               <ThumbsUp className="h-4 w-4" />
                             </button>
-                            <button className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors">
+                            <button
+                              onClick={() => handleOpenApprovalActionModal(row.id, 'reject')}
+                              className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                            >
                               <ThumbsDown className="h-4 w-4" />
                             </button>
                           </>
@@ -339,6 +405,22 @@ const ApprovalInvoiceDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Detail Invoice Modal */}
+      <DetailInvoiceModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        invoiceData={selectedInvoiceDetail}
+      />
+
+      {/* Approval Action Modal */}
+      <ApprovalActionModal
+        isOpen={isApprovalActionModalOpen}
+        onClose={() => setIsApprovalActionModalOpen(false)}
+        onConfirm={handleConfirmApprovalAction}
+        invoiceId={selectedInvoiceForAction}
+        actionType={approvalActionType}
+      />
     </div>
   );
 };

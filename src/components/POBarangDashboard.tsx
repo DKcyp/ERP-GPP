@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Calendar, Plus, FileDown, Clock, Eye, Trash2 } from 'lucide-react';
+import { Search, Calendar, Plus, FileDown, Clock, Eye, Trash2, Printer } from 'lucide-react'; // Import Printer icon
 import EntryPOBarangModal from './EntryPOBarangModal'; // Import the new modal
 import { EntryPOBarangFormData } from '../types'; // Import the new form data type
 
@@ -73,6 +73,11 @@ const POBarangDashboard: React.FC = () => {
     console.log('Entry PO Barang Form Data:', formData);
     // Here you would typically send this data to a backend API
     // For now, we'll just log it.
+  };
+
+  const handlePrint = (poId: number) => {
+    console.log(`Printing PO with ID: ${poId}`);
+    // Implement print logic here
   };
 
   return (
@@ -231,6 +236,12 @@ const POBarangDashboard: React.FC = () => {
                           </button>
                           <button className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                             <Eye size={14} />
+                          </button>
+                          <button
+                            onClick={() => handlePrint(item.id)} // Add print handler
+                            className="p-1.5 bg-purple-500 text-white rounded-md hover:bg-purple-600" // New button for print
+                          >
+                            <Printer size={14} />
                           </button>
                           <button className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600">
                             <Trash2 size={14} />

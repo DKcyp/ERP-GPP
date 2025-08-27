@@ -89,3 +89,160 @@ export interface KPIPerspective {
   polaritas: 'Positive' | 'Negative' | 'Neutral';
   finalScore: string;
 }
+
+// New interface for Invoice Detail Modal
+export interface InvoiceDetailData {
+  id: string;
+  noSO: string;
+  namaProject: string;
+  hppSO: // Corresponds to 'SO Turunan'
+  string;
+  noInvoice: string;
+  tanggalInvoice: string;
+  jumlah: number;
+  status: 'Approved' | 'Pending' | 'Rejected';
+  approver: string;
+  keterangan: string;
+  items: Array<{
+    no: number;
+    kodeBarang: string;
+    namaBarang: string;
+    jumlah: number;
+    satuan: string;
+    harga: number;
+  }>;
+}
+
+// New interface for Approval Action Modal
+export interface ApprovalActionData {
+  invoiceId: string;
+  action: 'approve' | 'reject';
+  keterangan: string;
+}
+
+// New interfaces for Approval Penggajian Modal
+export interface PenggajianDetailData {
+  id: string;
+  noPenggajian: string;
+  periode: string;
+  noPegawai: string;
+  namaPegawai: string;
+  nipPegawai: string;
+  keterangan: string;
+  bonusKinerja: string;
+  status: 'Approved' | 'Pending' | 'Rejected';
+  approver: string;
+  items: Array<{
+    no: number;
+    tanggalPenggajian: string;
+    gajiPokok: number;
+    potonganPPH21: number;
+    potonganBPJS: number;
+    potonganMess: number;
+    uangTunjangan: number;
+    totalGaji: number;
+  }>;
+}
+
+export interface ApprovalPenggajianActionData {
+  penggajianId: string;
+  action: 'approve' | 'reject';
+  keterangan: string;
+}
+
+// New interfaces for Approval PO Training Modal
+export interface POTrainingDetailData {
+  id: string;
+  no: number;
+  noSO: string;
+  soTurunan: string; // Added for detail
+  noTraining: string; // Added for detail
+  jenisTraining: string;
+  tanggalPelatihanStart: string; // Split for detail
+  tanggalPelatihanEnd: string; // Split for detail
+  vendor: string;
+  budget: number;
+  keterangan: string; // Added for detail
+  status: 'Approved' | 'Pending' | 'Rejected';
+  approver: string; // Added for detail
+  peserta: Array<{
+    no: number;
+    namaPegawai: string;
+    nip: string;
+    departemen: string;
+    kualifikasi: string;
+  }>;
+}
+
+export interface ApprovalPOTrainingActionData {
+  poTrainingId: string;
+  action: 'approve' | 'reject';
+  keterangan: string;
+}
+
+// New interfaces for Approval Voucher Modal
+export interface VoucherEmployee {
+  no: number;
+  kodePegawai: string;
+  namaPegawai: string;
+  departemen: string;
+  nip: string;
+}
+
+export interface VoucherTicketDetail {
+  keberangkatan: {
+    tanggal: string;
+    tujuan: string;
+    jam: string;
+    maskapai: string;
+    harga: number;
+    jenisTiket: string;
+  };
+  kepulangan: {
+    tanggal: string;
+    tujuan: string;
+    jam: string;
+    maskapai: string;
+    hargaTotal: number; // This seems to be the total for return, not individual ticket price
+    jenisTiket: string;
+  };
+  ditagihkanKe: 'Client' | 'Perusahaan';
+  note: string;
+}
+
+export interface VoucherHotelDetail {
+  // Structure for hotel details, not shown in image but for completeness
+  namaHotel: string;
+  checkIn: string;
+  checkOut: string;
+  jumlahMalam: number;
+  hargaPerMalam: number;
+  totalHarga: number;
+  ditagihkanKe: 'Client' | 'Perusahaan';
+  note: string;
+}
+
+export interface VoucherTravelDetail {
+  // Structure for general travel expenses, not shown in image but for completeness
+  jenisBiaya: string;
+  deskripsi: string;
+  jumlah: number;
+  satuan: string;
+  totalHarga: number;
+  ditagihkanKe: 'Client' | 'Perusahaan';
+  note: string;
+}
+
+export interface ApprovalVoucherDetailData {
+  id: string;
+  noVoucher: string;
+  tanggalPengajuan: string;
+  noSO: string;
+  jumlahNominal: number;
+  dataPegawai: VoucherEmployee[];
+  keterangan: string;
+  pemesananTiketPesawat?: VoucherTicketDetail;
+  pemesananHotel?: VoucherHotelDetail;
+  biayaTravel?: VoucherTravelDetail;
+  status: 'Approved' | 'Pending' | 'Rejected'; // Assuming status for dashboard table
+}
