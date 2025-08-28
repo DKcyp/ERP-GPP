@@ -1,13 +1,56 @@
-import React from 'react';
-import { Search, FileSpreadsheet, FileText, FileDown, CalendarDays, ThumbsUp, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, FileSpreadsheet, FileText, FileDown, CalendarDays, ThumbsUp, Clock, Plus } from 'lucide-react';
+import InvoiceModal from './InvoiceModal'; // Import the new modal
+import TandaTerimaInvoiceModal from './TandaTerimaInvoiceModal'; // Import the new TandaTerimaInvoiceModal
+import { InvoiceDashboardData, InvoiceFormInput, TandaTerimaInvoiceDetail } from '../types'; // Import the new types
 
 const InvoiceDashboard: React.FC = () => {
-  const data = [
-    { no: 1, noPO: 'PO001', tanggalPO: '13-02-2024', namaVendor: 'PT Maju Sejahtera', nilaiInvoice: 'Rp 10.000.000', penerimaInvoice: 'Ahmad Kasim' },
-    { no: 2, noPO: 'PO002', tanggalPO: '12-02-2024', namaVendor: 'CV Hendra Jaya', nilaiInvoice: 'Rp 15.000.000', penerimaInvoice: 'Budi Santoso' },
-    { no: 3, noPO: 'PO003', tanggalPO: '11-01-2024', namaVendor: 'PT JoHigh Express', nilaiInvoice: 'Rp 8.500.000', penerimaInvoice: 'Siti Aminah' },
-    { no: 4, noPO: 'PO004', tanggalPO: '10-03-2024', namaVendor: 'ACE GROUP', nilaiInvoice: 'Rp 12.750.000', penerimaInvoice: 'Rizky Fauzan' },
-  ];
+  const [isAddInvoiceModalOpen, setIsAddInvoiceModalOpen] = useState(false);
+  const [isTandaTerimaModalOpen, setIsTandaTerimaModalOpen] = useState(false);
+  const [selectedInvoiceForTandaTerima, setSelectedInvoiceForTandaTerima] = useState<TandaTerimaInvoiceDetail | null>(null);
+
+  const [invoiceData, setInvoiceData] = useState<InvoiceDashboardData[]>([
+    { id: '1', no: 1, noPO: 'PO001', tanggalPO: '13-02-2024', namaVendor: 'PT Maju Sejahtera', nilaiInvoice: 'Rp 10.000.000', penerimaInvoice: 'Ahmad Kasim', statusVerifikasi: 'Pending', unduhInvoice: '/documents/inv001.pdf', tanggalVerifikasi: '' },
+    { id: '2', no: 2, noPO: 'PO002', tanggalPO: '12-02-2024', namaVendor: 'CV Hendra Jaya', nilaiInvoice: 'Rp 15.000.000', penerimaInvoice: 'Budi Santoso', statusVerifikasi: 'Approved', unduhInvoice: '/documents/inv002.pdf', tanggalVerifikasi: '15/02/2024' },
+    { id: '3', no: 3, noPO: 'PO003', tanggalPO: '11-01-2024', namaVendor: 'PT JoHigh Express', nilaiInvoice: 'Rp 8.500.000', penerimaInvoice: 'Siti Aminah', statusVerifikasi: 'Pending', unduhInvoice: '/documents/inv003.pdf', tanggalVerifikasi: '' },
+    { id: '4', no: 4, noPO: 'PO004', tanggalPO: '10-03-2024', namaVendor: 'ACE GROUP', nilaiInvoice: 'Rp 12.750.000', penerimaInvoice: 'Rizky Fauzan', statusVerifikasi: 'Rejected', unduhInvoice: '/documents/inv004.pdf', tanggalVerifikasi: '12/03/2024' },
+  ]);
+
+  const handleAddInvoice = (formData: InvoiceFormInput) => {
+    const newInvoice: InvoiceDashboardData = {
+      id: (invoiceData.length + 1).toString(), // Simple ID generation
+      no: invoiceData.length + 1,
+      ...formData,
+      statusVerifikasi: 'Pending', // Default status for new invoices
+      unduhInvoice: `/documents/inv${invoiceData.length + 1}.pdf`, // Placeholder for new invoice
+      tanggalVerifikasi: '',
+    };
+    setInvoiceData(prev => [newInvoice, ...prev]); // Add new invoice to the top
+  };
+
+  const handleOpenTandaTerimaModal = (invoice: InvoiceDashboardData) => {
+    setSelectedInvoiceForTandaTerima({
+      id: invoice.id,
+      tanggalPO: invoice.tanggalPO,
+      noPO: invoice.noPO,
+      namaVendor: invoice.namaVendor,
+      nilaiInvoice: invoice.nilaiInvoice,
+      penerimaInvoice: invoice.penerimaInvoice,
+      unduhInvoice: invoice.unduhInvoice,
+      tanggalVerifikasi: invoice.tanggalVerifikasi,
+    });
+    setIsTandaTerimaModalOpen(true);
+  };
+
+  const handleVerifyInvoice = (invoiceId: string, verificationDate: string) => {
+    setInvoiceData(prev =>
+      prev.map(invoice =>
+        invoice.id === invoiceId
+          ? { ...invoice, statusVerifikasi: 'Approved', tanggalVerifikasi: verificationDate }
+          : invoice
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -104,7 +147,7 @@ const InvoiceDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Export Buttons */}
+          {/* Export and Add Buttons */}
           <div className="flex flex-wrap gap-3 mb-6 justify-end">
             <button className="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-2 shadow-md">
               <FileSpreadsheet className="h-4 w-4" />
@@ -117,6 +160,13 @@ const InvoiceDashboard: React.FC = () => {
             <button className="px-4 py-2 bg-red-500 text-white rounded-md text-sm font-medium hover:bg-red-600 transition-colors flex items-center space-x-2 shadow-md">
               <FileDown className="h-4 w-4" />
               <span>Export PDF</span>
+            </button>
+            <button
+              onClick={() => setIsAddInvoiceModalOpen(true)}
+              className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90 transition-colors flex items-center space-x-2 shadow-md"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Invoice</span>
             </button>
           </div>
 
@@ -219,8 +269,8 @@ const InvoiceDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data.map((row) => (
-                  <tr key={row.no} className="hover:bg-gray-50 transition-colors">
+                {invoiceData.map((row) => (
+                  <tr key={row.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.noPO}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.tanggalPO}</td>
@@ -228,7 +278,15 @@ const InvoiceDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.nilaiInvoice}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.penerimaInvoice}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <button className="p-2 bg-blue-100 rounded-full text-blue-600 hover:bg-blue-200 transition-colors">
+                      <button
+                        onClick={() => handleOpenTandaTerimaModal(row)}
+                        className={`p-2 rounded-full transition-colors ${
+                          row.statusVerifikasi === 'Approved' ? 'bg-green-100 text-green-600 hover:bg-green-200' :
+                          row.statusVerifikasi === 'Rejected' ? 'bg-red-100 text-red-600 hover:bg-red-200' :
+                          'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                        }`}
+                        title={row.statusVerifikasi}
+                      >
                         <ThumbsUp className="h-5 w-5" />
                       </button>
                     </td>
@@ -241,7 +299,7 @@ const InvoiceDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-700">
-              Showing 1 to {data.length} of {data.length} entries
+              Showing 1 to {invoiceData.length} of {invoiceData.length} entries
             </div>
             <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
               <button className="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
@@ -260,6 +318,21 @@ const InvoiceDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Invoice Modal (for adding new invoices) */}
+      <InvoiceModal
+        isOpen={isAddInvoiceModalOpen}
+        onClose={() => setIsAddInvoiceModalOpen(false)}
+        onSave={handleAddInvoice}
+      />
+
+      {/* Tanda Terima Invoice Modal (for verifying existing invoices) */}
+      <TandaTerimaInvoiceModal
+        isOpen={isTandaTerimaModalOpen}
+        onClose={() => setIsTandaTerimaModalOpen(false)}
+        invoiceData={selectedInvoiceForTandaTerima}
+        onVerify={handleVerifyInvoice}
+      />
     </div>
   );
 };

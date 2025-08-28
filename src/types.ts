@@ -90,7 +90,42 @@ export interface KPIPerspective {
   finalScore: string;
 }
 
-// New interface for Invoice Detail Modal
+// New interface for Invoice Dashboard table data
+export interface InvoiceDashboardData {
+  id: string; // Unique ID for keying and potential future operations
+  no: number;
+  noPO: string;
+  tanggalPO: string;
+  namaVendor: string;
+  nilaiInvoice: string;
+  penerimaInvoice: string;
+  statusVerifikasi: 'Pending' | 'Approved' | 'Rejected'; // Added for verifikasi status
+}
+
+// New interface for Invoice Form Modal
+export interface InvoiceFormInput {
+  noPO: string;
+  tanggalPO: string;
+  namaVendor: string;
+  nilaiInvoice: string;
+  penerimaInvoice: string;
+}
+
+// New interfaces for Procon Invoice Dashboard
+export interface Project {
+  id: string;
+  name: string;
+  soTurunan: { id: string; name: string; nominal: number }[];
+}
+
+export interface ProconInvoiceFormInput {
+  noInvoice: string;
+  projectId: string;
+  soTurunanId: string;
+  nominal: string; // Formatted string
+}
+
+// New interface for Invoice Detail Modal (existing, kept for context)
 export interface InvoiceDetailData {
   id: string;
   noSO: string;

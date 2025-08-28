@@ -1,383 +1,180 @@
-export type UserRole = 'marketing' | 'operational' | 'hrd' | 'pengadaan';
-
-export interface User {
-  username: string;
-  role: UserRole;
-  fullName: string;
-  profilePicture: string;
-}
-
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-}
-
-export interface MenuSection {
-  title: string;
-  icon: string;
-  items: MenuItem[];
-  directPath?: string;
-}
-
-export interface MenuItem {
-  title: string;
-  icon: string;
-  path: string;
-}
-
-export interface PenawaranDetailData {
-  kategoriPajak: string;
-  noRefReq: string;
-  kodeCustomer: string;
-  namaCustomer: string;
-  pajak: string;
-  noPenawaran: string;
-  tanggalPenawaran: string;
-  tanggalPenawaranEnd: string;
-  tanggalKirim: string;
-  tanggalKirimEnd: string;
-  statusDok: string;
-  namaDivisi: string;
-  jenisPenawaran: string;
+// Existing types from MonitoringIzinAlatDashboard.tsx
+export interface IzinAlatData {
+  id: string;
+  no: number;
   kodeBarang: string;
-  statusSO: string;
-  statusPenawaran: string;
-  jenisPekerjaan: string;
-  statusKOM: string;
+  namaAlat: string;
+  noSeri: string;
+  jenisPerizinan: string;
+  tanggalBerlaku: string;
+  tanggalExp: string;
+  status: 'Aktif' | 'Segera Habis' | 'Expired' | 'Menunggu Persetujuan' | 'Disetujui' | 'Izin Tersedia';
 }
 
-export interface ManPowerFormData {
-  // Step 1: Data Pemohon
-  untukKebutuhanSOTurunan: string;
-  namaPemohon: string;
-  mob: string;
-  demob: string;
-  jabatan: string;
-  departemen: string;
-  
-  // Step 2: Permintaan Tenaga Kerja
-  penggantian: 'Ya' | 'Tidak';
-  penambahan: 'Ya' | 'Tidak';
-  headHunter: 'Ya' | 'Tidak';
-  perluHasilMedicalCheckUp: 'Ya' | 'Tidak';
-  statusKepegawaian: 'Tetap' | 'Kontrak' | 'Magang';
-  
-  // Step 3: Kebutuhan Tenaga Kerja
-  tanggalMulaiKerja: string;
-  lokasiKerja: string;
-  kebutuhanTenagaKerja: Array<{
-    jabatan: string;
-    level: string;
-    jumlahKebutuhan: string;
-    rateKualifikasi: string;
-    gajiPokok: string;
-    tunjanganJabatan: string;
-    tunjanganLain: string;
-  }>;
-  
-  // Step 4: Jabatan Tenaga Kerja
-  deskripsiJabatan: string;
-  
-  // Step 5: Kualifikasi Tenaga Kerja
-  usiaMin: string;
-  usiaMax: string;
-  status: 'Menikah' | 'Lajang';
-  jenisKelamin: 'Laki-laki' | 'Perempuan';
-  pendidikan: 'SMA/SMK' | 'D3' | 'S1';
-  keahlian: string;
-  kemampuanLainnya: string;
+export interface HistoryIzinEntry {
+  no: number;
+  tanggalPerpanjang: string;
+  tanggalExp: string;
+  dokumenUrl: string;
+  catatan?: string;
 }
 
-export interface ManPowerDetailData {
-  soNumber: string;
-  namaProyek: string;
-  lokasi: string;
-  kualifikasi: string[];
-  estimasiRate: string;
-  mob: string;
-  demob: string;
-  totalOrang: string;
-  catatanTambahan: string;
+// Updated PerpanjangIzinFormData
+export interface PerpanjangIzinFormData {
+  namaAlat: string;
+  kodeBarang: string;
+  noSeri: string;
+  jenisPerizinan: string;
+  alasan?: string; // Added 'alasan' based on image
 }
 
-export interface ManPowerPlanDetailData {
-  id: string;
-  kodePegawai: string;
-  namaPegawai: string;
-  noSO: string;
-  soTurunan: string;
-  namaProyek: string;
-  lokasi: string;
-  kualifikasi: string;
-  ratePerHari: string;
-  mob: string;
-  demob: string;
-  durasi: string;
-  total: string;
-  // Data Pemohon
-  nama: string;
-  tanggalMulaiKerja: string;
-  jabatan: string;
-  departemen: string;
-  // Data Pegawai
-  kodePegawaiDetail: string;
-  namaPegawaiDetail: string;
-  level: string;
-  lokasiKerja: string;
-  // Kompensasi
-  gaji: string;
-  tunjanganTransport: string;
-  tunjanganJabatan: string;
-  tunjanganMakan: string;
-  tunjanganLainnya: string;
-  hariKerja: string;
-  jamKerja: string;
-  // Deskripsi Jabatan
-  deskripsiJabatan: string;
-  // Kualifikasi
-  usia: string;
-  status: string;
-  jenisKelamin: string;
-  pendidikan: string;
-  // Lampiran Dokumen
-  mcu: string;
-  sertifikasi: string;
+// Updated DetailIzinAlatFormData
+export interface DetailIzinAlatFormData {
+  kodeBarang: string;
+  namaAlat: string;
+  noSeri: string;
+  jenisPerizinan: string;
+  noDokumen: string;
+  tanggalMulaiBerlaku: string;
+  tanggalBerakhir: string;
+  uploadDokumen?: File | null; // Added for file upload
 }
 
-export interface PegawaiData {
+// New type for PerizinanAlatDashboard table
+export interface PerizinanAlatEntry {
   id: string;
   no: number;
-  namaNIK: string;
-  nama: string;
-  wilayah: string;
-  jenisGaji: 'Bulanan' | 'Harian' | 'Proyek';
-  jenisKontrak: 'Tetap' | 'Freelancer';
-  gajiPokok: string;
+  kodeBarang: string;
+  namaAlat: string;
+  noSeri: string;
+  jenisPerizinan: string;
+  status: 'Belum Berizin' | 'Menunggu Persetujuan' | 'Disetujui' | 'Izin Tersedia' | 'Aktif';
 }
 
-export interface PegawaiFormData {
-  namaPegawai: string;
-  noKTP: string;
-  jabatan: string;
-  wilayahKerja: string;
-  jenisKontrak: 'Tetap' | 'Freelancer';
-  jenisGaji: 'Bulanan' | 'Harian' | 'Proyek';
-  gajiPokok: string;
+// New type for AjukanIzinModal
+export interface AjukanIzinFormData {
+  kodeBarang: string;
+  namaAlat: string;
+  noSeri: string;
+  jenisPerizinan: string;
+  catatan?: string;
 }
 
-export interface KontrakKerjaData {
+// New type for Dashboard Alerts
+export interface AlertItem {
   id: string;
-  no: number;
-  noKontrak: string;
-  penerimaKontrak: string;
-  periodeKontrak: string;
-  tunjangan: string[];
+  message: string;
+  type: 'error' | 'success' | 'info';
+  actionText?: string;
 }
 
-export interface TunjanganItem {
-  namaTunjangan: string;
-  nominal: string;
-}
-
-export interface KontrakKerjaFormData {
-  nomorKontrak: string;
-  penerimaKontrak: string;
-  periodeKontrakStart: string;
-  periodeKontrakEnd: string;
-  keterangan: string;
-  uploadSuratLamaran: File | null;
-  uploadCV: File | null;
-  uploadFotoDiri: File | null;
-  uploadSertifikasi: File | null;
-  tunjangan: TunjanganItem[];
-}
-
-export interface PotonganGajiData {
-  id: string;
-  no: number;
-  kodePegawai: string;
-  namaPegawai: string;
-  jenisPegawai: string;
-  tanggal: string;
-  potongan: string;
-  keterangan: string;
-}
-
-export interface PotonganGajiFormData {
-  kodePegawai: string;
-  namaPegawai: string;
-  jenisPegawai: string;
-  periode: string;
-  keterangan: string;
-  potonganItems: Array<{
-    namaPotongan: string;
-    nominal: string;
-  }>;
-}
-
-export interface GajiData {
-  id: string;
-  no: number;
-  namaPegawai: string;
-  gajiPokok: string;
-  tunjangan: string;
-  pph21: string;
-  potonganMess: string;
-  gajiBersih: string;
-}
-
-export interface GajiFormData {
-  namaPegawai: string;
-  gajiPokok: string;
-  tunjangan: string;
-  pph21: string;
-  potonganMess: string;
-  bpjs: string;
-  gajiBersih: string;
-}
-
-export interface AbsensiTeknisiData {
-  id: string;
-  no: number;
-  namaTeknisi: string;
-  tanggalAbsensi: string;
-  zonaKerja: string;
-  statusAbsensi: 'DL' | 'H' | 'CT' | 'CP' | 'TM';
-  lampiran: string;
-  statusApprove: 'Approved' | 'Process' | 'Rejected';
-}
-
-export interface ApprovalTimesheetPegawaiData {
-  id: string;
-  no: number;
-  nama: string;
-  kualifikasi: string;
-  mob: string;
-  demob: string;
-  durasi: string;
-  noSO: string;
-  noHPP: string;
-  lokasi: string;
-  jenisPekerjaan: 'On Call' | 'Tender';
-  status: 'Approved' | 'Pending' | 'Rejected';
-}
-
-export interface ApproveTimesheetFormData {
-  nama: string;
-  mob: string;
-  demob: string;
-  durasi: string;
-  namaProject: string;
-  noSO: string;
-  noHPP: string;
-  lokasi: string;
-  namaClient: string;
-  jenisPekerjaan: 'On Call' | 'Tender';
-  kualifikasi: string[];
-  tunjangan: Array<{
-    namaTunjangan: string;
-    rateTunjangan: string;
-    overtime: string;
-  }>;
-}
-
-// NEW: Interfaces for Evaluasi Vendor
-export interface EvaluasiVendorData {
-  id: string;
-  no: number;
-  namaVendor: string;
-  onTime: 'Ya' | 'Tidak';
-  sesuaiSpesifikasi: 'Ya' | 'Tidak';
-  jumlahBarangSesuaiPO: number;
-  tanggalEvaluasi: string; // Format: DD/MM/YYYY
-}
-
-export interface EvaluasiVendorFormData {
-  namaVendor: string; // Should be a selected vendor ID or name
-  barangOnTime: 'Ya' | 'Tidak';
-  sesuaiSpesifikasi: 'Ya' | 'Tidak';
-  jumlahBarangSesuaiPO: string; // Input will be string, convert to number
-}
-
-// NEW: Interfaces for Entry Supplier / Bidding Modal
-export interface BiddingItemEntry {
-  id: string; // Unique ID for each item row
-  namaBarang: string;
-  qty: string;
-  namaVendor: string;
-  harga: string;
-  diskon: string;
-  jumlah: string;
-  ppnNonPpn: string;
-  total: string;
-  pengiriman: string;
-  garansi: string;
-  keterangan: string; // Using 'keterangan' for the 'M' column
-}
-
+// New type for EntrySupplierBiddingModal (keeping it for now, though not used in this dashboard directly)
 export interface EntrySupplierBiddingFormData {
   noBidding: string;
-  noPR: string;
   tanggalBidding: string;
+  noPR: string;
   departemen: string;
-  items: BiddingItemEntry[];
+  itemBarangJasa: string[];
+  qty: number;
+  namaVendor: string[];
+  namaPemenang?: string;
 }
 
-// NEW: Interfaces for Entry PO Barang Modal
-export interface POBarangItemEntry {
-  id: string;
-  namaBarang: string;
+// New type for Daftar Seleksi Supplier / Bidding Dashboard table
+export interface SeleksiSupplierBiddingData {
+  no: number;
+  noBidding: string;
+  tglPendaftaranVendor: string;
+  namaVendor: string;
+  namaPIC: string;
+  noTelp: string;
+  noPR: string;
+  vendorTerpilih: 'Accept' | 'Rejected';
+}
+
+// New types for PO Barang Dashboard Modals
+export interface POApprovalHistory {
+  managerPPIC: 'Approve' | 'Pending';
+  gudangManajer: 'Approve' | 'Pending';
+  direkturOPS: 'Approve' | 'Pending';
+  direkturUtama: 'Approve' | 'Pending';
+}
+
+export interface DetailPOBarangItem {
   kodeBarang: string;
-  qty: string;
+  namaBarang: string;
+  beliSatuan: string;
+  jumlahBeli: number;
+  hargaSatuan: number;
+  disc: number;
+  jumlah: number;
+}
+
+export interface DetailPOBarangData {
+  noPr: string;
+  vendor: string;
+  ppn: string; // Assuming PPN is a string like "11%"
+  noPoBarang: string;
+  tanggalPo: string;
+  items: DetailPOBarangItem[];
+}
+
+// New type for EntryPOBarangModal
+export interface EntryPOBarangFormData {
+  noPr: string;
+  periodePr: string;
+  divisi: string;
+  kodeSupplier: string;
+  namaSupplier: string;
+  noPo: string;
+  tanggalPo: string;
+  tanggalPengiriman: string;
+  status: 'Paid' | 'Unpaid';
+}
+
+// New types for Entry PO Jasa Modal
+export interface EntryPOJasaItem {
+  id: string; // Unique ID for each item in the table
+  namaJasa: string;
+  kodeJasa: string;
+  qty: number;
   satuan: string;
-  hargaSatuan: string;
-  pajakItem: string; // Renamed to avoid conflict with form-level 'pajak'
-  discRp: string;
-  jumlah: string;
+  hargaSatuan: number;
+  disc: number; // Assuming percentage for now
+  jumlah: number; // Calculated field
   keterangan: string;
 }
 
-export interface EntryPOBarangFormData {
-  noPR: string;
-  noSO: string;
-  metodePembayaran: string;
-  tanggalPO: string;
-  kodeVendor: string;
-  tanggalPengiriman: string;
-  noPO: string; // Pre-filled, read-only
-  departemen: string;
+export interface EntryPOJasaFormData {
+  noPr: string;
+  tanggalPo: string; // Date string
+  noPo: string;
   vendor: string;
-  pajak: string;
-  tandaBukti: File | null;
-  daftarFile: File[]; // For drag & drop files
-  items: POBarangItemEntry[];
-  total: string;
-  discAkhir: string;
-  subTotal: string;
-  ppn: string;
-  ongkosKirim: string;
-  grandTotal: string;
+  noSo: string;
+  kodeVendor: string;
+  departemen: string;
+  pajak: string; // e.g., "PPN 11%"
+  metodePembayaran: string;
+  items: EntryPOJasaItem[];
+  daftarFile: File | null; // For file upload
 }
 
-// NEW: Interfaces for Kirim Ke Finance Modal
-export interface KirimKeFinanceItemEntry {
-  id: string;
-  no: number;
-  nama: string;
-  jumlah: string;
-  hargaSatuan: string;
-  total: string;
+// New type for PO Jasa Data in the dashboard table
+export interface POJasaData {
+  id: number;
+  noPr: string;
+  periodePr: string;
+  divisi: string;
+  kodeSupplier: string;
+  namaSupplier: string;
+  noPo: string;
+  tanggalPo: string;
+  tanggalPengiriman: string;
+  status: 'Paid' | 'Unpaid';
+  items: EntryPOJasaItem[]; // Added for edit functionality
 }
 
-export interface KirimKeFinanceFormData {
-  noPO: string;
-  tanggalPO: string;
-  namaVendor: string;
-  namaPenyerah: string;
-  items: KirimKeFinanceItemEntry[];
-}
-
-// NEW: Interface for Tanda Terima PO Dari Gudang
+// New types for Gudang Penerimaan Dashboard
 export interface TandaTerimaPODariGudangData {
   id: string;
   no: number;
@@ -386,5 +183,80 @@ export interface TandaTerimaPODariGudangData {
   tglFaktur: string;
   vendor: string;
   penerima: string;
-  verifikasi: boolean; // True if verified, false otherwise
+  verifikasi: boolean;
+}
+
+export interface TandaTerimaGudangItem {
+  kodeBarang: string;
+  namaBarang: string;
+  jumlah: number;
+  diterima: number;
+  satuan: string;
+  hargaSatuan: number;
+  hargaGross: number;
+}
+
+export interface TandaTerimaGudangDetailData {
+  noPO: string;
+  noFaktur: string;
+  tglFaktur: string;
+  penerima: string;
+  tanggalVerifikasi: string; // dd/mm/yyyy
+  namaVerifikasi: string;
+  unduhDokumen: string; // filename or URL
+  items: TandaTerimaGudangItem[];
+  grandTotal: number;
+}
+
+// New type for Invoice Dashboard
+export interface InvoiceDashboardData {
+  id: string;
+  no: number;
+  noPO: string;
+  tanggalPO: string; // Tanggal PO
+  namaVendor: string;
+  nilaiInvoice: string; // Nilai Invoice
+  penerimaInvoice: string; // Penerima Invoice
+  statusVerifikasi: 'Pending' | 'Approved' | 'Rejected';
+  unduhInvoice: string; // URL or filename for invoice download
+  tanggalVerifikasi: string; // dd/mm/yyyy
+}
+
+// New type for Invoice Form Input
+export interface InvoiceFormInput {
+  noPO: string;
+  tanggalPO: string;
+  namaVendor: string;
+  nilaiInvoice: string;
+  penerimaInvoice: string;
+}
+
+// New type for the data displayed in the Tanda Terima Invoice Modal
+export interface TandaTerimaInvoiceDetail {
+  id: string;
+  tanggalPO: string;
+  noPO: string;
+  namaVendor: string;
+  nilaiInvoice: string;
+  penerimaInvoice: string;
+  unduhInvoice: string; // URL or filename
+  tanggalVerifikasi: string; // dd/mm/yyyy
+}
+
+// Existing type for DetailInvoiceModal (from context buffer)
+export interface InvoiceDetailItem {
+  no: number;
+  kodeBarang: string;
+  namaBarang: string;
+  jumlah: number;
+  satuan: string;
+  harga: number;
+}
+
+export interface InvoiceDetailData {
+  noSO: string;
+  namaProject: string;
+  hppSO: string;
+  noInvoice: string;
+  items: InvoiceDetailItem[];
 }

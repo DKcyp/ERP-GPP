@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import {
-  PerizinanAlatEntry,
-  AjukanIzinFormData,
-  DetailIzinAlatFormData,
+  IzinAlatData,
+  HistoryIzinEntry,
   PerpanjangIzinFormData,
+  DetailIzinAlatFormData,
 } from '../types';
-import AjukanIzinModal from './AjukanIzinModal';
-import DetailIzinAlatModal from './DetailIzinAlatModal';
+import HistoryIzinModal from './HistoryIzinModal';
 import PerpanjangIzinModal from './PerpanjangIzinModal';
+import DetailIzinAlatModal from './DetailIzinAlatModal';
 
-const PerizinanAlatDashboard: React.FC = () => {
-  const [perizinanAlatData, setPerizinanAlatData] = useState<PerizinanAlatEntry[]>([
+const MonitoringIzinAlatDashboard: React.FC = () => {
+  const [izinAlatData, setIzinAlatData] = useState<IzinAlatData[]>([
     {
       id: '1',
       no: 1,
       kodeBarang: 'EXC-001',
       namaAlat: 'Excavator',
       noSeri: '12345-EXC',
-      jenisPerizinan: '-',
-      status: 'Belum Berizin',
+      jenisPerizinan: 'SLO',
+      tanggalBerlaku: '10-03-2025',
+      tanggalExp: '10-03-2026',
+      status: 'Aktif',
     },
     {
       id: '2',
@@ -27,7 +29,9 @@ const PerizinanAlatDashboard: React.FC = () => {
       namaAlat: 'Crane',
       noSeri: '12345-CRN',
       jenisPerizinan: 'SLO',
-      status: 'Menunggu Persetujuan',
+      tanggalBerlaku: '10-03-2024',
+      tanggalExp: '10-03-2025',
+      status: 'Segera Habis',
     },
     {
       id: '3',
@@ -36,133 +40,128 @@ const PerizinanAlatDashboard: React.FC = () => {
       namaAlat: 'Truk',
       noSeri: '12345-TRK',
       jenisPerizinan: 'Izin Angkut',
-      status: 'Disetujui',
+      tanggalBerlaku: '20-01-2024',
+      tanggalExp: '20-01-2025',
+      status: 'Expired',
     },
     {
       id: '4',
       no: 4,
-      kodeBarang: 'DZR-001',
-      namaAlat: 'Dozer',
-      noSeri: '12345-DZR',
-      jenisPerizinan: 'Izin Operasional',
-      status: 'Izin Tersedia',
+      kodeBarang: 'CRN-001',
+      namaAlat: 'Crane',
+      noSeri: '12345-CRN',
+      jenisPerizinan: 'SLO',
+      tanggalBerlaku: '14-03-2023',
+      tanggalExp: '14-03-2026',
+      status: 'Menunggu Persetujuan',
     },
     {
       id: '5',
       no: 5,
-      kodeBarang: 'DMP-001',
+      kodeBarang: 'TRK-001',
+      namaAlat: 'Truk',
+      noSeri: '12345-TRK',
+      jenisPerizinan: 'Izin Angkut',
+      tanggalBerlaku: '09-02-2027',
+      tanggalExp: '09-02-2027',
+      status: 'Disetujui',
+    },
+    {
+      id: '6',
+      no: 6,
+      kodeBarang: 'DZR-001',
+      namaAlat: 'Dozer',
+      noSeri: '12345-DZR',
+      jenisPerizinan: 'Izin Operasional',
+      tanggalBerlaku: '03-02-2025',
+      tanggalExp: '03-02-2026',
+      status: 'Izin Tersedia',
+    },
+    {
+      id: '7',
+      no: 7,
+      kodeBarang: 'DMF-001',
       namaAlat: 'Dump Truck',
       noSeri: '12345-DMP',
       jenisPerizinan: 'STNK',
+      tanggalBerlaku: '10-04-2024',
+      tanggalExp: '10-04-2026',
       status: 'Aktif',
     },
   ]);
 
-  const [isAjukanIzinModalOpen, setIsAjukanIzinModalOpen] = useState(false);
-  const [isDetailIzinModalOpen, setIsDetailIzinModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isPerpanjangModalOpen, setIsPerpanjangModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const [selectedIzin, setSelectedIzin] = useState<PerizinanAlatEntry | null>(null);
+  const [selectedIzin, setSelectedIzin] = useState<IzinAlatData | null>(null);
+  const [historyData, setHistoryData] = useState<HistoryIzinEntry[]>([]);
 
-  const handleOpenAjukanIzinModal = (izin?: PerizinanAlatEntry) => {
-    setSelectedIzin(izin || null);
-    setIsAjukanIzinModalOpen(true);
-  };
-
-  const handleOpenDetailIzinModal = (izin: PerizinanAlatEntry) => {
+  const handleOpenHistoryModal = (izin: IzinAlatData) => {
     setSelectedIzin(izin);
-    setIsDetailIzinModalOpen(true);
+    // Mock history data for demonstration
+    setHistoryData([
+      { no: 1, tanggalPerpanjang: '20-01-2025', tanggalExp: '20-01-2026', dokumenUrl: '#', catatan: 'Perpanjangan Tahunan' },
+      { no: 2, tanggalPerpanjang: '20-01-2024', tanggalExp: '20-01-2025', dokumenUrl: '#', catatan: 'Perpanjangan Tahunan' },
+    ]);
+    setIsHistoryModalOpen(true);
   };
 
-  const handleOpenPerpanjangModal = (izin: PerizinanAlatEntry) => {
+  const handleOpenPerpanjangModal = (izin: IzinAlatData) => {
     setSelectedIzin(izin);
     setIsPerpanjangModalOpen(true);
   };
 
-  const handleAjukanIzinSubmit = (data: AjukanIzinFormData) => {
-    console.log('Submit Ajukan Izin:', data);
-    // In a real app, you would send this data to your backend
-    // And then update the perizinanAlatData state
-    // For now, let's simulate adding a new entry or updating an existing one
-    if (selectedIzin) {
-      setPerizinanAlatData((prev) =>
-        prev.map((item) =>
-          item.id === selectedIzin.id
-            ? { ...item, jenisPerizinan: data.jenisPerizinan, status: 'Menunggu Persetujuan' }
-            : item
-        )
-      );
-    } else {
-      const newId = String(perizinanAlatData.length + 1);
-      setPerizinanAlatData((prev) => [
-        ...prev,
-        {
-          id: newId,
-          no: prev.length + 1,
-          kodeBarang: data.kodeBarang,
-          namaAlat: data.namaAlat,
-          noSeri: data.noSeri,
-          jenisPerizinan: data.jenisPerizinan,
-          status: 'Menunggu Persetujuan',
-        },
-      ]);
-    }
-  };
-
-  const handleDetailIzinSubmit = (data: DetailIzinAlatFormData) => {
-    console.log('Submit Detail Izin Alat:', data);
-    // In a real app, you would send this data to your backend
-    // And then update the perizinanAlatData state
+  const handleOpenDetailModal = (izin: IzinAlatData) => {
+    setSelectedIzin(izin);
+    setIsDetailModalOpen(true);
   };
 
   const handlePerpanjangSubmit = (data: PerpanjangIzinFormData) => {
     console.log('Submit Perpanjang Izin:', data);
     // In a real app, you would send this data to your backend
-    // And then update the perizinanAlatData state
-    if (selectedIzin) {
-      setPerizinanAlatData((prev) =>
-        prev.map((item) =>
-          item.id === selectedIzin.id
-            ? { ...item, status: 'Menunggu Persetujuan' } // Simulate status change after extension request
-            : item
-        )
-      );
-    }
+    // And then update the izinAlatData state
   };
 
-  const getStatusClasses = (status: PerizinanAlatEntry['status']) => {
+  const handleDetailSubmit = (data: DetailIzinAlatFormData) => {
+    console.log('Submit Detail Izin Alat:', data);
+    // In a real app, you would send this data to your backend
+    // And then update the izinAlatData state
+  };
+
+  const getStatusClasses = (status: IzinAlatData['status']) => {
     switch (status) {
       case 'Aktif':
         return 'bg-success/20 text-success';
-      case 'Belum Berizin':
-        return 'bg-gray-500/20 text-gray-500';
+      case 'Segera Habis':
+        return 'bg-warning/20 text-warning';
+      case 'Expired':
+        return 'bg-error/20 text-error';
       case 'Menunggu Persetujuan':
-        return 'bg-warning/20 text-warning'; // Changed to warning for consistency with Monitoring
+        return 'bg-blue-500/20 text-blue-500'; // Using a custom blue for this status
       case 'Disetujui':
         return 'bg-primary/20 text-primary';
       case 'Izin Tersedia':
-        return 'bg-green-500/20 text-green-500';
+        return 'bg-green-500/20 text-green-500'; // Another custom green
       default:
         return 'bg-gray-500/20 text-gray-500';
     }
   };
 
   // Search and filter states
-  const [searchNoSeri, setSearchNoSeri] = useState('');
   const [searchKodeBarang, setSearchKodeBarang] = useState('');
-  const [searchNamaAlat, setSearchNamaAlat] = useState('');
-  const [jenisPerizinanFilter, setJenisPerizinanFilter] = useState('');
-  const [statusIzinFilter, setStatusIzinFilter] = useState('');
+  const [searchTanggalExp, setSearchTanggalExp] = useState('');
+  const [statusAlatFilter, setStatusAlatFilter] = useState('');
   const [showEntries, setShowEntries] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredData = perizinanAlatData.filter((item) => {
-    const matchesNoSeri = item.noSeri.toLowerCase().includes(searchNoSeri.toLowerCase());
+  const filteredData = izinAlatData.filter((item) => {
     const matchesKodeBarang = item.kodeBarang.toLowerCase().includes(searchKodeBarang.toLowerCase());
-    const matchesNamaAlat = item.namaAlat.toLowerCase().includes(searchNamaAlat.toLowerCase());
-    const matchesJenisPerizinan = jenisPerizinanFilter ? item.jenisPerizinan === jenisPerizinanFilter : true;
-    const matchesStatusIzin = statusIzinFilter ? item.status === statusIzinFilter : true;
-    return matchesNoSeri && matchesKodeBarang && matchesNamaAlat && matchesJenisPerizinan && matchesStatusIzin;
+    const matchesTanggalExp = searchTanggalExp
+      ? item.tanggalExp.includes(searchTanggalExp) // Simple string match for now, can be improved with date parsing
+      : true;
+    const matchesStatus = statusAlatFilter ? item.status === statusAlatFilter : true;
+    return matchesKodeBarang && matchesTanggalExp && matchesStatus;
   });
 
   const totalPages = Math.ceil(filteredData.length / showEntries);
@@ -173,31 +172,11 @@ const PerizinanAlatDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background p-8 text-text">
-      <h1 className="text-3xl font-bold text-primary mb-8">Perizinan Alat</h1>
+      <h1 className="text-3xl font-bold text-primary mb-8">Monitoring Izin Alat</h1>
 
       {/* Search and Filter Section */}
       <div className="bg-surface rounded-xl shadow-lg p-6 mb-8 border border-border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div>
-            <label htmlFor="searchNoSeri" className="block text-sm font-medium text-textSecondary mb-1">
-              Cari No Seri
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="searchNoSeri"
-                value={searchNoSeri}
-                onChange={(e) => setSearchNoSeri(e.target.value)}
-                placeholder="12345-CRN"
-                className="w-full px-4 py-2 pl-10 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-textSecondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
           <div>
             <label htmlFor="searchKodeBarang" className="block text-sm font-medium text-textSecondary mb-1">
               Cari Kode Barang
@@ -219,59 +198,41 @@ const PerizinanAlatDashboard: React.FC = () => {
             </div>
           </div>
           <div>
-            <label htmlFor="searchNamaAlat" className="block text-sm font-medium text-textSecondary mb-1">
-              Cari Nama Alat
+            <label htmlFor="searchTanggalExp" className="block text-sm font-medium text-textSecondary mb-1">
+              Cari Tanggal Exp
             </label>
             <div className="relative">
               <input
-                type="text"
-                id="searchNamaAlat"
-                value={searchNamaAlat}
-                onChange={(e) => setSearchNamaAlat(e.target.value)}
-                placeholder="Truk"
-                className="w-full px-4 py-2 pl-10 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
+                type="date" // Changed to type="date" for better UX
+                id="searchTanggalExp"
+                value={searchTanggalExp}
+                onChange={(e) => setSearchTanggalExp(e.target.value)}
+                className="w-full px-4 py-2 pr-10 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
               />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-textSecondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
             </div>
           </div>
           <div>
-            <label htmlFor="jenisPerizinanFilter" className="block text-sm font-medium text-textSecondary mb-1">
-              Jenis Perizinan
+            <label htmlFor="statusAlatFilter" className="block text-sm font-medium text-textSecondary mb-1">
+              Status Alat
             </label>
             <select
-              id="jenisPerizinanFilter"
-              value={jenisPerizinanFilter}
-              onChange={(e) => setJenisPerizinanFilter(e.target.value)}
+              id="statusAlatFilter"
+              value={statusAlatFilter}
+              onChange={(e) => setStatusAlatFilter(e.target.value as IzinAlatData['status'])}
               className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
             >
-              <option value="">--Pilih Jenis Perizinan--</option>
-              <option value="SLO">SLO</option>
-              <option value="Izin Angkut">Izin Angkut</option>
-              <option value="Izin Operasional">Izin Operasional</option>
-              <option value="STNK">STNK</option>
-              <option value="-">-</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="statusIzinFilter" className="block text-sm font-medium text-textSecondary mb-1">
-              Status Izin
-            </label>
-            <select
-              id="statusIzinFilter"
-              value={statusIzinFilter}
-              onChange={(e) => setStatusIzinFilter(e.target.value as PerizinanAlatEntry['status'])}
-              className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
-            >
-              <option value="">--Pilih Status Izin--</option>
-              <option value="Belum Berizin">Belum Berizin</option>
+              <option value="">--Pilih Status Alat--</option>
+              <option value="Aktif">Aktif</option>
+              <option value="Segera Habis">Segera Habis</option>
+              <option value="Expired">Expired</option>
               <option value="Menunggu Persetujuan">Menunggu Persetujuan</option>
               <option value="Disetujui">Disetujui</option>
               <option value="Izin Tersedia">Izin Tersedia</option>
-              <option value="Aktif">Aktif</option>
             </select>
           </div>
         </div>
@@ -338,6 +299,12 @@ const PerizinanAlatDashboard: React.FC = () => {
                   Jenis Perizinan
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
+                  Tanggal Berlaku
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
+                  Tanggal Exp
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
                   Status
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
@@ -348,8 +315,8 @@ const PerizinanAlatDashboard: React.FC = () => {
             <tbody className="bg-surface divide-y divide-border">
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary text-center">
-                    Tidak ada data perizinan alat yang ditemukan.
+                  <td colSpan={9} className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary text-center">
+                    Tidak ada data izin alat yang ditemukan.
                   </td>
                 </tr>
               ) : (
@@ -360,6 +327,8 @@ const PerizinanAlatDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.namaAlat}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.noSeri}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.jenisPerizinan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.tanggalBerlaku}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.tanggalExp}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(izin.status)}`}
@@ -369,30 +338,31 @@ const PerizinanAlatDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
-                        {izin.status === 'Belum Berizin' && (
-                          <button
-                            onClick={() => handleOpenAjukanIzinModal(izin)}
-                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-secondary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-colors duration-200"
-                          >
-                            Ajukan Izin
-                          </button>
-                        )}
-                        {(izin.status === 'Disetujui' || izin.status === 'Izin Tersedia' || izin.status === 'Aktif') && (
-                          <button
-                            onClick={() => handleOpenDetailIzinModal(izin)}
-                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
-                          >
-                            Detail Izin
-                          </button>
-                        )}
-                        {(izin.status === 'Aktif' || izin.status === 'Izin Tersedia') && (
+                        {(izin.status === 'Segera Habis' || izin.status === 'Expired' || izin.status === 'Menunggu Persetujuan') && (
                           <button
                             onClick={() => handleOpenPerpanjangModal(izin)}
-                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-secondary hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-colors duration-200"
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-secondary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-colors duration-200"
                           >
                             + Perpanjang
                           </button>
                         )}
+                        {izin.status === 'Izin Tersedia' && (
+                          <button
+                            onClick={() => handleOpenDetailModal(izin)}
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
+                          >
+                            + Detail Izin
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleOpenHistoryModal(izin)}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-text bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
+                        >
+                          <svg className="-ml-0.5 mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          History
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -440,36 +410,11 @@ const PerizinanAlatDashboard: React.FC = () => {
       </div>
 
       {/* Modals */}
-      {selectedIzin && (
-        <AjukanIzinModal
-          isOpen={isAjukanIzinModalOpen}
-          onClose={() => setIsAjukanIzinModalOpen(false)}
-          initialData={{
-            kodeBarang: selectedIzin.kodeBarang,
-            namaAlat: selectedIzin.namaAlat,
-            noSeri: selectedIzin.noSeri,
-            jenisPerizinan: selectedIzin.jenisPerizinan === '-' ? '' : selectedIzin.jenisPerizinan, // Clear if no type
-          }}
-          onSubmit={handleAjukanIzinSubmit}
-        />
-      )}
-
-      {selectedIzin && (
-        <DetailIzinAlatModal
-          isOpen={isDetailIzinModalOpen}
-          onClose={() => setIsDetailIzinModalOpen(false)}
-          initialData={{
-            kodeBarang: selectedIzin.kodeBarang,
-            namaAlat: selectedIzin.namaAlat,
-            noSeri: selectedIzin.noSeri,
-            jenisPerizinan: selectedIzin.jenisPerizinan,
-            noDokumen: 'DOC-0012', // Mock data
-            tanggalMulaiBerlaku: '2024-01-01', // Mock data
-            tanggalBerakhir: '2025-01-01', // Mock data
-          }}
-          onSubmit={handleDetailIzinSubmit}
-        />
-      )}
+      <HistoryIzinModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        historyData={historyData}
+      />
 
       {selectedIzin && (
         <PerpanjangIzinModal
@@ -484,8 +429,26 @@ const PerizinanAlatDashboard: React.FC = () => {
           onSubmit={handlePerpanjangSubmit}
         />
       )}
+
+      {selectedIzin && (
+        <DetailIzinAlatModal
+          isOpen={isDetailModalOpen}
+          onClose={() => setIsDetailModalOpen(false)}
+          initialData={{
+            kodeBarang: selectedIzin.kodeBarang,
+            namaAlat: selectedIzin.namaAlat,
+            noSeri: selectedIzin.noSeri,
+            jenisPerizinan: selectedIzin.jenisPerizinan,
+            // Mock other fields for detail modal
+            noDokumen: 'DOC-0012',
+            tanggalMulaiBerlaku: '2024-01-01', // Example date format for input type="date"
+            tanggalBerakhir: '2025-01-01',
+          }}
+          onSubmit={handleDetailSubmit}
+        />
+      )}
     </div>
   );
 };
 
-export default PerizinanAlatDashboard;
+export default MonitoringIzinAlatDashboard;

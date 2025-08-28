@@ -23,43 +23,83 @@ const Login: React.FC = () => {
     }
   };
 
+  // New function to handle clicking on demo credentials
+  const handleCredentialClick = (user: string, pass: string) => {
+    setUsername(user);
+    setPassword(pass);
+    setError(''); // Clear any previous errors
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
       {/* Floating Demo Credentials Note */}
       <div className="fixed top-4 right-4 z-50 bg-white p-4 rounded-lg shadow-xl max-w-xs border border-gray-200">
         <p className="text-sm font-semibold text-gray-800 mb-3 text-center">Demo Credentials</p>
         <div className="space-y-2 text-xs">
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('marketing', '12345')}
+          >
             <p><span className="font-medium">Marketing:</span> marketing / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('operational', '12345')}
+          >
             <p><span className="font-medium">Operational:</span> operational / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('hrd', '12345')}
+          >
             <p><span className="font-medium">HRD:</span> hrd / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('pengadaan', '12345')}
+          >
             <p><span className="font-medium">Pengadaan:</span> pengadaan / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('finance', '12345')}
+          >
             <p><span className="font-medium">Finance:</span> finance / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('gudang', '12345')}
+          >
             <p><span className="font-medium">Gudang:</span> gudang / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('management', '12345')}
+          >
             <p><span className="font-medium">Management:</span> management / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('qhse', '12345')}
+          >
             <p><span className="font-medium">QHSE:</span> qhse / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('accounting', '12345')}
+          >
             <p><span className="font-medium">Accounting:</span> accounting / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('tax', '12345')}
+          >
             <p><span className="font-medium">Tax:</span> tax / 12345</p>
           </div>
-          <div className="bg-gray-50 p-2 rounded-md">
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('procon', '12345')}
+          >
             <p><span className="font-medium">Procon:</span> procon / 12345</p>
           </div>
         </div>

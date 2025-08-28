@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Calendar, Plus, FileDown, Printer, Eye, Edit, Trash2 } from 'lucide-react';
+import EntryPOJasaModal from './EntryPOJasaModal';
+import EditPOJasaModal from './EditPOJasaModal'; // Import the new edit modal
+import { EntryPOJasaFormData, EntryPOJasaItem, POJasaData as POJasaDataType } from '../types'; // Import POJasaData type
 
-const poJasaData = [
+const initialPOJasaData: POJasaDataType[] = [
   {
     id: 1,
     noPr: 'PR001',
@@ -13,6 +16,11 @@ const poJasaData = [
     tanggalPo: '01-01-2025',
     tanggalPengiriman: '14-01-2025',
     status: 'Paid',
+    items: [
+      { id: '1', namaJasa: 'Jasa audit dan inspeksi untuk proses sertifikasi', kodeJasa: 'JS001', qty: 1, satuan: 'Pax', hargaSatuan: 500000, disc: 10, jumlah: 450000, keterangan: 'Audit Tahunan' },
+      { id: '2', namaJasa: 'Jasa perbaikan peralatan inspeksi', kodeJasa: 'JS002', qty: 1, satuan: 'Pax', hargaSatuan: 500000, disc: 10, jumlah: 450000, keterangan: 'Perbaikan Sensor' },
+      { id: '3', namaJasa: 'Jasa pemeliharaan peralatan pelatihan', kodeJasa: 'JS003', qty: 1, satuan: 'Pax', hargaSatuan: 500000, disc: 10, jumlah: 450000, keterangan: 'Maintenance Rutin' },
+    ],
   },
   {
     id: 2,
@@ -25,6 +33,9 @@ const poJasaData = [
     tanggalPo: '10-02-2025',
     tanggalPengiriman: '24-02-2025',
     status: 'Unpaid',
+    items: [
+      { id: '4', namaJasa: 'Jasa konsultasi keuangan', kodeJasa: 'JS004', qty: 2, satuan: 'Jam', hargaSatuan: 750000, disc: 0, jumlah: 1500000, keterangan: 'Konsultasi Pajak' },
+    ],
   },
   {
     id: 3,
@@ -37,6 +48,9 @@ const poJasaData = [
     tanggalPo: '15-03-2025',
     tanggalPengiriman: '30-03-2025',
     status: 'Unpaid',
+    items: [
+      { id: '5', namaJasa: 'Jasa pengadaan barang', kodeJasa: 'JS005', qty: 1, satuan: 'Proyek', hargaSatuan: 1200000, disc: 5, jumlah: 1140000, keterangan: 'Pengadaan Server' },
+    ],
   },
   {
     id: 4,
@@ -49,6 +63,9 @@ const poJasaData = [
     tanggalPo: '20-04-2025',
     tanggalPengiriman: '20-05-2025',
     status: 'Paid',
+    items: [
+      { id: '6', namaJasa: 'Jasa pelatihan karyawan', kodeJasa: 'JS006', qty: 1, satuan: 'Sesi', hargaSatuan: 800000, disc: 0, jumlah: 800000, keterangan: 'Pelatihan Softskill' },
+    ],
   },
   {
     id: 5,
@@ -61,10 +78,41 @@ const poJasaData = [
     tanggalPo: '25-05-2025',
     tanggalPengiriman: '30-05-2025',
     status: 'Unpaid',
+    items: [
+      { id: '7', namaJasa: 'Jasa kampanye digital', kodeJasa: 'JS007', qty: 1, satuan: 'Bulan', hargaSatuan: 2500000, disc: 15, jumlah: 2125000, keterangan: 'Campaign Q2' },
+    ],
   },
 ];
 
 const POJasaDashboard: React.FC = () => {
+  const [poJasaData, setPoJasaData] = useState<POJasaDataType[]>(initialPOJasaData);
+  const [isEntryPOJasaModalOpen, setIsEntryPOJasaModalOpen] = useState(false);
+  const [isEditPOJasaModalOpen, setIsEditPOJasaModalOpen] = useState(false); // State for edit modal
+  const [selectedPOJasaForEdit, setSelectedPOJasaForEdit] = useState<POJasaDataType | null>(null); // State to hold data for editing
+
+  const handleEntryPOJasaModalSubmit = (formData: EntryPOJasaFormData) => {
+    console.log('Entry PO Jasa Form Data:', formData);
+    // In a real application, you would add this to your state or send to backend
+    // For now, just log and close.
+    setIsEntryPOJasaModalOpen(false);
+  };
+
+  const handleEditPOJasaModalSubmit = (poId: number, updatedItems: EntryPOJasaItem[]) => {
+    console.log(`Updating PO Jasa ID ${poId} with items:`, updatedItems);
+    setPoJasaData((prevData) =>
+      prevData.map((po) =>
+        po.id === poId ? { ...po, items: updatedItems } : po
+      )
+    );
+    setIsEditPOJasaModalOpen(false);
+    setSelectedPOJasaForEdit(null);
+  };
+
+  const openEditModal = (po: POJasaDataType) => {
+    setSelectedPOJasaForEdit(po);
+    setIsEditPOJasaModalOpen(true);
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -109,7 +157,10 @@ const POJasaDashboard: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm">
+                <button
+                  onClick={() => setIsEntryPOJasaModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
+                >
                     <Plus size={18} />
                     <span>Tambah</span>
                 </button>
@@ -220,7 +271,10 @@ const POJasaDashboard: React.FC = () => {
                             <Eye size={14} />
                           </button>
                           {item.status === 'Unpaid' && (
-                            <button className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                            <button
+                              onClick={() => openEditModal(item)} // Open edit modal
+                              className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
                                 <Edit size={14} />
                             </button>
                           )}
@@ -245,6 +299,24 @@ const POJasaDashboard: React.FC = () => {
             </div>
         </div>
       </div>
+
+      {/* Entry PO Jasa Modal */}
+      <EntryPOJasaModal
+        isOpen={isEntryPOJasaModalOpen}
+        onClose={() => setIsEntryPOJasaModalOpen(false)}
+        onSubmit={handleEntryPOJasaModalSubmit}
+      />
+
+      {/* Edit PO Jasa Modal */}
+      {selectedPOJasaForEdit && (
+        <EditPOJasaModal
+          isOpen={isEditPOJasaModalOpen}
+          onClose={() => setIsEditPOJasaModalOpen(false)}
+          onSubmit={handleEditPOJasaModalSubmit}
+          poId={selectedPOJasaForEdit.id}
+          initialItems={selectedPOJasaForEdit.items}
+        />
+      )}
     </div>
   );
 };

@@ -10,7 +10,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
       icon: 'BarChart',
       items: [
         { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: `/${role}/general/kpi/dashboard` },
-        { title: 'Master KPI', icon: 'Database', path: `/${role}/role/general/kpi/master` },
+        { title: 'Master KPI', icon: 'Database', path: `/${role}/general/kpi/master` },
         { title: 'List KPI', icon: 'List', path: `/${role}/general/kpi/list` },
       ]
     },
@@ -50,6 +50,12 @@ const createGeneralMenu = (role: string): MenuSection => ({
 });
 
 export const marketingMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard', // NEW: Main Dashboard for Marketing
+    icon: 'Home',
+    items: [],
+    directPath: '/marketing/dashboard'
+  },
   {
     title: 'Suspect',
     icon: 'Search',
@@ -92,6 +98,12 @@ export const marketingMenu: MenuSection[] = [
 ];
 
 export const operationalMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard', // NEW: Main Dashboard for Operational
+    icon: 'Home',
+    items: [],
+    directPath: '/operational/dashboard'
+  },
   {
     title: 'Kontrak',
     icon: 'FileSignature',
@@ -155,6 +167,12 @@ export const operationalMenu: MenuSection[] = [
 ];
 
 export const hrdMenu: MenuSection[] = [
+  {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/hrd/dashboard'
+  },
   {
     title: 'Tunjangan Unit',
     icon: 'Building',
@@ -236,6 +254,12 @@ export const hrdMenu: MenuSection[] = [
 
 export const pengadaanMenu: MenuSection[] = [
   {
+    title: 'Main Dashboard',
+    icon: 'Home',
+    items: [],
+    directPath: '/pengadaan/dashboard'
+  },
+  {
     title: 'Vendor / Supplier',
     icon: 'Factory',
     items: [
@@ -249,8 +273,8 @@ export const pengadaanMenu: MenuSection[] = [
     title: 'Seleksi Supplier / Bidding',
     icon: 'Handshake',
     items: [
-      { title: 'Daftar Seleksi Supplier / Bidding', icon: 'ClipboardList', path: '/pengadaan/seleksi/daftar' },
       { title: 'Proses Seleksi Supplier / Bidding', icon: 'ClipboardCheck', path: '/pengadaan/seleksi/seleksi' },
+      { title: 'Daftar Seleksi Supplier / Bidding', icon: 'ClipboardList', path: '/pengadaan/seleksi/daftar' },
       { title: 'Laporan', icon: 'FileText', path: '/pengadaan/seleksi/laporan' }
     ]
   },
@@ -410,6 +434,22 @@ export const gudangMenu: MenuSection[] = [
     items: [],
     directPath: '/gudang/permintaan-barang-gudang/dashboard'
   },
+  // Grouped 'Izin Alat' menu
+  {
+    title: 'Izin Alat', // Parent menu title
+    icon: 'Tool', // Parent menu icon
+    subSections: [
+      {
+        title: 'Manajemen Izin Alat', // Sub-section title
+        icon: 'Tool', // Sub-section icon
+        items: [
+          { title: 'Monitoring Izin Alat', icon: 'Tool', path: '/gudang/monitoring-izin-alat' },
+          { title: 'Perizinan Alat', icon: 'FileText', path: '/gudang/perizinan-alat' },
+          { title: 'Monitoring Perizinan', icon: 'ClipboardCheck', path: '/gudang/monitoring-perizinan' }
+        ]
+      }
+    ]
+  },
   createGeneralMenu('gudang')
 ];
 
@@ -417,8 +457,24 @@ export const managementMenu: MenuSection[] = [
   {
     title: 'Main Dashboard',
     icon: 'Home',
-    items: [],
-    directPath: '/management/dashboard'
+    subSections: [ // Changed to subSections as requested
+      {
+        title: 'Dashboards by Role',
+        icon: 'LayoutDashboard',
+        items: [
+          { title: 'Management Dashboard', icon: 'Briefcase', path: '/management/dashboard' },
+          { title: 'Procon Dashboard', icon: 'HardHat', path: '/procon/dashboard' },
+          { title: 'Accounting Dashboard', icon: 'Calculator', path: '/accounting/dashboard' },
+          { title: 'QHSE Dashboard', icon: 'ShieldCheck', path: '/qhse/dashboard' },
+          { title: 'Gudang Dashboard', icon: 'Warehouse', path: '/gudang/dashboard' },
+          { title: 'Finance Dashboard', icon: 'DollarSign', path: '/finance/dashboard' },
+          { title: 'Pengadaan Dashboard', icon: 'ShoppingCart', path: '/pengadaan/dashboard' },
+          { title: 'HRD Dashboard', icon: 'Users', path: '/hrd/dashboard' },
+          { title: 'Operational Dashboard', icon: 'Settings', path: '/operational/dashboard' },
+          { title: 'Marketing Dashboard', icon: 'Megaphone', path: '/marketing/dashboard' }
+        ]
+      }
+    ]
   },
   {
     title: 'Approve Kontrak',
@@ -431,6 +487,12 @@ export const managementMenu: MenuSection[] = [
     icon: 'Wallet', // Using Wallet for payroll
     items: [],
     directPath: '/management/penggajian'
+  },
+  {
+    title: 'Approval Training', // New menu item
+    icon: 'CheckCircle', // Icon for approval
+    items: [],
+    directPath: '/management/training' // Path to Proses Training page
   }
 ];
 
@@ -605,10 +667,4 @@ export const proconMenu: MenuSection[] = [
     items: [],
     directPath: '/procon/invoice'
   },
-  {
-    title: 'Dashboard', // Renamed to avoid conflict with Main Dashboard, will be ProconOverviewDashboard
-    icon: 'LayoutDashboard',
-    items: [],
-    directPath: '/procon/overview'
-  }
 ];

@@ -70,6 +70,11 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
+  // Add this useEffect to log the role
+  useEffect(() => {
+    console.log('Current role in KontrakKerjaDashboard:', role);
+  }, [role]); // Re-run when role changes
+
   const handleAddKontrakKerja = (formData: KontrakKerjaFormData) => {
     const newKontrakKerja: KontrakKerjaData = {
       id: (kontrakKerjaData.length + 1).toString(),
@@ -379,6 +384,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                       <div className="flex items-center justify-center space-x-1">
                         {role === 'management' ? (
                           <button 
+														onClick={() => setIsModalOpen(true)}
                             className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
                             title="Approve"
                           >
@@ -387,6 +393,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                         ) : (
                           <>
                             <button 
+															onClick={() => setIsModalOpen(true)}
                               className="p-2 text-cyan-600 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
                               title="View"
                             >

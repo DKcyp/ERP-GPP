@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, PlusCircle, Edit, Trash2, Save, ReceiptText } from 'lucide-react'; // Changed FileInvoice to ReceiptText
+import React, { useState } from 'react';
+import { Clock, Plus, Edit, Trash2, ReceiptText } from 'lucide-react';
+import ProconInvoiceModal from './ProconInvoiceModal'; // Import the new modal
+import { Project, ProconInvoiceFormInput } from '../types'; // Import the new types
 
 interface Invoice {
   id: number;
@@ -8,12 +10,6 @@ interface Invoice {
   soTurunan: string;
   nominal: string;
   status: 'Pending' | 'Paid' | 'Draft';
-}
-
-interface Project {
-  id: string;
-  name: string;
-  soTurunan: { id: string; name: string; nominal: number }[];
 }
 
 const dummyProjects: Project[] = [
@@ -57,66 +53,45 @@ const ProconInvoiceDashboard: React.FC = () => {
     { id: 8, noInvoice: 'INV-2024008', project: 'Proyek Renovasi Kantor B', soTurunan: 'Pengecatan', nominal: 'Rp 60.000.000', status: 'Paid' },
   ]);
 
-  const [newInvoice, setNewInvoice] = useState({
-    noInvoice: '',
-    projectId: '',
-    soTurunanId: '',
-    nominal: '',
-  });
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [nextInvoiceId, setNextInvoiceId] = useState(invoices.length + 1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    generateAutoInvoiceNumber();
-  }, [invoices]);
+  const getNextInvoiceNumber = (currentInvoices: Invoice[]): string => {
+    const currentYear = new Date().getFullYear();
+    const prefix = `INV-${currentYear}`;
+    
+    const latestSequentialNum = currentInvoices
+      .filter(inv => inv.noInvoice.startsWith(prefix))
+      .map(inv => {
+        const parts = inv.noInvoice.split('-');
+        if (parts.length === 2 && parts[0] === 'INV' && parts[1].startsWith(String(currentYear))) {
+          const numPart = parts[1].substring(4); // e.g., "001" from "2024001"
+          return parseInt(numPart);
+        }
+        return 0;
+      })
+      .filter(num => !isNaN(num))
+      .reduce((max, current) => Math.max(max, current), 0);
 
-  const generateAutoInvoiceNumber = () => {
-    const latestId = invoices.length > 0 ? Math.max(...invoices.map(inv => parseInt(inv.noInvoice.split('-')[1].substring(4)))) : 0;
-    const newId = latestId + 1;
-    const formattedId = String(newId).padStart(3, '0');
-    setNewInvoice(prev => ({ ...prev, noInvoice: `INV-2024${formattedId}` }));
+    const newSequentialNum = latestSequentialNum + 1;
+    const formattedSequentialNum = String(newSequentialNum).padStart(3, '0');
+
+    return `${prefix}${formattedSequentialNum}`;
   };
 
-  const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const projectId = e.target.value;
-    const project = dummyProjects.find(p => p.id === projectId);
-    setSelectedProject(project || null);
-    setNewInvoice(prev => ({ ...prev, projectId, soTurunanId: '', nominal: '' }));
-  };
-
-  const handleSOTurunanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const soTurunanId = e.target.value;
-    const so = selectedProject?.soTurunan.find(s => s.id === soTurunanId);
-    setNewInvoice(prev => ({
-      ...prev,
-      soTurunanId,
-      nominal: so ? `Rp ${Intl.NumberFormat('id-ID').format(so.nominal)}` : '',
-    }));
-  };
-
-  const handleSaveInvoice = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newInvoice.projectId || !newInvoice.soTurunanId || !newInvoice.nominal) {
-      alert('Please fill all invoice details.');
-      return;
-    }
-
-    const project = dummyProjects.find(p => p.id === newInvoice.projectId);
-    const soTurunan = project?.soTurunan.find(s => s.id === newInvoice.soTurunanId);
+  const handleSaveInvoice = (formData: ProconInvoiceFormInput) => {
+    const project = dummyProjects.find(p => p.id === formData.projectId);
+    const soTurunan = project?.soTurunan.find(s => s.id === formData.soTurunanId);
 
     if (project && soTurunan) {
       const newEntry: Invoice = {
-        id: invoices.length + 1,
-        noInvoice: newInvoice.noInvoice,
+        id: invoices.length + 1, // Simple ID generation
+        noInvoice: formData.noInvoice,
         project: project.name,
         soTurunan: soTurunan.name,
-        nominal: newInvoice.nominal,
+        nominal: formData.nominal,
         status: 'Draft', // Default status for new invoices
       };
       setInvoices([...invoices, newEntry]);
-      setNewInvoice({ noInvoice: '', projectId: '', soTurunanId: '', nominal: '' });
-      setSelectedProject(null);
-      setNextInvoiceId(prev => prev + 1);
     }
   };
 
@@ -156,96 +131,21 @@ const ProconInvoiceDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Form Tambah Invoice */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-            <PlusCircle className="h-6 w-6 text-blue-600" />
-            <span>Tambah Invoice Baru</span>
-          </h3>
-          <form onSubmit={handleSaveInvoice} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="noInvoice" className="block text-sm font-medium text-gray-700 mb-1">
-                  No Invoice
-                </label>
-                <input
-                  id="noInvoice"
-                  name="noInvoice"
-                  type="text"
-                  value={newInvoice.noInvoice}
-                  readOnly
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
-                />
-              </div>
-              <div>
-                <label htmlFor="project" className="block text-sm font-medium text-gray-700 mb-1">
-                  Pilihan Project
-                </label>
-                <select
-                  id="project"
-                  name="project"
-                  value={newInvoice.projectId}
-                  onChange={handleProjectChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  required
-                >
-                  <option value="">Pilih Project</option>
-                  {dummyProjects.map(project => (
-                    <option key={project.id} value={project.id}>{project.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="soTurunan" className="block text-sm font-medium text-gray-700 mb-1">
-                  Pilihan SO Turunan
-                </label>
-                <select
-                  id="soTurunan"
-                  name="soTurunan"
-                  value={newInvoice.soTurunanId}
-                  onChange={handleSOTurunanChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  disabled={!selectedProject}
-                  required
-                >
-                  <option value="">Pilih SO Turunan</option>
-                  {selectedProject?.soTurunan.map(so => (
-                    <option key={so.id} value={so.id}>{so.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="nominal" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nominal
-                </label>
-                <input
-                  id="nominal"
-                  name="nominal"
-                  type="text"
-                  value={newInvoice.nominal}
-                  readOnly
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
-              >
-                <Save className="h-5 w-5" />
-                <span>Simpan Invoice</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
         {/* Tabel List Invoice */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
-            <ReceiptText className="h-6 w-6 text-purple-600" /> {/* Changed FileInvoice to ReceiptText */}
-            <span>Daftar Invoice</span>
-          </h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
+              <ReceiptText className="h-6 w-6 text-purple-600" />
+              <span>Daftar Invoice</span>
+            </h3>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md flex items-center space-x-2"
+            >
+              <Plus className="h-5 w-5" />
+              <span>Tambah Invoice</span>
+            </button>
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -297,6 +197,15 @@ const ProconInvoiceDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Procon Invoice Modal */}
+      <ProconInvoiceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveInvoice}
+        dummyProjects={dummyProjects}
+        initialNoInvoice={getNextInvoiceNumber(invoices)}
+      />
     </div>
   );
 };

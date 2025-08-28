@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Search, Calendar, Plus, FileDown, Clock, Eye, Trash2, Printer } from 'lucide-react'; // Import Printer icon
 import EntryPOBarangModal from './EntryPOBarangModal'; // Import the new modal
+import HistoryApprovePOModal from './HistoryApprovePOModal'; // Import new History Approve modal
+import DetailPOBarangModal from './DetailPOBarangModal'; // Import new Detail PO Barang modal
 import { EntryPOBarangFormData } from '../types'; // Import the new form data type
 
 const poData = [
@@ -67,7 +69,10 @@ const poData = [
 ];
 
 const POBarangDashboard: React.FC = () => {
-  const [isEntryPOModalOpen, setIsEntryPOModalOpen] = useState(false); // State for the new modal
+  const [isEntryPOModalOpen, setIsEntryPOModalOpen] = useState(false);
+  const [isHistoryApproveModalOpen, setIsHistoryApproveModalOpen] = useState(false); // State for History Approve modal
+  const [isDetailPOModalOpen, setIsDetailPOModalOpen] = useState(false); // State for Detail PO Barang modal
+  const [selectedPoId, setSelectedPoId] = useState<number | null>(null); // State to hold selected PO ID for modals
 
   const handleEntryPOModalSubmit = (formData: EntryPOBarangFormData) => {
     console.log('Entry PO Barang Form Data:', formData);
@@ -78,6 +83,16 @@ const POBarangDashboard: React.FC = () => {
   const handlePrint = (poId: number) => {
     console.log(`Printing PO with ID: ${poId}`);
     // Implement print logic here
+  };
+
+  const openHistoryApproveModal = (poId: number) => {
+    setSelectedPoId(poId);
+    setIsHistoryApproveModalOpen(true);
+  };
+
+  const openDetailPOModal = (poId: number) => {
+    setSelectedPoId(poId);
+    setIsDetailPOModalOpen(true);
   };
 
   return (
@@ -231,10 +246,16 @@ const POBarangDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button className="p-1.5 bg-green-500 text-white rounded-md hover:bg-green-600">
+                          <button
+                            onClick={() => openHistoryApproveModal(item.id)} // Open History Approve modal
+                            className="p-1.5 bg-green-500 text-white rounded-md hover:bg-green-600"
+                          >
                             <Clock size={14} />
                           </button>
-                          <button className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                          <button
+                            onClick={() => openDetailPOModal(item.id)} // Open Detail PO Barang modal
+                            className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                          >
                             <Eye size={14} />
                           </button>
                           <button
@@ -270,6 +291,20 @@ const POBarangDashboard: React.FC = () => {
         isOpen={isEntryPOModalOpen}
         onClose={() => setIsEntryPOModalOpen(false)}
         onSubmit={handleEntryPOModalSubmit}
+      />
+
+      {/* History Approve PO Modal */}
+      <HistoryApprovePOModal
+        isOpen={isHistoryApproveModalOpen}
+        onClose={() => setIsHistoryApproveModalOpen(false)}
+        poId={selectedPoId}
+      />
+
+      {/* Detail PO Barang Modal */}
+      <DetailPOBarangModal
+        isOpen={isDetailPOModalOpen}
+        onClose={() => setIsDetailPOModalOpen(false)}
+        poId={selectedPoId}
       />
     </div>
   );

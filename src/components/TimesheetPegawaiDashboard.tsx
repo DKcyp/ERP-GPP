@@ -100,7 +100,6 @@ const TimesheetPegawaiDashboard: React.FC = () => {
       namaClient: 'Pertamina Hulu Energi',
       jamAwalKerja: '09:00',
       jamSelesaiKerja: '18:00',
-      overtime: '8 Jam',
       tunjangan: [
         { namaTunjangan: 'Makan', rateTunjangan: '60,000', overtime: '' },
         { namaTunjangan: 'Akomodasi', rateTunjangan: '100,000', overtime: '' },
@@ -128,7 +127,6 @@ const TimesheetPegawaiDashboard: React.FC = () => {
       namaClient: 'PLN (Persero)',
       jamAwalKerja: '07:00',
       jamSelesaiKerja: '16:00',
-      overtime: '12 Jam',
       tunjangan: [
         { namaTunjangan: 'Makan', rateTunjangan: '55,000', overtime: '' },
       ],
@@ -155,7 +153,6 @@ const TimesheetPegawaiDashboard: React.FC = () => {
       namaClient: 'Telkom Indonesia',
       jamAwalKerja: '08:30',
       jamSelesaiKerja: '17:30',
-      overtime: '9 Jam',
       tunjangan: [
         { namaTunjangan: 'Makan', rateTunjangan: '50,000', overtime: '' },
         { namaTunjangan: 'Transport', rateTunjangan: '60,000', overtime: '' },
@@ -183,7 +180,6 @@ const TimesheetPegawaiDashboard: React.FC = () => {
       namaClient: 'Waskita Karya',
       jamAwalKerja: '09:00',
       jamSelesaiKerja: '18:00',
-      overtime: '11 Jam',
       tunjangan: [
         { namaTunjangan: 'Makan', rateTunjangan: '65,000', overtime: '' },
         { namaTunjangan: 'Akomodasi', rateTunjangan: '90,000', overtime: '' },

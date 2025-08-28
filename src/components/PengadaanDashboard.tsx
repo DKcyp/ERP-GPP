@@ -1,33 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Factory, 
-  Handshake, 
-  FileBox, 
+import {
+  Factory,
+  Handshake,
+  FileBox,
   Truck,
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
-  Calendar, 
-  Clock, 
-  Target, 
+  BarChart3,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Calendar,
+  Clock,
+  Target,
   Award,
   Package,
   ShoppingCart,
   FileText,
   CheckCircle
 } from 'lucide-react';
+import Alert from './Alert'; // Import the new Alert component
+import { AlertItem } from '../types'; // Import AlertItem type
 
 const PengadaanDashboard: React.FC = () => {
   const [animateCards, setAnimateCards] = useState(false);
+  const [alerts, setAlerts] = useState<AlertItem[]>([
+    { id: '1', message: 'PR212 belum dibuatkan PO', type: 'error', actionText: 'Kerjakan' },
+    { id: '2', message: 'PO023 telah sampai', type: 'success', actionText: 'Kerjakan' },
+    { id: '3', message: 'PR003 belum melakukan seleksi vendor', type: 'success', actionText: 'Kerjakan' },
+  ]);
 
   useEffect(() => {
     // Trigger animations on component mount
     setTimeout(() => setAnimateCards(true), 100);
   }, []);
 
+  const handleCloseAlert = (id: string) => {
+    setAlerts((prevAlerts) => prevAlerts.filter((alert) => alert.id !== id));
+  };
+
+  const handleActionClick = (id: string) => {
+    console.log(`Action clicked for alert ID: ${id}`);
+    // Implement specific action logic here based on alert ID or message
+    // For example, navigate to a specific page or open another modal
+    // For now, just close the alert after action
+    handleCloseAlert(id);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+      {/* Alert Container */}
+      <div className="fixed top-4 right-4 z-50 space-y-3 w-72">
+        {alerts.map((alert) => (
+          <Alert
+            key={alert.id}
+            id={alert.id}
+            message={alert.message}
+            type={alert.type}
+            actionText={alert.actionText}
+            onActionClick={() => handleActionClick(alert.id)}
+            onCloseClick={() => handleCloseAlert(alert.id)}
+          />
+        ))}
+      </div>
+
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-6 py-8">
@@ -132,7 +166,7 @@ const PengadaanDashboard: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             {/* Bar Chart */}
             <div className="relative h-48">
               <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-500">
@@ -142,7 +176,7 @@ const PengadaanDashboard: React.FC = () => {
                 <span>8</span>
                 <span>0</span>
               </div>
-              
+
               <div className="ml-8 h-40 flex items-end justify-center space-x-2">
                 {[
                   { month: 'Jan', value: 8 },
@@ -159,7 +193,7 @@ const PengadaanDashboard: React.FC = () => {
                   { month: 'Dec', value: 25 }
                 ].map((item, index) => (
                   <div key={item.month} className="flex flex-col items-center space-y-1">
-                    <div 
+                    <div
                       className="w-4 bg-blue-500 rounded-t transition-all duration-1000 ease-out hover:opacity-80"
                       style={{ height: `${(item.value / 32) * 160}px` }}
                     ></div>
@@ -188,7 +222,7 @@ const PengadaanDashboard: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             {/* Line Chart */}
             <div className="relative h-48">
               <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-500">
@@ -199,7 +233,7 @@ const PengadaanDashboard: React.FC = () => {
                 <span>100</span>
                 <span>90</span>
               </div>
-              
+
               <div className="ml-8 h-40 relative">
                 <svg className="w-full h-full" viewBox="0 0 300 160">
                   {/* Grid lines */}
@@ -214,7 +248,7 @@ const PengadaanDashboard: React.FC = () => {
                       strokeWidth="1"
                     />
                   ))}
-                  
+
                   {/* PR Line (Blue) */}
                   <polyline
                     fill="none"
@@ -223,7 +257,7 @@ const PengadaanDashboard: React.FC = () => {
                     points="0,120 60,100 120,110 180,90 240,80"
                     className="animate-in fade-in duration-1000"
                   />
-                  
+
                   {/* PO Line (Green) */}
                   <polyline
                     fill="none"
@@ -232,7 +266,7 @@ const PengadaanDashboard: React.FC = () => {
                     points="0,100 60,115 120,105 180,110 240,70"
                     className="animate-in fade-in duration-1000"
                   />
-                  
+
                   {/* Data points for PR */}
                   {[
                     { x: 0, y: 120 },
@@ -251,7 +285,7 @@ const PengadaanDashboard: React.FC = () => {
                       style={{ animationDelay: `${index * 200}ms` }}
                     />
                   ))}
-                  
+
                   {/* Data points for PO */}
                   {[
                     { x: 0, y: 100 },
@@ -271,7 +305,7 @@ const PengadaanDashboard: React.FC = () => {
                     />
                   ))}
                 </svg>
-                
+
                 {/* X-axis labels */}
                 <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600 px-2">
                   <span>Jan</span>
@@ -281,7 +315,7 @@ const PengadaanDashboard: React.FC = () => {
                   <span>May</span>
                 </div>
               </div>
-              
+
               {/* Legend */}
               <div className="flex items-center justify-center space-x-6 mt-4">
                 <div className="flex items-center space-x-2">
@@ -312,7 +346,7 @@ const PengadaanDashboard: React.FC = () => {
                 </button>
               </div>
             </div>
-            
+
             {/* Line Chart */}
             <div className="relative h-48">
               <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-500">
@@ -323,7 +357,7 @@ const PengadaanDashboard: React.FC = () => {
                 <span>30</span>
                 <span>0</span>
               </div>
-              
+
               <div className="ml-8 h-40 relative">
                 <svg className="w-full h-full" viewBox="0 0 300 160">
                   {/* Grid lines */}
@@ -338,7 +372,7 @@ const PengadaanDashboard: React.FC = () => {
                       strokeWidth="1"
                     />
                   ))}
-                  
+
                   {/* Efficiency Line (Blue) */}
                   <polyline
                     fill="none"
@@ -347,7 +381,7 @@ const PengadaanDashboard: React.FC = () => {
                     points="0,140 30,130 60,125 90,120 120,115 150,110 180,100 210,85 240,70 270,50 300,30"
                     className="animate-in fade-in duration-1000"
                   />
-                  
+
                   {/* Data points */}
                   {[
                     { x: 0, y: 140 },
@@ -373,7 +407,7 @@ const PengadaanDashboard: React.FC = () => {
                     />
                   ))}
                 </svg>
-                
+
                 {/* X-axis labels */}
                 <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600 px-2">
                   <span>2017</span>

@@ -235,13 +235,17 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         {role === 'management' ? (
-                          <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="Approve">
+                          <button 
+														onClick={handleOpenGajiModal} // Connect to GajiModal
+														className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="Approve">
                             <CheckCircle className="h-4 w-4" />
                           </button>
                         ) : (
                           <>
                             {/* Removed Eye and Printer buttons as requested */}
-                            <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Edit">
+                            <button 
+															onClick={handleOpenGajiModal} // Connect to GajiModal
+															className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Edit">
                               <Edit className="h-4 w-4" />
                             </button>
                             <button className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Delete">

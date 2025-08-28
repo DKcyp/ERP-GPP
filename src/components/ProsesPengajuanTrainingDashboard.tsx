@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  ChevronDown
+  ChevronDown,
+  CheckCircle // Import CheckCircle icon
 } from 'lucide-react';
 
 // Updated interface for the dashboard's training data
@@ -35,7 +36,11 @@ interface ProsesPengajuanTraining {
   // Removed: namaProyek, tanggalExpired, statusDokumen, statusPembayaran, statusApproval
 }
 
-const ProsesPengajuanTrainingDashboard: React.FC = () => {
+interface ProsesPengajuanTrainingDashboardProps {
+  role?: string; // Add role prop
+}
+
+const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboardProps> = ({ role }) => {
   const [searchNoTraining, setSearchNoTraining] = useState('');
   const [searchSO, setSearchSO] = useState('');
   const [searchSOTurunan, setSearchSOTurunan] = useState('');
@@ -54,7 +59,7 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Sample data matching the new structure
-  const [trainingData, setTrainingData] = useState<ProsesPengajuanTraining[]>([
+  const [trainingData, setTrainingData] = useState<ProesPengajuanTraining[]>([
     {
       id: '1',
       no: 1,
@@ -110,6 +115,11 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
+
+  // Add this useEffect to log the role
+  useEffect(() => {
+    console.log('Current role in ProsesPengajuanTrainingDashboard:', role);
+  }, [role]); // Re-run when role changes
 
   const handleAddTraining = (formData: ProsesPengajuanTrainingFormData) => {
     const newTraining: ProsesPengajuanTraining = {
@@ -203,13 +213,15 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">
               Proses Pengajuan Training
             </h1>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah</span>
-            </button>
+            {role !== 'management' && ( // Only show Add button if not management role
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            )}
           </div>
 
           {/* Search and Filter Section */}
@@ -547,20 +559,32 @@ const ProsesPengajuanTrainingDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-600 truncate max-w-xs">{item.keterangan}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button
-                          onClick={() => setIsModalOpen(true)} // For editing, will need to pass item data
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Edit"
-                        >
-                          <Edit className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item)}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        {role === 'management' ? (
+                          <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="p-1.5 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
+                            title="Approve"
+                          >
+                            <CheckCircle className="h-3.5 w-3.5" />
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => setIsModalOpen(true)} // For editing, will need to pass item data
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Edit"
+                            >
+                              <Edit className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(item)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -1,52 +1,70 @@
 import React, { useState } from 'react';
-import { Search, CalendarDays, Plus, FileSpreadsheet, FileText, FileDown, Eye, Clock } from 'lucide-react';
-import EntrySupplierBiddingModal from './EntrySupplierBiddingModal'; // Import the new modal
-import { EntrySupplierBiddingFormData } from '../types'; // Import the new form data type
+import { Search, CalendarDays, FileSpreadsheet, FileText, FileDown, Clock } from 'lucide-react';
+import { SeleksiSupplierBiddingData } from '../types'; // Import the new form data type
 
 const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
-  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false); // State for the new modal
+  // No longer need isEntryModalOpen state as "Tambah" button is removed
+  // const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
 
-  const data = [
+  const data: SeleksiSupplierBiddingData[] = [
     {
       no: 1,
       noBidding: 'BIDDING001',
-      tanggalBidding: '08-02-2025',
-      noPR: 'PR0030',
-      departemen: 'Logistik',
-      itemBarangJasa: ['Peralatan Inspeksi', 'Alat keselamatan kerja', 'Kendaraan Operasional'],
-      qty: 2,
-      namaVendor: ['PT. Permata Buana', 'PT Makmur Sentosa', 'PT Jaya Abadi'],
-      namaPemenang: '-'
+      tglPendaftaranVendor: '01-02-2025',
+      namaVendor: 'PT. Sukses Makmur',
+      namaPIC: 'Budi Santoso',
+      noTelp: '081234567890',
+      noPR: 'PR0012',
+      vendorTerpilih: 'Accept'
     },
     {
       no: 2,
       noBidding: 'BIDDING002',
-      tanggalBidding: '11-02-2025',
-      noPR: 'PR0031',
-      departemen: 'Trainer',
-      itemBarangJasa: ['Peralatan pelatihan rope access', 'P3K', 'Alat peraga pelatihan'],
-      qty: 1,
-      namaVendor: ['PT Adem Ayem', 'PT Abden Jaya', 'CV Express'],
-      namaPemenang: 'CV Express'
+      tglPendaftaranVendor: '03-02-2025',
+      namaVendor: 'CV. Jaya Abadi',
+      namaPIC: 'Siti Aminah',
+      noTelp: '081345678901',
+      noPR: 'PR0013',
+      vendorTerpilih: 'Rejected'
     },
     {
       no: 3,
       noBidding: 'BIDDING003',
-      tanggalBidding: '13-02-2025',
-      noPR: 'PR0032',
-      departemen: 'HRD',
-      itemBarangJasa: ['Dokumen dan formulir sertifikasi', 'Segel dan stiker sertifikasi', 'Peralatan pendukung administrasi'],
-      qty: 3,
-      namaVendor: ['PT Drive Yos', 'PT Longsongts', 'PT Kukis'],
-      namaPemenang: '-'
+      tglPendaftaranVendor: '05-02-2025',
+      namaVendor: 'UD. Berkah Sentosa',
+      namaPIC: 'Andi Wijaya',
+      noTelp: '081456789012',
+      noPR: 'PR0014',
+      vendorTerpilih: 'Accept'
+    },
+    {
+      no: 4,
+      noBidding: 'BIDDING004',
+      tglPendaftaranVendor: '07-02-2025',
+      namaVendor: 'PT. Maju Bersama',
+      namaPIC: 'Rina Kusuma',
+      noTelp: '081567890123',
+      noPR: 'PR0015',
+      vendorTerpilih: 'Rejected'
+    },
+    {
+      no: 5,
+      noBidding: 'BIDDING005',
+      tglPendaftaranVendor: '09-02-2025',
+      namaVendor: 'CV. Amanah Sejahtera',
+      namaPIC: 'Hendra Saputra',
+      noTelp: '081678901234',
+      noPR: 'PR0016',
+      vendorTerpilih: 'Accept'
     },
   ];
 
-  const handleEntryModalSubmit = (formData: EntrySupplierBiddingFormData) => {
-    console.log('Entry Supplier / Bidding Form Data:', formData);
-    // Here you would typically send this data to a backend API
-    // For now, we'll just log it.
-  };
+  // No longer need handleEntryModalSubmit as "Tambah" button is removed
+  // const handleEntryModalSubmit = (formData: EntrySupplierBiddingFormData) => {
+  //   console.log('Entry Supplier / Bidding Form Data:', formData);
+  //   // Here you would typically send this data to a backend API
+  //   // For now, we'll just log it.
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -56,14 +74,14 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                DAFTAR SELEKSI SUPPLIER / BIDDING
+                DASHBOARD SELEKSI SUPPLIER / BIDDING
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Pengadaan</span>
                 <span className="mx-2">›</span>
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Seleksi Supplier / Bidding</span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Daftar</span>
+                <span className="text-blue-600 font-medium">Dashboard</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -107,18 +125,43 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="departemen" className="block text-sm font-medium text-gray-700 mb-1">Cari Departemen</label>
+              <label htmlFor="nama-vendor" className="block text-sm font-medium text-gray-700 mb-1">Cari Nama Vendor</label>
               <div className="relative">
                 <input
                   type="text"
-                  id="departemen"
+                  id="nama-vendor"
                   className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="HRD"
+                  placeholder="PT Maju Jaya"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <Search className="h-5 w-5 text-blue-500" />
                 </div>
               </div>
+            </div>
+            <div>
+              <label htmlFor="pic-vendor" className="block text-sm font-medium text-gray-700 mb-1">Cari PIC Vendor</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="pic-vendor"
+                  className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Budi Santoso"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <Search className="h-5 w-5 text-blue-500" />
+                </div>
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="vendor-terpilih-select" className="block text-sm font-medium text-gray-700 mb-1">Pilih Vendor Terpilih</label>
+              <select
+                id="vendor-terpilih-select"
+                className="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option>--Pilih Vendor Terpilih--</option>
+                <option>Accept</option>
+                <option>Rejected</option>
+              </select>
             </div>
           </div>
 
@@ -159,13 +202,7 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-6 justify-end">
-            <button
-              onClick={() => setIsEntryModalOpen(true)} // Open the new modal
-              className="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-2 shadow-md"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah</span>
-            </button>
+            {/* Removed "Tambah" button as per new design */}
             <button className="px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors flex items-center space-x-2 shadow-md">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
@@ -228,47 +265,7 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Tanggal Bidding
-                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
-                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">
-                      No PR
-                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
-                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">
-                      Departemen
-                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
-                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">
-                      Item Barang / Jasa
-                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
-                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">
-                      Qty
+                      Tgl Pendaftaran Vendor
                       <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
                         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
@@ -288,7 +285,7 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Nama Pemenang
+                      Nama PIC
                       <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
                         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
@@ -297,7 +294,34 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Aksi
+                    <div className="flex items-center">
+                      No. Telp
+                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
+                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      No PR
+                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
+                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      Vendor Terpilih
+                      <span className="ml-1 flex-none rounded bg-gray-200 text-gray-900 group-hover:bg-gray-300">
+                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fillRule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.75 7.25a.75.75 0 011.1 0L10 15.148l2.7-2.91a.75.75 0 011.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 010-1.02z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                    </div>
                   </th>
                 </tr>
               </thead>
@@ -306,29 +330,21 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
                   <tr key={row.no} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.noBidding}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.tanggalBidding}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.tglPendaftaranVendor}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.namaVendor}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.namaPIC}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.noTelp}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.noPR}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.departemen}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      <ul className="list-disc list-inside space-y-0.5">
-                        {row.itemBarangJasa.map((item, index) => (
-                          <li key={index}>{item}</li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.qty}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      <ul className="list-disc list-inside space-y-0.5">
-                        {row.namaVendor.map((vendor, index) => (
-                          <li key={index}>{vendor}</li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.namaPemenang}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <button className="p-2 bg-blue-100 rounded-full text-blue-600 hover:bg-blue-200 transition-colors">
-                        <Eye className="h-5 w-5" />
-                      </button>
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          row.vendorTerpilih === 'Accept'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {row.vendorTerpilih}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -359,12 +375,12 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Entry Supplier / Bidding Modal */}
-      <EntrySupplierBiddingModal
+      {/* Entry Supplier / Bidding Modal - Removed as per new design */}
+      {/* <EntrySupplierBiddingModal
         isOpen={isEntryModalOpen}
         onClose={() => setIsEntryModalOpen(false)}
         onSubmit={handleEntryModalSubmit}
-      />
+      /> */}
     </div>
   );
 };
