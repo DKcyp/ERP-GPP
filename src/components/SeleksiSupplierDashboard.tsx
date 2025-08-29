@@ -1,5 +1,9 @@
-import React from 'react';
-import { Search, Calendar, Plus, FileDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Calendar, Plus, FileDown,Eye,ThumbsUp } from 'lucide-react';
+import Modal from './Modal'; // Import the Modal component
+import DetailSeleksiModal from './DetailSeleksiModal'; // Import the new DetailSeleksiModal
+import ApproveSeleksiModal from './ApproveSeleksiModal'; // Import the new ApproveSeleksiModal
+import { DetailedBiddingEntry, BiddingItemDetail } from '../types'; // Import new types
 
 const biddingData = [
   {
@@ -37,7 +41,320 @@ const biddingData = [
   },
 ];
 
+// Mock detailed data for modals
+const mockDetailedBiddingData: DetailedBiddingEntry[] = [
+  {
+    id: 1,
+    noBidding: 'BIDDING001',
+    tanggalBidding: '08-02-2025',
+    noPr: 'PR0030',
+    departemen: 'Logistik',
+    vendorOfferings: [
+      {
+        namaBarang: 'Peralatan Inspeksi',
+        qty: 2,
+        namaVendor: 'PT. Permata Buana',
+        harga: 'Rp 15.000.000',
+        diskon: '50%',
+        jumlah: 'Rp 29.000.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '7 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'Alat keselamatan kerja',
+        qty: 2,
+        namaVendor: 'PT. Permata Buana',
+        harga: 'Rp 16.000.000',
+        diskon: '20%',
+        jumlah: 'Rp 29.000.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '7 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'Peralatan Inspeksi',
+        qty: 2,
+        namaVendor: 'PT Makmur Sentosa',
+        harga: 'Rp 10.000.000',
+        diskon: '10%',
+        jumlah: 'Rp 23.000.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '10 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'Alat keselamatan kerja',
+        qty: 2,
+        namaVendor: 'PT Makmur Sentosa',
+        harga: 'Rp 10.000.000',
+        diskon: '12%',
+        jumlah: 'Rp 23.000.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '10 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'Peralatan Inspeksi',
+        qty: 2,
+        namaVendor: 'PT Jaya Abadi',
+        harga: 'Rp 15.000.000',
+        diskon: '15%',
+        jumlah: 'Rp 29.000.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '7 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'Alat keselamatan kerja',
+        qty: 2,
+        namaVendor: 'PT Jaya Abadi',
+        harga: 'Rp 16.000.000',
+        diskon: '21%',
+        jumlah: 'Rp 29.000.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '7 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+    ],
+  },
+  {
+    id: 2,
+    noBidding: 'BIDDING002',
+    tanggalBidding: '11-02-2025',
+    noPr: 'PR0031',
+    departemen: 'Trainer',
+    vendorOfferings: [
+      {
+        namaBarang: 'Peralatan pelatihan rope access',
+        qty: 1,
+        namaVendor: 'PT Adem Ayem',
+        harga: 'Rp 20.000.000',
+        diskon: '5%',
+        jumlah: 'Rp 19.000.000',
+        ppnNonPpn: 'Non PPN',
+        lamaPengiriman: '5 Hari',
+        garansi: '6 Bulan',
+        metodeBayar: 'Transfer Bank',
+        keterangan: 'Termasuk instalasi',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'P3K',
+        qty: 1,
+        namaVendor: 'PT Adem Ayem',
+        harga: 'Rp 1.000.000',
+        diskon: '0%',
+        jumlah: 'Rp 1.000.000',
+        ppnNonPpn: 'Non PPN',
+        lamaPengiriman: '3 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'Peralatan pelatihan rope access',
+        qty: 1,
+        namaVendor: 'PT Abden Jaya',
+        harga: 'Rp 22.000.000',
+        diskon: '10%',
+        jumlah: 'Rp 19.800.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '7 Hari',
+        garansi: '1 Tahun',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'P3K',
+        qty: 1,
+        namaVendor: 'PT Abden Jaya',
+        harga: 'Rp 1.200.000',
+        diskon: '5%',
+        jumlah: 'Rp 1.140.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '5 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'Peralatan pelatihan rope access',
+        qty: 1,
+        namaVendor: 'CV Express',
+        harga: 'Rp 18.000.000',
+        diskon: '0%',
+        jumlah: 'Rp 18.000.000',
+        ppnNonPpn: 'Non PPN',
+        lamaPengiriman: '4 Hari',
+        garansi: '6 Bulan',
+        metodeBayar: 'Transfer Bank',
+        keterangan: 'Pemenang',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'P3K',
+        qty: 1,
+        namaVendor: 'CV Express',
+        harga: 'Rp 900.000',
+        diskon: '0%',
+        jumlah: 'Rp 900.000',
+        ppnNonPpn: 'Non PPN',
+        lamaPengiriman: '2 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: 'Pemenang',
+        status: 'Approve',
+      },
+    ],
+  },
+  {
+    id: 3,
+    noBidding: 'BIDDING003',
+    tanggalBidding: '13-02-2025',
+    noPr: 'PR0032',
+    departemen: 'HRD',
+    vendorOfferings: [
+      {
+        namaBarang: 'Dokumen dan formulir sertifikasi',
+        qty: 3,
+        namaVendor: 'PT Drive Yos',
+        harga: 'Rp 5.000.000',
+        diskon: '10%',
+        jumlah: 'Rp 13.500.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '14 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'Segel dan stiker sertifikasi',
+        qty: 3,
+        namaVendor: 'PT Drive Yos',
+        harga: 'Rp 1.000.000',
+        diskon: '5%',
+        jumlah: 'Rp 2.850.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '10 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Approve',
+      },
+      {
+        namaBarang: 'Dokumen dan formulir sertifikasi',
+        qty: 3,
+        namaVendor: 'PT longsongts',
+        harga: 'Rp 5.500.000',
+        diskon: '12%',
+        jumlah: 'Rp 14.520.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '12 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'Segel dan stiker sertifikasi',
+        qty: 3,
+        namaVendor: 'PT longsongts',
+        harga: 'Rp 1.100.000',
+        diskon: '8%',
+        jumlah: 'Rp 3.036.000',
+        ppnNonPpn: 'PPN',
+        lamaPengiriman: '8 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'Dokumen dan formulir sertifikasi',
+        qty: 3,
+        namaVendor: 'PT Kukis',
+        harga: 'Rp 4.800.000',
+        diskon: '8%',
+        jumlah: 'Rp 13.248.000',
+        ppnNonPpn: 'Non PPN',
+        lamaPengiriman: '15 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+      {
+        namaBarang: 'Segel dan stiker sertifikasi',
+        qty: 3,
+        namaVendor: 'PT Kukis',
+        harga: 'Rp 950.000',
+        diskon: '3%',
+        jumlah: 'Rp 2.767.500',
+        ppnNonPpn: 'Non PPN',
+        lamaPengiriman: '12 Hari',
+        garansi: '-',
+        metodeBayar: 'Transfer Bank',
+        keterangan: '-',
+        status: 'Rejected',
+      },
+    ],
+  },
+];
+
+
 const SeleksiSupplierDashboard: React.FC = () => {
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [selectedBiddingDetail, setSelectedBiddingDetail] = useState<DetailedBiddingEntry | null>(null);
+
+  const handleViewDetails = (noBidding: string) => {
+    console.log(`View details for Bidding No: ${noBidding}`);
+    const detail = mockDetailedBiddingData.find(data => data.noBidding === noBidding);
+    if (detail) {
+      setSelectedBiddingDetail(detail);
+      setIsDetailModalOpen(true);
+    }
+  };
+
+  const handleApproveVendor = (noBidding: string) => {
+    console.log(`Approve vendor for Bidding No: ${noBidding}`);
+    const detail = mockDetailedBiddingData.find(data => data.noBidding === noBidding);
+    if (detail) {
+      setSelectedBiddingDetail(detail);
+      setIsApproveModalOpen(true);
+    }
+  };
+
+  const handleSaveApproval = (updatedOfferings: BiddingItemDetail[]) => {
+    console.log('Updated offerings after approval:', updatedOfferings);
+    // Here you would typically send this data to your backend
+    // For demonstration, we'll just log it.
+    // You might want to update the local biddingData state or refetch data.
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -162,6 +479,7 @@ const SeleksiSupplierDashboard: React.FC = () => {
                     <th scope="col" className="px-6 py-3">Qty</th>
                     <th scope="col" className="px-6 py-3">Nama Vendor</th>
                     <th scope="col" className="px-6 py-3">Nama Pemenang</th>
+										<th scope="col" className="px-6 py-3">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -184,6 +502,27 @@ const SeleksiSupplierDashboard: React.FC = () => {
                         </ul>
                       </td>
                       <td className="px-6 py-4 font-medium text-blue-600">{item.pemenang}</td>
+											{/* New Aksi Column Data */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => handleViewDetails(item.noBidding)}
+                          className="p-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-200 shadow-sm"
+                          title="Lihat Detail"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        {item.pemenang !== '-' && ( // Condition changed to check if a winner is present
+                          <button
+                            onClick={() => handleApproveVendor(item.noBidding)}
+                            className="p-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-200 shadow-sm"
+                            title="Setuju Vendor"
+                          >
+                            <ThumbsUp className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
                     </tr>
                   ))}
                 </tbody>
@@ -198,6 +537,21 @@ const SeleksiSupplierDashboard: React.FC = () => {
             </div>
         </div>
       </div>
+
+      {/* Detail Seleksi Modal */}
+      <DetailSeleksiModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        biddingDetail={selectedBiddingDetail}
+      />
+
+      {/* Approve Seleksi Modal */}
+      <ApproveSeleksiModal
+        isOpen={isApproveModalOpen}
+        onClose={() => setIsApproveModalOpen(false)}
+        biddingDetail={selectedBiddingDetail}
+        onSave={handleSaveApproval}
+      />
     </div>
   );
 };

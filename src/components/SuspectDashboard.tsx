@@ -36,6 +36,7 @@ const SuspectDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedSuspectForDetail, setSelectedSuspectForDetail] = useState<SuspectDetailData | null>(null);
+  const [editingSuspect, setEditingSuspect] = useState<Suspect | null>(null); // New state for editing
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -130,19 +131,42 @@ const SuspectDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleAddSuspect = (formData: SuspectFormData) => {
-    const newSuspect: Suspect = {
-      id: (suspects.length + 1).toString(),
-      no: suspects.length + 1,
-      namaPerusahaan: formData.namaPerusahaan,
-      noTelp: formData.noTelp,
-      alamatPerusahaan: formData.alamatPerusahaan,
-      bidangUsaha: formData.bidangUsaha,
-      pic: formData.pic,
-      emailPIC: formData.emailPIC
-    };
+  const handleSaveSuspect = (formData: SuspectFormData & { id?: string }) => {
+    if (formData.id) {
+      // Edit existing suspect
+      setSuspects(prev => prev.map(s => 
+        s.id === formData.id ? { ...s, ...formData } : s
+      ));
+    } else {
+      // Add new suspect
+      const newSuspect: Suspect = {
+        id: Date.now().toString(), // Generate a unique ID
+        no: suspects.length + 1, // Simple increment for 'no'
+        namaPerusahaan: formData.namaPerusahaan,
+        noTelp: formData.noTelp,
+        alamatPerusahaan: formData.alamatPerusahaan,
+        bidangUsaha: formData.bidangUsaha,
+        pic: formData.pic,
+        emailPIC: formData.emailPIC
+      };
+      // Add new suspect and re-number existing ones to keep 'no' sequential
+      setSuspects(prev => {
+        const updatedSuspects = [newSuspect, ...prev];
+        return updatedSuspects.map((s, index) => ({ ...s, no: index + 1 }));
+      });
+    }
+    setEditingSuspect(null); // Clear editing state
+    setIsModalOpen(false); // Close modal
+  };
 
-    setSuspects(prev => [newSuspect, ...prev.map(s => ({ ...s, no: s.no + 1 }))]);
+  const handleAddClick = () => {
+    setEditingSuspect(null); // Ensure modal is in add mode
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (suspect: Suspect) => {
+    setEditingSuspect(suspect); // Set suspect data for editing
+    setIsModalOpen(true);
   };
 
   const handleViewDetail = (suspect: Suspect) => {
@@ -184,8 +208,12 @@ const SuspectDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setSuspects(prev => prev.filter(s => s.id !== itemToDelete.id));
+      setSuspects(prev => {
+        const updatedSuspects = prev.filter(s => s.id !== itemToDelete.id);
+        return updatedSuspects.map((s, index) => ({ ...s, no: index + 1 })); // Re-number after deletion
+      });
       setItemToDelete(null);
+      setDeleteModalOpen(false);
     }
   };
 
@@ -278,7 +306,7 @@ const SuspectDashboard: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex justify-end">
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleAddClick} // Use handleAddClick
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
@@ -361,7 +389,7 @@ const SuspectDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center space-x-2">
-                        <button onClick={() => setIsModalOpen(true)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
+                        <button onClick={() => handleEditClick(suspect)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
@@ -429,8 +457,12 @@ const SuspectDashboard: React.FC = () => {
       {/* Suspect Modal */}
       <SuspectModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleAddSuspect}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingSuspect(null); // Clear editing state on close
+        }}
+        onSave={handleSaveSuspect}
+        initialData={editingSuspect} // Pass initial data for editing
       />
 
       {/* Suspect Detail Modal */}

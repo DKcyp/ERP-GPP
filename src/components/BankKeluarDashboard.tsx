@@ -1,37 +1,26 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, PlusCircle, Save, Trash2, Search, Filter, FileSpreadsheet, FileDown } from 'lucide-react';
-
-interface DetailItem {
-  id: number;
-  coa: string;
-  nominal: number;
-  keterangan: string;
-  client: string; // Added client field
-}
-
-interface RecentTransaction {
-  id: number;
-  tanggal: string;
-  nomorJurnal: string;
-  coa: string;
-  keterangan: string;
-  nominal: number;
-  client: string;
-}
+import { Clock, PlusCircle, Save, Trash2, Search, Filter, FileSpreadsheet, FileDown, Pencil } from 'lucide-react';
+import { BankKeluarFormData, DetailItem, RecentTransaction } from '../types';
+import BankKeluarModal from './BankKeluarModal'; // Import the new modal component
 
 const BankKeluarDashboard: React.FC = () => {
   const today = new Date();
-  const [nomorJurnal, setNomorJurnal] = useState('BK-2024-07-001');
-  const [tanggal, setTanggal] = useState<Date | null>(today);
-  const [bankAccount, setBankAccount] = useState('Bank BCA');
-  const [keteranganHeader, setKeteranganHeader] = useState('');
-  const [detailItems, setDetailItems] = useState<DetailItem[]>([
-    { id: 1, coa: '5101 - Beban Gaji', nominal: 0, keterangan: '', client: '' }, // Initialize client
-  ]);
 
-  // Dummy data for the new recent transactions table
+  // State for modal
+  const [showModal, setShowModal] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<BankKeluarFormData | null>(null);
+
+  // State for search and filter
+  const [filterNomorJurnal, setFilterNomorJurnal] = useState('');
+  const [filterKeterangan, setFilterKeterangan] = useState('');
+  const [filterBankAccount, setFilterBankAccount] = useState('');
+  const [filterClient, setFilterClient] = useState('');
+  const [filterDateFrom, setFilterDateFrom] = useState<Date | null>(null);
+  const [filterDateTo, setFilterDateTo] = useState<Date | null>(null);
+
+  // Dummy data for recent transactions table
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([
     {
       id: 1,
@@ -80,21 +69,14 @@ const BankKeluarDashboard: React.FC = () => {
     },
   ]);
 
-  const coaOptions = [
-    '5101 - Beban Gaji',
-    '5102 - Beban Sewa',
-    '6101 - Beban Listrik',
-    '1301 - Persediaan Barang Dagang',
-    '2101 - Utang Usaha',
-  ];
-
   const bankOptions = [
     'Bank BCA',
     'Bank Mandiri',
     'Bank BRI',
+    'Bank BNI',
   ];
 
-  const clientOptions = [ // Added client options
+  const clientOptions = [
     'Client A',
     'Client B',
     'Client C',
@@ -105,49 +87,83 @@ const BankKeluarDashboard: React.FC = () => {
     'PLN',
     'Supplier Y',
     'Vendor Z',
+    'Pemasok Umum',
   ];
 
-  const handleAddDetailRow = () => {
-    setDetailItems([...detailItems, { id: detailItems.length + 1, coa: '', nominal: 0, keterangan: '', client: '' }]);
+  const handleAddClick = () => {
+    setEditingTransaction(null); // For new entry
+    setShowModal(true);
   };
 
-  const handleRemoveDetailRow = (id: number) => {
-    setDetailItems(detailItems.filter(item => item.id !== id));
-  };
-
-  const handleDetailChange = (id: number, field: keyof DetailItem, value: any) => {
-    setDetailItems(detailItems.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const calculateTotal = () => {
-    return detailItems.reduce((sum, item) => sum + item.nominal, 0);
-  };
-
-  const handleSave = () => {
-    const dataToSave = {
-      nomorJurnal,
-      tanggal: tanggal?.toISOString().split('T')[0],
-      bankAccount,
-      keteranganHeader,
-      detailItems,
-      total: calculateTotal(),
+  const handleEditClick = (transaction: RecentTransaction) => {
+    // Convert RecentTransaction to BankKeluarFormData for editing
+    const detailItem: DetailItem = {
+      id: 1, // Assuming one detail item for simplicity when editing from recent transactions
+      coa: transaction.coa,
+      nominal: transaction.nominal,
+      keterangan: transaction.keterangan,
+      client: transaction.client,
     };
-    alert('Data Bank Keluar Disimpan:\n' + JSON.stringify(dataToSave, null, 2));
-    console.log(dataToSave);
-    // For demo, add the new transaction to the recent transactions list
-    const newTransaction: RecentTransaction = {
-      id: recentTransactions.length > 0 ? Math.max(...recentTransactions.map(t => t.id)) + 1 : 1,
-      tanggal: tanggal?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
-      nomorJurnal: nomorJurnal,
-      coa: detailItems[0]?.coa || 'N/A', // Taking first COA for simplicity
-      keterangan: keteranganHeader || detailItems[0]?.keterangan || 'Transaksi Bank Keluar',
-      nominal: calculateTotal(),
-      client: detailItems[0]?.client || 'N/A', // Taking first client for simplicity
+
+    const formData: BankKeluarFormData = {
+      id: transaction.id,
+      nomorJurnal: transaction.nomorJurnal,
+      tanggal: new Date(transaction.tanggal),
+      bankAccount: bankOptions.includes(transaction.client) ? transaction.client : bankOptions[0], // Simple guess for bank account
+      keteranganHeader: transaction.keterangan,
+      detailItems: [detailItem],
+      total: transaction.nominal,
     };
-    setRecentTransactions((prev) => [newTransaction, ...prev]);
+    setEditingTransaction(formData);
+    setShowModal(true);
   };
+
+  const handleSaveTransaction = (formData: BankKeluarFormData) => {
+    if (formData.id) {
+      // Edit existing transaction
+      setRecentTransactions(prev =>
+        prev.map(t =>
+          t.id === formData.id
+            ? {
+                ...t,
+                tanggal: formData.tanggal?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+                nomorJurnal: formData.nomorJurnal,
+                coa: formData.detailItems[0]?.coa || 'N/A',
+                keterangan: formData.keteranganHeader || formData.detailItems[0]?.keterangan || 'Transaksi Bank Keluar',
+                nominal: formData.total,
+                client: formData.detailItems[0]?.client || 'N/A',
+              }
+            : t
+        )
+      );
+    } else {
+      // Add new transaction
+      const newId = recentTransactions.length > 0 ? Math.max(...recentTransactions.map(t => t.id)) + 1 : 1;
+      const newTransaction: RecentTransaction = {
+        id: newId,
+        tanggal: formData.tanggal?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+        nomorJurnal: formData.nomorJurnal,
+        coa: formData.detailItems[0]?.coa || 'N/A', // Taking first COA for simplicity
+        keterangan: formData.keteranganHeader || formData.detailItems[0]?.keterangan || 'Transaksi Bank Keluar',
+        nominal: formData.total,
+        client: formData.detailItems[0]?.client || 'N/A', // Taking first client for simplicity
+      };
+      setRecentTransactions((prev) => [newTransaction, ...prev]);
+    }
+  };
+
+  const filteredTransactions = recentTransactions.filter(transaction => {
+    const matchesNomorJurnal = filterNomorJurnal ? transaction.nomorJurnal.toLowerCase().includes(filterNomorJurnal.toLowerCase()) : true;
+    const matchesKeterangan = filterKeterangan ? transaction.keterangan.toLowerCase().includes(filterKeterangan.toLowerCase()) : true;
+    const matchesBankAccount = filterBankAccount ? transaction.client.toLowerCase().includes(filterBankAccount.toLowerCase()) : true; // Using client as a proxy for bank account in recent transactions
+    const matchesClient = filterClient ? transaction.client.toLowerCase().includes(filterClient.toLowerCase()) : true;
+
+    const transactionDate = new Date(transaction.tanggal);
+    const matchesDateFrom = filterDateFrom ? transactionDate >= filterDateFrom : true;
+    const matchesDateTo = filterDateTo ? transactionDate <= filterDateTo : true;
+
+    return matchesNomorJurnal && matchesKeterangan && matchesBankAccount && matchesClient && matchesDateFrom && matchesDateTo;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -174,185 +190,109 @@ const BankKeluarDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Main Form Section */}
+        {/* Search and Filter Section */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Form Bank Keluar</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Filter Transaksi Bank Keluar</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label htmlFor="nomorJurnal" className="block text-sm font-medium text-gray-700 mb-2">Nomor Jurnal</label>
+              <label htmlFor="filterNoJurnal" className="block text-sm font-medium text-gray-700 mb-2">Cari No Jurnal</label>
               <input
                 type="text"
-                id="nomorJurnal"
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-gray-50"
-                value={nomorJurnal}
-                readOnly
-              />
-            </div>
-            <div>
-              <label htmlFor="tanggal" className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
-              <DatePicker
-                selected={tanggal}
-                onChange={(date: Date | null) => setTanggal(date)}
-                dateFormat="dd/MM/yyyy"
+                id="filterNoJurnal"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholder="Cari No Jurnal..."
+                value={filterNomorJurnal}
+                onChange={(e) => setFilterNomorJurnal(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="bankAccount" className="block text-sm font-medium text-gray-700 mb-2">Bank</label>
+              <label htmlFor="filterKeterangan" className="block text-sm font-medium text-gray-700 mb-2">Cari Keterangan</label>
+              <input
+                type="text"
+                id="filterKeterangan"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholder="Cari Keterangan..."
+                value={filterKeterangan}
+                onChange={(e) => setFilterKeterangan(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="filterBankAccount" className="block text-sm font-medium text-gray-700 mb-2">Pilih Akun Bank</label>
               <select
-                id="bankAccount"
+                id="filterBankAccount"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
-                value={bankAccount}
-                onChange={(e) => setBankAccount(e.target.value)}
+                value={filterBankAccount}
+                onChange={(e) => setFilterBankAccount(e.target.value)}
               >
+                <option value="">Pilih Akun Bank...</option>
                 {bankOptions.map((option) => (
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
             </div>
-            <div className="md:col-span-2">
-              <label htmlFor="keteranganHeader" className="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
-              <textarea
-                id="keteranganHeader"
-                rows={3}
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                value={keteranganHeader}
-                onChange={(e) => setKeteranganHeader(e.target.value)}
-                placeholder="Masukkan keterangan jurnal..."
-              ></textarea>
-            </div>
-          </div>
-
-          <h4 className="text-xl font-bold text-gray-800 mb-4">Detail Transaksi</h4>
-          <div className="overflow-x-auto mb-6">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    COA
-                  </th>
-                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nominal
-                  </th>
-                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Keterangan
-                  </th>
-                  <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Client {/* Added Client column header */}
-                  </th>
-                  <th scope="col" className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {detailItems.map((item) => (
-                  <tr key={item.id}>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <select
-                        value={item.coa}
-                        onChange={(e) => handleDetailChange(item.id, 'coa', e.target.value)}
-                        className="block w-full border border-gray-300 rounded-lg py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="">Pilih COA</option>
-                        {coaOptions.map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <input
-                        type="number"
-                        value={item.nominal}
-                        onChange={(e) => handleDetailChange(item.id, 'nominal', parseFloat(e.target.value) || 0)}
-                        className="block w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <input
-                        type="text"
-                        value={item.keterangan}
-                        onChange={(e) => handleDetailChange(item.id, 'keterangan', e.target.value)}
-                        className="block w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <select // Added Client select dropdown
-                        value={item.client}
-                        onChange={(e) => handleDetailChange(item.id, 'client', e.target.value)}
-                        className="block w-full border border-gray-300 rounded-lg py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="">Pilih Client</option>
-                        {clientOptions.map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-center text-sm font-medium">
-                      <button
-                        onClick={() => handleRemoveDetailRow(item.id)}
-                        className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
+            <div>
+              <label htmlFor="filterClient" className="block text-sm font-medium text-gray-700 mb-2">Pilih Client</label>
+              <select
+                id="filterClient"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
+                value={filterClient}
+                onChange={(e) => setFilterClient(e.target.value)}
+              >
+                <option value="">Pilih Client...</option>
+                {clientOptions.map((option) => (
+                  <option key={option} value={option}>{option}</option>
                 ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={handleAddDetailRow}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
-            >
-              <PlusCircle className="h-5 w-5 mr-2" /> Tambah Baris
-            </button>
-            <div className="text-lg font-bold text-gray-900">
-              Total: Rp {calculateTotal().toLocaleString('id-ID')}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="filterDateFrom" className="block text-sm font-medium text-gray-700 mb-2">Periode Dari</label>
+              <DatePicker
+                selected={filterDateFrom}
+                onChange={(date: Date | null) => setFilterDateFrom(date)}
+                dateFormat="dd/MM/yyyy"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholderText="dd/MM/yyyy"
+              />
+            </div>
+            <div>
+              <label htmlFor="filterDateTo" className="block text-sm font-medium text-gray-700 mb-2">Periode Sampai</label>
+              <DatePicker
+                selected={filterDateTo}
+                onChange={(date: Date | null) => setFilterDateTo(date)}
+                dateFormat="dd/MM/yyyy"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholderText="dd/MM/yyyy"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={() => { /* Implement actual filter logic here */ }}
+                className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full h-[42px]"
+              >
+                <Search className="h-4 w-4 mr-2" /> Cari
+              </button>
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end space-x-3 mt-6">
             <button
-              onClick={handleSave}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              onClick={handleAddClick}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
-              <Save className="h-5 w-5 mr-2" /> Simpan Jurnal
+              <PlusCircle className="h-5 w-5 mr-2" /> Tambah Bank Keluar
+            </button>
+            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+              <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
+            </button>
+            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+              <FileDown className="h-4 w-4 mr-2" /> Export PDF
             </button>
           </div>
         </div>
 
-        {/* NEW: Recent Transactions Table Section */}
+        {/* Recent Transactions Table Section */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Bank Keluar Transactions</h3>
-
-          {/* Search, Filter, Export Section */}
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search transactions..."
-                  className="block w-full md:w-64 border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                />
-              </div>
-              <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                <Filter className="h-4 w-4 mr-2" /> Filter
-              </button>
-            </div>
-            <div className="flex space-x-3">
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-                <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
-              </button>
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                <FileDown className="h-4 w-4 mr-2" /> Export PDF
-              </button>
-            </div>
-          </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -376,10 +316,13 @@ const BankKeluarDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Client
                   </th>
+                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {recentTransactions.map((transaction) => (
+                {filteredTransactions.map((transaction) => (
                   <tr key={transaction.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(transaction.tanggal).toLocaleDateString('id-ID')}
@@ -399,6 +342,14 @@ const BankKeluarDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {transaction.client}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <button
+                        onClick={() => handleEditClick(transaction)}
+                        className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transition-colors"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -406,6 +357,15 @@ const BankKeluarDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Bank Keluar Modal */}
+      <BankKeluarModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleSaveTransaction}
+        initialData={editingTransaction}
+        title={editingTransaction ? 'Edit Transaksi Bank Keluar' : 'Tambah Transaksi Bank Keluar'}
+      />
     </div>
   );
 };

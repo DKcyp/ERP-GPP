@@ -27,17 +27,19 @@ interface Prospect {
   pic: string;
   jabatan: string;
   noTelp: string;
-  deadlineProspect: string;
+  deadlineProspect: string; // DD-MM-YYYY
   alamat: string;
   email: string;
   keterangan: string;
-  tanggalUpdate: string;
+  tanggalUpdate: string; // DD-MM-YYYY
   status: 'Cold' | 'Warm' | 'Hot';
 }
 
 const ProspectDashboard: React.FC = () => {
   const [searchNama, setSearchNama] = useState('');
   const [searchPIC, setSearchPIC] = useState('');
+  const [searchJenisPekerjaan, setSearchJenisPekerjaan] = useState(''); // New state for 'Cari Jenis Pekerjaan'
+  const [searchLokasiKerja, setSearchLokasiKerja] = useState(''); // New state for 'Cari Lokasi Kerja'
   const [selectedStatus, setSelectedStatus] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -49,6 +51,8 @@ const ProspectDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Prospect | null>(null);
+  const [editingProspect, setEditingProspect] = useState<Prospect | null>(null); // New state for editing
+  const [modalTitle, setModalTitle] = useState('Entry Prospect'); // New state for modal title
 
   // Sample data matching the image
   const [prospects, setProspects] = useState<Prospect[]>([
@@ -101,31 +105,78 @@ const ProspectDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleAddProspect = (formData: ProspectFormData) => {
-    const newProspect: Prospect = {
-      id: (prospects.length + 1).toString(),
-      no: prospects.length + 1,
-      namaPerusahaan: formData.namaPerusahaan,
-      pic: formData.pic,
-      jabatan: 'Staff', // Default jabatan
-      noTelp: formData.noTelp,
-      deadlineProspect: new Date(formData.deadlineProspect).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      alamat: 'Alamat akan diupdate',
-      email: formData.email,
-      keterangan: formData.keterangan || formData.catatan || 'Data baru ditambahkan',
-      tanggalUpdate: new Date(formData.tanggalUpdate).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      status: 'Warm' // Default status for new prospects
-    };
+  const handleSaveProspect = (formData: ProspectFormData) => {
+    const formattedDeadline = new Date(formData.deadlineProspect).toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const formattedTanggalUpdate = new Date(formData.tanggalUpdate).toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
 
-    setProspects(prev => [newProspect, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
+    if (editingProspect) {
+      // Update existing prospect
+      setProspects(prev => prev.map(p => 
+        p.id === editingProspect.id 
+          ? { 
+              ...p, 
+              namaPerusahaan: formData.namaPerusahaan,
+              pic: formData.pic,
+              noTelp: formData.noTelp,
+              deadlineProspect: formattedDeadline,
+              email: formData.email,
+              keterangan: formData.keterangan || formData.catatan || 'Data diupdate',
+              tanggalUpdate: formattedTanggalUpdate,
+              // Assuming other fields like jabatan, alamat, status might not be directly editable via this modal
+            }
+          : p
+      ));
+    } else {
+      // Add new prospect
+      const newProspect: Prospect = {
+        id: (prospects.length + 1).toString(),
+        no: prospects.length + 1,
+        namaPerusahaan: formData.namaPerusahaan,
+        pic: formData.pic,
+        jabatan: 'Staff', // Default jabatan
+        noTelp: formData.noTelp,
+        deadlineProspect: formattedDeadline,
+        alamat: 'Alamat akan diupdate', // Default alamat
+        email: formData.email,
+        keterangan: formData.keterangan || formData.catatan || 'Data baru ditambahkan',
+        tanggalUpdate: formattedTanggalUpdate,
+        status: 'Warm' // Default status for new prospects
+      };
+      setProspects(prev => [newProspect, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
+    }
+    setIsModalOpen(false);
+    setEditingProspect(null); // Clear editing state
+    setModalTitle('Entry Prospect'); // Reset title
+  };
+
+  const handleEditClick = (prospect: Prospect) => {
+    // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD' for date inputs
+    const deadlineParts = prospect.deadlineProspect.split('-');
+    const formattedDeadline = `${deadlineParts[2]}-${deadlineParts[1]}-${deadlineParts[0]}`;
+
+    const updateDateParts = prospect.tanggalUpdate.split('-');
+    const formattedUpdateDate = `${updateDateParts[2]}-${updateDateParts[1]}-${updateDateParts[0]}`;
+
+    setEditingProspect({
+      ...prospect,
+      deadlineProspect: formattedDeadline,
+      tanggalUpdate: formattedUpdateDate,
+      // Map other fields from Prospect to ProspectFormData
+      topikPembicaraan: prospect.keterangan, // Using keterangan as placeholder for topikPembicaraan
+      tindakLanjut: '', // Placeholder
+      hasil: '', // Placeholder
+      catatan: prospect.keterangan, // Using keterangan as placeholder for catatan
+    });
+    setModalTitle('Edit Prospect');
+    setIsModalOpen(true);
   };
 
   const handleDeleteClick = (prospect: Prospect) => {
@@ -155,8 +206,17 @@ const ProspectDashboard: React.FC = () => {
   const filteredProspects = prospects.filter(prospect => {
     const matchesNama = prospect.namaPerusahaan.toLowerCase().includes(searchNama.toLowerCase());
     const matchesPIC = prospect.pic.toLowerCase().includes(searchPIC.toLowerCase());
+    // Using 'keterangan' as a placeholder for 'Jenis Pekerjaan' and 'alamat' for 'Lokasi Kerja'
+    const matchesJenisPekerjaan = searchJenisPekerjaan ? prospect.keterangan.toLowerCase().includes(searchJenisPekerjaan.toLowerCase()) : true;
+    const matchesLokasiKerja = searchLokasiKerja ? prospect.alamat.toLowerCase().includes(searchLokasiKerja.toLowerCase()) : true;
     const matchesStatus = selectedStatus ? prospect.status === selectedStatus : true;
-    return matchesNama && matchesPIC && matchesStatus;
+    
+    // Date filtering (assuming deadlineProspect is 'DD-MM-YYYY')
+    const prospectDeadline = prospect.deadlineProspect.split('-').reverse().join('-'); // Convert to YYYY-MM-DD for comparison
+    const matchesDateFrom = dateFrom ? prospectDeadline >= dateFrom : true;
+    const matchesDateTo = dateTo ? prospectDeadline <= dateTo : true;
+
+    return matchesNama && matchesPIC && matchesJenisPekerjaan && matchesLokasiKerja && matchesStatus && matchesDateFrom && matchesDateTo;
   });
 
   // Pagination logic
@@ -205,8 +265,9 @@ const ProspectDashboard: React.FC = () => {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
           
+          {/* Filter Inputs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {/* Search Nama Perusahaan */}
+            {/* Cari Nama Perusahaan (equivalent to Cari No SPK) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari Nama Perusahaan
@@ -216,16 +277,13 @@ const ProspectDashboard: React.FC = () => {
                   type="text"
                   value={searchNama}
                   onChange={(e) => setSearchNama(e.target.value)}
-                  className="w-full pl-4 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Masukkan nama perusahaan..."
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari Nama Perusahaan..."
                 />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
-                  <Search className="h-4 w-4" />
-                </button>
               </div>
             </div>
 
-            {/* Search PIC */}
+            {/* Cari PIC (equivalent to Cari Nama Pegawai) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari PIC
@@ -235,16 +293,45 @@ const ProspectDashboard: React.FC = () => {
                   type="text"
                   value={searchPIC}
                   onChange={(e) => setSearchPIC(e.target.value)}
-                  className="w-full pl-4 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Masukkan nama PIC..."
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari PIC..."
                 />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
-                  <Search className="h-4 w-4" />
-                </button>
               </div>
             </div>
 
-            {/* Status Dropdown */}
+            {/* Cari Jenis Pekerjaan */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Cari Jenis Pekerjaan
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchJenisPekerjaan}
+                  onChange={(e) => setSearchJenisPekerjaan(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari Jenis Pekerjaan..."
+                />
+              </div>
+            </div>
+
+            {/* Cari Lokasi Kerja */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Cari Lokasi Kerja
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchLokasiKerja}
+                  onChange={(e) => setSearchLokasiKerja(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari Lokasi Kerja..."
+                />
+              </div>
+            </div>
+
+            {/* Pilih Status (equivalent to Pilih Status SPK) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Pilih Status
@@ -255,7 +342,7 @@ const ProspectDashboard: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
                 >
                   <span className={selectedStatus ? 'text-gray-900' : 'text-gray-500'}>
-                    {selectedStatus || 'Pilih status...'}
+                    {selectedStatus || 'Semua Status'}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -292,86 +379,75 @@ const ProspectDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Date Range */}
+            {/* Periode Awal */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Periode
+                Periode Awal
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
+            </div>
+
+            {/* Periode Akhir */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Periode Akhir
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Cari Button - Spanning 2 columns */}
+            <div className="space-y-2 lg:col-span-1 flex items-end"> {/* Adjusted to col-span-1 for proper grid flow, but visually it aligns as in the image */}
+              <button 
+                onClick={handleSearch}
+                className="w-full h-[46px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center justify-center space-x-2"
+              >
+                <Search className="h-5 w-5" />
+                <span>Cari</span>
+              </button>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 mt-6">
             <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5 text-sm"
+              onClick={() => {
+                setEditingProspect(null); // Ensure no prospect is being edited
+                setModalTitle('Entry Prospect');
+                setIsModalOpen(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
-              <span>Tambah</span>
+              <span>Tambah Prospect</span>
             </button>
-            <button 
-              onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5 text-sm"
-            >
-              <Search className="h-5 w-5" />
-              <span>Cari Data</span>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Export Excel</span>
+            </button>
+            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
+              <FileText className="h-4 w-4" />
+              <span>Export PDF</span>
             </button>
           </div>
         </div>
 
-        {/* Quick Export Bar */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">Show</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-              <span className="text-sm text-gray-700">entries</span>
-            </div>
-            <div className="flex space-x-3">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5">
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Excel</span>
-              </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5">
-                <File className="h-4 w-4" />
-                <span>CSV</span>
-              </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-1.5">
-                <FileText className="h-4 w-4" />
-                <span>PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Quick Export Bar - Removed as its functionality is now integrated */}
 
         {/* Prospect Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -441,7 +517,7 @@ const ProspectDashboard: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center space-x-1">
                         <button 
-                          onClick={() => setIsModalOpen(true)} 
+                          onClick={() => handleEditClick(prospect)} 
                           className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
                           title="Edit"
                         >
@@ -535,8 +611,26 @@ const ProspectDashboard: React.FC = () => {
       {/* Prospect Modal */}
       <ProspectModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleAddProspect}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProspect(null); // Clear editing state on close
+          setModalTitle('Entry Prospect'); // Reset title on close
+        }}
+        onSave={handleSaveProspect}
+        initialData={editingProspect ? {
+          namaPerusahaan: editingProspect.namaPerusahaan,
+          pic: editingProspect.pic,
+          email: editingProspect.email,
+          noTelp: editingProspect.noTelp,
+          deadlineProspect: editingProspect.deadlineProspect, // Already formatted in handleEditClick
+          topikPembicaraan: editingProspect.keterangan, // Using keterangan as placeholder
+          tindakLanjut: '', // Placeholder
+          hasil: '', // Placeholder
+          catatan: editingProspect.keterangan, // Using keterangan as placeholder
+          keterangan: editingProspect.keterangan,
+          tanggalUpdate: editingProspect.tanggalUpdate, // Already formatted in handleEditClick
+        } : null}
+        title={modalTitle}
       />
 
       {/* History Prospect Modal */}

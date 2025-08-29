@@ -148,6 +148,7 @@ import MarketingMainDashboard from './MarketingMainDashboard'; // NEW: Import Ma
 import ManagementMainDashboard from './ManagementMainDashboard'; // NEW: Import ManagementMainDashboard
 import MonitoringIzinAlatDashboard from './MonitoringIzinAlatDashboard'; // NEW: Import MonitoringIzinAlatDashboard
 import MonitoringPerizinanDashboard from './MonitoringPerizinanDashboard'; // NEW: Import MonitoringPerizinanDashboard
+import ApproveSPKDashboard from './ApproveSPKDashboard'; // NEW: Import ApproveSPKDashboard
 
 import { BarChart3, TrendingUp, Users, DollarSign, Calendar, Target, Award, Clock, Menu, Phone, Megaphone, FileText, ArrowRight, ArrowLeft, File, CheckCircle } from 'lucide-react';
 
@@ -463,6 +464,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/hrd/penilaian/master-indikator-hrd') {
       return <MasterIndikatorHRDDashboard />;
     }
+    // NEW: Route for Approve SPK
+    if (currentPage === '/hrd/spk/approve') {
+      return <ApproveSPKDashboard />;
+    }
     // HRD General Routes
     if (currentPage === '/hrd/general/kpi/dashboard') {
       return <DashboardKPIDashboard />;
@@ -695,6 +700,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/management/training') {
       return <ProsesPengajuanTrainingDashboard role="management" />;
+    }
+		    if (currentPage === '/management/po/jasa') {
+      return <POJasaDashboard role="management" />; // Pass role prop
+    }
+		    if (currentPage === '/management/po/barang') {
+      return <POBarangDashboard role="management" />;
     }
     // QHSE Routes
     if (currentPage === '/qhse/dashboard') {

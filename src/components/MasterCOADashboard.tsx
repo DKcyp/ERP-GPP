@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Clock, Search, PlusCircle, Edit, Trash2, Download } from 'lucide-react';
+import Modal from './Modal'; // Import the Modal component
+import ConfirmDeleteModal from './ConfirmDeleteModal'; // Import the ConfirmDeleteModal component
 
 interface COAItem {
   id: string;
@@ -11,7 +13,7 @@ interface COAItem {
 const MasterCOADashboard: React.FC = () => {
   const today = new Date();
 
-  const dummyData: COAItem[] = [
+  const [dummyData, setDummyData] = useState<COAItem[]>([
     { id: '1', kodeCOA: '1101', namaCOA: 'Kas Besar', kategori: 'Aset Lancar' },
     { id: '2', kodeCOA: '1102', namaCOA: 'Kas Kecil', kategori: 'Aset Lancar' },
     { id: '3', kodeCOA: '1110', namaCOA: 'Bank BCA', kategori: 'Aset Lancar' },
@@ -22,11 +24,22 @@ const MasterCOADashboard: React.FC = () => {
     { id: '8', kodeCOA: '2102', namaCOA: 'Utang Gaji', kategori: 'Liabilitas Jangka Pendek' },
     { id: '9', kodeCOA: '3101', namaCOA: 'Modal Disetor', kategori: 'Ekuitas' },
     { id: '10', kodeCOA: '4101', namaCOA: 'Pendapatan Penjualan', kategori: 'Pendapatan' },
-  ];
+  ]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterKategori, setFilterKategori] = useState('');
   const [showEntries, setShowEntries] = useState('10');
+
+  // State for the generic COA Modal (Add/Edit)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCOA, setEditingCOA] = useState<COAItem | null>(null); // Stores the COA item being edited, or null for adding
+  const [isEditing, setIsEditing] = useState(false); // True if editing, false if adding
+
+  // State for Delete Confirmation Modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [coaToDelete, setCoaToDelete] = useState<COAItem | null>(null);
+
+  const availableCategories = Array.from(new Set(dummyData.map(item => item.kategori)));
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}, Kategori: ${filterKategori}`);
@@ -34,19 +47,67 @@ const MasterCOADashboard: React.FC = () => {
   };
 
   const handleAdd = () => {
-    alert('Tambah COA');
-    // Implement add logic here
+    setIsEditing(false);
+    setEditingCOA({ id: '', kodeCOA: '', namaCOA: '', kategori: 'Aset Lancar' }); // Initialize with empty values
+    setIsModalOpen(true);
   };
 
   const handleEdit = (id: string) => {
-    alert(`Edit COA: ${id}`);
-    // Implement edit logic here
+    const coaToEdit = dummyData.find(item => item.id === id);
+    if (coaToEdit) {
+      setIsEditing(true);
+      setEditingCOA(coaToEdit);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCOA(null); // Clear editing COA data
+    setIsEditing(false); // Reset editing state
+  };
+
+  const handleFormInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (editingCOA) {
+      setEditingCOA(prev => ({ ...prev!, [name]: value }));
+    }
+  };
+
+  const handleSubmitForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCOA) return; // Should not happen if form is properly managed
+
+    if (isEditing) {
+      // Update existing COA
+      setDummyData(prev =>
+        prev.map(item => (item.id === editingCOA.id ? editingCOA : item))
+      );
+      alert(`COA ${editingCOA.id} berhasil diperbarui.`);
+    } else {
+      // Add new COA
+      const newId = (Math.max(...dummyData.map(item => parseInt(item.id))) + 1).toString();
+      const coaToAdd = { ...editingCOA, id: newId };
+      setDummyData(prev => [...prev, coaToAdd]);
+      alert(`COA Baru Ditambahkan: ${JSON.stringify(coaToAdd)}`);
+    }
+    handleCloseModal(); // Close modal after submission
   };
 
   const handleDelete = (id: string) => {
-    if (confirm(`Are you sure you want to delete COA ${id}?`)) {
-      alert(`Delete COA: ${id}`);
-      // Implement delete logic here
+    const coa = dummyData.find(item => item.id === id);
+    if (coa) {
+      setCoaToDelete(coa);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (coaToDelete) {
+      setDummyData(prev => prev.filter(item => item.id !== coaToDelete.id));
+      alert(`COA ${coaToDelete.kodeCOA} - ${coaToDelete.namaCOA} berhasil dihapus.`);
+      setCoaToDelete(null); // Clear the item to delete
+      setIsDeleteModalOpen(false); // Close the modal
     }
   };
 
@@ -115,11 +176,9 @@ const MasterCOADashboard: React.FC = () => {
                   onChange={(e) => setFilterKategori(e.target.value)}
                 >
                   <option value="">Semua Kategori</option>
-                  <option value="Aset Lancar">Aset Lancar</option>
-                  <option value="Liabilitas Jangka Pendek">Liabilitas Jangka Pendek</option>
-                  <option value="Ekuitas">Ekuitas</option>
-                  <option value="Pendapatan">Pendapatan</option>
-                  {/* Add more categories as needed */}
+                  {availableCategories.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
                 </select>
                 <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rotate-180" /> {/* Chevron down */}
               </div>
@@ -235,6 +294,90 @@ const MasterCOADashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit COA Modal */}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={isEditing ? "Edit COA" : "Tambah COA Baru"}>
+        <form onSubmit={handleSubmitForm} className="space-y-5">
+          <div>
+            <label htmlFor="kodeCOA" className="block text-sm font-medium text-text mb-2">
+              Kode COA
+            </label>
+            <input
+              type="text"
+              id="kodeCOA"
+              name="kodeCOA"
+              value={editingCOA?.kodeCOA || ''}
+              onChange={handleFormInputChange}
+              className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text"
+              placeholder="Masukkan Kode COA"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="namaCOA" className="block text-sm font-medium text-text mb-2">
+              Nama COA
+            </label>
+            <input
+              type="text"
+              id="namaCOA"
+              name="namaCOA"
+              value={editingCOA?.namaCOA || ''}
+              onChange={handleFormInputChange}
+              className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text"
+              placeholder="Masukkan Nama COA"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="kategori" className="block text-sm font-medium text-text mb-2">
+              Kategori
+            </label>
+            <select
+              id="kategori"
+              name="kategori"
+              value={editingCOA?.kategori || 'Aset Lancar'}
+              onChange={handleFormInputChange}
+              className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text appearance-none"
+              required
+            >
+              {availableCategories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+            >
+              {isEditing ? (
+                <>
+                  <Edit className="h-5 w-5 mr-2" /> Simpan Perubahan
+                </>
+              ) : (
+                <>
+                  <PlusCircle className="h-5 w-5 mr-2" /> Tambah
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={coaToDelete ? `${coaToDelete.kodeCOA} - ${coaToDelete.namaCOA}` : ''}
+      />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import SalesOrderModal, { SalesOrderFormData } from './SalesOrderModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  Plus, 
-  FileSpreadsheet, 
-  FileText, 
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -172,7 +172,14 @@ const SalesOrderDashboard: React.FC = () => {
     const matchesClient = item.namaClient.toLowerCase().includes(searchClient.toLowerCase());
     const matchesJenisPekerjaan = selectedJenisPekerjaan ? item.jenisPekerjaan === selectedJenisPekerjaan : true;
     
-    return matchesNoSO && matchesNomorKontrak && matchesClient && matchesJenisPekerjaan;
+    // Date filtering logic (if dates are provided)
+    const itemDate = new Date(item.tanggalDibuat.split('-').reverse().join('-')); // Assuming dd-mm-yyyy format
+    const fromDate = dateFrom ? new Date(dateFrom) : null;
+    const toDate = dateTo ? new Date(dateTo) : null;
+
+    const matchesDate = (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
+
+    return matchesNoSO && matchesNomorKontrak && matchesClient && matchesJenisPekerjaan && matchesDate;
   });
 
   // Pagination logic
@@ -221,80 +228,42 @@ const SalesOrderDashboard: React.FC = () => {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            {/* Search No SO */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {/* Cari No SO */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari No SO
               </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchNoSO}
-                    onChange={(e) => setSearchNoSO(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="SO0012"
-                  />
-                </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchNoSO}
+                  onChange={(e) => setSearchNoSO(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari No SO..."
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
-            {/* Search Nomor Kontrak */}
+            {/* Cari Nomor Kontrak */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari Nomor Kontrak
               </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchNomorKontrak}
-                    onChange={(e) => setSearchNomorKontrak(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="001/02/P0810"
-                  />
-                </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchNomorKontrak}
+                  onChange={(e) => setSearchNomorKontrak(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari Nomor Kontrak..."
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
-            {/* Search Client */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Cari Client
-              </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchClient}
-                    onChange={(e) => setSearchClient(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Client A"
-                  />
-                </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Jenis Kontrak Dropdown */}
+            {/* Pilih Jenis Pekerjaan Dropdown */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Pilih Jenis Pekerjaan
@@ -305,7 +274,7 @@ const SalesOrderDashboard: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
                 >
                   <span className={selectedJenisPekerjaan ? 'text-gray-900' : 'text-gray-500'}>
-                    {selectedJenisPekerjaan || 'On Call'}
+                    {selectedJenisPekerjaan || 'Pilih jenis pekerjaan...'}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisPekerjaanDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -341,86 +310,89 @@ const SalesOrderDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Date Range */}
+            {/* Cari Client */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Periode
+                Cari Client
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchClient}
+                  onChange={(e) => setSearchClient(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Cari Client..."
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
+            </div>
+
+            {/* Periode Dari */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Periode Dari
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Periode Sampai */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Periode Sampai
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Search Button */}
+            {/* Changed lg:col-span-2 to lg:col-span-1 to match input width */}
+            <div className="lg:col-span-1 flex items-end">
+              <button 
+                onClick={handleSearch}
+                className="w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2"
+              >
+                <Search className="h-4 w-4" />
+                <span>Cari</span>
+              </button>
             </div>
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-3">
-            <button 
-              onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
-            >
-              <Search className="h-4 w-4" />
-              <span>Cari Data</span>
-            </button>
+          {/* Action Buttons below filter panel */}
+          <div className="flex justify-end space-x-3 mt-6">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
-              <span>Tambah</span>
+              <span>Tambah Sales Order</span>
+            </button>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Export Excel</span>
+            </button>
+            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
+              <FileText className="h-4 w-4" />
+              <span>Export PDF</span>
             </button>
           </div>
         </div>
 
-        {/* Quick Export Bar */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">Show</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-              <span className="text-sm text-gray-700">entries</span>
-            </div>
-            <div className="flex space-x-3">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5">
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Export Excel</span>
-              </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5">
-                <File className="h-4 w-4" />
-                <span>Export CSV</span>
-              </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-1.5">
-                <FileText className="h-4 w-4" />
-                <span>Export PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Quick Export Bar - REMOVED */}
 
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">

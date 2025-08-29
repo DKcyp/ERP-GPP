@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Save, Loader2 } from 'lucide-react';
 
-interface SuspectModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (data: SuspectFormData) => void;
-}
-
 export interface SuspectFormData {
   namaPerusahaan: string;
   pic: string;
@@ -16,7 +10,14 @@ export interface SuspectFormData {
   bidangUsaha: string;
 }
 
-const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave }) => {
+interface SuspectModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: SuspectFormData & { id?: string }) => void; // Now accepts id for updates
+  initialData?: (SuspectFormData & { id: string }) | null; // Optional initial data for editing
+}
+
+const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
   const [formData, setFormData] = useState<SuspectFormData>({
     namaPerusahaan: '',
     pic: '',
@@ -29,45 +30,36 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave }) 
   const [errors, setErrors] = useState<Partial<SuspectFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const companyOptions = [
-    'PT Teknologi Maju',
-    'CV Digital Solutions',
-    'PT Industri Kreatif',
-    'UD Berkah Jaya',
-    'PT Global Mandiri',
-    'PT Inovasi Digital',
-    'CV Solusi Terpadu',
-    'PT Mitra Sejahtera'
-  ];
-
-  const bidangUsahaOptions = [
-    'Teknologi Informasi',
-    'Manufaktur',
-    'Perdagangan',
-    'Jasa Konsultasi',
-    'Konstruksi',
-    'Pendidikan',
-    'Kesehatan',
-    'Transportasi'
-  ];
-
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
     if (isOpen) {
+      // Initialize form data when modal opens, either with initialData or empty
+      setFormData(initialData || {
+        namaPerusahaan: '',
+        pic: '',
+        emailPIC: '',
+        noTelp: '',
+        alamatPerusahaan: '',
+        bidangUsaha: ''
+      });
+      setErrors({}); // Clear errors on open
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+    } else {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, initialData]);
+
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isOpen) {
+      onClose();
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<SuspectFormData> = {};
@@ -123,20 +115,10 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave }) 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    onSave(formData);
+    onSave({ ...formData, id: initialData?.id }); // Pass id if editing
     setIsLoading(false);
     
-    // Reset form
-    setFormData({
-      namaPerusahaan: '',
-      pic: '',
-      emailPIC: '',
-      noTelp: '',
-      alamatPerusahaan: '',
-      bidangUsaha: ''
-    });
-    setErrors({});
-    onClose();
+    onClose(); // Close modal after saving
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -147,6 +129,8 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave }) 
 
   if (!isOpen) return null;
 
+  const modalTitle = initialData ? 'Edit Suspect' : 'Entry Suspect';
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
@@ -155,7 +139,7 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave }) 
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Suspect</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{modalTitle}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"

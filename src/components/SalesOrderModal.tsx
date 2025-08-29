@@ -18,6 +18,7 @@ export interface SalesOrderFormData {
   tanggalDeMOB: string;
   tanggalDibuat: string;
   estimasiSO: string;
+  keterangan: string; // Added new field
 }
 
 const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -31,7 +32,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
     tanggalMOB: '',
     tanggalDeMOB: '',
     tanggalDibuat: new Date().toISOString().split('T')[0],
-    estimasiSO: ''
+    estimasiSO: '',
+    keterangan: '' // Added initial state for new field
   });
 
   const [errors, setErrors] = useState<Partial<SalesOrderFormData>>({});
@@ -106,6 +108,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
       newErrors.estimasiSO = 'Estimasi SO wajib diisi';
     }
 
+    if (!formData.keterangan.trim()) { // Added validation for keterangan
+      newErrors.keterangan = 'Keterangan wajib diisi';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -144,7 +150,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
       tanggalMOB: '',
       tanggalDeMOB: '',
       tanggalDibuat: new Date().toISOString().split('T')[0],
-      estimasiSO: ''
+      estimasiSO: '',
+      keterangan: '' // Reset new field
     });
     setErrors({});
     onClose();
@@ -345,7 +352,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.estimasiSO ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                  placeholder="Rp 20.000.000"
+                  placeholder="Estimasi SO"
                 />
                 {errors.estimasiSO && (
                   <p className="mt-1 text-sm text-red-600">{errors.estimasiSO}</p>
@@ -357,20 +364,36 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Lokasi <span className="text-red-500">*</span>
                 </label>
-                <select
+								<input
+                  type="text"
                   value={formData.lokasi}
-                  onChange={(e) => handleInputChange('lokasi', e.target.value)}
+                  onChange={(e) => handleInputChange('lokasi', e.target.value)} // Corrected field
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.lokasi ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                >
-                  <option value="">Pilih Lokasi</option>
-                  {lokasiOptions.map((lokasi) => (
-                    <option key={lokasi} value={lokasi}>{lokasi}</option>
-                  ))}
-                </select>
+                  placeholder="Lokasi"
+                />
                 {errors.lokasi && (
                   <p className="mt-1 text-sm text-red-600">{errors.lokasi}</p>
+                )}
+              </div>
+
+							{/* Estimasi Keterangan */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Estimasi Keterangan <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.keterangan}
+                  onChange={(e) => handleInputChange('keterangan', e.target.value)} // Corrected field
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    errors.keterangan ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                  }`}
+                  placeholder="Keterangan"
+                />
+                {errors.keterangan && (
+                  <p className="mt-1 text-sm text-red-600">{errors.keterangan}</p> // Corrected error display
                 )}
               </div>
             </div>

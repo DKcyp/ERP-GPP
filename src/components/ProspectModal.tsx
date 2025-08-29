@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Save, Loader2 } from 'lucide-react';
 
-interface ProspectModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (data: ProspectFormData) => void;
-}
-
 export interface ProspectFormData {
   namaPerusahaan: string;
   pic: string;
@@ -21,7 +15,15 @@ export interface ProspectFormData {
   tanggalUpdate: string;
 }
 
-const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }) => {
+interface ProspectModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: ProspectFormData) => void;
+  initialData?: ProspectFormData | null; // New prop for pre-filling
+  title: string; // New prop for modal title
+}
+
+const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, initialData, title }) => {
   const [formData, setFormData] = useState<ProspectFormData>({
     namaPerusahaan: '',
     pic: '',
@@ -39,17 +41,6 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }
   const [errors, setErrors] = useState<Partial<ProspectFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const companyOptions = [
-    'PT Teknologi Maju',
-    'CV Digital Solutions',
-    'PT Industri Kreatif',
-    'UD Berkah Jaya',
-    'PT Global Mandiri',
-    'PT Inovasi Digital',
-    'CV Solusi Terpadu',
-    'PT Mitra Sejahtera'
-  ];
-
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -60,13 +51,47 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      if (initialData) {
+        setFormData(initialData);
+      } else {
+        // Reset form for new entry if no initialData
+        setFormData({
+          namaPerusahaan: '',
+          pic: '',
+          email: '',
+          noTelp: '',
+          deadlineProspect: '',
+          topikPembicaraan: '',
+          tindakLanjut: '',
+          hasil: '',
+          catatan: '',
+          keterangan: '',
+          tanggalUpdate: new Date().toISOString().split('T')[0]
+        });
+      }
+    } else {
+      // Reset form and errors when modal closes
+      setFormData({
+        namaPerusahaan: '',
+        pic: '',
+        email: '',
+        noTelp: '',
+        deadlineProspect: '',
+        topikPembicaraan: '',
+        tindakLanjut: '',
+        hasil: '',
+        catatan: '',
+        keterangan: '',
+        tanggalUpdate: new Date().toISOString().split('T')[0]
+      });
+      setErrors({});
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, initialData]); // Add initialData to dependency array
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ProspectFormData> = {};
@@ -121,21 +146,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }
     onSave(formData);
     setIsLoading(false);
     
-    // Reset form
-    setFormData({
-      namaPerusahaan: '',
-      pic: '',
-      email: '',
-      noTelp: '',
-      deadlineProspect: '',
-      topikPembicaraan: '',
-      tindakLanjut: '',
-      hasil: '',
-      catatan: '',
-      keterangan: '',
-      tanggalUpdate: new Date().toISOString().split('T')[0]
-    });
-    setErrors({});
+    // onClose will trigger useEffect to reset form
     onClose();
   };
 
@@ -155,7 +166,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Prospect</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -295,8 +306,14 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }
                   value={formData.catatan}
                   onChange={(e) => handleInputChange('catatan', e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] border-gray-200`}
                   placeholder="Masukkan catatan"
+									style={{ minHeight: '50px', resize: 'vertical' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = Math.max(50, target.scrollHeight) + 'px';
+                  }}
                 />
               </div>
 
@@ -330,8 +347,14 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave }
                   value={formData.keterangan}
                   onChange={(e) => handleInputChange('keterangan', e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                  placeholder="Masukkan keterangan"
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] border-gray-200`}
+                  placeholder="Masukkan Keterangan"
+									style={{ minHeight: '50px', resize: 'vertical' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = Math.max(50, target.scrollHeight) + 'px';
+                  }}
                 />
               </div>
 

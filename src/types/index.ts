@@ -1,126 +1,106 @@
-// Existing types from MonitoringIzinAlatDashboard.tsx
-export interface IzinAlatData {
+import { LucideIcon } from 'lucide-react';
+
+export interface User {
   id: string;
+  name: string;
+  email: string;
+  role: 'marketing' | 'operational' | 'hrd' | 'pengadaan' | 'finance' | 'gudang' | 'management' | 'qhse' | 'accounting' | 'tax' | 'procon';
+}
+
+export interface MenuSection {
+  title: string;
+  icon: string; // Name of the Lucide icon
+  items?: MenuItem[];
+  subSections?: MenuSubSection[];
+  directPath?: string; // For sections that are directly clickable
+}
+
+export interface MenuSubSection {
+  title: string;
+  icon: string; // Name of the Lucide icon
+  items: MenuItem[];
+}
+
+export interface MenuItem {
+  title: string;
+  icon: string; // Name of the Lucide icon
+  path: string;
+}
+
+export interface ApprovalActionData {
+  invoiceId: string;
+  action: 'approve' | 'reject';
+  keterangan: string;
+}
+
+export interface PenggajianDetailItem {
   no: number;
-  kodeBarang: string;
-  namaAlat: string;
-  noSeri: string;
-  jenisPerizinan: string;
-  tanggalBerlaku: string;
-  tanggalExp: string;
-  status: 'Aktif' | 'Segera Habis' | 'Expired' | 'Menunggu Persetujuan' | 'Disetujui' | 'Izin Tersedia';
+  tanggalPenggajian: string;
+  gajiPokok: number;
+  potonganPPH21: number;
+  potonganBPJS: number;
+  potonganMess: number;
+  uangTunjangan: number;
+  totalGaji: number;
 }
 
-export interface HistoryIzinEntry {
-  no: number;
-  tanggalPerpanjang: string;
-  tanggalExp: string;
-  dokumenUrl: string;
-  catatan?: string;
-}
-
-// Updated PerpanjangIzinFormData
-export interface PerpanjangIzinFormData {
-  namaAlat: string;
-  kodeBarang: string;
-  noSeri: string;
-  jenisPerizinan: string;
-  alasan?: string; // Added 'alasan' based on image
-}
-
-// Updated DetailIzinAlatFormData
-export interface DetailIzinAlatFormData {
-  kodeBarang: string;
-  namaAlat: string;
-  noSeri: string;
-  jenisPerizinan: string;
-  noDokumen: string;
-  tanggalMulaiBerlaku: string;
-  tanggalBerakhir: string;
-  uploadDokumen?: File | null; // Added for file upload
-}
-
-// New type for PerizinanAlatDashboard table
-export interface PerizinanAlatEntry {
+export interface PenggajianDetailData {
   id: string;
-  no: number;
-  kodeBarang: string;
-  namaAlat: string;
-  noSeri: string;
-  jenisPerizinan: string;
-  status: 'Belum Berizin' | 'Menunggu Persetujuan' | 'Disetujui' | 'Izin Tersedia' | 'Aktif';
+  noPenggajian: string;
+  periode: string;
+  noPegawai: string;
+  namaPegawai: string;
+  nipPegawai: string;
+  keterangan: string;
+  bonusKinerja: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  approver: string;
+  items: PenggajianDetailItem[];
 }
 
-// New type for AjukanIzinModal
-export interface AjukanIzinFormData {
-  kodeBarang: string;
-  namaAlat: string;
-  noSeri: string;
-  jenisPerizinan: string;
-  catatan?: string;
+export interface ApprovalPenggajianActionData {
+  penggajianId: string;
+  action: 'approve' | 'reject';
+  keterangan: string;
 }
 
-// New type for Dashboard Alerts
-export interface AlertItem {
+// NEW: SPK Data Types
+export interface SPKData {
   id: string;
-  message: string;
-  type: 'error' | 'success' | 'info';
-  actionText?: string;
-}
-
-// New type for EntrySupplierBiddingModal (keeping it for now, though not used in this dashboard directly)
-export interface EntrySupplierBiddingFormData {
-  noBidding: string;
-  tanggalBidding: string;
-  noPR: string;
+  noSPK: string;
+  tanggalSPK: string;
+  namaPegawai: string;
+  jabatan: string;
   departemen: string;
-  itemBarangJasa: string[];
+  jenisPekerjaan: string;
+  lokasiKerja: string;
+  periodeAwal: string;
+  periodeAkhir: string;
+  statusSPK: 'Pending' | 'Aktif' | 'Selesai' | 'Batal' | 'Approved'; // Added Pending and Approved
+}
+
+// NEW: Employee Data Type for dropdowns
+export interface EmployeeData {
+  id: string;
+  name: string;
+  position: string;
+  department: string;
+}
+
+// PO Jasa Types
+export interface EntryPOJasaItem {
+  id: string;
+  namaJasa: string;
+  kodeJasa: string;
   qty: number;
-  namaVendor: string[];
-  namaPemenang?: string;
-}
-
-// New type for Daftar Seleksi Supplier / Bidding Dashboard table
-export interface SeleksiSupplierBiddingData {
-  no: number;
-  noBidding: string;
-  tglPendaftaranVendor: string;
-  namaVendor: string;
-  namaPIC: string;
-  noTelp: string;
-  noPR: string;
-  vendorTerpilih: 'Accept' | 'Rejected';
-}
-
-// New types for PO Barang Dashboard Modals
-export interface POApprovalHistory {
-  managerPPIC: 'Approve' | 'Pending';
-  gudangManajer: 'Approve' | 'Pending';
-  direkturOPS: 'Approve' | 'Pending';
-  direkturUtama: 'Approve' | 'Pending';
-}
-
-export interface DetailPOBarangItem {
-  kodeBarang: string;
-  namaBarang: string;
-  beliSatuan: string;
-  jumlahBeli: number;
+  satuan: string;
   hargaSatuan: number;
   disc: number;
   jumlah: number;
+  keterangan: string;
 }
 
-export interface DetailPOBarangData {
-  noPr: string;
-  vendor: string;
-  ppn: string; // Assuming PPN is a string like "11%"
-  noPoBarang: string;
-  tanggalPo: string;
-  items: DetailPOBarangItem[];
-}
-
-// New type for EntryPOBarangModal
-export interface EntryPOBarangFormData {
+export interface EntryPOJasaFormData {
   noPr: string;
   periodePr: string;
   divisi: string;
@@ -130,36 +110,9 @@ export interface EntryPOBarangFormData {
   tanggalPo: string;
   tanggalPengiriman: string;
   status: 'Paid' | 'Unpaid';
-}
-
-// New types for Entry PO Jasa Modal
-export interface EntryPOJasaItem {
-  id: string; // Unique ID for each item in the table
-  namaJasa: string;
-  kodeJasa: string;
-  qty: number;
-  satuan: string;
-  hargaSatuan: number;
-  disc: number; // Assuming percentage for now
-  jumlah: number; // Calculated field
-  keterangan: string;
-}
-
-export interface EntryPOJasaFormData {
-  noPr: string;
-  tanggalPo: string; // Date string
-  noPo: string;
-  vendor: string;
-  noSo: string;
-  kodeVendor: string;
-  departemen: string;
-  pajak: string; // e.g., "PPN 11%"
-  metodePembayaran: string;
   items: EntryPOJasaItem[];
-  daftarFile: File | null; // For file upload
 }
 
-// New type for PO Jasa Data in the dashboard table
 export interface POJasaData {
   id: number;
   noPr: string;
@@ -170,93 +123,89 @@ export interface POJasaData {
   noPo: string;
   tanggalPo: string;
   tanggalPengiriman: string;
-  status: 'Paid' | 'Unpaid';
-  items: EntryPOJasaItem[]; // Added for edit functionality
+  status: 'Paid' | 'Unpaid'; // Status can be 'Paid' or 'Unpaid'
+  items: EntryPOJasaItem[];
 }
 
-// New types for Gudang Penerimaan Dashboard
-export interface TandaTerimaPODariGudangData {
+// NEW: PO Barang Types
+export interface POBarangItemEntry { // Used for EntryPOBarangModal
   id: string;
-  no: number;
-  noPO: string;
-  noFaktur: string;
-  tglFaktur: string;
-  vendor: string;
-  penerima: string;
-  verifikasi: boolean;
-}
-
-export interface TandaTerimaGudangItem {
-  kodeBarang: string;
   namaBarang: string;
-  jumlah: number;
-  diterima: number;
-  satuan: string;
-  hargaSatuan: number;
-  hargaGross: number;
-}
-
-export interface TandaTerimaGudangDetailData {
-  noPO: string;
-  noFaktur: string;
-  tglFaktur: string;
-  penerima: string;
-  tanggalVerifikasi: string; // dd/mm/yyyy
-  namaVerifikasi: string;
-  unduhDokumen: string; // filename or URL
-  items: TandaTerimaGudangItem[];
-  grandTotal: number;
-}
-
-// New type for Invoice Dashboard
-export interface InvoiceDashboardData {
-  id: string;
-  no: number;
-  noPO: string;
-  tanggalPO: string; // Tanggal PO
-  namaVendor: string;
-  nilaiInvoice: string; // Nilai Invoice
-  penerimaInvoice: string; // Penerima Invoice
-  statusVerifikasi: 'Pending' | 'Approved' | 'Rejected';
-  unduhInvoice: string; // URL or filename for invoice download
-  tanggalVerifikasi: string; // dd/mm/yyyy
-}
-
-// New type for Invoice Form Input
-export interface InvoiceFormInput {
-  noPO: string;
-  tanggalPO: string;
-  namaVendor: string;
-  nilaiInvoice: string;
-  penerimaInvoice: string;
-}
-
-// New type for the data displayed in the Tanda Terima Invoice Modal
-export interface TandaTerimaInvoiceDetail {
-  id: string;
-  tanggalPO: string;
-  noPO: string;
-  namaVendor: string;
-  nilaiInvoice: string;
-  penerimaInvoice: string;
-  unduhInvoice: string; // URL or filename
-  tanggalVerifikasi: string; // dd/mm/yyyy
-}
-
-// Existing type for DetailInvoiceModal (from context buffer)
-export interface InvoiceDetailItem {
-  no: number;
   kodeBarang: string;
-  namaBarang: string;
-  jumlah: number;
+  qty: string;
   satuan: string;
-  harga: number;
+  hargaSatuan: string;
+  pajakItem: string;
+  discRp: string;
+  jumlah: string;
+  keterangan: string;
 }
 
-export interface InvoiceDetailData {
+export interface EntryPOBarangFormData { // Used for EntryPOBarangModal
+  noPR: string;
   noSO: string;
-  namaProject: string;
-  hppSO: string;
-  noInvoice: string;
-  items: InvoiceDetailItem[];
+  metodePembayaran: string;
+  tanggalPO: string;
+  kodeVendor: string;
+  tanggalPengiriman: string;
+  noPO: string;
+  departemen: string;
+  vendor: string;
+  pajak: string;
+  tandaBukti: File | null;
+  daftarFile: File[];
+  items: POBarangItemEntry[];
+  total: string;
+  discAkhir: string;
+  subTotal: string;
+  ppn: string;
+  ongkosKirim: string;
+  grandTotal: string;
+}
+
+export interface POBarangItem { // Used for POBarangData and ApprovePOBarangModal
+  id: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: string;
+  satuan: string;
+  hargaSatuan: string;
+  pajakItem: string;
+  discRp: string;
+  jumlah: string;
+  keterangan: string;
+}
+
+export interface POBarangData { // Full PO Barang data for display/approval
+  id: number;
+  noPr: string;
+  periodePr: string;
+  divisi: string;
+  kodeSupplier: string;
+  namaSupplier: string;
+  noPo: string;
+  tanggalPo: string;
+  tanggalPengiriman: string;
+  status: 'Paid' | 'Unpaid' | 'Pending'; // Added 'Pending' status
+  noSO?: string;
+  metodePembayaran?: string;
+  kodeVendor?: string;
+  departemen?: string;
+  vendor?: string;
+  pajak?: string;
+  tandaBuktiUrl?: string; // Assuming file is uploaded and a URL is stored
+  daftarFileUrls?: string[]; // Assuming files are uploaded and URLs are stored
+  items: POBarangItem[];
+  total?: string;
+  discAkhir?: string;
+  subTotal?: string;
+  ppn?: string;
+  ongkosKirim?: string;
+  grandTotal?: string;
+}
+
+export interface ApprovalPOBarangFormData {
+  poId: number;
+  action: 'approve' | 'reject';
+  keterangan?: string; // Optional for approval/rejection notes
 }

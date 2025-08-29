@@ -39,16 +39,7 @@ const PenawaranModal: React.FC<PenawaranModalProps> = ({ isOpen, onClose, onSave
   const [errors, setErrors] = useState<Partial<PenawaranFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const clientOptions = [
-    'PT Teknologi Maju',
-    'CV Digital Solutions',
-    'PT Industri Kreatif',
-    'UD Berkah Jaya',
-    'PT Global Mandiri',
-    'PT Inovasi Digital',
-    'CV Solusi Terpadu',
-    'PT Mitra Sejahtera'
-  ];
+  // Removed clientOptions as Nama Client will be a free text input
 
   const salesOptions = [
     'Ahmad Rizki',
@@ -195,18 +186,15 @@ const PenawaranModal: React.FC<PenawaranModalProps> = ({ isOpen, onClose, onSave
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nama Client <span className="text-red-500">*</span>
                 </label>
-                <select
+                <input
+                  type="text"
                   value={formData.namaClient}
                   onChange={(e) => handleInputChange('namaClient', e.target.value)}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaClient ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                >
-                  <option value="">Pilih Nama Client</option>
-                  {clientOptions.map((client) => (
-                    <option key={client} value={client}>{client}</option>
-                  ))}
-                </select>
+                  placeholder="Masukkan Nama Client"
+                />
                 {errors.namaClient && (
                   <p className="mt-1 text-sm text-red-600">{errors.namaClient}</p>
                 )}
@@ -298,7 +286,7 @@ const PenawaranModal: React.FC<PenawaranModalProps> = ({ isOpen, onClose, onSave
               {/* Keterangan */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Keterangan
+                  Keterangan <span className="text-red-500">*</span>
                 </label>
                 <div className="border border-gray-200 rounded-xl overflow-hidden">
                   <Editor
@@ -364,7 +352,7 @@ const PenawaranModal: React.FC<PenawaranModalProps> = ({ isOpen, onClose, onSave
               {/* Catatan */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Catatan
+                  Catatan <span className="text-red-500">*</span>
                 </label>
                 <div className="border border-gray-200 rounded-xl overflow-hidden">
                   <Editor
@@ -430,7 +418,7 @@ const PenawaranModal: React.FC<PenawaranModalProps> = ({ isOpen, onClose, onSave
               {/* Tanggal Update */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tanggal Update
+                  Tanggal Update <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input

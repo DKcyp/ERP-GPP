@@ -154,7 +154,7 @@ export const operationalMenu: MenuSection[] = [
     icon: 'GraduationCap',
     items: [
       { title: 'Dashboard', icon: 'BarChart3', path: 'hrd/operational/training/dashboard' },
-      { title: 'Proses Training', icon: 'BookOpen', path: '/operational/training/proses' }
+      { title: 'Proses Training', icon: '/operational/training/proses' }
     ]
   },
   {
@@ -249,6 +249,13 @@ export const hrdMenu: MenuSection[] = [
       { title: 'Master Indikator HRD', icon: 'Target', path: '/hrd/penilaian/master-indikator-hrd' }
     ]
   },
+  {
+    title: 'SPK', // Moved SPK Section to HRD
+    icon: 'FileSignature',
+    items: [
+      { title: 'Approve SPK', icon: 'CheckCircle', path: '/hrd/spk/approve' },
+    ]
+  },
   createGeneralMenu('hrd')
 ];
 
@@ -273,7 +280,7 @@ export const pengadaanMenu: MenuSection[] = [
     title: 'Seleksi Supplier / Bidding',
     icon: 'Handshake',
     items: [
-      { title: 'Proses Seleksi Supplier / Bidding', icon: 'ClipboardCheck', path: '/pengadaan/seleksi/seleksi' },
+      { title: 'Dashboard Seleksi Supplier / Bidding', icon: 'ClipboardCheck', path: '/pengadaan/seleksi/seleksi' },
       { title: 'Daftar Seleksi Supplier / Bidding', icon: 'ClipboardList', path: '/pengadaan/seleksi/daftar' },
       { title: 'Laporan', icon: 'FileText', path: '/pengadaan/seleksi/laporan' }
     ]
@@ -493,7 +500,25 @@ export const managementMenu: MenuSection[] = [
     icon: 'CheckCircle', // Icon for approval
     items: [],
     directPath: '/management/training' // Path to Proses Training page
-  }
+  },
+	  {
+    title: 'SPK', 
+    icon: 'CheckCircle',
+    items: [],
+		directPath: '/hrd/spk/approve'
+  },
+		  {
+    title: 'Approve PO Barang', 
+    icon: 'Package',
+		items: [],
+		directPath: '/management/po/barang'
+  },
+		  {
+    title: 'Approve PO Jasa', 
+    icon: 'Wrench',
+		items: [],
+		directPath: '/management/po/jasa'
+  },
 ];
 
 export const qhseMenu: MenuSection[] = [
@@ -626,7 +651,7 @@ export const accountingMenu: MenuSection[] = [
     items: [],
     directPath: '/accounting/neraca'
   },
-  createGeneralMenu('accounting') // Retain createGeneralMenu
+	createGeneralMenu('gudang')
 ];
 
 // Refined Tax Menu
@@ -637,7 +662,7 @@ export const taxMenu: MenuSection[] = [
     subSections: [
       {
         title: 'Pajak', // Sub-section title, can be same as main section or more specific
-        icon: 'Scale', // Icon for the sub-section
+        icon: 'Scale', // Sub-section icon
         items: [
           { title: 'Pajak Masukan', icon: 'ArrowDownCircle', path: '/tax/pajak-masukan' },
           { title: 'Pajak Keluaran', icon: 'ArrowUpCircle', path: '/tax/pajak-keluaran' },

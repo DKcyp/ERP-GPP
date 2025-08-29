@@ -15,7 +15,9 @@ import {
   ChevronDown,
   Calendar,
   Clock,
-  Info
+  Info,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface KontrakDeal {
@@ -25,86 +27,119 @@ interface KontrakDeal {
   namaKontrak: string;
   jenisKontrak: string;
   tanggalKontrak: string;
-  durasiKontrak: string;
+  durasiKontrak: string; // This is a combined string, will need to parse for editing
   nilaiKontrak: string;
   lokasiPekerjaan: string;
   scopeOfWork: string;
+  pic: string;
+  statusPenawaran: 'Deal' | 'Pending' | 'Cancel';
+  // For editing, we need the raw start/end dates
+  durasiKontrakStartRaw?: string;
+  durasiKontrakEndRaw?: string;
 }
 
 const KontrakDealDashboard: React.FC = () => {
-  const [searchNamaClient, setSearchNamaClient] = useState('');
-  const [searchNamaKontrak, setSearchNamaKontrak] = useState('');
+  const [searchNoKontrak, setSearchNoKontrak] = useState('');
+  const [searchPIC, setSearchPIC] = useState('');
   const [selectedJenisKontrak, setSelectedJenisKontrak] = useState('');
+  const [searchLokasiPekerjaan, setSearchLokasiPekerjaan] = useState('');
+  const [selectedStatusKontrak, setSelectedStatusKontrak] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [jenisKontrakDropdownOpen, setJenisKontrakDropdownOpen] = useState(false);
+  const [statusKontrakDropdownOpen, setStatusKontrakDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isKickOffModalOpen, setIsKickOffModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<KontrakDeal | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
+  // New state for editing
+  const [editingKontrakDeal, setEditingKontrakDeal] = useState<KontrakDealFormData | null>(null);
 
   // Sample data
   const [kontrakDeals, setKontrakDeals] = useState<KontrakDeal[]>([
     {
-      id: '1',
+      id: 'KD-001',
       no: 1,
       namaClient: 'PT Teknologi Maju',
       namaKontrak: 'Implementasi ERP System',
       jenisKontrak: 'Software Development',
       tanggalKontrak: '15-01-2025',
-      durasiKontrak: '12 Bulan',
+      durasiKontrak: '12 Bulan', // This is a display string
+      durasiKontrakStartRaw: '2025-01-15', // Raw date for editing
+      durasiKontrakEndRaw: '2026-01-15', // Raw date for editing
       nilaiKontrak: 'Rp 2.500.000.000',
       lokasiPekerjaan: 'Jakarta Selatan',
-      scopeOfWork: 'Full ERP Implementation'
+      scopeOfWork: 'Full ERP Implementation',
+      pic: 'Budi Santoso',
+      statusPenawaran: 'Deal'
     },
     {
-      id: '2',
+      id: 'KD-002',
       no: 2,
       namaClient: 'CV Digital Solutions',
       namaKontrak: 'Website Development',
       jenisKontrak: 'Web Development',
       tanggalKontrak: '14-01-2025',
       durasiKontrak: '6 Bulan',
+      durasiKontrakStartRaw: '2025-01-14',
+      durasiKontrakEndRaw: '2025-07-14',
       nilaiKontrak: 'Rp 750.000.000',
       lokasiPekerjaan: 'Bandung',
-      scopeOfWork: 'Corporate Website & CMS'
+      scopeOfWork: 'Corporate Website & CMS',
+      pic: 'Sari Dewi',
+      statusPenawaran: 'Pending'
     },
     {
-      id: '3',
+      id: 'KD-003',
       no: 3,
       namaClient: 'PT Industri Kreatif',
       namaKontrak: 'IT Infrastructure Setup',
       jenisKontrak: 'Infrastructure',
       tanggalKontrak: '13-01-2025',
       durasiKontrak: '8 Bulan',
+      durasiKontrakStartRaw: '2025-01-13',
+      durasiKontrakEndRaw: '2025-09-13',
       nilaiKontrak: 'Rp 1.200.000.000',
       lokasiPekerjaan: 'Surabaya',
-      scopeOfWork: 'Network & Server Setup'
+      scopeOfWork: 'Network & Server Setup',
+      pic: 'Ahmad Rizki',
+      statusPenawaran: 'Deal'
     },
     {
-      id: '4',
+      id: 'KD-004',
       no: 4,
       namaClient: 'UD Berkah Jaya',
       namaKontrak: 'POS System Integration',
       jenisKontrak: 'System Integration',
       tanggalKontrak: '12-01-2025',
       durasiKontrak: '4 Bulan',
+      durasiKontrakStartRaw: '2025-01-12',
+      durasiKontrakEndRaw: '2025-05-12',
       nilaiKontrak: 'Rp 450.000.000',
       lokasiPekerjaan: 'Yogyakarta',
-      scopeOfWork: 'POS & Inventory System'
+      scopeOfWork: 'POS & Inventory System',
+      pic: 'Maya Putri',
+      statusPenawaran: 'Cancel'
     },
     {
-      id: '5',
+      id: 'KD-005',
       no: 5,
       namaClient: 'PT Global Mandiri',
       namaKontrak: 'Mobile App Development',
       jenisKontrak: 'Mobile Development',
       tanggalKontrak: '11-01-2025',
       durasiKontrak: '10 Bulan',
+      durasiKontrakStartRaw: '2025-01-11',
+      durasiKontrakEndRaw: '2025-11-11',
       nilaiKontrak: 'Rp 1.800.000.000',
       lokasiPekerjaan: 'Medan',
-      scopeOfWork: 'iOS & Android App'
+      scopeOfWork: 'iOS & Android App',
+      pic: 'Andi Wijaya',
+      statusPenawaran: 'Pending'
     }
   ]);
 
@@ -113,25 +148,54 @@ const KontrakDealDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleAddKontrakDeal = (formData: KontrakDealFormData) => {
-    const newKontrakDeal: KontrakDeal = {
-      id: (kontrakDeals.length + 1).toString(),
-      no: kontrakDeals.length + 1,
-      namaClient: formData.namaClient,
-      namaKontrak: formData.namaKontrak,
-      jenisKontrak: formData.jenisKontrak,
-      tanggalKontrak: new Date(formData.tanggalKontrak).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      durasiKontrak: `${formData.durasiKontrakStart} s.d ${formData.durasiKontrakEnd}`,
-      nilaiKontrak: formData.nilaiKontrak,
-      lokasiPekerjaan: formData.lokasiPekerjaan,
-      scopeOfWork: formData.scopeOfWork || 'Kontrak baru'
-    };
-
-    setKontrakDeals(prev => [newKontrakDeal, ...prev]);
+  const handleSaveKontrakDeal = (formData: KontrakDealFormData) => {
+    if (formData.id) { // If formData has an ID, it's an edit operation
+      setKontrakDeals(prev => prev.map(kontrak => 
+        kontrak.id === formData.id // Use formData.id to find the item
+          ? {
+              ...kontrak, // Keep existing fields not in modal (like pic, statusPenawaran)
+              namaClient: formData.namaClient,
+              namaKontrak: formData.namaKontrak,
+              jenisKontrak: formData.jenisKontrak,
+              tanggalKontrak: new Date(formData.tanggalKontrak).toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              }),
+              durasiKontrak: `${formData.durasiKontrakStart} s.d ${formData.durasiKontrakEnd}`,
+              durasiKontrakStartRaw: formData.durasiKontrakStart,
+              durasiKontrakEndRaw: formData.durasiKontrakEnd,
+              nilaiKontrak: formData.nilaiKontrak,
+              lokasiPekerjaan: formData.lokasiPekerjaan,
+              scopeOfWork: formData.scopeOfWork || 'Kontrak diperbarui',
+            }
+          : kontrak
+      ));
+    } else {
+      // This is an add operation
+      const newKontrakDeal: KontrakDeal = {
+        id: `KD-${(kontrakDeals.length + 1).toString().padStart(3, '0')}`,
+        no: kontrakDeals.length + 1,
+        namaClient: formData.namaClient,
+        namaKontrak: formData.namaKontrak,
+        jenisKontrak: formData.jenisKontrak,
+        tanggalKontrak: new Date(formData.tanggalKontrak).toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }),
+        durasiKontrak: `${formData.durasiKontrakStart} s.d ${formData.durasiKontrakEnd}`,
+        durasiKontrakStartRaw: formData.durasiKontrakStart,
+        durasiKontrakEndRaw: formData.durasiKontrakEnd,
+        nilaiKontrak: formData.nilaiKontrak,
+        lokasiPekerjaan: formData.lokasiPekerjaan,
+        scopeOfWork: formData.scopeOfWork || 'Kontrak baru',
+        pic: 'Default PIC',
+        statusPenawaran: 'Pending'
+      };
+      setKontrakDeals(prev => [newKontrakDeal, ...prev]);
+    }
+    setEditingKontrakDeal(null); // Clear editing state
   };
 
   const handleKickOffSave = (formData: KickOffFormData) => {
@@ -149,9 +213,77 @@ const KontrakDealDashboard: React.FC = () => {
       setKontrakDeals(prev => prev.filter(k => k.id !== itemToDelete.id));
       setItemToDelete(null);
     }
+    setDeleteModalOpen(false); // Close delete modal after confirmation
+  };
+
+  const handleAddClick = () => {
+    setEditingKontrakDeal(null); // Ensure form is for new entry
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (kontrak: KontrakDeal) => {
+    // User requested arbitrary data for pre-filling, but we need the ID to update the correct row
+    const arbitraryData: KontrakDealFormData = {
+      id: kontrak.id, // Crucially, pass the ID of the item being edited
+      noKontrak: 'ARB-001',
+      namaClient: 'PT Arbitrary Solutions',
+      namaKontrak: 'Arbitrary Project X',
+      jenisKontrak: 'Tender',
+      tanggalKontrak: '2025-03-01',
+      durasiKontrakStart: '2025-03-01',
+      durasiKontrakEnd: '2025-09-01',
+      nilaiKontrak: 'Rp 1.500.000.000',
+      lokasiPekerjaan: 'Arbitrary City',
+      scopeOfWork: 'Arbitrary scope of work for editing.',
+      uploadKontrak: null
+    };
+    setEditingKontrakDeal(arbitraryData);
+    setIsModalOpen(true);
   };
 
   const jenisKontrakOptions = ['Software Development', 'Web Development', 'Mobile Development', 'Infrastructure', 'System Integration', 'Consulting'];
+  const statusKontrakOptions = ['Deal', 'Pending', 'Cancel'];
+
+  // Filter data based on search criteria
+  const filteredKontrakDeals = kontrakDeals.filter(kontrak => {
+    const matchesNoKontrak = kontrak.id.toLowerCase().includes(searchNoKontrak.toLowerCase());
+    const matchesPIC = kontrak.pic.toLowerCase().includes(searchPIC.toLowerCase());
+    const matchesJenisKontrak = selectedJenisKontrak ? kontrak.jenisKontrak === selectedJenisKontrak : true;
+    const matchesLokasiPekerjaan = kontrak.lokasiPekerjaan.toLowerCase().includes(searchLokasiPekerjaan.toLowerCase());
+    const matchesStatusKontrak = selectedStatusKontrak ? kontrak.statusPenawaran === selectedStatusKontrak : true;
+
+    // Date filtering logic
+    const kontrakDate = new Date(kontrak.tanggalKontrak.split('-').reverse().join('-')); // Convert DD-MM-YYYY to YYYY-MM-DD
+    const fromDate = dateFrom ? new Date(dateFrom) : null;
+    const toDate = dateTo ? new Date(dateTo) : null;
+
+    const matchesDate = (!fromDate || kontrakDate >= fromDate) && (!toDate || kontrakDate <= toDate);
+
+    return matchesNoKontrak && matchesPIC && matchesJenisKontrak && matchesLokasiPekerjaan && matchesStatusKontrak && matchesDate;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredKontrakDeals.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = filteredKontrakDeals.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const getStatusPenawaranColor = (status: string) => {
+    switch (status) {
+      case 'Deal': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Cancel': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
 
   return (
     <>
@@ -187,48 +319,38 @@ const KontrakDealDashboard: React.FC = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {/* Search Nama Client */}
+            {/* Cari No Penawaran */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Cari Nama Client
+                Cari No Kontrak
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchNamaClient}
-                  onChange={(e) => setSearchNamaClient(e.target.value)}
-                  className="w-full pl-4 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Masukkan nama client..."
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
-                  <Search className="h-4 w-4" />
-                </button>
-              </div>
+              <input
+                type="text"
+                value={searchNoKontrak}
+                onChange={(e) => setSearchNoKontrak(e.target.value)}
+                className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="Cari No Kontrak..."
+              />
             </div>
 
-            {/* Search Nama Kontrak */}
+            {/* Cari PIC */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Cari Nama Kontrak
+                Cari PIC
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchNamaKontrak}
-                  onChange={(e) => setSearchNamaKontrak(e.target.value)}
-                  className="w-full pl-4 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Masukkan nama kontrak..."
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
-                  <Search className="h-4 w-4" />
-                </button>
-              </div>
+              <input
+                type="text"
+                value={searchPIC}
+                onChange={(e) => setSearchPIC(e.target.value)}
+                className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="Cari PIC..."
+              />
             </div>
 
-            {/* Jenis Kontrak Dropdown */}
+            {/* Cari Jenis Pekerjaan Dropdown */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Cari Jenis Kontrak
+                Cari Jenis Pekerjaan
               </label>
               <div className="relative">
                 <button
@@ -236,7 +358,7 @@ const KontrakDealDashboard: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
                 >
                   <span className={selectedJenisKontrak ? 'text-gray-900' : 'text-gray-500'}>
-                    {selectedJenisKontrak || 'Pilih jenis kontrak...'}
+                    {selectedJenisKontrak || 'Cari Jenis Pekerjaan...'}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisKontrakDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -250,7 +372,7 @@ const KontrakDealDashboard: React.FC = () => {
                       }}
                       className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
                     >
-                      Semua Jenis Kontrak
+                      Semua Jenis Pekerjaan
                     </button>
                     {jenisKontrakOptions.map((jenis) => (
                       <button
@@ -270,68 +392,129 @@ const KontrakDealDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Date Range */}
+            {/* Cari Lokasi Kerja */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Periode
+                Cari Lokasi Kerja
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
+              <input
+                type="text"
+                value={searchLokasiPekerjaan}
+                onChange={(e) => setSearchLokasiPekerjaan(e.target.value)}
+                className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="Cari Lokasi Kerja..."
+              />
+            </div>
+
+            {/* Pilih Status Penawaran Dropdown */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Pilih Status Penawaran
+              </label>
+              <div className="relative">
+                <button
+                  onClick={() => setStatusKontrakDropdownOpen(!statusKontrakDropdownOpen)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
+                >
+                  <span className={selectedStatusKontrak ? 'text-gray-900' : 'text-gray-500'}>
+                    {selectedStatusKontrak || 'Pilih status penawaran...'}
+                  </span>
+                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusKontrakDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {statusKontrakDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                    <button
+                      onClick={() => {
+                        setSelectedStatusKontrak('');
+                        setStatusKontrakDropdownOpen(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
+                    >
+                      Semua Status
+                    </button>
+                    {statusKontrakOptions.map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => {
+                          setSelectedStatusKontrak(status);
+                          setStatusKontrakDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                      >
+                        <span className={`w-3 h-3 rounded-full ${
+                          status === 'Deal' ? 'bg-green-500' : 
+                          status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}></span>
+                        <span>{status}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Periode Dari */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Periode Dari
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Periode Sampai */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Periode Sampai
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Cari Data Button */}
+            <div className="flex items-end">
+              <button 
+                onClick={handleSearch}
+                className="w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
+              >
+                <Search className="h-4 w-4" />
+                <span>Cari</span>
+              </button>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-100">
             <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5 text-sm"
+              onClick={handleAddClick} // Use new handler
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
-              <span>Tambah</span>
+              <span>Tambah Kontrak Deal</span>
             </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5 text-sm">
-              <Search className="h-5 w-5" />
-              <span>Cari Data</span>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Export Excel</span>
             </button>
-          </div>
-        </div>
-
-        {/* Quick Export Bar */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Export Data</h3>
-            <div className="flex space-x-3">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5">
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Excel</span>
-              </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5">
-                <File className="h-4 w-4" />
-                <span>CSV</span>
-              </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-1.5">
-                <FileText className="h-4 w-4" />
-                <span>PDF</span>
-              </button>
-            </div>
+            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
+              <FileText className="h-4 w-4" />
+              <span>Export PDF</span>
+            </button>
           </div>
         </div>
 
@@ -339,22 +522,24 @@ const KontrakDealDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No Kontrak</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Client</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">PIC</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Kontrak</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Jenis Kontrak</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Tanggal Kontrak</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Durasi Kontrak</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nilai Kontrak</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Lokasi Pekerjaan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Scope Of Work</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status Penawaran</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {kontrakDeals.map((kontrak, index) => (
+                {currentData.map((kontrak, index) => (
                   <tr 
                     key={kontrak.id}
                     className={`hover:bg-gray-50 transition-all duration-200 ${
@@ -373,20 +558,24 @@ const KontrakDealDashboard: React.FC = () => {
                         <span className="font-medium text-gray-900">{kontrak.no}</span>
                       </div>
                     </td>
+                    <td className="px-6 py-4 font-medium text-gray-900">{kontrak.id}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">{kontrak.namaClient}</td>
+                    <td className="px-6 py-4 text-gray-600">{kontrak.pic}</td>
                     <td className="px-6 py-4 text-gray-600">{kontrak.namaKontrak}</td>
                     <td className="px-6 py-4 text-gray-600">{kontrak.jenisKontrak}</td>
                     <td className="px-6 py-4 text-gray-600">{kontrak.tanggalKontrak}</td>
                     <td className="px-6 py-4 text-gray-600">{kontrak.durasiKontrak}</td>
                     <td className="px-6 py-4 text-gray-600 font-medium">{kontrak.nilaiKontrak}</td>
                     <td className="px-6 py-4 text-gray-600">{kontrak.lokasiPekerjaan}</td>
-                    <td className="px-6 py-4 text-gray-600 max-w-xs truncate" title={kontrak.scopeOfWork}>
-                      {kontrak.scopeOfWork}
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusPenawaranColor(kontrak.statusPenawaran)}`}>
+                        {kontrak.statusPenawaran}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center space-x-2">
                         <button 
-                          onClick={() => setIsModalOpen(true)}
+                          onClick={() => handleEditClick(kontrak)} // Use new handler
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
                           <Edit className="h-4 w-4" />
                         </button>
@@ -409,14 +598,56 @@ const KontrakDealDashboard: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-700">
+                Showing {startIndex + 1} to {Math.min(endIndex, filteredKontrakDeals.length)} of {filteredKontrakDeals.length} results
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      currentPage === page
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                        : 'text-gray-700 hover:bg-white hover:text-blue-600'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Kontrak Deal Modal */}
       <KontrakDealModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleAddKontrakDeal}
+        onClose={() => { setIsModalOpen(false); setEditingKontrakDeal(null); }} // Reset editing state on close
+        onSave={handleSaveKontrakDeal} // Use updated save handler
+        initialData={editingKontrakDeal} // Pass initial data for editing
+        title={editingKontrakDeal ? 'Edit Kontrak Deal' : 'Entry Kontrak Deal'} // Dynamic title
       />
 
       {/* Kick Off Modal */}

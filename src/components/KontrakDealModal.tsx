@@ -5,9 +5,12 @@ interface KontrakDealModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: KontrakDealFormData) => void;
+  initialData?: KontrakDealFormData | null; // Optional initial data for editing
+  title: string; // Dynamic title for the modal
 }
 
 export interface KontrakDealFormData {
+  id?: string; // Add optional ID for editing
   noKontrak: string;
   namaClient: string;
   namaKontrak: string;
@@ -21,8 +24,8 @@ export interface KontrakDealFormData {
   uploadKontrak: File | null;
 }
 
-const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, onSave }) => {
-  const [formData, setFormData] = useState<KontrakDealFormData>({
+const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, onSave, initialData, title }) => {
+  const initialEmptyFormData: KontrakDealFormData = {
     noKontrak: '',
     namaClient: '',
     namaKontrak: '',
@@ -34,8 +37,9 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
     lokasiPekerjaan: '',
     scopeOfWork: '',
     uploadKontrak: null
-  });
+  };
 
+  const [formData, setFormData] = useState<KontrakDealFormData>(initialEmptyFormData);
   const [errors, setErrors] = useState<Partial<KontrakDealFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,13 +69,19 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Set form data when modal opens, either from initialData or reset to empty
+      setFormData(initialData || initialEmptyFormData);
+      setErrors({}); // Clear errors when opening
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
+      // Reset form data and errors when modal closes
+      setFormData(initialEmptyFormData);
+      setErrors({});
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, initialData]); // initialData is a dependency
 
   const validateForm = (): boolean => {
     const newErrors: Partial<KontrakDealFormData> = {};
@@ -145,22 +155,7 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
     onSave(formData);
     setIsLoading(false);
     
-    // Reset form
-    setFormData({
-      noKontrak: '',
-      namaClient: '',
-      namaKontrak: '',
-      jenisKontrak: '',
-      tanggalKontrak: '',
-      durasiKontrakStart: '',
-      durasiKontrakEnd: '',
-      nilaiKontrak: '',
-      lokasiPekerjaan: '',
-      scopeOfWork: '',
-      uploadKontrak: null
-    });
-    setErrors({});
-    onClose();
+    onClose(); // This will trigger the useEffect cleanup and reset
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -179,7 +174,7 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Kontrak Deal</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -237,20 +232,15 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nama Kontrak <span className="text-red-500">*</span>
                 </label>
-                <select
+                 <input
+                  type="text"
                   value={formData.namaKontrak}
-                  onChange={(e) => handleInputChange('namaKontrak', e.target.value)}
+                  onChange={(e) => handleInputChange('namaKontrak', e.target.value)} // Corrected field name
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaKontrak ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                >
-                  <option value="">Repeating</option>
-                  <option value="Implementasi ERP System">Implementasi ERP System</option>
-                  <option value="Website Development">Website Development</option>
-                  <option value="IT Infrastructure Setup">IT Infrastructure Setup</option>
-                  <option value="POS System Integration">POS System Integration</option>
-                  <option value="Mobile App Development">Mobile App Development</option>
-                </select>
+                  placeholder="Masukkan Nama kontrak"
+                />
                 {errors.namaKontrak && (
                   <p className="mt-1 text-sm text-red-600">{errors.namaKontrak}</p>
                 )}
@@ -346,7 +336,7 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
                     errors.jenisKontrak ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                 >
-                  <option value="">Tender</option>
+                  <option value="">Pilih Jenis Kontrak</option> {/* Changed default option text */}
                   {jenisKontrakOptions.map((jenis) => (
                     <option key={jenis} value={jenis}>{jenis}</option>
                   ))}

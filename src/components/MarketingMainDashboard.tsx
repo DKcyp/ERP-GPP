@@ -1,12 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Phone, Megaphone, FileText, ArrowRight, Clock } from 'lucide-react';
+import Alert from './Alert';
+import { AlertItem } from '../types';
 
 const MarketingMainDashboard: React.FC = () => {
+  const [alerts, setAlerts] = useState<AlertItem[]>([
+    {
+      id: '1',
+      message: 'CV Sejahtera harus segera di follow up sebelum deadline prospect',
+      type: 'info',
+      actionText: 'Follow Up',
+      onAction: () => console.log('Follow up CV Sejahtera'),
+    },
+    {
+      id: '2',
+      message: 'PT Makmur Jaya harus segera di follow up sebelum deadline prospect',
+      type: 'info',
+      actionText: 'Follow Up',
+      onAction: () => console.log('Follow up PT Makmur Jaya'),
+    },
+    {
+      id: '3',
+      message: 'PT Maju jaya harus segera di follow up sebelum deadline prospect',
+      type: 'info',
+      actionText: 'Follow Up',
+      onAction: () => console.log('Follow up PT Maju Jaya'),
+    },
+  ]);
+
+  const handleCloseAlert = (id: string) => {
+    setAlerts((prevAlerts) => prevAlerts.filter((alert) => alert.id !== id));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-6 py-8 relative"> {/* Added relative positioning */}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
@@ -22,6 +52,23 @@ const MarketingMainDashboard: React.FC = () => {
               <Clock className="h-4 w-4" />
               <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
             </div>
+          </div>
+          {/* Alerts container */}
+          <div className="absolute top-8 right-6 z-50 space-y-3 w-72">
+            {alerts.map((alert) => (
+              <Alert
+                key={alert.id}
+                id={alert.id}
+                message={alert.message}
+                type={alert.type}
+                actionText={alert.actionText}
+                onActionClick={() => {
+                  alert.onAction();
+                  handleCloseAlert(alert.id);
+                }}
+                onCloseClick={() => handleCloseAlert(alert.id)}
+              />
+            ))}
           </div>
         </div>
       </div>

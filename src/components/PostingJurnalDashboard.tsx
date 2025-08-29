@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Clock, Search, Download, ChevronDown, ChevronUp, CheckSquare } from 'lucide-react';
+import Modal from './Modal'; // Import the Modal component
 
 interface JurnalDetail {
   coa: string;
@@ -23,7 +24,7 @@ interface JurnalEntry {
 const PostingJurnalDashboard: React.FC = () => {
   const today = new Date();
 
-  const dummyData: JurnalEntry[] = [
+  const [dummyData, setDummyData] = useState<JurnalEntry[]>([
     {
       id: 'JRN001',
       noJurnal: 'KM-2024-07-001',
@@ -96,7 +97,7 @@ const PostingJurnalDashboard: React.FC = () => {
       ],
       isPosted: false,
     },
-  ];
+  ]);
 
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedJurnals, setSelectedJurnals] = useState<Set<string>>(new Set());
@@ -104,6 +105,9 @@ const PostingJurnalDashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showEntries, setShowEntries] = useState('10');
+
+  // State for Posting Confirmation Modal
+  const [isPostingModalOpen, setIsPostingModalOpen] = useState(false);
 
   const toggleExpand = (id: string) => {
     setExpandedRows(prev => {
@@ -134,9 +138,32 @@ const PostingJurnalDashboard: React.FC = () => {
       alert('Pilih setidaknya satu jurnal untuk diposting.');
       return;
     }
-    alert(`Posting jurnal dengan ID: ${Array.from(selectedJurnals).join(', ')}`);
-    // Implement actual posting logic here
+    setIsPostingModalOpen(true); // Open the posting confirmation modal
+  };
+
+  const handleConfirmPosting = () => {
+    // Filter out already posted journals from the selection
+    const jurnalsToPost = Array.from(selectedJurnals).filter(id => {
+      const entry = dummyData.find(j => j.id === id);
+      return entry && !entry.isPosted;
+    });
+
+    if (jurnalsToPost.length === 0) {
+      alert('Tidak ada jurnal yang valid untuk diposting.');
+      setIsPostingModalOpen(false);
+      return;
+    }
+
+    // Simulate posting logic
+    setDummyData(prevData =>
+      prevData.map(entry =>
+        jurnalsToPost.includes(entry.id) ? { ...entry, isPosted: true } : entry
+      )
+    );
+
+    alert(`Berhasil memposting jurnal dengan ID: ${jurnalsToPost.join(', ')}`);
     setSelectedJurnals(new Set()); // Clear selection after posting
+    setIsPostingModalOpen(false); // Close the modal
   };
 
   const handleSearch = () => {
@@ -157,6 +184,8 @@ const PostingJurnalDashboard: React.FC = () => {
     const matchesDate = (!startDate || entryDate >= startDate) && (!endDate || entryDate <= endDate);
     return matchesSearch && matchesDate;
   });
+
+  const selectedJurnalEntries = filteredData.filter(entry => selectedJurnals.has(entry.id));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -300,7 +329,7 @@ const PostingJurnalDashboard: React.FC = () => {
                           setSelectedJurnals(new Set());
                         }
                       }}
-                      checked={selectedJurnals.size > 0 && Array.from(selectedJurnals).every(id => filteredData.some(j => j.id === id && !j.isPosted))}
+                      checked={selectedJurnals.size > 0 && filteredData.filter(j => !j.isPosted).every(j => selectedJurnals.has(j.id))}
                       disabled={filteredData.filter(j => !j.isPosted).length === 0}
                     />
                   </th>
@@ -426,6 +455,60 @@ const PostingJurnalDashboard: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Posting Confirmation Modal */}
+      <Modal
+        isOpen={isPostingModalOpen}
+        onClose={() => setIsPostingModalOpen(false)}
+        title="Konfirmasi Posting Jurnal"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <p className="text-textSecondary">Anda akan memposting jurnal-jurnal berikut. Pastikan semua data sudah benar.</p>
+          <div className="max-h-60 overflow-y-auto border border-border rounded-lg p-3 bg-surface">
+            {selectedJurnalEntries.length > 0 ? (
+              <ul className="list-disc list-inside space-y-1 text-text">
+                {selectedJurnalEntries.map(entry => (
+                  <li key={entry.id} className="flex items-center justify-between text-sm">
+                    <span>
+                      <span className="font-semibold">{entry.noJurnal}</span> - {entry.keterangan}
+                    </span>
+                    {entry.isPosted && (
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
+                        Sudah Diposting
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-textSecondary text-sm italic">Tidak ada jurnal yang dipilih untuk diposting.</p>
+            )}
+          </div>
+          <p className="text-sm text-red-500">
+            Perhatian: Jurnal yang sudah diposting tidak dapat diubah atau dihapus.
+          </p>
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsPostingModalOpen(false)}
+              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmPosting}
+              disabled={selectedJurnalEntries.filter(j => !j.isPosted).length === 0}
+              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                selectedJurnalEntries.filter(j => !j.isPosted).length > 0 ? 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500' : 'bg-gray-400 cursor-not-allowed'
+              } transition-colors`}
+            >
+              <CheckSquare className="h-5 w-5 mr-2" /> Konfirmasi Posting
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

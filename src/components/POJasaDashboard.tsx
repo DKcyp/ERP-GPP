@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Search, Calendar, Plus, FileDown, Printer, Eye, Edit, Trash2 } from 'lucide-react';
+import { Search, Calendar, Plus, FileDown, Printer, Eye, Edit, Trash2, ThumbsUp } from 'lucide-react';
 import EntryPOJasaModal from './EntryPOJasaModal';
-import EditPOJasaModal from './EditPOJasaModal'; // Import the new edit modal
-import { EntryPOJasaFormData, EntryPOJasaItem, POJasaData as POJasaDataType } from '../types'; // Import POJasaData type
+import EditPOJasaModal from './EditPOJasaModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+import DetailPOJasaModal from './DetailPOJasaModal'; // Import DetailPOJasaModal
+import { EntryPOJasaFormData, EntryPOJasaItem, POJasaData as POJasaDataType } from '../types';
+
+interface POJasaDashboardProps {
+  role?: string; // Optional role prop
+}
 
 const initialPOJasaData: POJasaDataType[] = [
   {
@@ -84,11 +90,16 @@ const initialPOJasaData: POJasaDataType[] = [
   },
 ];
 
-const POJasaDashboard: React.FC = () => {
+const POJasaDashboard: React.FC<POJasaDashboardProps> = ({ role }) => {
   const [poJasaData, setPoJasaData] = useState<POJasaDataType[]>(initialPOJasaData);
   const [isEntryPOJasaModalOpen, setIsEntryPOJasaModalOpen] = useState(false);
-  const [isEditPOJasaModalOpen, setIsEditPOJasaModalOpen] = useState(false); // State for edit modal
-  const [selectedPOJasaForEdit, setSelectedPOJasaForEdit] = useState<POJasaDataType | null>(null); // State to hold data for editing
+  const [isEditPOJasaModalOpen, setIsEditPOJasaModalOpen] = useState(false);
+  const [selectedPOJasaForEdit, setSelectedPOJasaForEdit] = useState<POJasaDataType | null>(null);
+  const [isApprovalMode, setIsApprovalMode] = useState(false); // New state for approval mode
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for delete confirmation modal
+  const [poJasaToDeleteId, setPoJasaToDeleteId] = useState<number | null>(null); // State to store ID of PO Jasa to delete
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // State for detail modal
+  const [selectedPOJasaForDetail, setSelectedPOJasaForDetail] = useState<POJasaDataType | null>(null); // State for detail data
 
   const handleEntryPOJasaModalSubmit = (formData: EntryPOJasaFormData) => {
     console.log('Entry PO Jasa Form Data:', formData);
@@ -97,20 +108,41 @@ const POJasaDashboard: React.FC = () => {
     setIsEntryPOJasaModalOpen(false);
   };
 
-  const handleEditPOJasaModalSubmit = (poId: number, updatedItems: EntryPOJasaItem[]) => {
-    console.log(`Updating PO Jasa ID ${poId} with items:`, updatedItems);
+  const handleEditPOJasaModalSubmit = (poId: number, updatedItems: EntryPOJasaItem[], newStatus?: string) => {
+    console.log(`Updating PO Jasa ID ${poId} with items:`, updatedItems, `New Status: ${newStatus}`);
     setPoJasaData((prevData) =>
       prevData.map((po) =>
-        po.id === poId ? { ...po, items: updatedItems } : po
+        po.id === poId ? { ...po, items: updatedItems, status: newStatus || po.status } : po
       )
     );
     setIsEditPOJasaModalOpen(false);
     setSelectedPOJasaForEdit(null);
+    setIsApprovalMode(false); // Reset approval mode
   };
 
-  const openEditModal = (po: POJasaDataType) => {
+  const openEditModal = (po: POJasaDataType, approvalMode: boolean = false) => {
     setSelectedPOJasaForEdit(po);
+    setIsApprovalMode(approvalMode);
     setIsEditPOJasaModalOpen(true);
+  };
+
+  const openDeletePOJasaModal = (poId: number) => {
+    setPoJasaToDeleteId(poId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeletePOJasa = () => {
+    if (poJasaToDeleteId !== null) {
+      setPoJasaData((prevData) => prevData.filter((po) => po.id !== poJasaToDeleteId));
+      console.log(`PO Jasa with ID ${poJasaToDeleteId} deleted.`);
+      setPoJasaToDeleteId(null);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  const openDetailModal = (po: POJasaDataType) => {
+    setSelectedPOJasaForDetail(po);
+    setIsDetailModalOpen(true);
   };
 
   return (
@@ -157,13 +189,15 @@ const POJasaDashboard: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                <button
-                  onClick={() => setIsEntryPOJasaModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
-                >
-                    <Plus size={18} />
-                    <span>Tambah</span>
-                </button>
+                {role !== 'management' && ( // Hide "Tambah" button for management role
+                  <button
+                    onClick={() => setIsEntryPOJasaModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
+                  >
+                      <Plus size={18} />
+                      <span>Tambah</span>
+                  </button>
+                )}
             </div>
 
             {/* Periode */}
@@ -264,23 +298,41 @@ const POJasaDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button className="p-1.5 bg-cyan-500 text-white rounded-md hover:bg-cyan-600">
-                            <Printer size={14} />
-                          </button>
-                          <button className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                            <Eye size={14} />
-                          </button>
-                          {item.status === 'Unpaid' && (
+                          {role !== 'management' ? ( // Show all buttons if not management
+                            <>
+                              <button className="p-1.5 bg-cyan-500 text-white rounded-md hover:bg-cyan-600">
+                                <Printer size={14} />
+                              </button>
+                              <button
+                                onClick={() => openDetailModal(item)} // Open detail modal
+                                className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              >
+                                <Eye size={14} />
+                              </button>
+                              {item.status === 'Unpaid' && (
+                                <button
+                                  onClick={() => openEditModal(item)}
+                                  className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                >
+                                    <Edit size={14} />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => openDeletePOJasaModal(item.id)} // Open delete modal
+                                className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </>
+                          ) : ( // Only show ThumbsUp for management
                             <button
-                              onClick={() => openEditModal(item)} // Open edit modal
-                              className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              onClick={() => openEditModal(item, true)} // Open in approval mode
+                              className="p-1.5 bg-green-500 text-white rounded-md hover:bg-green-600"
+                              title="Approve PO Jasa"
                             >
-                                <Edit size={14} />
+                                <ThumbsUp size={14} />
                             </button>
                           )}
-                          <button className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600">
-                            <Trash2 size={14} />
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -311,10 +363,29 @@ const POJasaDashboard: React.FC = () => {
       {selectedPOJasaForEdit && (
         <EditPOJasaModal
           isOpen={isEditPOJasaModalOpen}
-          onClose={() => setIsEditPOJasaModalOpen(false)}
+          onClose={() => { setIsEditPOJasaModalOpen(false); setIsApprovalMode(false); }} // Reset approval mode on close
           onSubmit={handleEditPOJasaModalSubmit}
           poId={selectedPOJasaForEdit.id}
           initialItems={selectedPOJasaForEdit.items}
+          initialStatus={selectedPOJasaForEdit.status} // Pass initial status
+          isApprovalMode={isApprovalMode} // Pass approval mode
+        />
+      )}
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeletePOJasa}
+        itemName={poJasaData.find(po => po.id === poJasaToDeleteId)?.noPo || `PO Jasa ID: ${poJasaToDeleteId}`}
+      />
+
+      {/* Detail PO Jasa Modal */}
+      {selectedPOJasaForDetail && (
+        <DetailPOJasaModal
+          isOpen={isDetailModalOpen}
+          onClose={() => setIsDetailModalOpen(false)}
+          data={selectedPOJasaForDetail}
         />
       )}
     </div>

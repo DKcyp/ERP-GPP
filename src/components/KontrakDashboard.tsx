@@ -250,78 +250,88 @@ const KontrakDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
-      {/* Header Section */}
+      {/* Header Title - Moved to the top */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+          DASHBOARD KONTRAK
+        </h1>
+        <nav className="text-sm text-gray-600">
+          <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
+          <span className="mx-2">›</span>
+          <span className="hover:text-blue-600 cursor-pointer transition-colors">Kontrak</span>
+          <span className="mx-2">›</span>
+          <span className="text-blue-600 font-medium">Dashboard</span>
+        </nav>
+      </div>
+
+      {/* Header Section (now without the h1) */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            DASHBOARD KONTRAK
-          </h1>
-
           {/* Search and Filter Section */}
-<div className="space-y-4 mb-6">
-  {/* Inputs Row */}
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    {/* Search No SO */}
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        Cari No SO
-      </label>
-      <input
-        type="text"
-        value={searchNoSO}
-        onChange={(e) => setSearchNoSO(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-        placeholder="SO001"
-      />
-    </div>
+          <div className="space-y-4 mb-6">
+            {/* Inputs Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Search No SO */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Cari No SO
+                </label>
+                <input
+                  type="text"
+                  value={searchNoSO}
+                  onChange={(e) => setSearchNoSO(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                  placeholder="SO001"
+                />
+              </div>
 
-    {/* Search Nama Client */}
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        Cari Nama Client
-      </label>
-      <input
-        type="text"
-        value={searchNamaClient}
-        onChange={(e) => setSearchNamaClient(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-        placeholder="Jhon Doe"
-      />
-    </div>
+              {/* Search Nama Client */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Cari Nama Client
+                </label>
+                <input
+                  type="text"
+                  value={searchNamaClient}
+                  onChange={(e) => setSearchNamaClient(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                  placeholder="Jhon Doe"
+                />
+              </div>
 
-    {/* Date Range */}
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        Periode
-      </label>
-      <div className="flex items-center space-x-2">
-        <input
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-        />
-        <span className="text-sm text-gray-500">s.d</span>
-        <input
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-        />
-      </div>
-    </div>
-    {/* Full-width Button */}
-<div className="space-y-2">
-<button 
-  onClick={handleSearch}
-  className="w-full px-3 py-2 flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm"
->
-  <Search className="h-5 w-5" />
-  Cari Data
-</button>
-</div>
-  </div>
-</div>
+              {/* Date Range */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Periode
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                  />
+                  <span className="text-sm text-gray-500">s.d</span>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+              {/* Full-width Button */}
+              <div className="space-y-2">
+                <button 
+                  onClick={handleSearch}
+                  className="w-full px-3 py-2 flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm"
+                >
+                  <Search className="h-5 w-5" />
+                  Cari Data
+                </button>
+              </div>
+            </div>
+          </div>
 
 
           {/* Stats Cards */}

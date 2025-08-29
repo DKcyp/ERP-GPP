@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, CalendarDays, FileSpreadsheet, FileText, FileDown, Clock } from 'lucide-react';
+import { Search, CalendarDays, FileSpreadsheet, FileText, FileDown, Clock, Eye, ThumbsUp } from 'lucide-react'; // Added Eye and ThumbsUp icons
 import { SeleksiSupplierBiddingData } from '../types'; // Import the new form data type
 
 const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
@@ -65,6 +65,16 @@ const DaftarSeleksiSupplierBiddingDashboard: React.FC = () => {
   //   // Here you would typically send this data to a backend API
   //   // For now, we'll just log it.
   // };
+
+  const handleViewDetails = (noBidding: string) => {
+    console.log(`View details for Bidding No: ${noBidding}`);
+    // Implement navigation or modal for viewing details
+  };
+
+  const handleApproveVendor = (noBidding: string) => {
+    console.log(`Approve vendor for Bidding No: ${noBidding}`);
+    // Implement approval logic
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">

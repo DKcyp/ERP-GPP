@@ -363,7 +363,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                 {/* No. Ref Req */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    No. Ref Req
+                    No. Ref Req <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -377,7 +377,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                 {/* Kode Customer */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kode Customer
+                    Kode Customer <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -410,7 +410,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                 {/* Pajak */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Pajak
+                    Pajak <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formData.pajak}
@@ -427,7 +427,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                 {/* Tanggal Kirim */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Kirim
+                    Tanggal Kirim <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -445,7 +445,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tanggal Penawaran <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid grid-cols-3 gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center"> {/* Adjusted grid for better alignment */}
                     <div className="relative">
                       <input
                         type="date"
@@ -456,6 +456,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                         }`}
                       />
                       <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    </div>
+                    <div className="text-center text-gray-500 font-medium text-sm"> {/* Styled "S/d" */}
+                      <span>S/d</span>
                     </div>
                     <div className="relative">
                       <input
@@ -475,7 +478,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                 {/* Tanggal Follow up */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Follow up
+                    Tanggal Follow up <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input

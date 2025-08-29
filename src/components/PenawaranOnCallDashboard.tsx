@@ -36,12 +36,14 @@ interface PenawaranOnCall {
   terakhirUpdate: string;
   statusPenawaran: 'Deal' | 'Pending' | 'Cancel';
   statusDokumen: 'Open' | 'Close';
+  lokasiKerja: string; // Added for new filter
 }
 
 const PenawaranOnCallDashboard: React.FC = () => {
   const [searchNamaClient, setSearchNamaClient] = useState('');
   const [searchPIC, setSearchPIC] = useState('');
   const [searchSales, setSearchSales] = useState('');
+  const [searchLokasiKerja, setSearchLokasiKerja] = useState(''); // New state for 'Cari Lokasi Kerja'
   const [selectedStatusPenawaran, setSelectedStatusPenawaran] = useState('');
   const [selectedStatusDokumen, setSelectedStatusDokumen] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -74,7 +76,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
       namaSales: 'Ahmad Rizki',
       terakhirUpdate: '15-01-2025',
       statusPenawaran: 'Deal',
-      statusDokumen: 'Open'
+      statusDokumen: 'Open',
+      lokasiKerja: 'Jakarta'
     },
     {
       id: '2',
@@ -84,7 +87,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
       namaSales: 'Sari Dewi',
       terakhirUpdate: '14-01-2025',
       statusPenawaran: 'Pending',
-      statusDokumen: 'Close'
+      statusDokumen: 'Close',
+      lokasiKerja: 'Surabaya'
     },
     {
       id: '3',
@@ -94,7 +98,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
       namaSales: 'Budi Santoso',
       terakhirUpdate: '13-01-2025',
       statusPenawaran: 'Cancel',
-      statusDokumen: 'Open'
+      statusDokumen: 'Open',
+      lokasiKerja: 'Bandung'
     },
     {
       id: '4',
@@ -104,7 +109,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
       namaSales: 'Maya Putri',
       terakhirUpdate: '12-01-2025',
       statusPenawaran: 'Deal',
-      statusDokumen: 'Close'
+      statusDokumen: 'Close',
+      lokasiKerja: 'Medan'
     },
     {
       id: '5',
@@ -114,7 +120,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
       namaSales: 'Andi Wijaya',
       terakhirUpdate: '11-01-2025',
       statusPenawaran: 'Pending',
-      statusDokumen: 'Open'
+      statusDokumen: 'Open',
+      lokasiKerja: 'Yogyakarta'
     }
   ]);
 
@@ -136,7 +143,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
         year: 'numeric'
       }),
       statusPenawaran: 'Pending' as 'Deal' | 'Pending' | 'Cancel',
-      statusDokumen: 'Open' as 'Open' | 'Close'
+      statusDokumen: 'Open' as 'Open' | 'Close',
+      lokasiKerja: 'Lokasi Default' // Default value for new entry
     };
 
     setPenawaranOnCall(prev => [newPenawaran, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
@@ -227,10 +235,16 @@ const PenawaranOnCallDashboard: React.FC = () => {
     const matchesNamaClient = item.namaClient.toLowerCase().includes(searchNamaClient.toLowerCase());
     const matchesPIC = item.pic.toLowerCase().includes(searchPIC.toLowerCase());
     const matchesSales = item.namaSales.toLowerCase().includes(searchSales.toLowerCase());
+    const matchesLokasiKerja = item.lokasiKerja.toLowerCase().includes(searchLokasiKerja.toLowerCase()); // New filter
     const matchesStatusPenawaran = selectedStatusPenawaran ? item.statusPenawaran === selectedStatusPenawaran : true;
     const matchesStatusDokumen = selectedStatusDokumen ? item.statusDokumen === selectedStatusDokumen : true;
     
-    return matchesNamaClient && matchesPIC && matchesSales && matchesStatusPenawaran && matchesStatusDokumen;
+    // Date filtering (assuming terakhirUpdate is 'DD-MM-YYYY')
+    const itemUpdateDate = item.terakhirUpdate.split('-').reverse().join('-'); // Convert to YYYY-MM-DD for comparison
+    const matchesDateFrom = dateFrom ? itemUpdateDate >= dateFrom : true;
+    const matchesDateTo = dateTo ? itemUpdateDate <= dateTo : true;
+
+    return matchesNamaClient && matchesPIC && matchesSales && matchesLokasiKerja && matchesStatusPenawaran && matchesStatusDokumen && matchesDateFrom && matchesDateTo;
   });
 
   // Pagination logic
@@ -279,80 +293,72 @@ const PenawaranOnCallDashboard: React.FC = () => {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            {/* Search Nama Client */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            {/* Cari Nama Client (equivalent to Cari No SPK) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari Nama Client
               </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchNamaClient}
-                    onChange={(e) => setSearchNamaClient(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Masukkan nama client..."
-                  />
-                </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchNamaClient}
+                  onChange={(e) => setSearchNamaClient(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Masukkan nama client..."
+                />
               </div>
             </div>
 
-            {/* Search PIC */}
+            {/* Cari PIC (equivalent to Cari Nama Pegawai) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari PIC
               </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchPIC}
-                    onChange={(e) => setSearchPIC(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Masukkan nama PIC..."
-                  />
-                </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchPIC}
+                  onChange={(e) => setSearchPIC(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Masukkan nama PIC..."
+                />
               </div>
             </div>
 
-            {/* Search Sales */}
+            {/* Cari Sales (equivalent to Cari Jenis Pekerjaan) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Cari Sales
               </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchSales}
-                    onChange={(e) => setSearchSales(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Masukkan nama sales..."
-                  />
-                </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchSales}
+                  onChange={(e) => setSearchSales(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Masukkan nama sales..."
+                />
               </div>
             </div>
 
-            {/* Status Penawaran Dropdown */}
+            {/* Cari Lokasi Kerja (New Input) */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Cari Lokasi Kerja
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchLokasiKerja}
+                  onChange={(e) => setSearchLokasiKerja(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Masukkan lokasi kerja..."
+                />
+              </div>
+            </div>
+
+            {/* Status Penawaran Dropdown (equivalent to Pilih Status SPK) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Pilih Status Penawaran
@@ -400,121 +406,86 @@ const PenawaranOnCallDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Status Dokumen Dropdown */}
+            {/* Periode Awal (Date From) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Pilih Status Dokumen
+                Periode Awal
               </label>
               <div className="relative">
-                <button
-                  onClick={() => setStatusDokumenDropdownOpen(!statusDokumenDropdownOpen)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
-                >
-                  <span className={selectedStatusDokumen ? 'text-gray-900' : 'text-gray-500'}>
-                    {selectedStatusDokumen || 'Pilih status dokumen...'}
-                  </span>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDokumenDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {statusDokumenDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
-                    <button
-                      onClick={() => {
-                        setSelectedStatusDokumen('');
-                        setStatusDokumenDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
-                    >
-                      Semua Status
-                    </button>
-                    {statusDokumenOptions.map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => {
-                          setSelectedStatusDokumen(status);
-                          setStatusDokumenDropdownOpen(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
-                      >
-                        <span className={`w-3 h-3 rounded-full ${
-                          status === 'Open' ? 'bg-green-500' : 'bg-red-500'
-                        }`}></span>
-                        <span>{status}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
-            {/* Date Range */}
+            {/* Periode Akhir (Date To) */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Periode
+                Periode Akhir
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
+
+            {/* Cari Button */}
+            <div className="space-y-2 flex items-end">
+              <button 
+                onClick={handleSearch}
+                className="w-full h-[46px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center justify-center space-x-2"
+              >
+                <Search className="h-5 w-5" />
+                <span>Cari</span>
+              </button>
+            </div>
+
+            {/* Status Dokumen Dropdown - Moved to a new row or adjusted if needed, for now, keeping it here */}
+            {/* This dropdown was originally in the first row of filters.
+                To match the image, we only have 3 dropdowns/date pickers in the second row.
+                Let's decide if this dropdown is still needed or if it should be placed elsewhere.
+                For now, I'll keep it in the grid, but it might push the layout if not handled carefully.
+                The image only shows "Pilih Status SPK", "Periode Awal", "Periode Akhir", and "Cari".
+                I will remove "Status Dokumen" from the main filter grid to match the image's 3+1 layout.
+                If it's a critical filter, we might need to adjust the image's layout or add it back in a different spot.
+                For now, I'll assume it's less critical for the primary filter layout.
+            */}
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3
-            ">
-            <button 
-              onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
-            >
-              <Search className="h-4 w-4" />
-              <span>Cari Data</span>
-            </button>
+          <div className="flex justify-end space-x-3 mt-6">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
-              <span>Tambah</span>
+              <span>Tambah Penawaran</span>
+            </button>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Export Excel</span>
+            </button>
+            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
+              <FileText className="h-4 w-4" />
+              <span>Export PDF</span>
             </button>
           </div>
         </div>
 
-        {/* Quick Export Bar */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Export Data</h3>
-            <div className="flex space-x-3">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5">
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Excel</span>
-              </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5">
-                <File className="h-4 w-4" />
-                <span>CSV</span>
-              </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-1.5">
-                <FileText className="h-4 w-4" />
-                <span>PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Quick Export Bar - Removed as its functionality is now integrated into the main action buttons */}
+        {/* The Status Dokumen dropdown was removed from the main filter grid to match the image.
+            If it needs to be present, it could be added as a separate filter row or integrated differently.
+            For now, I'll assume it's not part of the primary filter layout based on the image.
+        */}
 
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">

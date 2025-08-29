@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, Lock, Unlock, CalendarDays } from 'lucide-react';
+import { Clock, Lock, Unlock, CalendarDays, Search, FileSpreadsheet, FileDown, PlusCircle } from 'lucide-react';
+import TutupBukuModal from './TutupBukuModal'; // Import the new modal component
+import Modal from './Modal'; // Import the generic Modal component
 
 interface TutupBukuEntry {
   id: string;
@@ -13,18 +15,29 @@ interface TutupBukuEntry {
 
 const TutupBukuDashboard: React.FC = () => {
   const today = new Date();
-  const [tanggalTutup, setTanggalTutup] = useState<Date | null>(today);
-  const [bulan, setBulan] = useState<string>((today.getMonth() + 1).toString());
-  const [tahun, setTahun] = useState<string>(today.getFullYear().toString());
 
-  const dummyData: TutupBukuEntry[] = [
+  // State for Tutup Buku modal
+  const [showTutupBukuModal, setShowTutupBukuModal] = useState(false);
+
+  // State for Buka Tutup Buku confirmation modal
+  const [showBukaTutupBukuConfirmModal, setShowBukaTutupBukuConfirmModal] = useState(false);
+  const [selectedEntryToOpen, setSelectedEntryToOpen] = useState<TutupBukuEntry | null>(null);
+
+  // State for search and filter
+  const [filterPeriodeBulan, setFilterPeriodeBulan] = useState('');
+  const [filterPeriodeTahun, setFilterPeriodeTahun] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterDateFrom, setFilterDateFrom] = useState<Date | null>(null);
+  const [filterDateTo, setFilterDateTo] = useState<Date | null>(null);
+
+  const [dummyData, setDummyData] = useState<TutupBukuEntry[]>([
     { id: '1', tanggalTutup: '2024-06-30', periodeBulan: 'Juni', periodeTahun: 2024, status: 'Closed' },
     { id: '2', tanggalTutup: '2024-05-31', periodeBulan: 'Mei', periodeTahun: 2024, status: 'Closed' },
     { id: '3', tanggalTutup: '2024-04-30', periodeBulan: 'April', periodeTahun: 2024, status: 'Closed' },
     { id: '4', tanggalTutup: '2024-03-31', periodeBulan: 'Maret', periodeTahun: 2024, status: 'Closed' },
     { id: '5', tanggalTutup: '2024-02-29', periodeBulan: 'Februari', periodeTahun: 2024, status: 'Closed' },
     { id: '6', tanggalTutup: '2024-01-31', periodeBulan: 'Januari', periodeTahun: 2024, status: 'Closed' },
-  ];
+  ]);
 
   const months = [
     { value: '1', label: 'Januari' }, { value: '2', label: 'Februari' },
@@ -37,18 +50,50 @@ const TutupBukuDashboard: React.FC = () => {
 
   const years = Array.from({ length: 5 }, (_, i) => (today.getFullYear() - i).toString());
 
-  const handleTutupBuku = () => {
-    const selectedMonthLabel = months.find(m => m.value === bulan)?.label;
-    alert(`Melakukan Tutup Buku untuk periode ${selectedMonthLabel} ${tahun} pada tanggal ${tanggalTutup?.toLocaleDateString('id-ID')}`);
-    // Implement actual tutup buku logic here
-  };
-
-  const handleBukaTutupBuku = (id: string) => {
-    if (confirm(`Apakah Anda yakin ingin membuka kembali buku untuk entri ${id}?`)) {
-      alert(`Membuka kembali buku untuk entri: ${id}`);
-      // Implement actual buka tutup buku logic here
+  const handleTutupBuku = (tanggalTutup: Date | null, bulanValue: string, tahun: string) => {
+    const selectedMonthLabel = months.find(m => m.value === bulanValue)?.label;
+    if (tanggalTutup && selectedMonthLabel) {
+      const newEntry: TutupBukuEntry = {
+        id: (dummyData.length + 1).toString(),
+        tanggalTutup: tanggalTutup.toISOString().split('T')[0],
+        periodeBulan: selectedMonthLabel,
+        periodeTahun: parseInt(tahun),
+        status: 'Closed',
+      };
+      setDummyData(prev => [newEntry, ...prev]);
+      alert(`Melakukan Tutup Buku untuk periode ${selectedMonthLabel} ${tahun} pada tanggal ${tanggalTutup.toLocaleDateString('id-ID')}`);
     }
   };
+
+  const handleBukaTutupBuku = (entry: TutupBukuEntry) => {
+    setSelectedEntryToOpen(entry);
+    setShowBukaTutupBukuConfirmModal(true);
+  };
+
+  const handleConfirmBukaTutupBuku = () => {
+    if (selectedEntryToOpen) {
+      setDummyData(prev =>
+        prev.map(entry =>
+          entry.id === selectedEntryToOpen.id ? { ...entry, status: 'Open' } : entry
+        )
+      );
+      alert(`Membuka kembali buku untuk entri: ${selectedEntryToOpen.id} (${selectedEntryToOpen.periodeBulan} ${selectedEntryToOpen.periodeTahun})`);
+      setSelectedEntryToOpen(null);
+      setShowBukaTutupBukuConfirmModal(false);
+    }
+  };
+
+  const filteredData = dummyData.filter(entry => {
+    const matchesBulan = filterPeriodeBulan ? entry.periodeBulan.toLowerCase().includes(filterPeriodeBulan.toLowerCase()) : true;
+    const matchesTahun = filterPeriodeTahun ? entry.periodeTahun.toString().includes(filterPeriodeTahun) : true;
+    const matchesStatus = filterStatus ? entry.status.toLowerCase() === filterStatus.toLowerCase() : true;
+
+    const entryDate = new Date(entry.tanggalTutup);
+    const matchesDateFrom = filterDateFrom ? entryDate >= filterDateFrom : true;
+    const matchesDateTo = filterDateTo ? entryDate <= filterDateTo : true;
+
+    return matchesBulan && matchesTahun && matchesStatus && matchesDateFrom && matchesDateTo;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -75,53 +120,93 @@ const TutupBukuDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Search and Filter Section */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Form Tutup Buku</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Filter Tutup Buku</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label htmlFor="tanggalTutup" className="block text-sm font-medium text-gray-700 mb-2">Tanggal Tutup Buku</label>
-              <DatePicker
-                selected={tanggalTutup}
-                onChange={(date: Date | null) => setTanggalTutup(date)}
-                dateFormat="dd/MM/yyyy"
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-              />
-            </div>
-            <div>
-              <label htmlFor="bulan" className="block text-sm font-medium text-gray-700 mb-2">Pilih Bulan</label>
+              <label htmlFor="filterPeriodeBulan" className="block text-sm font-medium text-gray-700 mb-2">Pilih Bulan</label>
               <select
-                id="bulan"
+                id="filterPeriodeBulan"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
-                value={bulan}
-                onChange={(e) => setBulan(e.target.value)}
+                value={filterPeriodeBulan}
+                onChange={(e) => setFilterPeriodeBulan(e.target.value)}
               >
+                <option value="">Semua Bulan</option>
                 {months.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
+                  <option key={m.label} value={m.label}>{m.label}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="tahun" className="block text-sm font-medium text-gray-700 mb-2">Pilih Tahun</label>
+              <label htmlFor="filterPeriodeTahun" className="block text-sm font-medium text-gray-700 mb-2">Pilih Tahun</label>
               <select
-                id="tahun"
+                id="filterPeriodeTahun"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
-                value={tahun}
-                onChange={(e) => setTahun(e.target.value)}
+                value={filterPeriodeTahun}
+                onChange={(e) => setFilterPeriodeTahun(e.target.value)}
               >
+                <option value="">Semua Tahun</option>
                 {years.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
             </div>
+            <div>
+              <label htmlFor="filterStatus" className="block text-sm font-medium text-gray-700 mb-2">Pilih Status</label>
+              <select
+                id="filterStatus"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="">Semua Status</option>
+                <option value="Closed">Closed</option>
+                <option value="Open">Open</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="filterDateFrom" className="block text-sm font-medium text-gray-700 mb-2">Tanggal Tutup Dari</label>
+              <DatePicker
+                selected={filterDateFrom}
+                onChange={(date: Date | null) => setFilterDateFrom(date)}
+                dateFormat="dd/MM/yyyy"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholderText="dd/MM/yyyy"
+              />
+            </div>
+            <div>
+              <label htmlFor="filterDateTo" className="block text-sm font-medium text-gray-700 mb-2">Tanggal Tutup Sampai</label>
+              <DatePicker
+                selected={filterDateTo}
+                onChange={(date: Date | null) => setFilterDateTo(date)}
+                dateFormat="dd/MM/yyyy"
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                placeholderText="dd/MM/yyyy"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={() => { /* Filter logic is already applied by state changes, this button can trigger a re-render or more complex server-side filtering */ }}
+                className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full h-[42px]"
+              >
+                <Search className="h-4 w-4 mr-2" /> Cari
+              </button>
+            </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end space-x-3 mt-6">
             <button
-              onClick={handleTutupBuku}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              onClick={() => setShowTutupBukuModal(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
-              <Lock className="h-5 w-5 mr-2" /> Tutup Buku
+              <Lock className="h-5 w-5 mr-2" /> Tambah Tutup Buku
+            </button>
+            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+              <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
+            </button>
+            <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+              <FileDown className="h-4 w-4 mr-2" /> Export PDF
             </button>
           </div>
         </div>
@@ -150,7 +235,7 @@ const TutupBukuDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((entry) => (
+                {filteredData.map((entry) => (
                   <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {new Date(entry.tanggalTutup).toLocaleDateString('id-ID')}
@@ -169,12 +254,14 @@ const TutupBukuDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button
-                        onClick={() => handleBukaTutupBuku(entry.id)}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                      >
-                        <Unlock className="h-4 w-4 mr-1" /> Buka Tutup Buku
-                      </button>
+                      {entry.status === 'Closed' && (
+                        <button
+                          onClick={() => handleBukaTutupBuku(entry)}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                        >
+                          <Unlock className="h-4 w-4 mr-1" /> Buka Tutup Buku
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -183,6 +270,51 @@ const TutupBukuDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Tutup Buku Modal */}
+      <TutupBukuModal
+        isOpen={showTutupBukuModal}
+        onClose={() => setShowTutupBukuModal(false)}
+        onSave={handleTutupBuku}
+        title="Form Tutup Buku"
+      />
+
+      {/* Buka Tutup Buku Confirmation Modal */}
+      <Modal
+        isOpen={showBukaTutupBukuConfirmModal}
+        onClose={() => setShowBukaTutupBukuConfirmModal(false)}
+        title="Konfirmasi Buka Tutup Buku"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-textSecondary">
+            Apakah Anda yakin ingin membuka kembali buku untuk periode{' '}
+            <span className="font-semibold text-text">
+              {selectedEntryToOpen?.periodeBulan} {selectedEntryToOpen?.periodeTahun}
+            </span>
+            ?
+          </p>
+          <p className="text-sm text-red-500">
+            Membuka kembali buku dapat mempengaruhi laporan keuangan yang sudah ditutup.
+          </p>
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowBukaTutupBukuConfirmModal(false)}
+              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmBukaTutupBuku}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            >
+              <Unlock className="h-5 w-5 mr-2" /> Ya, Buka Buku
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
