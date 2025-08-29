@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download } from 'lucide-react';
+import EntryISOTOPModal from './EntryISOTOPModal'; // Import the new modal component
 
 interface ISOTOPAlat {
   id: string;
@@ -14,36 +15,43 @@ interface ISOTOPAlat {
 const MonitoringISOTOPDashboard: React.FC = () => {
   const today = new Date();
 
-  const dummyData: ISOTOPAlat[] = [
+  const [isotopData, setIsotopData] = useState<ISOTOPAlat[]>([
     {
       id: 'ISO001',
       namaAlat: 'Detektor Radiasi Gamma',
       tanggalAwal: '2023-01-01',
       tanggalAkhir: '2024-06-30', // Masa berlaku habis
-      documentUrl: '#'
+      documentUrl: 'https://www.pexels.com/photo/person-holding-a-pen-and-a-notebook-716276/'
     },
     {
       id: 'ISO002',
       namaAlat: 'Spektrometer Alpha',
       tanggalAwal: '2024-03-10',
       tanggalAkhir: '2025-03-10', // Masa berlaku aktif
-      documentUrl: '#'
+      documentUrl: 'https://www.pexels.com/photo/person-writing-on-a-notebook-716276/'
     },
     {
       id: 'ISO003',
       namaAlat: 'Pencacah Geiger-Muller',
       tanggalAwal: '2023-07-01',
       tanggalAkhir: '2024-07-01', // Masa berlaku habis
-      documentUrl: '#'
+      documentUrl: 'https://www.pexels.com/photo/person-writing-on-a-notebook-716276/'
     },
     {
       id: 'ISO004',
       namaAlat: 'Dosemeter Personal',
       tanggalAwal: '2024-05-20',
       tanggalAkhir: '2025-05-20', // Masa berlaku aktif
-      documentUrl: '#'
+      documentUrl: 'https://www.pexels.com/photo/person-writing-on-a-notebook-716276/'
     },
-  ];
+    {
+      id: 'ISO005',
+      namaAlat: 'Monitor Kontaminasi Permukaan',
+      tanggalAwal: '2024-01-15',
+      tanggalAkhir: '2025-12-31', // Masa berlaku aktif (tidak expired)
+      documentUrl: 'https://www.pexels.com/photo/person-writing-on-a-notebook-716276/'
+    },
+  ]);
 
   const isMasaBerlakuHabis = (masaBerlakuDate: string): boolean => {
     const expiryDate = new Date(masaBerlakuDate);
@@ -55,6 +63,7 @@ const MonitoringISOTOPDashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showEntries, setShowEntries] = useState('10');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // State for modal visibility
 
   const handleSearch = () => {
     alert(`Searching for Nama Alat: ${searchNamaAlat}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`);
@@ -62,8 +71,13 @@ const MonitoringISOTOPDashboard: React.FC = () => {
   };
 
   const handleAddAlat = () => {
-    alert('Tambah Alat ISOTOP');
-    // Implement add logic here
+    setIsAddModalOpen(true);
+  };
+
+  const handleSaveNewISOTOP = (newAlat: Omit<ISOTOPAlat, 'id'>) => {
+    const newId = `ISO${String(isotopData.length + 1).padStart(3, '0')}`; // Simple ID generation
+    setIsotopData((prevData) => [...prevData, { id: newId, ...newAlat }]);
+    alert('Alat ISOTOP berhasil ditambahkan!');
   };
 
   const handleExport = (type: string) => {
@@ -223,7 +237,7 @@ const MonitoringISOTOPDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((isotop) => {
+                {isotopData.map((isotop) => {
                   const isRed = isMasaBerlakuHabis(isotop.tanggalAkhir);
                   return (
                     <tr key={isotop.id} className={isRed ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
@@ -254,6 +268,13 @@ const MonitoringISOTOPDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add ISOTOP Modal */}
+      <EntryISOTOPModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleSaveNewISOTOP}
+      />
     </div>
   );
 };

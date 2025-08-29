@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { History, Eye, Clock, Search, PlusCircle, Download } from 'lucide-react';
+import EntryAlatSafetyModal from './EntryAlatSafetyModal'; // Import the new modal
 
 interface AlatSafety {
   id: string;
+  kodeBarang: string;
   namaAlat: string;
   nomorSeri: string;
   kondisi: 'Baik' | 'Rusak Ringan' | 'Rusak Berat';
@@ -11,13 +13,15 @@ interface AlatSafety {
 
 const MonitoringAlatSafetyDashboard: React.FC = () => {
   const today = new Date();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // Renamed for clarity
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // State for add modal
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
   const [selectedAlatName, setSelectedAlatName] = useState('');
 
-  const dummyData: AlatSafety[] = [
+  const [alatSafetyData, setAlatSafetyData] = useState<AlatSafety[]>([ // Manage data in state
     {
       id: 'AS001',
+      kodeBarang: 'KB-HS-001',
       namaAlat: 'Helm Safety',
       nomorSeri: 'HS-2023-001',
       kondisi: 'Baik',
@@ -25,6 +29,7 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
     },
     {
       id: 'AS002',
+      kodeBarang: 'KB-ST-005',
       namaAlat: 'Sarung Tangan Anti-Potong',
       nomorSeri: 'ST-2023-005',
       kondisi: 'Rusak Ringan',
@@ -32,6 +37,7 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
     },
     {
       id: 'AS003',
+      kodeBarang: 'KB-SS-010',
       namaAlat: 'Sepatu Safety',
       nomorSeri: 'SS-2022-010',
       kondisi: 'Baik',
@@ -39,21 +45,22 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
     },
     {
       id: 'AS004',
+      kodeBarang: 'KB-KS-003',
       namaAlat: 'Kacamata Safety',
       nomorSeri: 'KS-2023-003',
       kondisi: 'Rusak Berat',
       history: ['2024-03-10: Inspeksi rutin', '2024-05-01: Retak pada lensa', '2024-06-10: Direkomendasikan penggantian']
     },
-  ];
+  ]);
 
   const openHistoryModal = (alatName: string, history: string[]) => {
     setSelectedAlatName(alatName);
     setSelectedHistory(history);
-    setIsModalOpen(true);
+    setIsHistoryModalOpen(true);
   };
 
   const closeHistoryModal = () => {
-    setIsModalOpen(false);
+    setIsHistoryModalOpen(false);
     setSelectedHistory([]);
     setSelectedAlatName('');
   };
@@ -79,8 +86,18 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
   };
 
   const handleAddAlat = () => {
-    alert('Tambah Alat Safety');
-    // Implement add logic here
+    setIsAddModalOpen(true); // Open the add modal
+  };
+
+  const handleSaveNewAlatSafety = (newData: Omit<AlatSafety, 'id' | 'history'>) => {
+    const newId = `AS${String(alatSafetyData.length + 1).padStart(3, '0')}`; // Simple ID generation
+    const newAlat: AlatSafety = {
+      id: newId,
+      ...newData,
+      history: [`${new Date().toISOString().slice(0, 10)}: Alat baru ditambahkan`], // Initial history entry
+    };
+    setAlatSafetyData(prevData => [...prevData, newAlat]);
+    setIsAddModalOpen(false); // Close the modal after saving
   };
 
   const handleExport = (type: string) => {
@@ -226,6 +243,12 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kode Barang
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama Alat
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -240,8 +263,14 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((alat) => (
+                {alatSafetyData.map((alat, index) => (
                   <tr key={alat.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {alat.kodeBarang}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {alat.namaAlat}
                     </td>
@@ -269,7 +298,7 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
         </div>
 
         {/* History Modal */}
-        {isModalOpen && (
+        {isHistoryModalOpen && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 fade-in-0 duration-300">
               <div className="flex justify-between items-center mb-4">
@@ -303,6 +332,13 @@ const MonitoringAlatSafetyDashboard: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Add Alat Safety Modal */}
+        <EntryAlatSafetyModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSave={handleSaveNewAlatSafety}
+        />
       </div>
     </div>
   );

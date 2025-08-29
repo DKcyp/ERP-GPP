@@ -14,13 +14,15 @@ interface PegawaiTraining {
   id: string;
   namaPegawai: string;
   jumlahSertifikat: number;
-  masaBerlakuTerakhir: string;
+  masaBerlakuTerakhir: string; // This field will no longer be displayed in the main table
   documentUrl: string;
   sertifikatDetails: TrainingSertifikat[];
 }
 
 const MonitoringTrainingDashboard: React.FC = () => {
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize today to start of day for accurate date comparison
+
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const dummyData: PegawaiTraining[] = [
@@ -32,8 +34,8 @@ const MonitoringTrainingDashboard: React.FC = () => {
       documentUrl: '#',
       sertifikatDetails: [
         { id: 'S001', namaSertifikat: 'K3 Umum', masaBerlaku: '2025-06-01', documentUrl: '#' },
-        { id: 'S002', namaSertifikat: 'First Aid', masaBerlaku: '2024-08-15', documentUrl: '#' }, // < 90 hari
-        { id: 'S003', namaSertifikat: 'Fire Safety', masaBerlaku: '2025-01-20', documentUrl: '#' },
+        { id: 'S002', namaSertifikat: 'First Aid', masaBerlaku: '2024-08-15', documentUrl: '#' }, // Contoh: Expired
+        { id: 'S003', namaSertifikat: 'Fire Safety', masaBerlaku: '2025-01-20', documentUrl: '#' }, // Contoh: Expiring Soon (jika hari ini sebelum 2025-01-20 dan dalam 90 hari)
       ],
     },
     {
@@ -43,7 +45,7 @@ const MonitoringTrainingDashboard: React.FC = () => {
       masaBerlakuTerakhir: '2024-09-30',
       documentUrl: '#',
       sertifikatDetails: [
-        { id: 'S004', namaSertifikat: 'ISO 9001 Auditor', masaBerlaku: '2024-09-30', documentUrl: '#' }, // < 90 hari
+        { id: 'S004', namaSertifikat: 'ISO 9001 Auditor', masaBerlaku: '2024-09-30', documentUrl: '#' }, // Contoh: Expired
         { id: 'S005', namaSertifikat: 'Environmental Management', masaBerlaku: '2025-03-10', documentUrl: '#' },
       ],
     },
@@ -54,16 +56,42 @@ const MonitoringTrainingDashboard: React.FC = () => {
       masaBerlakuTerakhir: '2025-11-05',
       documentUrl: '#',
       sertifikatDetails: [
-        { id: 'S006', namaSertifikat: 'Confined Space Entry', masaBerlaku: '2025-11-05', documentUrl: '#' },
+        { id: 'S006', namaSertifikat: 'Confined Space Entry', masaBerlaku: '2025-11-05', documentUrl: '#' }, // Contoh: Valid
       ],
     },
   ];
 
-  const isMasaBerlakuLessThan90Days = (masaBerlakuDate: string): boolean => {
+  const isMasaBerlakuExpired = (masaBerlakuDate: string): boolean => {
     const expiryDate = new Date(masaBerlakuDate);
+    expiryDate.setHours(0, 0, 0, 0);
+    return expiryDate.getTime() < today.getTime();
+  };
+
+  const isMasaBerlakuExpiringSoon = (masaBerlakuDate: string): boolean => {
+    const expiryDate = new Date(masaBerlakuDate);
+    expiryDate.setHours(0, 0, 0, 0);
     const diffTime = expiryDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays < 90 && diffDays >= 0;
+    return diffDays >= 0 && diffDays < 90; // Expiring today or in the next 89 days
+  };
+
+  const getPegawaiTrainingRowStatus = (pegawai: PegawaiTraining) => {
+    let hasExpiredCert = false;
+    let hasExpiringSoonCert = false;
+
+    for (const sertifikat of pegawai.sertifikatDetails) {
+      if (isMasaBerlakuExpired(sertifikat.masaBerlaku)) {
+        hasExpiredCert = true;
+        break; // Jika ada sertifikat yang kadaluarsa, baris pegawai ditandai sebagai expired
+      }
+      if (isMasaBerlakuExpiringSoon(sertifikat.masaBerlaku)) {
+        hasExpiringSoonCert = true;
+      }
+    }
+
+    if (hasExpiredCert) return 'expired';
+    if (hasExpiringSoonCert) return 'expiringSoon';
+    return 'valid';
   };
 
   const toggleRow = (id: string) => {
@@ -135,7 +163,7 @@ const MonitoringTrainingDashboard: React.FC = () => {
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
             </div>
           </div>
         </div>
@@ -176,7 +204,7 @@ const MonitoringTrainingDashboard: React.FC = () => {
                   <option value="ISO 9001 Auditor">ISO 9001 Auditor</option>
                   {/* Add more options as needed */}
                 </select>
-                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rotate-180" /> {/* Chevron down */}
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
             </div>
 
@@ -280,9 +308,7 @@ const MonitoringTrainingDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Jumlah Sertifikat
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Masa Berlaku Terakhir
-                  </th>
+                  {/* Removed Masa Berlaku Terakhir column */}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Document
                   </th>
@@ -292,110 +318,129 @@ const MonitoringTrainingDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((pegawai) => (
-                  <React.Fragment key={pegawai.id}>
-                    <tr
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() => toggleRow(pegawai.id)}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {pegawai.namaPegawai}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {pegawai.jumlahSertifikat}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(pegawai.masaBerlakuTerakhir).toLocaleDateString('id-ID')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <a href={pegawai.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 flex items-center">
-                          <FileText className="h-4 w-4 mr-1" /> View Document
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <button className="text-gray-600 hover:text-gray-900">
-                          {expandedRows.has(pegawai.id) ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                        </button>
-                      </td>
-                    </tr>
-                    {expandedRows.has(pegawai.id) && (
-                      <tr>
-                        <td colSpan={5} className="p-0">
-                          <div className="bg-gray-50 p-4 border-t border-gray-200">
-                            <div className="flex justify-between items-center mb-4">
-                              <h4 className="text-lg font-semibold text-gray-800">Sertifikat {pegawai.namaPegawai}</h4>
-                              <button
-                                onClick={() => handleAddSertifikat(pegawai.id)}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                              >
-                                <PlusCircle className="h-5 w-5 mr-2" /> Tambah Sertifikat
-                              </button>
-                            </div>
-                            <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-                              <thead className="bg-gray-100">
-                                <tr>
-                                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                    Nama Sertifikat
-                                  </th>
-                                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                    Masa Berlaku
-                                  </th>
-                                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                    Document
-                                  </th>
-                                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                    Aksi
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {pegawai.sertifikatDetails.map((sertifikat) => {
-                                  const isRed = isMasaBerlakuLessThan90Days(sertifikat.masaBerlaku);
-                                  return (
-                                    <tr key={sertifikat.id} className={isRed ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {sertifikat.namaSertifikat}
-                                        {isRed && (
-                                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            <AlertTriangle className="h-3 w-3 mr-1" /> Expiring Soon
-                                          </span>
-                                        )}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(sertifikat.masaBerlaku).toLocaleDateString('id-ID')}
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href={sertifikat.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 flex items-center">
-                                          <FileText className="h-4 w-4 mr-1" /> View Document
-                                        </a>
-                                      </td>
-                                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        <div className="flex justify-center space-x-2">
-                                          <button
-                                            onClick={() => handleEditSertifikat(sertifikat.id)}
-                                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                                          >
-                                            <Edit className="h-4 w-4" />
-                                          </button>
-                                          <button
-                                            onClick={() => handleDeleteSertifikat(sertifikat.id)}
-                                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </button>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
+                {dummyData.map((pegawai) => {
+                  const rowStatus = getPegawaiTrainingRowStatus(pegawai);
+                  const rowClass = rowStatus === 'expired'
+                    ? 'bg-red-50 hover:bg-red-100'
+                    : rowStatus === 'expiringSoon'
+                      ? 'bg-yellow-50 hover:bg-yellow-100'
+                      : 'hover:bg-gray-50';
+
+                  return (
+                    <React.Fragment key={pegawai.id}>
+                      <tr
+                        className={`transition-colors cursor-pointer ${rowClass}`}
+                        onClick={() => toggleRow(pegawai.id)}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {pegawai.namaPegawai}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {pegawai.jumlahSertifikat}
+                        </td>
+                        {/* Removed Masa Berlaku Terakhir data cell */}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <a href={pegawai.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 flex items-center">
+                            <FileText className="h-4 w-4 mr-1" /> View Document
+                          </a>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                          <button className="text-gray-600 hover:text-gray-900">
+                            {expandedRows.has(pegawai.id) ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                          </button>
                         </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                ))}
+                      {expandedRows.has(pegawai.id) && (
+                        <tr>
+                          <td colSpan={4} className="p-0"> {/* Adjusted colSpan from 5 to 4 */}
+                            <div className="bg-gray-50 p-4 border-t border-gray-200">
+                              <div className="flex justify-between items-center mb-4">
+                                <h4 className="text-lg font-semibold text-gray-800">Sertifikat {pegawai.namaPegawai}</h4>
+                                <button
+                                  onClick={() => handleAddSertifikat(pegawai.id)}
+                                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                                >
+                                  <PlusCircle className="h-5 w-5 mr-2" /> Tambah Sertifikat
+                                </button>
+                              </div>
+                              <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                                <thead className="bg-gray-100">
+                                  <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                      Nama Sertifikat
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                      Masa Berlaku
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                      Document
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                      Aksi
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                  {pegawai.sertifikatDetails.map((sertifikat) => {
+                                    const isExpired = isMasaBerlakuExpired(sertifikat.masaBerlaku);
+                                    const isExpiringSoon = !isExpired && isMasaBerlakuExpiringSoon(sertifikat.masaBerlaku);
+                                    const sertifikatRowClass = isExpired
+                                      ? 'bg-red-50 hover:bg-red-100'
+                                      : isExpiringSoon
+                                        ? 'bg-yellow-50 hover:bg-yellow-100'
+                                        : 'hover:bg-gray-50';
+
+                                    return (
+                                      <tr key={sertifikat.id} className={`transition-colors ${sertifikatRowClass}`}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                          {sertifikat.namaSertifikat}
+                                          {isExpired && (
+                                            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                              <AlertTriangle className="h-3 w-3 mr-1" /> Expired
+                                            </span>
+                                          )}
+                                          {isExpiringSoon && (
+                                            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                              <AlertTriangle className="h-3 w-3 mr-1" /> Expiring Soon
+                                            </span>
+                                          )}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                          {new Date(sertifikat.masaBerlaku).toLocaleDateString('id-ID')}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                          <a href={sertifikat.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 flex items-center">
+                                            <FileText className="h-4 w-4 mr-1" /> View Document
+                                          </a>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                          <div className="flex justify-center space-x-2">
+                                            <button
+                                              onClick={() => handleEditSertifikat(sertifikat.id)}
+                                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                                            >
+                                              <Edit className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                              onClick={() => handleDeleteSertifikat(sertifikat.id)}
+                                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -19,6 +19,9 @@ const PerizinanAlatDashboard: React.FC = () => {
       noSeri: '12345-EXC',
       jenisPerizinan: '-',
       status: 'Belum Berizin',
+      tanggalAwalIzin: '',
+      tanggalAkhirIzin: '',
+      dokumen: '',
     },
     {
       id: '2',
@@ -28,6 +31,9 @@ const PerizinanAlatDashboard: React.FC = () => {
       noSeri: '12345-CRN',
       jenisPerizinan: 'SLO',
       status: 'Menunggu Persetujuan',
+      tanggalAwalIzin: '2024-03-01',
+      tanggalAkhirIzin: '2025-03-01',
+      dokumen: 'SLO-CRN-001',
     },
     {
       id: '3',
@@ -37,6 +43,9 @@ const PerizinanAlatDashboard: React.FC = () => {
       noSeri: '12345-TRK',
       jenisPerizinan: 'Izin Angkut',
       status: 'Disetujui',
+      tanggalAwalIzin: '2023-11-15',
+      tanggalAkhirIzin: '2024-11-15', // This one should be red (more than 3 months ago from current date)
+      dokumen: 'IA-TRK-001',
     },
     {
       id: '4',
@@ -46,6 +55,9 @@ const PerizinanAlatDashboard: React.FC = () => {
       noSeri: '12345-DZR',
       jenisPerizinan: 'Izin Operasional',
       status: 'Izin Tersedia',
+      tanggalAwalIzin: '2024-01-20',
+      tanggalAkhirIzin: '2025-01-20',
+      dokumen: 'IO-DZR-001',
     },
     {
       id: '5',
@@ -55,6 +67,33 @@ const PerizinanAlatDashboard: React.FC = () => {
       noSeri: '12345-DMP',
       jenisPerizinan: 'STNK',
       status: 'Aktif',
+      tanggalAwalIzin: '2024-02-10',
+      tanggalAkhirIzin: '2025-02-10',
+      dokumen: 'STNK-DMP-001',
+    },
+    {
+      id: '6',
+      no: 6,
+      kodeBarang: 'FORK-001',
+      namaAlat: 'Forklift',
+      noSeri: '12345-FORK',
+      jenisPerizinan: 'SIO',
+      status: 'Aktif',
+      tanggalAwalIzin: '2023-01-01',
+      tanggalAkhirIzin: '2024-01-01', // This one should be red (more than 3 months ago from current date)
+      dokumen: 'SIO-FORK-001',
+    },
+    {
+      id: '7',
+      no: 7,
+      kodeBarang: 'GEN-001',
+      namaAlat: 'Generator',
+      noSeri: '12345-GEN',
+      jenisPerizinan: 'Izin Genset',
+      status: 'Aktif',
+      tanggalAwalIzin: '2024-05-01',
+      tanggalAkhirIzin: '2024-07-25', // This one is less than 3 months ago (or exactly 3 months ago if today is 25 Oct)
+      dokumen: 'IG-GEN-001',
     },
   ]);
 
@@ -81,9 +120,6 @@ const PerizinanAlatDashboard: React.FC = () => {
 
   const handleAjukanIzinSubmit = (data: AjukanIzinFormData) => {
     console.log('Submit Ajukan Izin:', data);
-    // In a real app, you would send this data to your backend
-    // And then update the perizinanAlatData state
-    // For now, let's simulate adding a new entry or updating an existing one
     if (selectedIzin) {
       setPerizinanAlatData((prev) =>
         prev.map((item) =>
@@ -104,6 +140,9 @@ const PerizinanAlatDashboard: React.FC = () => {
           noSeri: data.noSeri,
           jenisPerizinan: data.jenisPerizinan,
           status: 'Menunggu Persetujuan',
+          tanggalAwalIzin: '', // Default empty for new application
+          tanggalAkhirIzin: '', // Default empty for new application
+          dokumen: '', // Default empty for new application
         },
       ]);
     }
@@ -113,12 +152,24 @@ const PerizinanAlatDashboard: React.FC = () => {
     console.log('Submit Detail Izin Alat:', data);
     // In a real app, you would send this data to your backend
     // And then update the perizinanAlatData state
+    if (selectedIzin) {
+      setPerizinanAlatData((prev) =>
+        prev.map((item) =>
+          item.id === selectedIzin.id
+            ? {
+                ...item,
+                dokumen: data.dokumen,
+                tanggalAwalIzin: data.tanggalAwalIzin,
+                tanggalAkhirIzin: data.tanggalAkhirIzin,
+              }
+            : item
+        )
+      );
+    }
   };
 
   const handlePerpanjangSubmit = (data: PerpanjangIzinFormData) => {
     console.log('Submit Perpanjang Izin:', data);
-    // In a real app, you would send this data to your backend
-    // And then update the perizinanAlatData state
     if (selectedIzin) {
       setPerizinanAlatData((prev) =>
         prev.map((item) =>
@@ -137,7 +188,7 @@ const PerizinanAlatDashboard: React.FC = () => {
       case 'Belum Berizin':
         return 'bg-gray-500/20 text-gray-500';
       case 'Menunggu Persetujuan':
-        return 'bg-warning/20 text-warning'; // Changed to warning for consistency with Monitoring
+        return 'bg-warning/20 text-warning';
       case 'Disetujui':
         return 'bg-primary/20 text-primary';
       case 'Izin Tersedia':
@@ -147,22 +198,35 @@ const PerizinanAlatDashboard: React.FC = () => {
     }
   };
 
+  // Function to determine if the expiry date is more than 3 months in the past
+  const getExpiryStatusClass = (tanggalAkhirIzin: string) => {
+    if (!tanggalAkhirIzin) return ''; // No date, no special styling
+
+    const expiryDate = new Date(tanggalAkhirIzin);
+    const currentDate = new Date();
+
+    // Calculate 3 months ago from current date
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+    threeMonthsAgo.setDate(currentDate.getDate()); // Keep the same day of the month
+
+    // If expiryDate is before threeMonthsAgo, it's expired by more than 3 months
+    if (expiryDate < threeMonthsAgo) {
+      return 'bg-red-900/30'; // A subtle red background
+    }
+    return '';
+  };
+
   // Search and filter states
-  const [searchNoSeri, setSearchNoSeri] = useState('');
   const [searchKodeBarang, setSearchKodeBarang] = useState('');
   const [searchNamaAlat, setSearchNamaAlat] = useState('');
-  const [jenisPerizinanFilter, setJenisPerizinanFilter] = useState('');
-  const [statusIzinFilter, setStatusIzinFilter] = useState('');
   const [showEntries, setShowEntries] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredData = perizinanAlatData.filter((item) => {
-    const matchesNoSeri = item.noSeri.toLowerCase().includes(searchNoSeri.toLowerCase());
     const matchesKodeBarang = item.kodeBarang.toLowerCase().includes(searchKodeBarang.toLowerCase());
     const matchesNamaAlat = item.namaAlat.toLowerCase().includes(searchNamaAlat.toLowerCase());
-    const matchesJenisPerizinan = jenisPerizinanFilter ? item.jenisPerizinan === jenisPerizinanFilter : true;
-    const matchesStatusIzin = statusIzinFilter ? item.status === statusIzinFilter : true;
-    return matchesNoSeri && matchesKodeBarang && matchesNamaAlat && matchesJenisPerizinan && matchesStatusIzin;
+    return matchesKodeBarang && matchesNamaAlat;
   });
 
   const totalPages = Math.ceil(filteredData.length / showEntries);
@@ -178,26 +242,6 @@ const PerizinanAlatDashboard: React.FC = () => {
       {/* Search and Filter Section */}
       <div className="bg-surface rounded-xl shadow-lg p-6 mb-8 border border-border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div>
-            <label htmlFor="searchNoSeri" className="block text-sm font-medium text-textSecondary mb-1">
-              Cari No Seri
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="searchNoSeri"
-                value={searchNoSeri}
-                onChange={(e) => setSearchNoSeri(e.target.value)}
-                placeholder="12345-CRN"
-                className="w-full px-4 py-2 pl-10 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-textSecondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
           <div>
             <label htmlFor="searchKodeBarang" className="block text-sm font-medium text-textSecondary mb-1">
               Cari Kode Barang
@@ -237,42 +281,6 @@ const PerizinanAlatDashboard: React.FC = () => {
                 </svg>
               </div>
             </div>
-          </div>
-          <div>
-            <label htmlFor="jenisPerizinanFilter" className="block text-sm font-medium text-textSecondary mb-1">
-              Jenis Perizinan
-            </label>
-            <select
-              id="jenisPerizinanFilter"
-              value={jenisPerizinanFilter}
-              onChange={(e) => setJenisPerizinanFilter(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
-            >
-              <option value="">--Pilih Jenis Perizinan--</option>
-              <option value="SLO">SLO</option>
-              <option value="Izin Angkut">Izin Angkut</option>
-              <option value="Izin Operasional">Izin Operasional</option>
-              <option value="STNK">STNK</option>
-              <option value="-">-</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="statusIzinFilter" className="block text-sm font-medium text-textSecondary mb-1">
-              Status Izin
-            </label>
-            <select
-              id="statusIzinFilter"
-              value={statusIzinFilter}
-              onChange={(e) => setStatusIzinFilter(e.target.value as PerizinanAlatEntry['status'])}
-              className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-text focus:ring-primary focus:border-primary transition-all duration-200"
-            >
-              <option value="">--Pilih Status Izin--</option>
-              <option value="Belum Berizin">Belum Berizin</option>
-              <option value="Menunggu Persetujuan">Menunggu Persetujuan</option>
-              <option value="Disetujui">Disetujui</option>
-              <option value="Izin Tersedia">Izin Tersedia</option>
-              <option value="Aktif">Aktif</option>
-            </select>
           </div>
         </div>
 
@@ -332,13 +340,13 @@ const PerizinanAlatDashboard: React.FC = () => {
                   Nama Alat
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
-                  No Seri
+                  Tanggal Awal Izin
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
-                  Jenis Perizinan
+                  Tanggal Akhir Izin
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
-                  Status
+                  Dokumen
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">
                   Aksi
@@ -354,19 +362,13 @@ const PerizinanAlatDashboard: React.FC = () => {
                 </tr>
               ) : (
                 paginatedData.map((izin) => (
-                  <tr key={izin.id} className="hover:bg-background transition-colors duration-150">
+                  <tr key={izin.id} className={`hover:bg-background transition-colors duration-150 ${getExpiryStatusClass(izin.tanggalAkhirIzin)}`}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text">{izin.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.kodeBarang}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.namaAlat}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.noSeri}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.jenisPerizinan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(izin.status)}`}
-                      >
-                        {izin.status}
-                      </span>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.tanggalAwalIzin || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.tanggalAkhirIzin || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-textSecondary">{izin.dokumen || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         {izin.status === 'Belum Berizin' && (
@@ -448,7 +450,7 @@ const PerizinanAlatDashboard: React.FC = () => {
             kodeBarang: selectedIzin.kodeBarang,
             namaAlat: selectedIzin.namaAlat,
             noSeri: selectedIzin.noSeri,
-            jenisPerizinan: selectedIzin.jenisPerizinan === '-' ? '' : selectedIzin.jenisPerizinan, // Clear if no type
+            jenisPerizinan: selectedIzin.jenisPerizinan === '-' ? '' : selectedIzin.jenisPerizinan,
           }}
           onSubmit={handleAjukanIzinSubmit}
         />
@@ -463,9 +465,9 @@ const PerizinanAlatDashboard: React.FC = () => {
             namaAlat: selectedIzin.namaAlat,
             noSeri: selectedIzin.noSeri,
             jenisPerizinan: selectedIzin.jenisPerizinan,
-            noDokumen: 'DOC-0012', // Mock data
-            tanggalMulaiBerlaku: '2024-01-01', // Mock data
-            tanggalBerakhir: '2025-01-01', // Mock data
+            dokumen: selectedIzin.dokumen,
+            tanggalAwalIzin: selectedIzin.tanggalAwalIzin,
+            tanggalAkhirIzin: selectedIzin.tanggalAkhirIzin,
           }}
           onSubmit={handleDetailIzinSubmit}
         />

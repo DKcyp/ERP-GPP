@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Plus, Edit, Trash2, ReceiptText } from 'lucide-react';
+import { Clock, Plus, Edit, Trash2, ReceiptText, Printer } from 'lucide-react'; // Import Printer icon
 import ProconInvoiceModal from './ProconInvoiceModal'; // Import the new modal
 import ConfirmDeleteModal from './ConfirmDeleteModal'; // Import ConfirmDeleteModal
 import { Project, ProconInvoiceFormInput, Invoice, SOTurunan } from '../types'; // Import the new types
@@ -97,6 +97,14 @@ const ProconInvoiceDashboard: React.FC = () => {
       setInvoices(invoices.filter(invoice => invoice.id !== itemToDeleteId));
       setItemToDeleteId(null);
       setIsConfirmDeleteModalOpen(false);
+    }
+  };
+
+  const handlePrintClick = (id: number) => {
+    const invoiceToPrint = invoices.find(inv => inv.id === id);
+    if (invoiceToPrint) {
+      alert(`Mencetak Invoice: ${invoiceToPrint.noInvoice} untuk Project: ${invoiceToPrint.project}`);
+      // Implement actual print logic here (e.g., open a new window with invoice details, trigger browser print)
     }
   };
 
@@ -211,20 +219,42 @@ const ProconInvoiceDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
-                        onClick={() => handleEditClick(item.id)}
-                        className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
-                      >
-                        <Edit className="h-4 w-4" />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(item.id)}
-                        className="text-red-600 hover:text-red-900 flex items-center space-x-1 mt-1"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span>Hapus</span>
-                      </button>
+                      {item.status === 'Draft' && (
+                        <>
+                          <button
+                            onClick={() => handleEditClick(item.id)}
+                            className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
+                          >
+                            <Edit className="h-4 w-4" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item.id)}
+                            className="text-red-600 hover:text-red-900 flex items-center space-x-1 mt-1"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            <span>Hapus</span>
+                          </button>
+                        </>
+                      )}
+                      {item.status === 'Pending' && (
+                        <button
+                          onClick={() => handleDeleteClick(item.id)}
+                          className="text-red-600 hover:text-red-900 flex items-center space-x-1"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span>Hapus</span>
+                        </button>
+                      )}
+                      {item.status === 'Paid' && (
+                        <button
+                          onClick={() => handlePrintClick(item.id)}
+                          className="text-blue-600 hover:text-blue-900 flex items-center space-x-1"
+                        >
+                          <Printer className="h-4 w-4" />
+                          <span>Print</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

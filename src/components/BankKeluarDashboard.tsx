@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, PlusCircle, Save, Trash2, Search, Filter, FileSpreadsheet, FileDown, Pencil } from 'lucide-react';
+import { Clock, PlusCircle, Save, Trash2, Search, Filter, FileSpreadsheet, FileDown, Pencil, Edit } from 'lucide-react'; // Added Edit icon
 import { BankKeluarFormData, DetailItem, RecentTransaction } from '../types';
 import BankKeluarModal from './BankKeluarModal'; // Import the new modal component
+import ConfirmDeleteModal from './ConfirmDeleteModal'; // Import the ConfirmDeleteModal component
 
 const BankKeluarDashboard: React.FC = () => {
   const today = new Date();
@@ -11,6 +12,10 @@ const BankKeluarDashboard: React.FC = () => {
   // State for modal
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<BankKeluarFormData | null>(null);
+
+  // State for Confirm Delete Modal
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<RecentTransaction | null>(null);
 
   // State for search and filter
   const [filterNomorJurnal, setFilterNomorJurnal] = useState('');
@@ -150,6 +155,24 @@ const BankKeluarDashboard: React.FC = () => {
       };
       setRecentTransactions((prev) => [newTransaction, ...prev]);
     }
+  };
+
+  const handleDeleteClick = (transaction: RecentTransaction) => {
+    setTransactionToDelete(transaction);
+    setIsConfirmDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (transactionToDelete) {
+      setRecentTransactions(prev => prev.filter(t => t.id !== transactionToDelete.id));
+      setTransactionToDelete(null);
+    }
+    setIsConfirmDeleteModalOpen(false);
+  };
+
+  const handleCancelDelete = () => {
+    setTransactionToDelete(null);
+    setIsConfirmDeleteModalOpen(false);
   };
 
   const filteredTransactions = recentTransactions.filter(transaction => {
@@ -343,12 +366,22 @@ const BankKeluarDashboard: React.FC = () => {
                       {transaction.client}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button
-                        onClick={() => handleEditClick(transaction)}
-                        className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transition-colors"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => handleEditClick(transaction)}
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition-colors"
+                          title="Edit Transaksi"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(transaction)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors"
+                          title="Hapus Transaksi"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -365,6 +398,15 @@ const BankKeluarDashboard: React.FC = () => {
         onSave={handleSaveTransaction}
         initialData={editingTransaction}
         title={editingTransaction ? 'Edit Transaksi Bank Keluar' : 'Tambah Transaksi Bank Keluar'}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isConfirmDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        itemName={transactionToDelete ? transactionToDelete.nomorJurnal : ''}
+        message="Apakah Anda yakin ingin menghapus transaksi bank keluar ini?"
       />
     </div>
   );

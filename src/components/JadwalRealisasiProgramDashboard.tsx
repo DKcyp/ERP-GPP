@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { PlusCircle, Edit, Trash2, FileText, AlertTriangle, Clock, Search, Download } from 'lucide-react';
+import EntryProgramModal from './EntryProgramModal'; // Import the new modal component
 
 interface ProgramItem {
   id: string;
@@ -13,50 +14,63 @@ interface ProgramItem {
 
 const JadwalRealisasiProgramDashboard: React.FC = () => {
   const today = new Date();
+  // Normalize today to start of day for consistent date comparison
+  const todayStartOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-  const dummyData: ProgramItem[] = [
+  const initialProgramData: ProgramItem[] = [
     {
       id: 'PRG001',
       program: 'Pelatihan K3 Dasar',
-      tanggal: '2024-07-15', // <= 7 hari dari hari ini
+      tanggal: '2024-07-15', // Example: If today is 2024-07-01, this is in future. If today is 2024-07-12, this is soon.
       realisasi: '80%',
       documentUrl: '#'
     },
     {
       id: 'PRG002',
       program: 'Inspeksi Lingkungan Triwulan',
-      tanggal: '2024-07-05', // <= 7 hari dari hari ini
+      tanggal: '2024-07-05', // Example: If today is 2024-07-01, this is soon and in future.
       realisasi: '100%',
       documentUrl: '#'
     },
     {
       id: 'PRG003',
       program: 'Simulasi Tanggap Darurat',
-      tanggal: '2024-08-20', // > 7 hari
+      tanggal: '2025-09-20', // Example: If today is 2024-07-01, this is in future but not soon.
       realisasi: 'Belum dimulai',
       documentUrl: '#'
     },
     {
       id: 'PRG004',
       program: 'Audit Internal ISO 14001',
-      tanggal: '2024-06-28', // Sudah lewat
+      tanggal: '2024-06-28', // Example: If today is 2024-07-01, this is in past.
       realisasi: '95%',
       documentUrl: '#'
     },
     {
       id: 'PRG005',
       program: 'Penyuluhan Bahaya Kimia',
-      tanggal: '2024-07-10', // <= 7 hari dari hari ini
+      tanggal: '2024-07-10', // Example: If today is 2024-07-01, this is in future but not soon.
       realisasi: '60%',
       documentUrl: '#'
     },
   ];
 
+  const [programData, setProgramData] = useState<ProgramItem[]>(initialProgramData);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Checks if the program date is within 7 days from today (inclusive of today)
   const isProgramDateSoon = (programDate: string): boolean => {
     const date = new Date(programDate);
     const diffTime = date.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 7 && diffDays >= 0; // Within 7 days from today, including today
+    return diffDays <= 7 && diffDays >= 0;
+  };
+
+  // Checks if the program date is strictly after today
+  const isProgramDateInFuture = (programDate: string): boolean => {
+    const date = new Date(programDate);
+    const programDateStartOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return programDateStartOfDay.getTime() > todayStartOfDay.getTime();
   };
 
   const handleEdit = (id: string) => {
@@ -66,9 +80,23 @@ const JadwalRealisasiProgramDashboard: React.FC = () => {
 
   const handleDelete = (id: string) => {
     if (confirm(`Are you sure you want to delete program ${id}?`)) {
-      alert(`Delete Program: ${id}`);
-      // Implement delete logic here
+      setProgramData(programData.filter(program => program.id !== id));
+      alert(`Program ${id} deleted.`);
     }
+  };
+
+  const handleAddProgram = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleSaveNewProgram = (newProgram: Omit<ProgramItem, 'id'>) => {
+    const newId = `PRG${String(programData.length + 1).padStart(3, '0')}`; // Simple ID generation
+    setProgramData([...programData, { id: newId, ...newProgram }]);
+  };
+
+  const handleExport = (type: string) => {
+    alert(`Exporting as ${type}`);
+    // Implement export logic here
   };
 
   // State for search and filter
@@ -81,16 +109,6 @@ const JadwalRealisasiProgramDashboard: React.FC = () => {
   const handleSearch = () => {
     alert(`Searching for Nama Program: ${searchNamaProgram}, Status Realisasi: ${statusRealisasiFilter}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`);
     // Implement actual search logic here
-  };
-
-  const handleAddProgram = () => {
-    alert('Tambah Program');
-    // Implement add logic here
-  };
-
-  const handleExport = (type: string) => {
-    alert(`Exporting as ${type}`);
-    // Implement export logic here
   };
 
   return (
@@ -267,13 +285,14 @@ const JadwalRealisasiProgramDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((program) => {
-                  const isRed = isProgramDateSoon(program.tanggal);
+                {programData.map((program) => {
+                  const isSoon = isProgramDateSoon(program.tanggal);
+                  const isFutureDate = isProgramDateInFuture(program.tanggal);
                   return (
-                    <tr key={program.id} className={isRed ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
+                    <tr key={program.id} className={isFutureDate ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {program.program}
-                        {isRed && (
+                        {isSoon && (
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                             <AlertTriangle className="h-3 w-3 mr-1" /> Mendekati Jadwal
                           </span>
@@ -314,6 +333,13 @@ const JadwalRealisasiProgramDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Program Modal */}
+      <EntryProgramModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleSaveNewProgram}
+      />
     </div>
   );
 };

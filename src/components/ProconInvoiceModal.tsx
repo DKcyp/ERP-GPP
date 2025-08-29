@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, SyntheticEvent } from 'react'; // Import SyntheticEvent
 import { X, Save, PlusCircle } from 'lucide-react';
 import { Project, ProconInvoiceFormInput, Invoice } from '../types'; // Import Invoice type
 
@@ -74,13 +74,16 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Modified handleSubmit to accept React.SyntheticEvent
+  const handleSubmit = (e: SyntheticEvent, forceStatus?: 'Draft') => {
     e.preventDefault();
     if (!formData.projectId || !formData.soTurunanId || !formData.nominal) {
       alert('Please fill all invoice details.');
       return;
     }
-    onSave(formData);
+
+    const dataToSave = forceStatus ? { ...formData, status: forceStatus } : formData;
+    onSave(dataToSave);
   };
 
   if (!isOpen) return null;
@@ -101,7 +104,7 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
           <span>{itemToEdit ? 'Edit Invoice' : 'Tambah Invoice Baru'}</span>
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
           {/* No Invoice */}
           <div>
             <label htmlFor="noInvoice" className="block text-sm font-medium text-gray-700 mb-1">
@@ -117,43 +120,43 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
             />
           </div>
 
-          {/* Pilihan Project */}
+          {/* Pilih No SO (Previously Pilihan Project) */}
           <div>
-            <label htmlFor="project" className="block text-sm font-medium text-gray-700 mb-1">
-              Pilihan Project
+            <label htmlFor="projectId" className="block text-sm font-medium text-gray-700 mb-1">
+              Pilih No SO
             </label>
             <select
-              id="project"
-              name="project"
+              id="projectId"
+              name="projectId"
               value={formData.projectId}
               onChange={handleProjectChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               required
             >
-              <option value="">Pilih Project</option>
+              <option value="">Pilih No SO</option>
               {dummyProjects.map(project => (
-                <option key={project.id} value={project.id}>{project.name}</option>
+                <option key={project.id} value={project.id}>{project.id}</option>
               ))}
             </select>
           </div>
 
-          {/* Pilihan SO Turunan */}
+          {/* Pilih No SO Turunan (New Field) */}
           <div>
-            <label htmlFor="soTurunan" className="block text-sm font-medium text-gray-700 mb-1">
-              Pilihan SO Turunan
+            <label htmlFor="soTurunanId" className="block text-sm font-medium text-gray-700 mb-1">
+              Pilih No SO Turunan
             </label>
             <select
-              id="soTurunan"
-              name="soTurunan"
+              id="soTurunanId"
+              name="soTurunanId"
               value={formData.soTurunanId}
               onChange={handleSOTurunanChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               disabled={!selectedProject}
               required
             >
-              <option value="">Pilih SO Turunan</option>
+              <option value="">Pilih No SO Turunan</option>
               {selectedProject?.soTurunan.map(so => (
-                <option key={so.id} value={so.id}>{so.name}</option>
+                <option key={so.id} value={so.id}>{so.id}</option>
               ))}
             </select>
           </div>
@@ -201,6 +204,14 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
               className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors shadow-sm"
             >
               Batal
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e, 'Draft')}
+              className="px-5 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors shadow-md flex items-center space-x-2"
+            >
+              <Save className="h-4 w-4" />
+              <span>Simpan Sebagai Draft</span>
             </button>
             <button
               type="submit"

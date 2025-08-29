@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Clock, PlusCircle, Save, Trash2, Search, Filter, FileSpreadsheet, FileDown, Edit } from 'lucide-react';
 import KasMasukModal from './KasMasukModal'; // Import the new modal component
+import ConfirmDeleteModal from './ConfirmDeleteModal'; // Import the ConfirmDeleteModal component
 import { KasMasukFormData, RecentTransaction } from '../types'; // Import types
 
 const KasMasukDashboard: React.FC = () => {
@@ -12,6 +13,10 @@ const KasMasukDashboard: React.FC = () => {
   const [isKasMasukModalOpen, setIsKasMasukModalOpen] = useState(false);
   const [editingKasMasukData, setEditingKasMasukData] = useState<KasMasukFormData | null>(null);
   const [modalTitle, setModalTitle] = useState('Tambah Kas Masuk Baru');
+
+  // State for Confirm Delete Modal
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<RecentTransaction | null>(null);
 
   // State for Search and Filter
   const [searchNoJurnal, setSearchNoJurnal] = useState('');
@@ -142,10 +147,22 @@ const KasMasukDashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteKasMasuk = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this transaction?')) {
-      setRecentTransactions(prev => prev.filter(t => t.id !== id));
+  const handleDeleteClick = (transaction: RecentTransaction) => {
+    setTransactionToDelete(transaction);
+    setIsConfirmDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (transactionToDelete) {
+      setRecentTransactions(prev => prev.filter(t => t.id !== transactionToDelete.id));
+      setTransactionToDelete(null);
     }
+    setIsConfirmDeleteModalOpen(false);
+  };
+
+  const handleCancelDelete = () => {
+    setTransactionToDelete(null);
+    setIsConfirmDeleteModalOpen(false);
   };
 
   const handleSearch = () => {
@@ -395,7 +412,7 @@ const KasMasukDashboard: React.FC = () => {
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteKasMasuk(transaction.id)}
+                          onClick={() => handleDeleteClick(transaction)}
                           className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors"
                           title="Hapus Transaksi"
                         >
@@ -418,6 +435,15 @@ const KasMasukDashboard: React.FC = () => {
         onSave={handleSaveKasMasuk}
         initialData={editingKasMasukData}
         title={modalTitle}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isConfirmDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        itemName={transactionToDelete ? transactionToDelete.nomorJurnal : ''}
+        message="Apakah Anda yakin ingin menghapus transaksi kas masuk ini?"
       />
     </div>
   );

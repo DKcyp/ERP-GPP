@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download } from 'lucide-react';
+import EntryAuditModal from './EntryAuditModal'; // Import the new modal component
 
 interface AuditItem {
   id: string;
@@ -16,47 +17,65 @@ const AuditDashboard: React.FC = () => {
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
-  const dummyData: AuditItem[] = [
+  const [auditData, setAuditData] = useState<AuditItem[]>([ // Use state for dummyData
     {
       id: 'AUD001',
       namaPegawai: 'Budi Santoso',
       jenisAudit: 'Internal QMS',
-      tanggalAudit: '2024-07-10', // Current month
+      tanggalAudit: '2024-07-10', // Example: Past date
       documentUrl: '#'
     },
     {
       id: 'AUD002',
       namaPegawai: 'Siti Aminah',
       jenisAudit: 'Eksternal ISO 45001',
-      tanggalAudit: '2024-06-25', // Past month
+      tanggalAudit: '2024-06-25', // Example: Past date
       documentUrl: '#'
     },
     {
       id: 'AUD003',
       namaPegawai: 'Joko Susilo',
       jenisAudit: 'Internal EMS',
-      tanggalAudit: '2024-07-22', // Current month
+      tanggalAudit: '2024-07-22', // Example: Future date (assuming today is before 2024-07-22)
       documentUrl: '#'
     },
     {
       id: 'AUD004',
       namaPegawai: 'Dewi Lestari',
       jenisAudit: 'Supplier Audit',
-      tanggalAudit: '2024-05-15', // Past month
+      tanggalAudit: '2024-05-15', // Example: Past date
       documentUrl: '#'
     },
     {
       id: 'AUD005',
       namaPegawai: 'Rudi Hartono',
       jenisAudit: 'Internal QMS',
-      tanggalAudit: '2024-08-05', // Future month
+      tanggalAudit: '2024-08-05', // Example: Future date
       documentUrl: '#'
     },
-  ];
+    {
+      id: 'AUD006',
+      namaPegawai: 'Fajar Pratama',
+      jenisAudit: 'Audit Keamanan Data',
+      tanggalAudit: '2024-10-20', // NEW: Example future date
+      documentUrl: '#'
+    },
+  ]);
 
-  const isAuditCurrentMonth = (auditDate: string): boolean => {
+  // Function to check if audit date is in the current month
+  const isAuditInCurrentMonth = (auditDate: string): boolean => {
     const date = new Date(auditDate);
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+  };
+
+  // Function to check if audit date is in the future (greater than today)
+  const isAuditDateInFuture = (auditDate: string): boolean => {
+    const auditDateObj = new Date(auditDate);
+    // Normalize both dates to the start of the day for accurate comparison
+    const todayNormalized = new Date();
+    todayNormalized.setHours(0, 0, 0, 0);
+    auditDateObj.setHours(0, 0, 0, 0);
+    return auditDateObj > todayNormalized;
   };
 
   // State for search and filter
@@ -66,14 +85,29 @@ const AuditDashboard: React.FC = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showEntries, setShowEntries] = useState('10');
 
+  // State for modal visibility
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   const handleSearch = () => {
     alert(`Searching for Nama Pegawai: ${searchNamaPegawai}, Jenis Audit: ${jenisAuditFilter}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`);
     // Implement actual search logic here
   };
 
   const handleAddAudit = () => {
-    alert('Tambah Audit');
-    // Implement add logic here
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleSaveNewAudit = (newAudit: Omit<AuditItem, 'id'>) => {
+    // Generate a simple unique ID for the new audit
+    const newId = `AUD${String(auditData.length + 1).padStart(3, '0')}`;
+    const auditWithId: AuditItem = { ...newAudit, id: newId };
+    setAuditData((prevData) => [...prevData, auditWithId]);
+    console.log('New Audit Added:', auditWithId);
+    // In a real application, you would send this data to a backend API
   };
 
   const handleExport = (type: string) => {
@@ -253,20 +287,18 @@ const AuditDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((audit) => {
-                  const isRed = isAuditCurrentMonth(audit.tanggalAudit);
+                {auditData.map((audit) => { // Use auditData state here
+                  const isCurrentMonth = isAuditInCurrentMonth(audit.tanggalAudit);
+                  const isFutureDate = isAuditDateInFuture(audit.tanggalAudit); // New condition for future dates
                   return (
-                    <tr key={audit.id} className={isRed ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
+                    <tr key={audit.id} className={isFutureDate ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {audit.namaPegawai}
-                        {isRed && (
+                        {isCurrentMonth && ( // This tag still uses the 'current month' logic
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                             <AlertTriangle className="h-3 w-3 mr-1" /> Audit Bulan Ini
                           </span>
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {audit.jenisAudit}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(audit.tanggalAudit).toLocaleDateString('id-ID')}
@@ -284,6 +316,13 @@ const AuditDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Audit Modal */}
+      <EntryAuditModal
+        isOpen={isAddModalOpen}
+        onClose={handleCloseAddModal}
+        onSave={handleSaveNewAudit}
+      />
     </div>
   );
 };

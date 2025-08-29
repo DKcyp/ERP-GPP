@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download } from 'lucide-react';
+import EntryPTIModal from './EntryPTIModal'; // Import the new modal component
 
 interface PTIAlat {
   id: string;
@@ -14,7 +15,7 @@ interface PTIAlat {
 const MonitoringPTIDashboard: React.FC = () => {
   const today = new Date();
 
-  const dummyData: PTIAlat[] = [
+  const initialDummyData: PTIAlat[] = [
     {
       id: 'PTI001',
       namaAlat: 'Alat Pelindung Diri (APD)',
@@ -43,7 +44,17 @@ const MonitoringPTIDashboard: React.FC = () => {
       tanggalAkhir: '2025-04-10', // Masa berlaku aktif
       documentUrl: '#'
     },
+    {
+      id: 'PTI005',
+      namaAlat: 'Detektor Gas',
+      tanggalAwal: '2024-01-20',
+      tanggalAkhir: '2025-12-31', // Masa berlaku aktif (tidak expired)
+      documentUrl: '#'
+    },
   ];
+
+  const [ptiData, setPtiData] = useState<PTIAlat[]>(initialDummyData);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const isMasaBerlakuHabis = (masaBerlakuDate: string): boolean => {
     const expiryDate = new Date(masaBerlakuDate);
@@ -62,8 +73,13 @@ const MonitoringPTIDashboard: React.FC = () => {
   };
 
   const handleAddAlat = () => {
-    alert('Tambah Alat PTI');
-    // Implement add logic here
+    setIsAddModalOpen(true);
+  };
+
+  const handleSaveNewPTI = (newPTI: Omit<PTIAlat, 'id'>) => {
+    const newId = `PTI${String(ptiData.length + 1).padStart(3, '0')}`; // Simple ID generation
+    setPtiData([...ptiData, { id: newId, ...newPTI }]);
+    setIsAddModalOpen(false);
   };
 
   const handleExport = (type: string) => {
@@ -223,7 +239,7 @@ const MonitoringPTIDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((pti) => {
+                {ptiData.map((pti) => { // Use ptiData from state
                   const isRed = isMasaBerlakuHabis(pti.tanggalAkhir);
                   return (
                     <tr key={pti.id} className={isRed ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
@@ -254,6 +270,13 @@ const MonitoringPTIDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add PTI Modal */}
+      <EntryPTIModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleSaveNewPTI}
+      />
     </div>
   );
 };

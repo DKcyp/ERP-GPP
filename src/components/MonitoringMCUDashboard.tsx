@@ -13,50 +13,58 @@ interface MCUPegawai {
 
 const MonitoringMCUDashboard: React.FC = () => {
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize today to midnight for accurate date comparison
 
   const dummyData: MCUPegawai[] = [
     {
       id: 'MCU001',
       namaPegawai: 'Budi Santoso',
       jenisMCU: 'General Check-up',
-      masaBerlaku: '2024-08-20', // < 90 hari
+      masaBerlaku: '2024-08-20', // Contoh: Expired jika hari ini setelah 20 Agustus 2024
       documentUrl: '#'
     },
     {
       id: 'MCU002',
       namaPegawai: 'Siti Aminah',
       jenisMCU: 'Medical Fitness',
-      masaBerlaku: '2025-03-10', // > 90 hari
+      masaBerlaku: '2025-03-10', // Contoh: Tidak expired, tidak expiring soon (jika hari ini Oct/Nov 2024)
       documentUrl: '#'
     },
     {
       id: 'MCU003',
       namaPegawai: 'Joko Susilo',
       jenisMCU: 'General Check-up',
-      masaBerlaku: '2024-07-01', // < 90 hari
+      masaBerlaku: '2024-07-01', // Contoh: Expired
       documentUrl: '#'
     },
     {
       id: 'MCU004',
       namaPegawai: 'Dewi Lestari',
       jenisMCU: 'Medical Fitness',
-      masaBerlaku: '2025-01-25', // > 90 hari
+      masaBerlaku: '2025-01-25', // Contoh: Expiring Soon (jika hari ini Oct/Nov 2024)
       documentUrl: '#'
     },
     {
       id: 'MCU005',
       namaPegawai: 'Rudi Hartono',
       jenisMCU: 'General Check-up',
-      masaBerlaku: '2024-09-15', // < 90 hari
+      masaBerlaku: '2024-09-15', // Contoh: Expired
       documentUrl: '#'
     },
   ];
 
-  const isMasaBerlakuLessThan90Days = (masaBerlakuDate: string): boolean => {
+  const isExpiringSoon = (masaBerlakuDate: string): boolean => {
     const expiryDate = new Date(masaBerlakuDate);
+    expiryDate.setHours(0, 0, 0, 0); // Normalize expiry date to midnight
     const diffTime = expiryDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays < 90 && diffDays >= 0; // Only if it's expiring soon, not already expired
+    return diffDays < 90 && diffDays > 0; // Expiring soon, but not today or in the past
+  };
+
+  const isExpired = (masaBerlakuDate: string): boolean => {
+    const expiryDate = new Date(masaBerlakuDate);
+    expiryDate.setHours(0, 0, 0, 0); // Normalize expiry date to midnight
+    return expiryDate.getTime() < today.getTime();
   };
 
   // State for search and filter
@@ -99,7 +107,7 @@ const MonitoringMCUDashboard: React.FC = () => {
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
             </div>
           </div>
         </div>
@@ -252,13 +260,29 @@ const MonitoringMCUDashboard: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {dummyData.map((mcu) => {
-                  const isRed = isMasaBerlakuLessThan90Days(mcu.masaBerlaku);
+                  const expired = isExpired(mcu.masaBerlaku);
+                  const expiringSoon = !expired && isExpiringSoon(mcu.masaBerlaku); // Only show if not already expired
+
                   return (
-                    <tr key={mcu.id} className={isRed ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
+                    <tr
+                      key={mcu.id}
+                      className={
+                        expired
+                          ? 'bg-red-50 hover:bg-red-100 transition-colors'
+                          : expiringSoon
+                          ? 'bg-yellow-50 hover:bg-yellow-100 transition-colors'
+                          : 'hover:bg-gray-50 transition-colors'
+                      }
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {mcu.namaPegawai}
-                        {isRed && (
+                        {expired && (
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <AlertTriangle className="h-3 w-3 mr-1" /> Expired
+                          </span>
+                        )}
+                        {!expired && expiringSoon && (
+                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                             <AlertTriangle className="h-3 w-3 mr-1" /> Expiring Soon
                           </span>
                         )}
