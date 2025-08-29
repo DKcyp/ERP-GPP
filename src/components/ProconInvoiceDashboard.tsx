@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
 import { Clock, Plus, Edit, Trash2, ReceiptText } from 'lucide-react';
 import ProconInvoiceModal from './ProconInvoiceModal'; // Import the new modal
-import { Project, ProconInvoiceFormInput } from '../types'; // Import the new types
+import ConfirmDeleteModal from './ConfirmDeleteModal'; // Import ConfirmDeleteModal
+import { Project, ProconInvoiceFormInput, Invoice, SOTurunan } from '../types'; // Import the new types
 
-interface Invoice {
-  id: number;
-  noInvoice: string;
-  project: string;
-  soTurunan: string;
-  nominal: string;
-  status: 'Pending' | 'Paid' | 'Draft';
-}
-
+// Moved dummyProjects to be consistent with types.ts
 const dummyProjects: Project[] = [
   {
     id: 'P001',
@@ -53,7 +46,10 @@ const ProconInvoiceDashboard: React.FC = () => {
     { id: 8, noInvoice: 'INV-2024008', project: 'Proyek Renovasi Kantor B', soTurunan: 'Pengecatan', nominal: 'Rp 60.000.000', status: 'Paid' },
   ]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<Invoice | null>(null);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<number | null>(null);
 
   const getNextInvoiceNumber = (currentInvoices: Invoice[]): string => {
     const currentYear = new Date().getFullYear();
@@ -78,32 +74,72 @@ const ProconInvoiceDashboard: React.FC = () => {
     return `${prefix}${formattedSequentialNum}`;
   };
 
+  const handleAddClick = () => {
+    setItemToEdit(null);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleEditClick = (id: number) => {
+    const invoiceToEdit = invoices.find(inv => inv.id === id);
+    if (invoiceToEdit) {
+      setItemToEdit(invoiceToEdit);
+      setIsAddEditModalOpen(true);
+    }
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setItemToDeleteId(id);
+    setIsConfirmDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDeleteId !== null) {
+      setInvoices(invoices.filter(invoice => invoice.id !== itemToDeleteId));
+      setItemToDeleteId(null);
+      setIsConfirmDeleteModalOpen(false);
+    }
+  };
+
   const handleSaveInvoice = (formData: ProconInvoiceFormInput) => {
     const project = dummyProjects.find(p => p.id === formData.projectId);
     const soTurunan = project?.soTurunan.find(s => s.id === formData.soTurunanId);
 
-    if (project && soTurunan) {
+    if (!project || !soTurunan) {
+      console.error("Project or SO Turunan not found.");
+      return;
+    }
+
+    // Ensure nominal is formatted consistently
+    const formattedNominal = formData.nominal.startsWith('Rp ') ? formData.nominal : `Rp ${Intl.NumberFormat('id-ID').format(parseFloat(formData.nominal.replace(/[^0-9,-]+/g, "").replace(",", ".")))}`;
+
+    if (itemToEdit) {
+      // Edit existing invoice
+      setInvoices(invoices.map(inv =>
+        inv.id === itemToEdit.id
+          ? {
+              ...inv,
+              noInvoice: formData.noInvoice,
+              project: project.name,
+              soTurunan: soTurunan.name,
+              nominal: formattedNominal,
+              status: formData.status || inv.status, // Use status from form if provided, else keep existing
+            }
+          : inv
+      ));
+      setItemToEdit(null); // Clear itemToEdit after saving
+    } else {
+      // Add new invoice
       const newEntry: Invoice = {
-        id: invoices.length + 1, // Simple ID generation
+        id: invoices.length > 0 ? Math.max(...invoices.map(inv => inv.id)) + 1 : 1, // Robust ID generation
         noInvoice: formData.noInvoice,
         project: project.name,
         soTurunan: soTurunan.name,
-        nominal: formData.nominal,
+        nominal: formattedNominal,
         status: 'Draft', // Default status for new invoices
       };
       setInvoices([...invoices, newEntry]);
     }
-  };
-
-  const handleEdit = (id: number) => {
-    alert(`Edit invoice with ID: ${id}`);
-    // Implement edit logic here
-  };
-
-  const handleDelete = (id: number) => {
-    if (window.confirm(`Are you sure you want to delete invoice with ID: ${id}?`)) {
-      setInvoices(invoices.filter(invoice => invoice.id !== id));
-    }
+    setIsAddEditModalOpen(false);
   };
 
   return (
@@ -139,7 +175,7 @@ const ProconInvoiceDashboard: React.FC = () => {
               <span>Daftar Invoice</span>
             </h3>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleAddClick}
               className="px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md flex items-center space-x-2"
             >
               <Plus className="h-5 w-5" />
@@ -176,14 +212,14 @@ const ProconInvoiceDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
-                        onClick={() => handleEdit(item.id)}
+                        onClick={() => handleEditClick(item.id)}
                         className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
                       >
                         <Edit className="h-4 w-4" />
                         <span>Edit</span>
                       </button>
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDeleteClick(item.id)}
                         className="text-red-600 hover:text-red-900 flex items-center space-x-1 mt-1"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -200,11 +236,20 @@ const ProconInvoiceDashboard: React.FC = () => {
 
       {/* Procon Invoice Modal */}
       <ProconInvoiceModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isAddEditModalOpen}
+        onClose={() => setIsAddEditModalOpen(false)}
         onSave={handleSaveInvoice}
         dummyProjects={dummyProjects}
+        itemToEdit={itemToEdit}
         initialNoInvoice={getNextInvoiceNumber(invoices)}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isConfirmDeleteModalOpen}
+        onClose={() => setIsConfirmDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDeleteId ? invoices.find(inv => inv.id === itemToDeleteId)?.noInvoice : ''}
       />
     </div>
   );

@@ -1,3 +1,5 @@
+import { type } from "os";
+
 // Existing types (if any)
 // ...
 
@@ -138,4 +140,51 @@ export interface POJasaData {
   tanggalPengiriman: string;
   status: 'Paid' | 'Unpaid';
   items: EntryPOJasaItem[];
+}
+
+// Type for PPh21Data
+export interface PPh21Data {
+  id: number;
+  namaPegawai: string;
+  npwp: string;
+  tanggal: string;
+  pph21: number;
+}
+
+export interface AlertItem {
+  id: string;
+  message: string;
+  type: 'primary' | 'success' | 'error' | 'info';
+  actionText?: string;
+  onAction?: () => void;
+}
+
+// Types for Procon Invoice
+export interface SOTurunan {
+  id: string;
+  name: string;
+  nominal: number;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  soTurunan: SOTurunan[];
+}
+
+export interface Invoice {
+  id: number;
+  noInvoice: string;
+  project: string; // Project name
+  soTurunan: string; // SO Turunan name
+  nominal: string; // Formatted string like "Rp 150.000.000"
+  status: 'Pending' | 'Paid' | 'Draft';
+}
+
+export interface ProconInvoiceFormInput {
+  noInvoice: string;
+  projectId: string; // Project ID
+  soTurunanId: string; // SO Turunan ID
+  nominal: string; // Formatted string or raw number, let's keep it string for now as it's read-only in modal
+  status?: 'Pending' | 'Paid' | 'Draft'; // Optional, mainly for edit mode
 }

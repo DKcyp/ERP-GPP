@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, FileDown, Clock } from 'lucide-react';
+import EntryPajakKeluaranModal from './EntryPajakKeluaranModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface PajakKeluaranData {
   id: number;
   namaProject: string;
   tanggal: string;
-  customer: string; // Changed from Vendor to Customer for Keluaran
+  customer: string;
   ppn: string;
   nilaiProject: number;
 }
 
-const dummyData: PajakKeluaranData[] = [
+const initialDummyData: PajakKeluaranData[] = [
   { id: 1, namaProject: 'Pengembangan Aplikasi Mobile', tanggal: '2024-01-20', customer: 'PT Global Solusi', ppn: '11%', nilaiProject: 30000000 },
   { id: 2, namaProject: 'Implementasi Sistem ERP', tanggal: '2024-02-10', customer: 'CV Usaha Bersama', ppn: '11%', nilaiProject: 50000000 },
   { id: 3, namaProject: 'Desain Ulang Website', tanggal: '2024-02-28', customer: 'UD Kreatif Digital', ppn: '11%', nilaiProject: 10000000 },
@@ -25,9 +27,13 @@ const dummyData: PajakKeluaranData[] = [
 
 const PajakKeluaranDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
+  const [data, setData] = useState<PajakKeluaranData[]>(initialDummyData);
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<PajakKeluaranData | null>(null);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<PajakKeluaranData | null>(null);
 
-  const filteredData = dummyData.filter(item => {
+  const filteredData = data.filter(item => {
     const matchesSearch = item.namaProject.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.customer.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
@@ -35,6 +41,41 @@ const PajakKeluaranDashboard: React.FC = () => {
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
+  };
+
+  const handleAddClick = () => {
+    setItemToEdit(null);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleEditClick = (item: PajakKeluaranData) => {
+    setItemToEdit(item);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (item: PajakKeluaranData) => {
+    setItemToDelete(item);
+    setIsConfirmDeleteModalOpen(true);
+  };
+
+  const handleSaveItem = (newItem: PajakKeluaranData) => {
+    if (itemToEdit) {
+      // Update existing item
+      setData(data.map((item) => (item.id === newItem.id ? newItem : item)));
+    } else {
+      // Add new item
+      setData([...data, { ...newItem, id: Date.now() }]); // Ensure unique ID for new items
+    }
+    setIsAddEditModalOpen(false);
+    setItemToEdit(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      setData(data.filter((item) => item.id !== itemToDelete.id));
+      setIsConfirmDeleteModalOpen(false);
+      setItemToDelete(null);
+    }
   };
 
   return (
@@ -89,7 +130,10 @@ const PajakKeluaranDashboard: React.FC = () => {
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+            <button
+              onClick={handleAddClick}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
             </button>
@@ -142,10 +186,16 @@ const PajakKeluaranDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-1 rounded-full hover:bg-blue-100">
+                        <button
+                          onClick={() => handleEditClick(item)}
+                          className="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-1 rounded-full hover:bg-blue-100"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-100">
+                        <button
+                          onClick={() => handleDeleteClick(item)}
+                          className="text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-100"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -164,6 +214,22 @@ const PajakKeluaranDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <EntryPajakKeluaranModal
+        isOpen={isAddEditModalOpen}
+        onClose={() => setIsAddEditModalOpen(false)}
+        onSave={handleSaveItem}
+        itemToEdit={itemToEdit}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isConfirmDeleteModalOpen}
+        onClose={() => setIsConfirmDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDelete?.namaProject || ''}
+        message="Apakah Anda yakin ingin menghapus data Pajak Keluaran ini?"
+      />
     </div>
   );
 };

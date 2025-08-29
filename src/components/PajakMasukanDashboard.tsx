@@ -1,41 +1,82 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, FileDown, Clock } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+import EntryPajakMasukanModal from './EntryPajakMasukanModal'; // Import the new modal
 
 interface PajakMasukanData {
   id: number;
   namaPengadaan: string;
   tanggal: string;
   vendor: string;
-  ppn: string;
+  ppn: number; // Changed to number for better handling (e.g., 0.11 for 11%)
   nilaiProject: number;
 }
 
-const dummyData: PajakMasukanData[] = [
-  { id: 1, namaPengadaan: 'Pembelian Bahan Baku A', tanggal: '2024-01-15', vendor: 'PT Supplier Maju', ppn: '11%', nilaiProject: 15000000 },
-  { id: 2, namaPengadaan: 'Jasa Konsultan IT', tanggal: '2024-02-01', vendor: 'CV Tech Solusi', ppn: '11%', nilaiProject: 25000000 },
-  { id: 3, namaPengadaan: 'Sewa Peralatan Kantor', tanggal: '2024-02-20', vendor: 'UD Rental Prima', ppn: '11%', nilaiProject: 5000000 },
-  { id: 4, namaPengadaan: 'Pengadaan Mesin Produksi', tanggal: '2024-03-10', vendor: 'PT Manufaktur Jaya', ppn: '11%', nilaiProject: 75000000 },
-  { id: 5, namaPengadaan: 'Pembelian Perlengkapan Gudang', tanggal: '2024-03-25', vendor: 'Toko Logistik', ppn: '11%', nilaiProject: 8000000 },
-  { id: 6, namaPengadaan: 'Jasa Perbaikan Kendaraan', tanggal: '2024-04-05', vendor: 'Bengkel Sejahtera', ppn: '11%', nilaiProject: 3000000 },
-  { id: 7, namaPengadaan: 'Pembelian Software Akuntansi', tanggal: '2024-04-18', vendor: 'PT Software Cerdas', ppn: '11%', nilaiProject: 12000000 },
-  { id: 8, namaPengadaan: 'Pengadaan Seragam Karyawan', tanggal: '2024-05-02', vendor: 'Konveksi Indah', ppn: '11%', nilaiProject: 6000000 },
-  { id: 9, namaPengadaan: 'Biaya Pemasaran Digital', tanggal: '2024-05-10', vendor: 'Agency Kreatif', ppn: '11%', nilaiProject: 10000000 },
-  { id: 10, namaPengadaan: 'Pembelian ATK Bulanan', tanggal: '2024-05-25', vendor: 'Stationery Mart', ppn: '11%', nilaiProject: 2000000 },
+const initialDummyData: PajakMasukanData[] = [
+  { id: 1, namaPengadaan: 'Pembelian Bahan Baku A', tanggal: '2024-01-15', vendor: 'PT Supplier Maju', ppn: 0.11, nilaiProject: 15000000 },
+  { id: 2, namaPengadaan: 'Jasa Konsultan IT', tanggal: '2024-02-01', vendor: 'CV Tech Solusi', ppn: 0.11, nilaiProject: 25000000 },
+  { id: 3, namaPengadaan: 'Sewa Peralatan Kantor', tanggal: '2024-02-20', vendor: 'UD Rental Prima', ppn: 0.11, nilaiProject: 5000000 },
+  { id: 4, namaPengadaan: 'Pengadaan Mesin Produksi', tanggal: '2024-03-10', vendor: 'PT Manufaktur Jaya', ppn: 0.11, nilaiProject: 75000000 },
+  { id: 5, namaPengadaan: 'Pembelian Perlengkapan Gudang', tanggal: '2024-03-25', vendor: 'Toko Logistik', ppn: 0.11, nilaiProject: 8000000 },
+  { id: 6, namaPengadaan: 'Jasa Perbaikan Kendaraan', tanggal: '2024-04-05', vendor: 'Bengkel Sejahtera', ppn: 0.11, nilaiProject: 3000000 },
+  { id: 7, namaPengadaan: 'Pembelian Software Akuntansi', tanggal: '2024-04-18', vendor: 'PT Software Cerdas', ppn: 0.11, nilaiProject: 12000000 },
+  { id: 8, namaPengadaan: 'Pengadaan Seragam Karyawan', tanggal: '2024-05-02', vendor: 'Konveksi Indah', ppn: 0.11, nilaiProject: 6000000 },
+  { id: 9, namaPengadaan: 'Biaya Pemasaran Digital', tanggal: '2024-05-10', vendor: 'Agency Kreatif', ppn: 0.11, nilaiProject: 10000000 },
+  { id: 10, namaPengadaan: 'Pembelian ATK Bulanan', tanggal: '2024-05-25', vendor: 'Stationery Mart', ppn: 0.11, nilaiProject: 2000000 },
 ];
 
 const PajakMasukanDashboard: React.FC = () => {
+  const [data, setData] = useState<PajakMasukanData[]>(initialDummyData);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<PajakMasukanData | null>(null);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<PajakMasukanData | null>(null);
 
-  const filteredData = dummyData.filter(item => {
+  const filteredData = data.filter(item => {
     const matchesSearch = item.namaPengadaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.vendor.toLowerCase().includes(searchTerm.toLowerCase());
-    // Add more filter logic if 'filterStatus' was implemented for specific criteria
     return matchesSearch;
   });
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
+  };
+
+  const handleAddClick = () => {
+    setItemToEdit(null);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleEditClick = (item: PajakMasukanData) => {
+    setItemToEdit(item);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (item: PajakMasukanData) => {
+    setItemToDelete(item);
+    setIsConfirmDeleteModalOpen(true);
+  };
+
+  const handleSaveItem = (newItem: Omit<PajakMasukanData, 'id'> & { id?: number }) => {
+    if (newItem.id) {
+      // Update existing item
+      setData(prevData =>
+        prevData.map(item => (item.id === newItem.id ? { ...newItem, id: item.id } as PajakMasukanData : item))
+      );
+    } else {
+      // Add new item
+      const newId = Math.max(...prevData.map(item => item.id), 0) + 1;
+      setData(prevData => [...prevData, { ...newItem, id: newId } as PajakMasukanData]);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      setData(prevData => prevData.filter(item => item.id !== itemToDelete.id));
+      setItemToDelete(null);
+    }
+    setIsConfirmDeleteModalOpen(false);
   };
 
   return (
@@ -90,7 +131,10 @@ const PajakMasukanDashboard: React.FC = () => {
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+            <button
+              onClick={handleAddClick} // Add handler for "Tambah" button
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
             </button>
@@ -136,17 +180,23 @@ const PajakMasukanDashboard: React.FC = () => {
                       {item.vendor}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {item.ppn}
+                      {item.ppn * 100}% {/* Display PPN as percentage */}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
                       {formatCurrency(item.nilaiProject)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-1 rounded-full hover:bg-blue-100">
+                        <button
+                          onClick={() => handleEditClick(item)} // Add handler for "Edit" button
+                          className="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-1 rounded-full hover:bg-blue-100"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-100">
+                        <button
+                          onClick={() => handleDeleteClick(item)} // Add handler for "Hapus" button
+                          className="text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-100"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -165,6 +215,22 @@ const PajakMasukanDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit Modal */}
+      <EntryPajakMasukanModal
+        isOpen={isAddEditModalOpen}
+        onClose={() => setIsAddEditModalOpen(false)}
+        onSave={handleSaveItem}
+        itemToEdit={itemToEdit}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isConfirmDeleteModalOpen}
+        onClose={() => setIsConfirmDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDelete?.namaPengadaan}
+      />
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, PlusCircle } from 'lucide-react';
-import { Project, ProconInvoiceFormInput } from '../types';
+import { Project, ProconInvoiceFormInput, Invoice } from '../types'; // Import Invoice type
 
 interface ProconInvoiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (formData: ProconInvoiceFormInput) => void;
   dummyProjects: Project[];
+  itemToEdit: Invoice | null; // New prop for edit mode
   initialNoInvoice: string;
 }
 
@@ -15,27 +16,46 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
   onClose,
   onSave,
   dummyProjects,
+  itemToEdit, // Destructure itemToEdit
   initialNoInvoice,
 }) => {
   const [formData, setFormData] = useState<ProconInvoiceFormInput>({
-    noInvoice: initialNoInvoice,
+    noInvoice: '',
     projectId: '',
     soTurunanId: '',
     nominal: '',
+    status: 'Draft', // Add status for edit mode
   });
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({
-        noInvoice: initialNoInvoice,
-        projectId: '',
-        soTurunanId: '',
-        nominal: '',
-      });
-      setSelectedProject(null);
+      if (itemToEdit) {
+        // Edit mode: pre-fill form
+        const project = dummyProjects.find(p => p.name === itemToEdit.project);
+        const soTurunan = project?.soTurunan.find(s => s.name === itemToEdit.soTurunan);
+
+        setFormData({
+          noInvoice: itemToEdit.noInvoice,
+          projectId: project?.id || '',
+          soTurunanId: soTurunan?.id || '',
+          nominal: itemToEdit.nominal,
+          status: itemToEdit.status,
+        });
+        setSelectedProject(project || null);
+      } else {
+        // Add mode: reset form
+        setFormData({
+          noInvoice: initialNoInvoice,
+          projectId: '',
+          soTurunanId: '',
+          nominal: '',
+          status: 'Draft',
+        });
+        setSelectedProject(null);
+      }
     }
-  }, [isOpen, initialNoInvoice]);
+  }, [isOpen, itemToEdit, initialNoInvoice, dummyProjects]);
 
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const projectId = e.target.value;
@@ -61,7 +81,6 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
       return;
     }
     onSave(formData);
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -79,7 +98,7 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
 
         <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b pb-4 flex items-center space-x-2">
           <PlusCircle className="h-7 w-7 text-blue-600" />
-          <span>Tambah Invoice Baru</span>
+          <span>{itemToEdit ? 'Edit Invoice' : 'Tambah Invoice Baru'}</span>
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -153,6 +172,27 @@ const ProconInvoiceModal: React.FC<ProconInvoiceModalProps> = ({
               className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
             />
           </div>
+
+          {/* Status (only for edit mode) */}
+          {itemToEdit && (
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'Pending' | 'Paid' | 'Draft' }))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                required
+              >
+                <option value="Draft">Draft</option>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3 pt-4 border-t">
             <button

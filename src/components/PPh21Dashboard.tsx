@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, FileDown, Clock } from 'lucide-react';
-
-interface PPh21Data {
-  id: number;
-  namaPegawai: string;
-  npwp: string;
-  tanggal: string;
-  pph21: number;
-}
+import { PPh21Data } from '../types'; // Import PPh21Data from types
+import EntryPPh21Modal from './EntryPPh21Modal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const dummyData: PPh21Data[] = [
   { id: 1, namaPegawai: 'Budi Santoso', npwp: '12.345.678.9-001.000', tanggal: '2024-01-31', pph21: 1500000 },
@@ -23,10 +18,19 @@ const dummyData: PPh21Data[] = [
 ];
 
 const PPh21Dashboard: React.FC = () => {
+  const [data, setData] = useState<PPh21Data[]>(dummyData);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All'); // Not used yet, but kept for future filter functionality
 
-  const filteredData = dummyData.filter(item => {
+  // State for Add/Edit Modal
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<PPh21Data | null>(null);
+
+  // State for Confirm Delete Modal
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<number | null>(null);
+
+  const filteredData = data.filter(item => {
     const matchesSearch = item.namaPegawai.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.npwp.includes(searchTerm);
     return matchesSearch;
@@ -34,6 +38,53 @@ const PPh21Dashboard: React.FC = () => {
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
+  };
+
+  // Handlers for Add/Edit Modal
+  const handleAddClick = () => {
+    setItemToEdit(null);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleEditClick = (item: PPh21Data) => {
+    setItemToEdit(item);
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleSaveItem = (newItem: PPh21Data) => {
+    if (newItem.id) {
+      // Edit existing item
+      setData(prevData => prevData.map(item => (item.id === newItem.id ? newItem : item)));
+    } else {
+      // Add new item
+      const newId = data.length > 0 ? Math.max(...data.map(item => item.id)) + 1 : 1;
+      setData(prevData => [...prevData, { ...newItem, id: newId }]);
+    }
+    setIsAddEditModalOpen(false);
+  };
+
+  const handleCloseAddEditModal = () => {
+    setIsAddEditModalOpen(false);
+    setItemToEdit(null);
+  };
+
+  // Handlers for Delete Modal
+  const handleDeleteClick = (id: number) => {
+    setItemToDeleteId(id);
+    setIsConfirmDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDeleteId) {
+      setData(prevData => prevData.filter(item => item.id !== itemToDeleteId));
+    }
+    setIsConfirmDeleteModalOpen(false);
+    setItemToDeleteId(null);
+  };
+
+  const handleCloseConfirmDeleteModal = () => {
+    setIsConfirmDeleteModalOpen(false);
+    setItemToDeleteId(null);
   };
 
   return (
@@ -88,7 +139,10 @@ const PPh21Dashboard: React.FC = () => {
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+            <button
+              onClick={handleAddClick}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
             </button>
@@ -135,10 +189,16 @@ const PPh21Dashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-1 rounded-full hover:bg-blue-100">
+                        <button
+                          onClick={() => handleEditClick(item)}
+                          className="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-1 rounded-full hover:bg-blue-100"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-100">
+                        <button
+                          onClick={() => handleDeleteClick(item.id)}
+                          className="text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-100"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -157,6 +217,22 @@ const PPh21Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit PPh 21 Modal */}
+      <EntryPPh21Modal
+        isOpen={isAddEditModalOpen}
+        onClose={handleCloseAddEditModal}
+        onSave={handleSaveItem}
+        itemToEdit={itemToEdit}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={isConfirmDeleteModalOpen}
+        onClose={handleCloseConfirmDeleteModal}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDeleteId ? data.find(item => item.id === itemToDeleteId)?.namaPegawai : ''}
+      />
     </div>
   );
 };
