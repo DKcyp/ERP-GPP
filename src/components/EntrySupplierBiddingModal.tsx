@@ -24,9 +24,9 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
         diskon: '',
         jumlah: '',
         ppnNonPpn: '',
-        total: '',
         pengiriman: '',
         garansi: '',
+        metodeBayar: '', // NEW: Added metodeBayar
         keterangan: '',
       },
     ],
@@ -64,9 +64,9 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
           diskon: '',
           jumlah: '',
           ppnNonPpn: '',
-          total: '',
           pengiriman: '',
           garansi: '',
+          metodeBayar: '', // NEW: Added metodeBayar
           keterangan: '',
         },
       ],
@@ -92,9 +92,9 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
           diskon: '',
           jumlah: '',
           ppnNonPpn: '',
-          total: '',
           pengiriman: '',
           garansi: '',
+          metodeBayar: '',
           keterangan: '',
         },
       ],
@@ -200,9 +200,9 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diskon (%)</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PPN / Non PPN</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengiriman</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Garansi</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode Bayar</th> {/* NEW COLUMN */}
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                     </tr>
                   </thead>
@@ -275,15 +275,6 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                         <td className="p-2">
                           <input
                             type="text"
-                            name="total"
-                            value={item.total}
-                            onChange={(e) => handleItemChange(index, e)}
-                            className="w-full border-0 focus:ring-0 text-sm"
-                          />
-                        </td>
-                        <td className="p-2">
-                          <input
-                            type="text"
                             name="pengiriman"
                             value={item.pengiriman}
                             onChange={(e) => handleItemChange(index, e)}
@@ -295,6 +286,15 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                             type="text"
                             name="garansi"
                             value={item.garansi}
+                            onChange={(e) => handleItemChange(index, e)}
+                            className="w-full border-0 focus:ring-0 text-sm"
+                          />
+                        </td>
+                        <td className="p-2"> {/* NEW CELL */}
+                          <input
+                            type="text"
+                            name="metodeBayar"
+                            value={item.metodeBayar}
                             onChange={(e) => handleItemChange(index, e)}
                             className="w-full border-0 focus:ring-0 text-sm"
                           />
@@ -323,7 +323,7 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
               onClick={handleAddItem}
               className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
             >
-              <Plus size={16} className="mr-1" /> Tambah Vendor
+              <Plus size={16} className="mr-1" /> Tambah Item Penawaran {/* Changed text */}
             </button>
             <button
               type="submit"

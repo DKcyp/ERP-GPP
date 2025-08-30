@@ -3,7 +3,8 @@ import { Search, Calendar, Plus, FileDown,Eye,ThumbsUp } from 'lucide-react';
 import Modal from './Modal'; // Import the Modal component
 import DetailSeleksiModal from './DetailSeleksiModal'; // Import the new DetailSeleksiModal
 import ApproveSeleksiModal from './ApproveSeleksiModal'; // Import the new ApproveSeleksiModal
-import { DetailedBiddingEntry, BiddingItemDetail } from '../types'; // Import new types
+import EntrySupplierBiddingModal from './EntrySupplierBiddingModal'; // NEW: Import EntrySupplierBiddingModal
+import { DetailedBiddingEntry, BiddingItemDetail, EntrySupplierBiddingFormData } from '../types'; // Import new types, including EntrySupplierBiddingFormData
 
 const biddingData = [
   {
@@ -328,6 +329,7 @@ const mockDetailedBiddingData: DetailedBiddingEntry[] = [
 const SeleksiSupplierDashboard: React.FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false); // NEW: State for entry modal
   const [selectedBiddingDetail, setSelectedBiddingDetail] = useState<DetailedBiddingEntry | null>(null);
 
   const handleViewDetails = (noBidding: string) => {
@@ -353,6 +355,14 @@ const SeleksiSupplierDashboard: React.FC = () => {
     // Here you would typically send this data to your backend
     // For demonstration, we'll just log it.
     // You might want to update the local biddingData state or refetch data.
+  };
+
+  // NEW: Handler for submitting new bidding entry
+  const handleEntrySubmit = (data: EntrySupplierBiddingFormData) => {
+    console.log('New Bidding Entry Submitted:', data);
+    // In a real application, you would send this data to your backend API
+    // After successful submission, you might want to refresh the main table data
+    setIsEntryModalOpen(false); // Close the modal after submission
   };
 
   return (
@@ -399,7 +409,11 @@ const SeleksiSupplierDashboard: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm">
+                {/* Updated "Tambah" button to open EntrySupplierBiddingModal */}
+                <button
+                  onClick={() => setIsEntryModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors shadow-sm"
+                >
                     <Plus size={18} />
                     <span>Tambah</span>
                 </button>
@@ -551,6 +565,13 @@ const SeleksiSupplierDashboard: React.FC = () => {
         onClose={() => setIsApproveModalOpen(false)}
         biddingDetail={selectedBiddingDetail}
         onSave={handleSaveApproval}
+      />
+
+      {/* NEW: Entry Supplier Bidding Modal */}
+      <EntrySupplierBiddingModal
+        isOpen={isEntryModalOpen}
+        onClose={() => setIsEntryModalOpen(false)}
+        onSubmit={handleEntrySubmit}
       />
     </div>
   );

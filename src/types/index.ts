@@ -209,3 +209,53 @@ export interface ApprovalPOBarangFormData {
   action: 'approve' | 'reject';
   keterangan?: string; // Optional for approval/rejection notes
 }
+
+// Existing types for Seleksi Supplier Dashboard
+export interface BiddingItemDetail {
+  namaBarang: string;
+  qty: number;
+  namaVendor: string;
+  harga: string;
+  diskon: string;
+  jumlah: string;
+  ppnNonPpn: string;
+  lamaPengiriman: string;
+  garansi: string;
+  metodeBayar: string;
+  keterangan: string;
+  status: 'Approve' | 'Rejected';
+}
+
+export interface DetailedBiddingEntry {
+  id: number;
+  noBidding: string;
+  tanggalBidding: string;
+  noPr: string;
+  departemen: string;
+  vendorOfferings: BiddingItemDetail[];
+}
+
+// NEW: Types for Entry Supplier Bidding Modal
+export interface BiddingItemEntry {
+  id: string;
+  namaBarang: string;
+  qty: string;
+  namaVendor: string;
+  harga: string;
+  diskon: string;
+  jumlah: string; // This is the calculated total for the item row
+  ppnNonPpn: string;
+  pengiriman: string; // 'lamaPengiriman' in detail modal
+  garansi: string;
+  metodeBayar: string; // NEW: Added Metode Bayar
+  keterangan: string;
+}
+
+export interface EntrySupplierBiddingFormData {
+  noBidding: string;
+  noPR: string;
+  tanggalBidding: string;
+  departemen: string;
+  items: BiddingItemEntry[];
+  // Removed: total, discAkhir, subTotal, ppn, ongkosKirim, grandTotal
+}

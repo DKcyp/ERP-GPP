@@ -450,7 +450,7 @@ export const gudangMenu: MenuSection[] = [
         title: 'Manajemen Izin Alat', // Sub-section title
         icon: 'Tool', // Sub-section icon
         items: [
-          { title: 'Monitoring Izin Alat', icon: 'Tool', path: '/gudang/monitoring-izin-alat' },
+          // { title: 'Monitoring Izin Alat', icon: 'Tool', path: '/gudang/monitoring-izin-alat' },
           { title: 'Perizinan Alat', icon: 'FileText', path: '/gudang/perizinan-alat' },
           { title: 'Monitoring Perizinan', icon: 'ClipboardCheck', path: '/gudang/monitoring-perizinan' }
         ]
