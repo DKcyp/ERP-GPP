@@ -490,7 +490,7 @@ export const managementMenu: MenuSection[] = [
     directPath: '/management/approve-kontrak'
   },
   {
-    title: 'Penggajian',
+    title: 'Approve gaji',
     icon: 'Wallet', // Using Wallet for payroll
     items: [],
     directPath: '/management/penggajian'
@@ -502,7 +502,7 @@ export const managementMenu: MenuSection[] = [
     directPath: '/management/training' // Path to Proses Training page
   },
 	  {
-    title: 'SPK', 
+    title: 'Approve SPK', 
     icon: 'CheckCircle',
     items: [],
 		directPath: '/hrd/spk/approve'
@@ -692,4 +692,12 @@ export const proconMenu: MenuSection[] = [
     items: [],
     directPath: '/procon/invoice'
   },
+  {
+    title: 'Approval', // New section
+    icon: 'CheckCircle', // Appropriate icon for Approval
+    items: [
+      { title: 'Approval PO Jasa', icon: 'Wrench', path: '/procon/approval/po-jasa' }, // New item
+      { title: 'Approval Timesheet', icon: 'Clock', path: '/procon/approval/timesheet' } // New item
+    ]
+  }
 ];

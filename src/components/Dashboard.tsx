@@ -137,6 +137,9 @@ import PPh21Dashboard from './PPh21Dashboard';
 import ProconMainDashboard from './ProconMainDashboard';
 import ProconInvoiceDashboard from './ProconInvoiceDashboard';
 import ProconOverviewDashboard from './ProconOverviewDashboard';
+// NEW: Procon Approval Dashboards
+import ApprovalPoJasa from '../pages/procon/approval/ApprovalPoJasa';
+import ApprovalTimesheet from '../pages/procon/approval/ApprovalTimesheet';
 
 // NEW: Import your new blank page components
 import MasterKPIHRDDashboard from './MasterKPIHRDDashboard';
@@ -794,6 +797,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/procon/overview') {
       return <ProconOverviewDashboard />;
+    }
+    // NEW: Procon Approval Routes
+    if (currentPage === '/procon/approval/po-jasa') {
+      return <POJasaDashboard role="management" />; // Pass role prop
+    }
+    if (currentPage === '/procon/approval/timesheet') {
+      return <ApprovalTimesheet />;
     }
 
     // Default to main dashboard
