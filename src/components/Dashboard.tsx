@@ -588,6 +588,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/operational/hpp-turunan/dashboard') {
       return <HPPTurunanDashboard />;
     }
+		    if (currentPage === '/operational/produksi/dashboard') {
+      return <ProduksiDashboard />;
+    }
     if (currentPage === '/operational/produksi/proses') {
       return <ProsesProduksiDashboard />;
     }

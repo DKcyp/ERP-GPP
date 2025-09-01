@@ -153,8 +153,8 @@ export const operationalMenu: MenuSection[] = [
     title: 'Training',
     icon: 'GraduationCap',
     items: [
-      { title: 'Dashboard', icon: 'BarChart3', path: 'hrd/operational/training/dashboard' },
-      { title: 'Proses Training', icon: '/operational/training/proses' }
+      { title: 'Dashboard', icon: 'BarChart3', path: '/operational/training/dashboard' },
+      { title: 'Proses Training', icon: 'BarChart3' ,path: '/operational/training/proses' }
     ]
   },
   {
