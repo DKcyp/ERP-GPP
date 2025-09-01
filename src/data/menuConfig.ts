@@ -218,7 +218,8 @@ export const hrdMenu: MenuSection[] = [
     icon: 'UserRound',
     items: [
       { title: 'Daftar Pegawai', icon: 'Users', path: '/hrd/pegawai/daftar' },
-      { title: 'Master UMR', icon: 'Banknote', path: '/hrd/pegawai/master-umr' }
+      { title: 'Master UMR', icon: 'Banknote', path: '/hrd/pegawai/master-umr' },
+      { title: 'PR Training', icon: 'GraduationCap', path: '/hrd/pegawai/pr-training' } // NEW: PR Training submenu
     ]
   },
   {

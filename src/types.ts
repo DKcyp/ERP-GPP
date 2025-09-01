@@ -65,3 +65,24 @@ export interface PerpanjangIzinFormData {
   noSeri: string;
   jenisPerizinan: string;
 }
+
+// New type for Proses Pengajuan Training form data
+export interface ProsesPengajuanTrainingFormData {
+  noTraining: string;
+  noSO: string;
+  soTurunan: string;
+  karyawan: string;
+  jenisTraining: 'New Training' | 'Re-Training';
+  tanggalPelatihanStart: string;
+  tanggalPelatihanEnd: string;
+  budget: string;
+  keterangan: string;
+}
+
+// New type for Realisasi Document Upload form data
+export interface RealisasiDocumentUploadFormData {
+  noTraining: string;
+  documentName: string;
+  documentFile: File | null;
+  keterangan: string;
+}

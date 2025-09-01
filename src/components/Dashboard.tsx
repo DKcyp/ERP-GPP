@@ -435,6 +435,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/hrd/pegawai/master-umr') {
       return <MasterUMRDashboard />;
     }
+    if (currentPage === '/hrd/pegawai/pr-training') { // NEW: Route for PR Training
+      return <ProsesPengajuanTrainingDashboard role="hrd" />; // Pass role prop
+    }
     if (currentPage === '/hrd/gaji/daftar') {
       return <DaftarGajiDashboard />;
     }

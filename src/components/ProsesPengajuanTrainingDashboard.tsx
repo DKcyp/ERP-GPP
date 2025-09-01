@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ProsesPengajuanTrainingModal from './ProsesPengajuanTrainingModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { ProsesPengajuanTrainingFormData } from '../types'; // Import the new FormData type
+import RealisasiDocumentUploadModal from './RealisasiDocumentUploadModal'; // Import the new modal
+import { ProsesPengajuanTrainingFormData, RealisasiDocumentUploadFormData } from '../types'; // Import the new FormData type
 import {
   Search,
   Plus,
@@ -18,7 +19,8 @@ import {
   ChevronRight,
   ArrowUp,
   ChevronDown,
-  CheckCircle // Import CheckCircle icon
+  CheckCircle, // Import CheckCircle icon
+  FileUp // Import FileUp icon for Realisasi
 } from 'lucide-react';
 
 // Updated interface for the dashboard's training data
@@ -51,6 +53,8 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
   const [jenisTrainingDropdownOpen, setJenisTrainingDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRealisasiModalOpen, setIsRealisasiModalOpen] = useState(false); // New state for Realisasi modal
+  const [selectedTrainingForRealisasi, setSelectedTrainingForRealisasi] = useState<ProsesPengajuanTraining | null>(null); // To pass data to Realisasi modal
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -59,7 +63,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Sample data matching the new structure
-  const [trainingData, setTrainingData] = useState<ProesPengajuanTraining[]>([
+  const [trainingData, setTrainingData] = useState<ProsesPengajuanTraining[]>([
     {
       id: '1',
       no: 1,
@@ -159,6 +163,22 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
     }
   };
 
+  // Handler for opening Realisasi modal
+  const handleRealisasiClick = (training: ProsesPengajuanTraining) => {
+    setSelectedTrainingForRealisasi(training);
+    setIsRealisasiModalOpen(true);
+  };
+
+  // Handler for Realisasi document upload
+  const handleRealisasiUpload = (data: RealisasiDocumentUploadFormData) => {
+    console.log('Realisasi Document Uploaded:', data);
+    // Here you would typically send the data to a backend API
+    // For now, just log it and close the modal
+    setIsRealisasiModalOpen(false);
+    setSelectedTrainingForRealisasi(null);
+    alert(`Dokumen realisasi untuk No Training ${data.noTraining} berhasil diunggah!`);
+  };
+
   // Filter data based on search criteria
   const filteredData = trainingData.filter(item => {
     const matchesNoTraining = item.noTraining.toLowerCase().includes(searchNoTraining.toLowerCase());
@@ -205,18 +225,19 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-text">
               Proses Pengajuan Training
             </h1>
-            {role !== 'management' && ( // Only show Add button if not management role
+            {/* Conditional rendering for "Tambah" button: hidden for management and HRD roles */}
+            {role !== 'management' && role !== 'hrd' && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+                className="bg-success hover:bg-success/80 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-success/25 flex items-center space-x-2 text-sm"
               >
                 <Plus className="h-4 w-4" />
                 <span>Tambah</span>
@@ -230,7 +251,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               {/* Search No Training */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-textSecondary">
                   Cari No Training
                 </label>
                 <div className="flex space-x-2">
@@ -238,12 +259,12 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     type="text"
                     value={searchNoTraining}
                     onChange={(e) => setSearchNoTraining(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="TRNG001"
                   />
                   <button
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
                   >
                     <Search className="h-4 w-4" />
                   </button>
@@ -252,7 +273,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
 
               {/* Search SO */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-textSecondary">
                   Cari SO
                 </label>
                 <div className="flex space-x-2">
@@ -260,12 +281,12 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     type="text"
                     value={searchSO}
                     onChange={(e) => setSearchSO(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="SO001"
                   />
                   <button
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
                   >
                     <Search className="h-4 w-4" />
                   </button>
@@ -274,7 +295,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
 
               {/* Search SO Turunan */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-textSecondary">
                   Cari SO Turunan
                 </label>
                 <div className="flex space-x-2">
@@ -282,12 +303,12 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     type="text"
                     value={searchSOTurunan}
                     onChange={(e) => setSearchSOTurunan(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="SO001.12"
                   />
                   <button
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
                   >
                     <Search className="h-4 w-4" />
                   </button>
@@ -296,7 +317,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
 
               {/* Search Karyawan */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-textSecondary">
                   Cari Karyawan
                 </label>
                 <div className="flex space-x-2">
@@ -304,12 +325,12 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     type="text"
                     value={searchKaryawan}
                     onChange={(e) => setSearchKaryawan(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="Budi Santoso"
                   />
                   <button
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
                   >
                     <Search className="h-4 w-4" />
                   </button>
@@ -321,28 +342,28 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               {/* Jenis Training Dropdown */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-textSecondary">
                   Pilih Jenis Training
                 </label>
                 <div className="relative">
                   <button
                     onClick={() => setJenisTrainingDropdownOpen(!jenisTrainingDropdownOpen)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 flex items-center justify-between bg-surface text-sm"
                   >
-                    <span className={selectedJenisTraining ? 'text-gray-900' : 'text-gray-500'}>
+                    <span className={selectedJenisTraining ? 'text-text' : 'text-textSecondary'}>
                       {selectedJenisTraining || '--Pilih Jenis Training--'}
                     </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisTrainingDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 text-textSecondary transition-transform duration-200 ${jenisTrainingDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {jenisTrainingDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-md shadow-lg z-50 overflow-hidden">
                       <button
                         onClick={() => {
                           setSelectedJenisTraining('');
                           setJenisTrainingDropdownOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
+                        className="w-full px-3 py-2 text-left hover:bg-border transition-colors text-textSecondary text-sm"
                       >
                         --Pilih Jenis Training--
                       </button>
@@ -353,7 +374,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                             setSelectedJenisTraining(jenis);
                             setJenisTrainingDropdownOpen(false);
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-sm"
+                          className="w-full px-3 py-2 text-left hover:bg-border transition-colors text-sm text-text"
                         >
                           {jenis}
                         </button>
@@ -365,7 +386,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
 
               {/* Periode */}
               <div className="space-y-2 lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-textSecondary">
                   Periode
                 </label>
                 <div className="flex items-center space-x-2">
@@ -373,15 +394,15 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="03/03/2025"
                   />
-                  <span className="text-sm text-gray-500">s.d</span>
+                  <span className="text-sm text-textSecondary">s.d</span>
                   <input
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="03/03/2025"
                   />
                 </div>
@@ -389,12 +410,12 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
 
               {/* Search Button */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 opacity-0">
+                <label className="block text-sm font-medium text-textSecondary opacity-0">
                   Search
                 </label>
                 <button
                   onClick={handleSearch}
-                  className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
+                  className="w-full px-6 py-2 bg-secondary hover:bg-secondary/80 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
                   <Search className="h-4 w-4" />
                   Search
@@ -405,15 +426,15 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
 
           {/* Export Buttons */}
           <div className="flex justify-end space-x-2 mb-6">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+            <button className="bg-success hover:bg-success/80 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
             </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+            <button className="bg-primary hover:bg-primary/80 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
               <File className="h-4 w-4" />
               <span>Export CSV</span>
             </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+            <button className="bg-error hover:bg-error/80 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
@@ -424,28 +445,28 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
         {/* Show entries control */}
         <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-700">Show</span>
+          <span className="text-sm text-textSecondary">Show</span>
           <select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="px-3 py-1 border border-border rounded text-sm focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
-          <span className="text-sm text-gray-700">entries</span>
+          <span className="text-sm text-textSecondary">entries</span>
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+        <div className="bg-surface rounded-lg shadow border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-background border-b border-border">
                 <tr>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('no')}
                   >
                     <div className="flex items-center space-x-1">
@@ -456,7 +477,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('noTraining')}
                   >
                     <div className="flex items-center space-x-1">
@@ -467,7 +488,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('noSO')}
                   >
                     <div className="flex items-center space-x-1">
@@ -478,7 +499,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('soTurunan')}
                   >
                     <div className="flex items-center space-x-1">
@@ -489,7 +510,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('karyawan')}
                   >
                     <div className="flex items-center space-x-1">
@@ -500,7 +521,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('jenisTraining')}
                   >
                     <div className="flex items-center space-x-1">
@@ -511,7 +532,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('tanggalPelatihan')}
                   >
                     <div className="flex items-center space-x-1">
@@ -522,7 +543,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
                     onClick={() => handleSort('budget')}
                   >
                     <div className="flex items-center space-x-1">
@@ -532,53 +553,65 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Keterangan</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">Keterangan</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-textSecondary">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {currentData.map((item, index) => (
                   <tr
                     key={item.id}
-                    className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+                    className={`hover:bg-border transition-colors ${
+                      index % 2 === 0 ? 'bg-surface' : 'bg-background'
                     } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
                     style={{
                       animationDelay: animateRows ? `${index * 100}ms` : '0ms',
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noTraining}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.soTurunan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.karyawan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.jenisTraining}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalPelatihan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.budget}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 truncate max-w-xs">{item.keterangan}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.no}</td>
+                    <td className="px-4 py-3 text-sm text-text font-medium">{item.noTraining}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.noSO}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.soTurunan}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.karyawan}</td>
+                    <td className="px-4 py-3 text-sm text-textSecondary">{item.jenisTraining}</td>
+                    <td className="px-4 py-3 text-sm text-textSecondary">{item.tanggalPelatihan}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.budget}</td>
+                    <td className="px-4 py-3 text-sm text-textSecondary truncate max-w-xs">{item.keterangan}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        {role === 'management' ? (
-                          <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="p-1.5 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
-                            title="Approve"
-                          >
-                            <CheckCircle className="h-3.5 w-3.5" />
-                          </button>
-                        ) : (
+                        {/* Conditional rendering for action buttons based on role */}
+                        {role === 'management' || role === 'hrd' ? ( // If role is management OR hrd, show Approve and Realisasi
+                          <>
+                            <button
+                              onClick={() => setIsModalOpen(true)} // This would typically open an approval modal
+                              className="p-1.5 text-success hover:bg-success/10 rounded transition-all duration-200 hover:scale-110"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-3.5 w-3.5" />
+                            </button>
+                            {role === 'hrd' && ( // Only show Realisasi for HRD
+                              <button
+                                onClick={() => handleRealisasiClick(item)}
+                                className="p-1.5 text-primary hover:bg-primary/10 rounded transition-all duration-200 hover:scale-110"
+                                title="Realisasi"
+                              >
+                                <FileUp className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </>
+                        ) : ( // Otherwise (for other roles), show Edit and Delete
                           <>
                             <button
                               onClick={() => setIsModalOpen(true)} // For editing, will need to pass item data
-                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
+                              className="p-1.5 text-primary hover:bg-primary/10 rounded transition-all duration-200 hover:scale-110"
                               title="Edit"
                             >
                               <Edit className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => handleDeleteClick(item)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
+                              className="p-1.5 text-error hover:bg-error/10 rounded transition-all duration-200 hover:scale-110"
                               title="Delete"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -594,16 +627,16 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
           </div>
 
           {/* Pagination */}
-          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+          <div className="bg-background px-4 py-3 border-t border-border">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-textSecondary">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1 text-sm text-textSecondary hover:text-text hover:bg-border rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
@@ -615,8 +648,8 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                       onClick={() => handlePageChange(page)}
                       className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                         currentPage === page
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'bg-primary text-white'
+                          : 'text-textSecondary hover:bg-border'
                       }`}
                     >
                       {page}
@@ -627,7 +660,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1 text-sm text-textSecondary hover:text-text hover:bg-border rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
@@ -637,7 +670,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
         </div>
       </div>
 
-      {/* Training Modal */}
+      {/* Training Modal (for Add/Edit) */}
       <ProsesPengajuanTrainingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -651,6 +684,16 @@ const ProsesPengajuanTrainingDashboard: React.FC<ProsesPengajuanTrainingDashboar
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.noTraining}
       />
+
+      {/* Realisasi Document Upload Modal */}
+      {selectedTrainingForRealisasi && (
+        <RealisasiDocumentUploadModal
+          isOpen={isRealisasiModalOpen}
+          onClose={() => setIsRealisasiModalOpen(false)}
+          onUpload={handleRealisasiUpload}
+          noTraining={selectedTrainingForRealisasi.noTraining}
+        />
+      )}
     </div>
   );
 };
