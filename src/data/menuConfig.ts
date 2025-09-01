@@ -20,6 +20,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
       items: [
         { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: `/${role}/general/voucher/dashboard` },
         { title: 'Proses Voucher', icon: 'Workflow', path: `/${role}/general/voucher/proses` },
+        { title: 'Pertanggung jawaban voucher', icon: 'FileText', path: `/${role}/general/voucher/pertanggungjawaban` } // NEW: Pertanggung jawaban voucher
       ]
     },
     {
@@ -327,6 +328,7 @@ export const financeMenu: MenuSection[] = [
         items: [
           { title: 'Dashboard AP', icon: 'LayoutDashboard', path: '/finance/ap/dashboard' },
           { title: 'Laporan AP', icon: 'FileText', path: '/finance/ap/laporan' },
+          { title: 'Pembayaran Gaji', icon: 'Banknote', path: '/finance/ap/pembayaran-gaji' }, // NEW: Pembayaran Gaji submenu
         ]
       }
     ]

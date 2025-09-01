@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronDown, Eye, Clock, Printer, Plus } from 'lucide-react';
+import EntryPurchasingRequestModal from './EntryPurchasingRequestModal'; // Import the new modal
+import { EntryPurchasingRequestFormData } from '../types'; // Import the new type
 
 interface PurchasingRequest {
   id: number;
@@ -8,18 +10,39 @@ interface PurchasingRequest {
   noSO: string;
   departemen: string;
   keterangan: string;
-  statusPR: 'Approve' | 'Rejected';
+  statusPR: 'Approve' | 'Rejected' | 'Pending'; // Added 'Pending' for form options
   statusPO: 'PO' | '-';
 }
 
 const GeneralProsesPurchasingRequest: React.FC = () => {
-  const purchasingRequests: PurchasingRequest[] = [
+  const [purchasingRequests, setPurchasingRequests] = useState<PurchasingRequest[]>([
     { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO' },
     { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-' },
     { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-' },
     { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO' },
     { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-' },
-  ];
+  ]);
+
+  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+
+  const handleOpenEntryModal = () => setIsEntryModalOpen(true);
+  const handleCloseEntryModal = () => setIsEntryModalOpen(false);
+
+  const handleAddPurchasingRequest = (newData: EntryPurchasingRequestFormData) => {
+    const newId = purchasingRequests.length > 0 ? Math.max(...purchasingRequests.map(req => req.id)) + 1 : 1;
+    const newRequest: PurchasingRequest = {
+      id: newId,
+      tanggalPR: newData.tanggalPR,
+      noPR: newData.noPR,
+      noSO: newData.noSO,
+      departemen: newData.departemen,
+      keterangan: newData.keterangan,
+      statusPR: newData.statusPR as 'Approve' | 'Rejected' | 'Pending', // Cast to valid type
+      statusPO: newData.statusPO as 'PO' | '-', // Cast to valid type
+    };
+    setPurchasingRequests((prev) => [...prev, newRequest]);
+    console.log('New Purchasing Request Added:', newRequest);
+  };
 
   const getRowBackgroundColor = (index: number) => {
     // Replicating the exact background colors from the image
@@ -31,7 +54,16 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">DAFTAR PURCHASING REQUEST</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">DAFTAR PURCHASING REQUEST</h1>
+          <button
+            onClick={handleOpenEntryModal}
+            className="flex items-center px-4 py-2 bg-primary text-white rounded-md shadow-sm hover:bg-primary/80 transition-colors text-sm font-medium"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Tambah PR
+          </button>
+        </div>
 
         {/* Filter Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -127,7 +159,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.keterangan}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        request.statusPR === 'Approve' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        request.statusPR === 'Approve' ? 'bg-green-100 text-green-800' : request.statusPR === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {request.statusPR}
                       </span>
@@ -183,6 +215,13 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Entry Purchasing Request Modal */}
+      <EntryPurchasingRequestModal
+        isOpen={isEntryModalOpen}
+        onClose={handleCloseEntryModal}
+        onSubmit={handleAddPurchasingRequest}
+      />
     </div>
   );
 };

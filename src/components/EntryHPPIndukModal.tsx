@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 import { Calendar } from 'lucide-react';
+import HPPDetailTabs from './HPPDetailTabs'; // Import the new component
 
 interface EntryHPPIndukModalProps {
   isOpen: boolean;
@@ -38,7 +39,7 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
   const jenisPekerjaanOptions = ['On Call', 'Project Based', 'Maintenance'];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Entry HPP Induk" size="3xl">
+    <Modal isOpen={isOpen} onClose={onClose} title="Entry HPP Turunan" size="6xl"> {/* Changed size to 6xl */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* No Kontrak */}
         <div className="space-y-2">
@@ -167,6 +168,9 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
           />
         </div>
       </div>
+
+      {/* New HPP Detail Tabs Component */}
+      <HPPDetailTabs />
 
       <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-border">
         <button

@@ -69,6 +69,7 @@ import ReimburseVoucherDashboard from './ReimburseVoucherDashboard';
 import ARDashboard from './ARDashboard';
 import ProsesPembayaranARDashboard from './ProsesPembayaranARDashboard';
 import LaporanARDashboard from './LaporanARDashboard';
+import FinancePembayaranGajiPage from './FinancePembayaranGajiPage';
 
 // Gudang Dashboards
 import MasterBarangDashboard from './MasterBarangDashboard';
@@ -102,6 +103,7 @@ import GeneralProsesCashAdvance from './GeneralProsesCashAdvance'; // Import the
 import GeneralPurchasingRequestDashboard from './GeneralPurchasingRequestDashboard'; // Import the new GeneralPurchasingRequestDashboard
 import GeneralProsesPurchasingRequest from './GeneralProsesPurchasingRequest'; // Import the new Proses Purchasing Request component
 import PengajianActiveDashboard from './PengajianActiveDashboard'; // Import the new PengajianActiveDashboard
+import GeneralPertanggungJawabanVoucherDashboard from './GeneralPertanggungJawabanVoucherDashboard'; // Import the new PengajianActiveDashboard
 
 // QHSE Dashboards
 import QHSENewDashboard from './QHSENewDashboard';
@@ -646,6 +648,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/operational/general/purchase-request/dashboard') {
       return <GeneralPurchasingRequestDashboard />;
     }
+		    if (currentPage === '/operational/general/voucher/pertanggungjawaban') {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
+    }
     if (currentPage === '/operational/general/purchase-request/proses') {
       return <GeneralProsesPurchasingRequest />;
     }
@@ -671,6 +676,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/finance/ar/laporan') {
       return <LaporanARDashboard />;
+    }
+		    if (currentPage === '/finance/ap/pembayaran-gaji') {
+      return <FinancePembayaranGajiPage />;
     }
     if (currentPage === '/finance/approval/tiket') {
       return <ApprovalTiketDashboard />;

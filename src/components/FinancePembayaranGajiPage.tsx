@@ -66,7 +66,7 @@ const ReimburseVoucherDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                REIMBURSE / VOUCHER
+                PEMBAYARAN GAJI
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
