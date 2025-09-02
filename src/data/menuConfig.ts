@@ -147,17 +147,13 @@ export const marketingMenu: MenuSection[] = [
     items: [],
     directPath: "/marketing/sales-order/dashboard",
   },
-<<<<<<< HEAD
   {
-    title: 'Report Kontrak',
-    icon: 'FileText',
+    title: "Report Kontrak",
+    icon: "FileText",
     items: [],
-    directPath: '/marketing/report-kontrak'
+    directPath: "/marketing/report-kontrak",
   },
-  createGeneralMenu('marketing')
-=======
   createGeneralMenu("marketing"),
->>>>>>> origin/Dika
 ];
 
 export const operationalMenu: MenuSection[] = [
