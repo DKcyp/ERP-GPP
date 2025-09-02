@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download } from 'lucide-react';
+import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download, Pencil, Trash2, X } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface MCUPegawai {
   id: string;
@@ -15,7 +16,7 @@ const MonitoringMCUDashboard: React.FC = () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize today to midnight for accurate date comparison
 
-  const dummyData: MCUPegawai[] = [
+  const initialData: MCUPegawai[] = [
     {
       id: 'MCU001',
       namaPegawai: 'Budi Santoso',
@@ -53,6 +54,18 @@ const MonitoringMCUDashboard: React.FC = () => {
     },
   ];
 
+  const [data, setData] = useState<MCUPegawai[]>(initialData);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<MCUPegawai | null>(null);
+  const [form, setForm] = useState<Omit<MCUPegawai, 'id'>>({
+    namaPegawai: '',
+    jenisMCU: '',
+    masaBerlaku: '',
+    documentUrl: ''
+  });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<MCUPegawai | null>(null);
+
   const isExpiringSoon = (masaBerlakuDate: string): boolean => {
     const expiryDate = new Date(masaBerlakuDate);
     expiryDate.setHours(0, 0, 0, 0); // Normalize expiry date to midnight
@@ -79,9 +92,59 @@ const MonitoringMCUDashboard: React.FC = () => {
     // Implement actual search logic here
   };
 
-  const handleAddMCU = () => {
-    alert('Tambah MCU Pegawai');
-    // Implement add logic here
+  const openAddModal = () => {
+    setEditingItem(null);
+    setForm({ namaPegawai: '', jenisMCU: '', masaBerlaku: '', documentUrl: '' });
+    setShowFormModal(true);
+  };
+
+  const openEditModal = (item: MCUPegawai) => {
+    setEditingItem(item);
+    setForm({
+      namaPegawai: item.namaPegawai,
+      jenisMCU: item.jenisMCU,
+      masaBerlaku: item.masaBerlaku,
+      documentUrl: item.documentUrl,
+    });
+    setShowFormModal(true);
+  };
+
+  const handleSave = () => {
+    if (editingItem) {
+      // Update existing
+      setData((prev) =>
+        prev.map((it) =>
+          it.id === editingItem.id ? { ...editingItem, ...form } : it
+        )
+      );
+    } else {
+      // Add new
+      const newItem: MCUPegawai = {
+        id: generateId(),
+        ...form,
+      };
+      setData((prev) => [newItem, ...prev]);
+    }
+    setShowFormModal(false);
+    setEditingItem(null);
+  };
+
+  const generateId = () => {
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `MCU${num}`;
+  };
+
+  const askDelete = (item: MCUPegawai) => {
+    setDeleteTarget(item);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      setData((prev) => prev.filter((it) => it.id !== deleteTarget.id));
+      setDeleteTarget(null);
+      setShowDeleteModal(false);
+    }
   };
 
   const handleExport = (type: string) => {
@@ -186,7 +249,7 @@ const MonitoringMCUDashboard: React.FC = () => {
 
           <div className="flex justify-end space-x-3">
             <button
-              onClick={handleAddMCU}
+              onClick={openAddModal}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah MCU
@@ -256,10 +319,13 @@ const MonitoringMCUDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Document
                   </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyData.map((mcu) => {
+                {data.map((mcu) => {
                   const expired = isExpired(mcu.masaBerlaku);
                   const expiringSoon = !expired && isExpiringSoon(mcu.masaBerlaku); // Only show if not already expired
 
@@ -298,6 +364,24 @@ const MonitoringMCUDashboard: React.FC = () => {
                           <FileText className="h-4 w-4 mr-1" /> View Document
                         </a>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openEditModal(mcu)}
+                            className="inline-flex items-center px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 text-xs"
+                            title="Edit"
+                          >
+                            <Pencil className="h-4 w-4 mr-1" /> Edit
+                          </button>
+                          <button
+                            onClick={() => askDelete(mcu)}
+                            className="inline-flex items-center px-3 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs"
+                            title="Hapus"
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -305,6 +389,76 @@ const MonitoringMCUDashboard: React.FC = () => {
             </table>
           </div>
         </div>
+        {/* Form Modal */}
+        {showFormModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                <h2 className="text-xl font-bold text-gray-900">{editingItem ? 'Edit MCU' : 'Tambah MCU'}</h2>
+                <button onClick={() => { setShowFormModal(false); setEditingItem(null); }} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
+                  <input
+                    type="text"
+                    value={form.namaPegawai}
+                    onChange={(e) => setForm((f) => ({ ...f, namaPegawai: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    placeholder="Masukkan nama pegawai"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jenis MCU</label>
+                  <select
+                    value={form.jenisMCU}
+                    onChange={(e) => setForm((f) => ({ ...f, jenisMCU: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
+                  >
+                    <option value="">Pilih jenis...</option>
+                    <option value="General Check-up">General Check-up</option>
+                    <option value="Medical Fitness">Medical Fitness</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Masa Berlaku</label>
+                  <input
+                    type="date"
+                    value={form.masaBerlaku}
+                    onChange={(e) => setForm((f) => ({ ...f, masaBerlaku: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Document URL</label>
+                  <input
+                    type="url"
+                    value={form.documentUrl}
+                    onChange={(e) => setForm((f) => ({ ...f, documentUrl: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    placeholder="# atau tautan dokumen"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+                <button onClick={() => { setShowFormModal(false); setEditingItem(null); }} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">Batal</button>
+                <button onClick={handleSave} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">Simpan</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirm Modal */}
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          title="Konfirmasi Hapus MCU"
+          message="Apakah Anda yakin ingin menghapus data MCU ini?"
+          itemName={deleteTarget ? `${deleteTarget.namaPegawai} (${deleteTarget.jenisMCU})` : undefined}
+        />
       </div>
     </div>
   );

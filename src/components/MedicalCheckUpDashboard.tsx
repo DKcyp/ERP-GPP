@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Search, PlusCircle, Download, Clock, AlertTriangle } from 'lucide-react';
+import { Search, PlusCircle, Download, Clock, AlertTriangle, Pencil, Trash2 } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface MCURecord {
   nama: string;
@@ -16,7 +17,7 @@ const sampleData: MCURecord[] = [
   { nama: 'Eko Prasetyo', posisi: 'Supervisor', provider: 'RS Duta', expiry: '2024-12-10' },
 ];
 
-const positions = Array.from(new Set(sampleData.map((d) => d.posisi)));
+// rows state will be the source of truth; positions derived from it
 
 const formatDate = (iso: string) => {
   const d = new Date(iso);
@@ -35,14 +36,24 @@ const MedicalCheckUpDashboard: React.FC = () => {
   const [searchNama, setSearchNama] = useState('');
   const [filterPosisi, setFilterPosisi] = useState('');
   const [showEntries, setShowEntries] = useState<string>('10');
+  const [rows, setRows] = useState<MCURecord[]>(sampleData);
+
+  // modal & delete states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add'|'edit'>('add');
+  const [form, setForm] = useState<Partial<MCURecord>>({});
+  const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+
+  const positions = useMemo(() => Array.from(new Set(rows.map((d) => d.posisi))), [rows]);
 
   const filteredData = useMemo(() => {
-    return sampleData.filter((row) => {
+    return rows.filter((row) => {
       const byNama = row.nama.toLowerCase().includes(searchNama.toLowerCase());
       const byPosisi = filterPosisi ? row.posisi === filterPosisi : true;
       return byNama && byPosisi;
     });
-  }, [searchNama, filterPosisi]);
+  }, [rows, searchNama, filterPosisi]);
 
   const displayedData = useMemo(() => {
     const limit = parseInt(showEntries, 10);
@@ -50,13 +61,48 @@ const MedicalCheckUpDashboard: React.FC = () => {
   }, [filteredData, showEntries]);
 
   const handleSearch = () => {
-    alert(`Cari: ${searchNama} | Posisi: ${filterPosisi || 'Semua'}`);
+    // set pagination or trigger fetch if needed; kept as placeholder
   };
 
-  const handleAdd = () => alert('Tambah Data MCU');
+  const openAdd = () => {
+    setModalMode('add');
+    setForm({ nama: '', posisi: '', provider: '', expiry: '' });
+    setModalOpen(true);
+  };
+  const openEdit = (item: MCURecord) => {
+    setModalMode('edit');
+    setForm({ ...item });
+    const idx = rows.findIndex(r => r === item);
+    setEditIndex(idx >= 0 ? idx : null);
+    setModalOpen(true);
+  };
+  const saveForm = () => {
+    if (!form.nama || !form.posisi || !form.provider || !form.expiry) return;
+    if (modalMode === 'add') {
+      const newItem: MCURecord = {
+        nama: String(form.nama),
+        posisi: String(form.posisi),
+        provider: String(form.provider),
+        expiry: String(form.expiry),
+      };
+      setRows(prev => [newItem, ...prev]);
+    } else if (modalMode === 'edit' && editIndex !== null) {
+      setRows(prev => prev.map((p, i) => (
+        i === editIndex
+          ? { nama: String(form.nama), posisi: String(form.posisi), provider: String(form.provider), expiry: String(form.expiry) }
+          : p
+      )));
+    }
+    setModalOpen(false);
+  };
+  const confirmDelete = () => {
+    if (confirmId !== null) setRows(prev => prev.filter((_, idx) => idx !== confirmId));
+    setConfirmId(null);
+  };
   const handleExport = (type: string) => alert(`Export ${type}`);
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       {/* Header Section (mirror MCU style) */}
       <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
@@ -122,14 +168,14 @@ const MedicalCheckUpDashboard: React.FC = () => {
 
           <div className="flex justify-end space-x-3">
             <button
-              onClick={handleAdd}
+              onClick={openAdd}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah MCU
             </button>
             <button
               onClick={handleSearch}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             >
               <Search className="h-5 w-5 mr-2" /> Cari Data
             </button>
@@ -184,6 +230,7 @@ const MedicalCheckUpDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Medical Provider</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -209,12 +256,30 @@ const MedicalCheckUpDashboard: React.FC = () => {
                           <span className="text-xs">{remaining >= 0 ? `${remaining} hari lagi` : `${Math.abs(remaining)} hari lewat`}</span>
                         </div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openEdit(row)}
+                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => setConfirmId(rows.findIndex(r => r === row))}
+                            className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-red-700 hover:bg-red-50 transition-colors"
+                            title="Hapus"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
                 {displayedData.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td>
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td>
                   </tr>
                 )}
               </tbody>
@@ -223,6 +288,71 @@ const MedicalCheckUpDashboard: React.FC = () => {
         </div>
       </div>
     </div>
+
+    {/* Add/Edit Modal */}
+    {modalOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40" onClick={() => setModalOpen(false)} />
+        <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-lg p-5">
+          <h2 className="text-lg font-semibold mb-4">{modalMode === 'add' ? 'Tambah Data MCU' : 'Edit Data MCU'}</h2>
+          <div className="grid grid-cols-1 gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Nama</label>
+              <input
+                type="text"
+                value={form.nama || ''}
+                onChange={e => setForm(f => ({ ...f, nama: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Posisi</label>
+              <select
+                value={form.posisi || ''}
+                onChange={e => setForm(f => ({ ...f, posisi: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <option value="">Pilih Posisi</option>
+                {positions.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Medical Provider</label>
+              <input
+                type="text"
+                value={form.provider || ''}
+                onChange={e => setForm(f => ({ ...f, provider: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Masa Berlaku</label>
+              <input
+                type="date"
+                value={form.expiry || ''}
+                onChange={e => setForm(f => ({ ...f, expiry: e.target.value }))}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <button onClick={() => setModalOpen(false)} className="px-3 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">Batal</button>
+            <button onClick={saveForm} className="px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700">Simpan</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Confirm Delete Modal */}
+    <ConfirmDeleteModal
+      isOpen={confirmId !== null}
+      onClose={() => setConfirmId(null)}
+      onConfirm={confirmDelete}
+      title="Konfirmasi Hapus"
+      message="Apakah Anda yakin ingin menghapus data MCU ini?"
+      itemName={confirmId !== null ? rows[confirmId]?.nama : undefined}
+    />
+    </>
   );
 };
 

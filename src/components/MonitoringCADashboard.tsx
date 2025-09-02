@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Search, PlusCircle, Download, Clock } from 'lucide-react';
+import { Search, PlusCircle, Download, Clock, Pencil, Trash2, X } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface Row {
   no: string; // No. CA
@@ -31,10 +32,22 @@ const MonitoringCADashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [showEntries, setShowEntries] = useState('10');
 
-  const filtered = useMemo(() => sampleData.filter(r => (
+  // table data state
+  const [rows, setRows] = useState<Row[]>(sampleData);
+
+  // form modal state
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Row | null>(null);
+  const [form, setForm] = useState<Row>({ no: '', namaPegawai: '', jumlah: 0, tanggal: '', status: 'Draft' });
+
+  // delete modal state
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
+
+  const filtered = useMemo(() => rows.filter(r => (
     r.no.toLowerCase().includes(search.toLowerCase()) ||
     r.namaPegawai.toLowerCase().includes(search.toLowerCase())
-  )), [search]);
+  )), [rows, search]);
 
   const displayed = useMemo(() => {
     const n = parseInt(showEntries, 10);
@@ -42,6 +55,49 @@ const MonitoringCADashboard: React.FC = () => {
   }, [filtered, showEntries]);
 
   const handleExport = (t: string) => alert(`Export ${t}`);
+
+  // actions
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ no: '', namaPegawai: '', jumlah: 0, tanggal: '', status: 'Draft' });
+    setShowForm(true);
+  };
+
+  const openEdit = (r: Row) => {
+    setEditing(r);
+    setForm({ ...r });
+    setShowForm(true);
+  };
+
+  const genNo = () => {
+    const seq = Math.floor(100 + Math.random() * 900);
+    const year = new Date().getFullYear();
+    return `CA-${year}-${seq}`;
+  };
+
+  const saveForm = () => {
+    if (editing) {
+      setRows(prev => prev.map(p => (p.no === editing.no ? { ...form } : p)));
+    } else {
+      const no = form.no && form.no.trim() !== '' ? form.no : genNo();
+      setRows(prev => [{ ...form, no }, ...prev]);
+    }
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const askDelete = (r: Row) => {
+    setDeleteTarget(r);
+    setShowDelete(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      setRows(prev => prev.filter(p => p.no !== deleteTarget.no));
+      setDeleteTarget(null);
+      setShowDelete(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,7 +126,7 @@ const MonitoringCADashboard: React.FC = () => {
             </div>
           </div>
           <div className="flex justify-end space-x-3">
-            <button className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white shadow">
+            <button onClick={openAdd} className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white shadow">
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah
             </button>
             <button className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow">
@@ -107,6 +163,7 @@ const MonitoringCADashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -117,15 +174,108 @@ const MonitoringCADashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{rupiah(r.jumlah)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(r.tanggal)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm"><StatusBadge s={r.status} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => openEdit(r)} className="inline-flex items-center px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 text-xs" title="Edit">
+                          <Pencil className="h-4 w-4 mr-1" /> Edit
+                        </button>
+                        <button onClick={() => askDelete(r)} className="inline-flex items-center px-3 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs" title="Hapus">
+                          <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {displayed.length===0 && (
-                  <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td></tr>
                 )}
               </tbody>
             </table>
           </div>
         </div>
+
+        {/* Form Modal */}
+        {showForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                <h2 className="text-xl font-bold text-gray-900">{editing ? 'Edit Cash Advance' : 'Tambah Cash Advance'}</h2>
+                <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">No. CA</label>
+                  <input
+                    type="text"
+                    value={form.no}
+                    onChange={(e) => setForm(f => ({ ...f, no: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    placeholder="Mis. CA-2025-123"
+                    disabled={!!editing}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
+                  <input
+                    type="text"
+                    value={form.namaPegawai}
+                    onChange={(e) => setForm(f => ({ ...f, namaPegawai: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    placeholder="Nama pegawai"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
+                  <input
+                    type="number"
+                    value={form.jumlah}
+                    onChange={(e) => setForm(f => ({ ...f, jumlah: Number(e.target.value) }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    min={0}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                  <input
+                    type="date"
+                    value={form.tanggal}
+                    onChange={(e) => setForm(f => ({ ...f, tanggal: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm(f => ({ ...f, status: e.target.value as Row['status'] }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
+                  >
+                    <option value="Draft">Draft</option>
+                    <option value="Proses">Proses</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+                <button onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">Batal</button>
+                <button onClick={saveForm} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">Simpan</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirm Modal */}
+        <ConfirmDeleteModal
+          isOpen={showDelete}
+          onClose={() => setShowDelete(false)}
+          onConfirm={confirmDelete}
+          title="Konfirmasi Hapus Cash Advance"
+          message="Apakah Anda yakin ingin menghapus data Cash Advance ini?"
+          itemName={deleteTarget ? `${deleteTarget.no} - ${deleteTarget.namaPegawai}` : undefined}
+        />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download } from 'lucide-react';
+import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download, Pencil, Trash2 } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface Sertifikat {
   id: string;
@@ -125,7 +126,6 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
   const openAdd = () => setModal({ open: true, mode: 'add', data: { nama: '', jenis: '', tanggalTerbit: '', masaBerlaku: '', document: '' } });
   const openEdit = (r: Sertifikat) => setModal({ open: true, mode: 'edit', data: { ...r } });
 
-  const onDelete = (id: string) => setConfirmId(id);
   const confirmDelete = () => {
     if (confirmId) setRows(prev => prev.filter(p => p.id !== confirmId));
     setConfirmId(null);
@@ -216,7 +216,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
 
           <div className="flex justify-end space-x-3">
             <button
-              onClick={() => alert('Tambah Legalitas')}
+              onClick={openAdd}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah Legalitas
@@ -279,6 +279,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Terbit</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -321,6 +322,24 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                         ) : (
                           <span className="text-gray-400">-</span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openEdit(r)}
+                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => setConfirmId(r.id)}
+                            className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-red-700 hover:bg-red-50 transition-colors"
+                            title="Hapus"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -420,19 +439,14 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
       )}
 
       {/* Confirm Delete Modal */}
-      {confirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setConfirmId(null)} />
-          <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md p-5">
-            <h3 className="text-base font-semibold text-gray-800">Hapus Sertifikat</h3>
-            <p className="mt-2 text-sm text-gray-600">Anda yakin ingin menghapus data ini? Tindakan ini tidak bisa dibatalkan.</p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button onClick={() => setConfirmId(null)} className="px-3 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">Batal</button>
-              <button onClick={confirmDelete} className="px-3 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700">Hapus</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDeleteModal
+        isOpen={!!confirmId}
+        onClose={() => setConfirmId(null)}
+        onConfirm={confirmDelete}
+        title="Konfirmasi Hapus"
+        message="Apakah Anda yakin ingin menghapus sertifikat ini?"
+        itemName={confirmId ? rows.find((x) => x.id === confirmId)?.nama : undefined}
+      />
     </>
   );
 };

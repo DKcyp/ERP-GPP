@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Clock, Search, PlusCircle, Download, FileText, AlertTriangle, Pencil, Trash2 } from 'lucide-react';
+import { Clock, Search, PlusCircle, Download, FileText, Pencil, Trash2 } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface PerformanceItem {
   id: string;
@@ -158,19 +159,19 @@ const QHSEPerformanceDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div className="flex items-end">
-                <div className="flex gap-3 w-full">
+              <div className="flex items-end justify-end">
+                <div className="flex gap-3">
+                  <button
+                    onClick={openAdd}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                  >
+                    <PlusCircle className="h-5 w-5 mr-2" /> Tambah Data
+                  </button>
                   <button
                     onClick={() => setPage(1)}
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                   >
                     <Search className="h-5 w-5 mr-2" /> Cari Data
-                  </button>
-                  <button
-                    onClick={openAdd}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                  >
-                    <PlusCircle className="h-5 w-5 mr-2" /> Tambah Data Performance
                   </button>
                 </div>
               </div>
@@ -360,19 +361,14 @@ const QHSEPerformanceDashboard: React.FC = () => {
       )}
 
       {/* Confirm Delete Modal */}
-      {confirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setConfirmId(null)} />
-          <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md p-5">
-            <h3 className="text-base font-semibold text-gray-800">Hapus Data Performance</h3>
-            <p className="mt-2 text-sm text-gray-600">Anda yakin ingin menghapus data ini? Tindakan ini tidak bisa dibatalkan.</p>
-            <div className="mt-5 flex justify-end gap-2">
-              <button onClick={() => setConfirmId(null)} className="px-3 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">Batal</button>
-              <button onClick={confirmDelete} className="px-3 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700">Hapus</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDeleteModal
+        isOpen={!!confirmId}
+        onClose={() => setConfirmId(null)}
+        onConfirm={confirmDelete}
+        title="Konfirmasi Hapus"
+        message="Apakah Anda yakin ingin menghapus data performance ini?"
+        itemName={confirmId ? (() => { const i = rows.find(r => r.id === confirmId); return i ? `${i.bulan} ${i.tahun}` : undefined; })() : undefined}
+      />
     </>
   );
 };

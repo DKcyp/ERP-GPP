@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Search, PlusCircle, Download, Clock } from 'lucide-react';
+import { Search, PlusCircle, Download, Clock, Pencil, Trash2, X } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface Row {
   no: string; // No. PBG
@@ -28,14 +29,22 @@ const MonitoringPBGDashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [showEntries, setShowEntries] = useState('10');
 
+  // Data & UI state
+  const [data, setData] = useState<Row[]>(sampleData);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Row | null>(null);
+  const [form, setForm] = useState<Row>({ no: '', namaBarang: '', jumlah: 0, status: 'Draft' });
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
+
   const filtered = useMemo(
     () =>
-      sampleData.filter(
+      data.filter(
         (r) =>
           r.no.toLowerCase().includes(search.toLowerCase()) ||
           r.namaBarang.toLowerCase().includes(search.toLowerCase())
       ),
-    [search]
+    [search, data]
   );
 
   const displayed = useMemo(() => {
@@ -44,6 +53,53 @@ const MonitoringPBGDashboard: React.FC = () => {
   }, [filtered, showEntries]);
 
   const handleExport = (t: string) => alert(`Export ${t}`);
+
+  // Helpers
+  const genNo = () => {
+    const y = new Date().getFullYear();
+    const rand = Math.floor(100 + Math.random() * 900);
+    return `PBG-${y}-${rand}`;
+  };
+
+  // Handlers
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ no: '', namaBarang: '', jumlah: 0, status: 'Draft' });
+    setShowForm(true);
+  };
+
+  const openEdit = (row: Row) => {
+    setEditing(row);
+    setForm(row);
+    setShowForm(true);
+  };
+
+  const saveForm = () => {
+    const payload: Row = { ...form, no: form.no.trim() || genNo() };
+    if (!payload.namaBarang) {
+      alert('Nama Barang wajib diisi');
+      return;
+    }
+    if (editing) {
+      setData(prev => prev.map(r => (r.no === editing.no ? payload : r)));
+    } else {
+      setData(prev => [payload, ...prev]);
+    }
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const askDelete = (row: Row) => {
+    setDeleteTarget(row);
+    setShowDelete(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    setData(prev => prev.filter(r => r.no !== deleteTarget.no));
+    setShowDelete(false);
+    setDeleteTarget(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -79,7 +135,7 @@ const MonitoringPBGDashboard: React.FC = () => {
             </div>
           </div>
           <div className="flex justify-end space-x-3">
-            <button className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white shadow">
+            <button onClick={openAdd} className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white shadow">
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah
             </button>
             <button className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow">
@@ -136,6 +192,7 @@ const MonitoringPBGDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -145,11 +202,29 @@ const MonitoringPBGDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.namaBarang}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.jumlah}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm"><StatusBadge s={r.status} /></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                      <div className="inline-flex items-center space-x-2">
+                        <button
+                          onClick={() => openEdit(r)}
+                          className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
+                          title="Edit"
+                        >
+                          <Pencil className="h-4 w-4 mr-1" /> Edit
+                        </button>
+                        <button
+                          onClick={() => askDelete(r)}
+                          className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 border border-red-200"
+                          title="Hapus"
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {displayed.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                       Tidak ada data
                     </td>
                   </tr>
@@ -158,6 +233,77 @@ const MonitoringPBGDashboard: React.FC = () => {
             </table>
           </div>
         </div>
+
+        {/* Modal Tambah/Edit */}
+        {showForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                <h2 className="text-xl font-bold text-gray-900">{editing ? 'Edit PBG' : 'Tambah PBG'}</h2>
+                <button onClick={()=>setShowForm(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">No. PBG</label>
+                    <input
+                      value={form.no}
+                      onChange={(e)=>setForm(prev=>({...prev, no: e.target.value}))}
+                      disabled={!!editing}
+                      placeholder="PBG-YYYY-XXX"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm disabled:bg-gray-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Barang</label>
+                    <input
+                      value={form.namaBarang}
+                      onChange={(e)=>setForm(prev=>({...prev, namaBarang: e.target.value}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
+                    <input
+                      type="number"
+                      value={form.jumlah}
+                      onChange={(e)=>setForm(prev=>({...prev, jumlah: Number(e.target.value) || 0}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={form.status}
+                      onChange={(e)=>setForm(prev=>({...prev, status: e.target.value as Row['status']}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    >
+                      <option value="Draft">Draft</option>
+                      <option value="Proses">Proses</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50">
+                <button onClick={()=>setShowForm(false)} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium">Batal</button>
+                <button onClick={saveForm} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Simpan</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Konfirmasi Hapus */}
+        <ConfirmDeleteModal
+          isOpen={showDelete}
+          title="Hapus PBG?"
+          message={deleteTarget ? `Apakah Anda yakin ingin menghapus PBG ${deleteTarget.no}? Tindakan ini tidak dapat dibatalkan.` : ''}
+          onClose={()=>setShowDelete(false)}
+          onConfirm={confirmDelete}
+        />
       </div>
     </div>
   );
