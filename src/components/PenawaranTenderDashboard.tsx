@@ -36,7 +36,7 @@ interface PenawaranTender {
   jenisPekerjaan: string;
   lokasiKerja: string;
   terakhirUpdate: string;
-  statusPenawaran: 'Deal' | 'Pending' | 'Cancel';
+  statusPenawaran: 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel';
   statusDokumen: 'Open' | 'Close';
 }
 
@@ -81,7 +81,7 @@ const PenawaranTenderDashboard: React.FC = () => {
       jenisPekerjaan: 'Project Based',
       lokasiKerja: 'Jakarta',
       terakhirUpdate: '15-01-2025',
-      statusPenawaran: 'Deal',
+      statusPenawaran: 'Minat',
       statusDokumen: 'Close'
     },
     {
@@ -94,7 +94,7 @@ const PenawaranTenderDashboard: React.FC = () => {
       jenisPekerjaan: 'On Call',
       lokasiKerja: 'Surabaya',
       terakhirUpdate: '14-01-2025',
-      statusPenawaran: 'Pending',
+      statusPenawaran: 'Register',
       statusDokumen: 'Open'
     },
     {
@@ -107,7 +107,7 @@ const PenawaranTenderDashboard: React.FC = () => {
       jenisPekerjaan: 'Maintenance',
       lokasiKerja: 'Bandung',
       terakhirUpdate: '13-01-2025',
-      statusPenawaran: 'Cancel',
+      statusPenawaran: 'Pra-kualifikasi',
       statusDokumen: 'Close'
     },
     {
@@ -120,7 +120,7 @@ const PenawaranTenderDashboard: React.FC = () => {
       jenisPekerjaan: 'Project Based',
       lokasiKerja: 'Medan',
       terakhirUpdate: '12-01-2025',
-      statusPenawaran: 'Deal',
+      statusPenawaran: 'Evaluasi',
       statusDokumen: 'Open'
     },
     {
@@ -133,7 +133,33 @@ const PenawaranTenderDashboard: React.FC = () => {
       jenisPekerjaan: 'On Call',
       lokasiKerja: 'Yogyakarta',
       terakhirUpdate: '11-01-2025',
-      statusPenawaran: 'Pending',
+      statusPenawaran: 'Tender',
+      statusDokumen: 'Close'
+    },
+    {
+      id: '6',
+      no: 6,
+      noPenawaran: 'PNW-006',
+      namaClient: 'PT Mega Proyek',
+      pic: 'Irfan Pratama',
+      namaSales: 'Budi Santoso',
+      jenisPekerjaan: 'Project Based',
+      lokasiKerja: 'Semarang',
+      terakhirUpdate: '10-01-2025',
+      statusPenawaran: 'Deal',
+      statusDokumen: 'Open'
+    },
+    {
+      id: '7',
+      no: 7,
+      noPenawaran: 'PNW-007',
+      namaClient: 'CV Nusantara Abadi',
+      pic: 'Siti Aminah',
+      namaSales: 'Dedi Kurniawan',
+      jenisPekerjaan: 'Maintenance',
+      lokasiKerja: 'Malang',
+      terakhirUpdate: '09-01-2025',
+      statusPenawaran: 'Cancel',
       statusDokumen: 'Close'
     }
   ]);
@@ -158,7 +184,7 @@ const PenawaranTenderDashboard: React.FC = () => {
         month: '2-digit',
         year: 'numeric'
       }),
-      statusPenawaran: 'Pending' as 'Deal' | 'Pending' | 'Cancel',
+      statusPenawaran: 'Minat' as 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel',
       statusDokumen: 'Open' as 'Open' | 'Close'
     };
 
@@ -205,7 +231,7 @@ const PenawaranTenderDashboard: React.FC = () => {
       setPenawaranTender(prev => 
         prev.map(item => 
           item.id === selectedItemForStatusUpdate.id 
-            ? { ...item, statusPenawaran: formData.status as 'Deal' | 'Pending' | 'Cancel' }
+            ? { ...item, statusPenawaran: formData.status as 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel' }
             : item
         )
       );
@@ -227,10 +253,27 @@ const PenawaranTenderDashboard: React.FC = () => {
 
   const getStatusPenawaranColor = (status: string) => {
     switch (status) {
+      case 'Minat': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Register': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'Pra-kualifikasi': return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'Evaluasi': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Tender': return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'Deal': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'Cancel': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusDotColor = (status: string) => {
+    switch (status) {
+      case 'Minat': return 'bg-blue-500';
+      case 'Register': return 'bg-indigo-500';
+      case 'Pra-kualifikasi': return 'bg-amber-500';
+      case 'Evaluasi': return 'bg-yellow-500';
+      case 'Tender': return 'bg-purple-500';
+      case 'Deal': return 'bg-green-500';
+      case 'Cancel': return 'bg-red-500';
+      default: return 'bg-gray-400';
     }
   };
 
@@ -242,7 +285,7 @@ const PenawaranTenderDashboard: React.FC = () => {
     }
   };
 
-  const statusPenawaranOptions = ['Deal', 'Pending', 'Cancel'];
+  const statusPenawaranOptions = ['Minat', 'Register', 'Pra-kualifikasi', 'Evaluasi', 'Tender', 'Deal', 'Cancel'];
   const jenisPekerjaanOptions = ['On Call', 'Project Based', 'Maintenance'];
 
   // Filter data based on search criteria
@@ -433,10 +476,7 @@ const PenawaranTenderDashboard: React.FC = () => {
                         }}
                         className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
                       >
-                        <span className={`w-3 h-3 rounded-full ${
-                          status === 'Deal' ? 'bg-green-500' : 
-                          status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500'
-                        }`}></span>
+                        <span className={`w-3 h-3 rounded-full ${getStatusDotColor(status)}`}></span>
                         <span>{status}</span>
                       </button>
                     ))}
@@ -512,19 +552,19 @@ const PenawaranTenderDashboard: React.FC = () => {
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No Penawaran</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Client</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">PIC</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Sales</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Jenis Pekerjaan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Lokasi Kerja</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Terakhir Update</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status Penawaran</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Aksi</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No Penawaran</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Client</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">PIC</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Sales</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jenis Pekerjaan</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Lokasi Kerja</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Terakhir Update</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Status Penawaran</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -539,7 +579,7 @@ const PenawaranTenderDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-1">
                       <div className="flex items-center space-x-3">
                         <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0">
                           <Info className="h-2 w-2 text-blue-600" />
@@ -547,49 +587,49 @@ const PenawaranTenderDashboard: React.FC = () => {
                         <span className="font-medium text-gray-900">{item.no}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{item.noPenawaran}</td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{item.namaClient}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.pic}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.namaSales}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.jenisPekerjaan}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.lokasiKerja}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.terakhirUpdate}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusPenawaranColor(item.statusPenawaran)}`}>
+                    <td className="px-2 py-1 font-medium text-gray-900">{item.noPenawaran}</td>
+                    <td className="px-2 py-1 font-medium text-gray-900">{item.namaClient}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.pic}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.namaSales}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.jenisPekerjaan}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.lokasiKerja}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.terakhirUpdate}</td>
+                    <td className="px-2 py-1">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusPenawaranColor(item.statusPenawaran)}`}>
                         {item.statusPenawaran}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-1">
                       <div className="flex items-center justify-center space-x-1">
                         <button 
                           onClick={() => handleViewDetail(item)}
-                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setIsModalOpen(true)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
+                          className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleUpdateStatus(item)}
-                          className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200 hover:scale-110"
                         >
                           <Settings className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleDeleteClick(item)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 hover:scale-110">
+                        <button className="p-1 text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 hover:scale-110">
                           <Printer className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => setIsHistoryModalOpen(true)}
-                          className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1 text-teal-600 hover:bg-teal-50 rounded-lg transition-all duration-200 hover:scale-110"
                         >
                           <Clock className="h-4 w-4" />
                         </button>
