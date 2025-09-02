@@ -87,21 +87,21 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
     <div className="bg-surface sticky top-[4.0rem] z-40 shadow-lg border-b border-border">
       <div className="max-w-7xl mx-auto">
         {/* Desktop Menu Bar */}
-        <div className="hidden md:flex items-center justify-start px-4 py-2.5 space-x-2">
+        <div className="hidden md:flex items-center justify-start px-3 py-1.5 space-x-1.5">
           {/* Main Dashboard */}
           <button
             onClick={handleMainDashboardClick}
-            className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md ${
               isMainDashboard
                 ? 'bg-primary text-white shadow-primary/30 ring-2 ring-blue-200/50'
                 : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border hover:border-primary/50'
             }`}
           >
             <div className={`p-0.5 rounded-md ${isMainDashboard ? 'bg-white/20' : 'bg-blue-100'}`}>
-              <LucideIcons.Home className="h-3.5 w-3.5" />
+              <LucideIcons.Home className="h-3 w-3" />
             </div>
             <span>Main Dashboard</span>
-            {isMainDashboard && <Zap className="h-2.5 w-2.5 text-yellow-300" />}
+            {isMainDashboard && <Zap className="h-2 w-2 text-yellow-300" />}
           </button>
 
           {/* Menu Section Items */}
@@ -109,18 +109,18 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
             <div key={section.title} className="relative">
               <button
                 onClick={() => toggleDropdown(section.title)}
-                className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md ${
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md ${
                   (activeDropdown === section.title || (section.directPath && currentPage === section.directPath) || (section.items && section.items.some(item => currentPage === item.path)) || isSectionWithSubSectionsActive(section))
                     ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-primary/30 ring-2 ring-blue-200/50'
                     : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border hover:border-primary/50'
                 }`}
               >
                 <div className={`p-0.5 rounded-md ${((activeDropdown === section.title || (section.directPath && currentPage === section.directPath) || (section.items && section.items.some(item => currentPage === item.path)) || isSectionWithSubSectionsActive(section))) ? 'bg-white/20' : 'bg-blue-100/80'}`}>
-                  <div className="h-3.5 w-3.5">{getIconComponent(section.icon)}</div>
+                  <div className="h-3 w-3">{getIconComponent(section.icon)}</div>
                 </div>
                 <span>{section.title}</span>
                 {!section.directPath && (
-                  <ChevronDown className={`h-3 w-3 transition-transform duration-300 ease-in-out ${
+                  <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-300 ease-in-out ${
                     activeDropdown === section.title ? 'rotate-180' : ''
                   }`} />
                 )}
@@ -133,15 +133,15 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                   section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
                 }`}>
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'py-2' : 'py-3'}>
+                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'py-1.5' : 'py-2'}>
                     {section.subSections && section.subSections.length > 0 ? (
                       // New layout for General menu with sub-sections
                       <div className="space-y-1">
                         {section.subSections.map((subSection) => (
-                          <div key={subSection.title} className="px-3 py-2">
+                          <div key={subSection.title} className="px-2.5 py-1.5">
                             <div className="flex items-center space-x-2 mb-2">
                               <div className="p-1 rounded-md bg-blue-100">
-                                <div className="h-3 w-3">{getIconComponent(subSection.icon)}</div>
+                                <div className="h-2.5 w-2.5">{getIconComponent(subSection.icon)}</div>
                               </div>
                               <span className="text-xs font-semibold text-text uppercase tracking-wide">{subSection.title}</span>
                             </div>
@@ -150,18 +150,18 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                                 <button
                                   key={item.path}
                                   onClick={() => handleItemClick(item.path)}
-                                  className={`w-full flex items-center space-x-2 px-3 py-2 text-left transition-all duration-300 ease-in-out hover:bg-primary/5 hover:translate-x-1 transform group rounded-lg ${
+                                  className={`w-full flex items-center space-x-2 px-2.5 py-1.5 text-left transition-all duration-300 ease-in-out hover:bg-primary/5 hover:translate-x-1 transform group rounded-lg ${
                                     currentPage === item.path
                                       ? 'bg-primary/5 text-primary border-r-2 border-primary font-semibold shadow-sm'
                                       : 'text-text hover:text-primary'
                                   }`}
                                 >
-                                  <div className={`p-1 rounded-md transition-all duration-300 group-hover:scale-110 ${
+                                  <div className={`p-0.5 rounded-md transition-all duration-300 group-hover:scale-110 ${
                                     currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100 shadow-sm' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
                                   }`}>
-                                    <div className="h-3 w-3">{getIconComponent(item.icon)}</div>
+                                    <div className="h-2.5 w-2.5">{getIconComponent(item.icon)}</div>
                                   </div>
-                                  <span className="text-xs font-medium">{item.title}</span>
+                                  <span className="text-[11px] font-medium">{item.title}</span>
                                 </button>
                               ))}
                             </div>
@@ -175,18 +175,18 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                           <button
                             key={item.path}
                             onClick={() => handleItemClick(item.path)}
-                            className={`w-full flex items-center space-x-2 px-3 py-2 text-left transition-all duration-300 ease-in-out hover:bg-primary/5 hover:translate-x-1 transform group rounded-lg ${
+                            className={`w-full flex items-center space-x-2 px-2.5 py-1.5 text-left transition-all duration-300 ease-in-out hover:bg-primary/5 hover:translate-x-1 transform group rounded-lg ${
                               currentPage === item.path
                                 ? 'bg-primary/5 text-primary border-r-2 border-primary font-semibold shadow-sm'
                                 : 'text-text hover:text-primary'
                             }`}
                           >
-                            <div className={`p-1 rounded-md transition-all duration-300 group-hover:scale-110 ${
+                            <div className={`p-0.5 rounded-md transition-all duration-300 group-hover:scale-110 ${
                               currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100 shadow-sm' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
                             }`}>
-                              <div className="h-3 w-3">{getIconComponent(item.icon)}</div>
+                              <div className="h-2.5 w-2.5">{getIconComponent(item.icon)}</div>
                             </div>
-                            <span className="text-xs font-medium">{item.title}</span>
+                            <span className="text-[11px] font-medium">{item.title}</span>
                           </button>
                         ))}
                       </div>
@@ -196,27 +196,27 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       <button
                         key={item.path}
                         onClick={() => handleItemClick(item.path)}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-300 ease-in-out hover:bg-primary/5 hover:translate-x-1 transform group ${
+                        className={`w-full flex items-center space-x-2.5 px-3 py-2 text-left transition-all duration-300 ease-in-out hover:bg-primary/5 hover:translate-x-1 transform group ${
                           currentPage === item.path
                             ? 'bg-primary/5 text-primary border-r-3 border-primary font-semibold shadow-sm'
                             : 'text-text hover:text-primary'
                         }`}
                       >
-                        <div className={`p-1.5 rounded-lg transition-all duration-300 group-hover:scale-110 ${
+                        <div className={`p-1 rounded-lg transition-all duration-300 group-hover:scale-110 ${
                           currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100 shadow-sm' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
                         }`}>
-                          <div className="h-3.5 w-3.5">{getIconComponent(item.icon)}</div>
+                          <div className="h-3 w-3">{getIconComponent(item.icon)}</div>
                         </div>
                         <div className="flex-1">
-                          <span className="font-medium text-sm">{item.title}</span>
+                          <span className="font-medium text-xs">{item.title}</span>
                           {currentPage === item.path && (
                             <div className="flex items-center space-x-1 mt-0.5">
-                              <div className="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                              <div className="h-1 w-1 bg-primary rounded-full"></div>
                               <span className="text-xs text-primary font-medium">Active</span>
                             </div>
                           )}
                         </div>
-                        {currentPage === item.path && <Zap className="h-2.5 w-2.5 text-primary" />}
+                        {currentPage === item.path && <Zap className="h-2 w-2 text-primary" />}
                       </button>
                     ))
                     )}
@@ -228,11 +228,11 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
         </div>
 
         {/* Mobile Menu */}
-        <div className="md:hidden bg-surface px-4 py-3 border-t border-border">
+        <div className="md:hidden bg-surface px-3 py-2 border-t border-border">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={handleMainDashboardClick}
-              className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 transform shadow-sm ${
+              className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 transform shadow-sm ${
                 isMainDashboard
                   ? 'bg-primary text-white shadow-primary/30'
                   : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border'
@@ -248,7 +248,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
               <button
                 key={section.title}
                 onClick={() => toggleDropdown(section.title)}
-                className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 transform shadow-sm ${
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 transform shadow-sm ${
                   (activeDropdown === section.title || (section.directPath && currentPage === section.directPath) || (section.items && section.items.some(item => currentPage === item.path)) || isSectionWithSubSectionsActive(section))
                     ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-primary/30'
                     : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border'
@@ -269,19 +269,19 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
 
           {/* Mobile Dropdown */}
           {activeDropdown && !menuSections.find(s => s.title === activeDropdown)?.directPath && (menuSections.find(s => s.title === activeDropdown)?.items?.length > 0 || menuSections.find(s => s.title === activeDropdown)?.subSections?.length > 0) && (
-            <div className={`mt-3 bg-surface rounded-2xl shadow-2xl border border-border animate-in slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
+            <div className={`mt-2.5 bg-surface rounded-2xl shadow-2xl border border-border animate-in slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
               activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR' ? 'max-h-96 overflow-y-auto' : ''
             }`}>
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-              <div className="py-2">
+              <div className="py-1.5">
                 {menuSections.find(s => s.title === activeDropdown)?.subSections && menuSections.find(s => s.title === activeDropdown)?.subSections?.length > 0 ? (
                   // New mobile layout for General menu with sub-sections
                   <div className="space-y-3">
                     {menuSections.find(s => s.title === activeDropdown)?.subSections?.map((subSection) => (
-                      <div className="px-4 py-2" key={subSection.title}>
+                      <div className="px-3 py-1.5" key={subSection.title}>
                         <div className="flex items-center space-x-2 mb-2">
                           <div className="p-1 rounded-md bg-blue-100">
-                            <div className="h-3 w-3">{getIconComponent(subSection.icon)}</div>
+                            <div className="h-2.5 w-2.5">{getIconComponent(subSection.icon)}</div>
                           </div>
                           <span className="text-xs font-semibold text-text uppercase tracking-wide">{subSection.title}</span>
                         </div>
@@ -290,13 +290,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                             <button
                               key={item.path}
                               onClick={() => handleItemClick(item.path)}
-                              className={`w-full flex items-center space-x-2 px-3 py-2 text-left transition-all duration-300 ease-in-out group rounded-lg ${
+                              className={`w-full flex items-center space-x-2 px-2.5 py-1.5 text-left transition-all duration-300 ease-in-out group rounded-lg ${
                                 currentPage === item.path
                                   ? 'bg-primary/5 text-primary border-r-2 border-primary font-medium'
                                   : 'text-text hover:bg-gray-50 hover:text-primary'
                               }`}
                             >
-                              <div className={`p-1 rounded-lg transition-all duration-300 group-hover:scale-110 ${
+                              <div className={`p-0.5 rounded-lg transition-all duration-300 group-hover:scale-110 ${
                                 currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
                               }`}>
                                 <div className="h-2.5 w-2.5">{getIconComponent(item.icon)}</div>
@@ -312,16 +312,16 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                   // Special mobile layout for Finance Approval, Voucher, Gudang Pengembalian Barang and Stock Opname menus
                   <div className="space-y-3">
                     {menuSections.find(s => s.title === activeDropdown)?.items?.map((item) => (
-                      <div className="px-4 py-2" key={item.path}>
+                      <div className="px-3 py-1.5" key={item.path}>
                         <button
                           onClick={() => handleItemClick(item.path)}
-                          className={`w-full flex items-center space-x-2 px-3 py-2 text-left transition-all duration-300 ease-in-out group rounded-lg ${
+                          className={`w-full flex items-center space-x-2 px-2.5 py-1.5 text-left transition-all duration-300 ease-in-out group rounded-lg ${
                             currentPage === item.path
                               ? 'bg-primary/5 text-primary border-r-2 border-primary font-medium'
                               : 'text-text hover:bg-gray-50 hover:text-primary'
                           }`}
                         >
-                          <div className={`p-1 rounded-lg transition-all duration-300 group-hover:scale-110 ${
+                          <div className={`p-0.5 rounded-lg transition-all duration-300 group-hover:scale-110 ${
                             currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
                           }`}>
                             <div className="h-2.5 w-2.5">{getIconComponent(item.icon)}</div>
@@ -337,16 +337,16 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                   <button
                     key={item.path}
                     onClick={() => handleItemClick(item.path)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-300 ease-in-out group ${
+                    className={`w-full flex items-center space-x-2.5 px-3 py-2 text-left transition-all duration-300 ease-in-out group ${
                       currentPage === item.path
                         ? 'bg-primary/5 text-primary border-r-3 border-primary font-medium'
                         : 'text-text hover:bg-gray-50 hover:text-primary'
                     }`}
                   >
-                    <div className={`p-1.5 rounded-lg transition-all duration-300 group-hover:scale-110 ${
+                    <div className={`p-1 rounded-lg transition-all duration-300 group-hover:scale-110 ${
                       currentPage === item.path ? 'bg-gradient-to-br from-blue-100 to-purple-100' : 'bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100'
                     }`}>
-                      <div className="h-3 w-3">{getIconComponent(item.icon)}</div>
+                      <div className="h-2.5 w-2.5">{getIconComponent(item.icon)}</div>
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-xs">{item.title}</span>
