@@ -128,43 +128,15 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
   };
 
   const validateStep1 = (): boolean => {
-    const newErrors: Partial<PenawaranTwoStepFormData> = {};
-
-    if (!formData.noPenawaran.trim()) {
-      newErrors.noPenawaran = 'No Penawaran wajib diisi';
-    }
-    if (!formData.kategoriPajak) {
-      newErrors.kategoriPajak = 'Kategori Pajak wajib dipilih';
-    }
-    if (!formData.namaSales) {
-      newErrors.namaSales = 'Nama Sales wajib dipilih';
-    }
-    if (!formData.namaCustomer.trim()) {
-      newErrors.namaCustomer = 'Nama Customer wajib diisi';
-    }
-    if (!formData.tanggalPenawaran) {
-      newErrors.tanggalPenawaran = 'Tanggal Penawaran wajib diisi';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    // Validation disabled per request: allow proceeding without required checks
+    setErrors({});
+    return true;
   };
 
   const validateStep2 = (): boolean => {
-    const newErrors: Partial<PenawaranTwoStepFormData> = {};
-
-    if (!formData.nama.trim()) {
-      newErrors.nama = 'Nama wajib diisi';
-    }
-    if (!formData.alamat.trim()) {
-      newErrors.alamat = 'Alamat wajib diisi';
-    }
-    if (!formData.jenisPekerjaan) {
-      newErrors.jenisPekerjaan = 'Jenis Pekerjaan wajib dipilih';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    // Validation disabled per request
+    setErrors({});
+    return true;
   };
 
   const handleNext = () => {
@@ -179,10 +151,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateStep2()) {
-      return;
-    }
+    // Validation disabled
 
     setIsLoading(true);
     
@@ -301,121 +270,103 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
         <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
           <form onSubmit={handleSubmit} className="p-6">
             {currentStep === 1 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* No Penawaran */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    No Penawaran <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    No Penawaran
                   </label>
                   <input
                     type="text"
                     value={formData.noPenawaran}
                     onChange={(e) => handleInputChange('noPenawaran', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.noPenawaran ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     placeholder="Masukkan no penawaran"
                   />
-                  {errors.noPenawaran && (
-                    <p className="mt-1 text-sm text-red-600">{errors.noPenawaran}</p>
-                  )}
                 </div>
 
                 {/* Nama Sales */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nama Sales <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Nama Sales
                   </label>
                   <input
                     type="text"
                     value={formData.namaSales}
                     onChange={(e) => handleInputChange('namaSales', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="Masukkan Nama Sales"
                   />
-                  {errors.namaSales && (
-                    <p className="mt-1 text-sm text-red-600">{errors.namaSales}</p>
-                  )}
                 </div>
 
                 {/* Kategori Pajak */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kategori Pajak <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Kategori Pajak
                   </label>
                   <select
                     value={formData.kategoriPajak}
                     onChange={(e) => handleInputChange('kategoriPajak', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.kategoriPajak ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                   >
                     <option value="">Pilih Kategori Pajak</option>
                     {kategoriPajakOptions.map((option) => (
                       <option key={option} value={option}>{option}</option>
                     ))}
                   </select>
-                  {errors.kategoriPajak && (
-                    <p className="mt-1 text-sm text-red-600">{errors.kategoriPajak}</p>
-                  )}
                 </div>
 
                 {/* No. Ref Req */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    No. Ref Req <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    No. Ref Req
                   </label>
                   <input
                     type="text"
                     value={formData.noRefReq}
                     onChange={(e) => handleInputChange('noRefReq', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="Masukkan no ref req"
                   />
                 </div>
 
                 {/* Kode Customer */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kode Customer <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Kode Customer
                   </label>
                   <input
                     type="text"
                     value={formData.kodeCustomer}
                     onChange={(e) => handleInputChange('kodeCustomer', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="Masukkan kode customer"
                   />
                 </div>
 
                 {/* Nama Customer */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nama Customer <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Nama Customer
                   </label>
                   <input
                     type="text"
                     value={formData.namaCustomer}
                     onChange={(e) => handleInputChange('namaCustomer', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.namaCustomer ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     placeholder="Masukkan nama customer"
                   />
-                  {errors.namaCustomer && (
-                    <p className="mt-1 text-sm text-red-600">{errors.namaCustomer}</p>
-                  )}
                 </div>
 
                 {/* Pajak */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Pajak <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Pajak
                   </label>
                   <select
                     value={formData.pajak}
                     onChange={(e) => handleInputChange('pajak', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   >
                     <option value="">Pilih Pajak</option>
                     {pajakOptions.map((option) => (
@@ -426,38 +377,36 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
 
                 {/* Tanggal Kirim */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Kirim <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tanggal Kirim
                   </label>
                   <div className="relative">
                     <input
                       type="date"
                       value={formData.tanggalKirim}
                       onChange={(e) => handleInputChange('tanggalKirim', e.target.value)}
-                      className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     />
-                    <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Tanggal Penawaran */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Penawaran <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tanggal Penawaran
                   </label>
-                  <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center"> {/* Adjusted grid for better alignment */}
+                  <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
                     <div className="relative">
                       <input
                         type="date"
                         value={formData.tanggalPenawaran}
                         onChange={(e) => handleInputChange('tanggalPenawaran', e.target.value)}
-                        className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.tanggalPenawaran ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                        }`}
+                        className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                       />
-                      <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                     </div>
-                    <div className="text-center text-gray-500 font-medium text-sm"> {/* Styled "S/d" */}
+                    <div className="text-center text-gray-500 font-medium text-xs">
                       <span>S/d</span>
                     </div>
                     <div className="relative">
@@ -465,99 +414,86 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                         type="date"
                         value={formData.tanggalPenawaranEnd}
                         onChange={(e) => handleInputChange('tanggalPenawaranEnd', e.target.value)}
-                        className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                       />
-                      <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
-                  {errors.tanggalPenawaran && (
-                    <p className="mt-1 text-sm text-red-600">{errors.tanggalPenawaran}</p>
-                  )}
                 </div>
 
                 {/* Tanggal Follow up */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Follow up <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tanggal Follow up
                   </label>
                   <div className="relative">
                     <input
                       type="date"
                       value={formData.tanggalFollowUp}
                       onChange={(e) => handleInputChange('tanggalFollowUp', e.target.value)}
-                      className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     />
-                    <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
               </div>
             )}
 
             {currentStep === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Nama */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nama <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Nama
                     </label>
                     <input
                       type="text"
                       value={formData.nama}
                       onChange={(e) => handleInputChange('nama', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                        errors.nama ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                       placeholder="Masukkan nama"
                     />
-                    {errors.nama && (
-                      <p className="mt-1 text-sm text-red-600">{errors.nama}</p>
-                    )}
                   </div>
 
                   {/* Perusahaan */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Perusahaan <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Perusahaan
                     </label>
                     <input
                       type="text"
                       value={formData.perusahaan}
                       onChange={(e) => handleInputChange('perusahaan', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                       placeholder="Masukkan nama perusahaan"
                     />
                   </div>
 
                   {/* Alamat */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Alamat <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Alamat
                     </label>
                     <textarea
                       value={formData.alamat}
                       onChange={(e) => handleInputChange('alamat', e.target.value)}
                       rows={3}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${
-                        errors.alamat ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-xs border-gray-200`}
                       placeholder="Masukkan alamat"
                     />
-                    {errors.alamat && (
-                      <p className="mt-1 text-sm text-red-600">{errors.alamat}</p>
-                    )}
                   </div>
 
                   {/* Jenis Penawaran */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Jenis Penawaran <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Jenis Penawaran
                     </label>
                     <select
                       value={formData.jenisPenawaran}
                       onChange={(e) => handleInputChange('jenisPenawaran', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     >
                       <option value="">Pilih Jenis Penawaran</option>
                       {jenisPenawaranOptions.map((option) => (
@@ -568,75 +504,63 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
 
                   {/* Jenis Pekerjaan */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Jenis Pekerjaan <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Jenis Pekerjaan
                     </label>
                     <select
                       value={formData.jenisPekerjaan}
                       onChange={(e) => handleInputChange('jenisPekerjaan', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                        errors.jenisPekerjaan ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     >
                       <option value="">Pilih Jenis Pekerjaan</option>
                       {jenisPekerjaanOptions.map((option) => (
                         <option key={option} value={option}>{option}</option>
                       ))}
                     </select>
-                    {errors.jenisPekerjaan && (
-                      <p className="mt-1 text-sm text-red-600">{errors.jenisPekerjaan}</p>
-                    )}
                   </div>
                 </div>
 
                 {/* Term & Condition */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Term & Condition <span className="text-red-500">*</span>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Term & Condition
                   </label>
-                  <div className="border border-gray-200 rounded-xl p-4 bg-gray-50 min-h-[200px]">
+                  <div className="border border-gray-200 rounded-xl p-3 bg-gray-50 min-h-[200px]">
      <Editor
       apiKey='oevuvo9pv4lces7pexy2lbdy5khujbg9jz6i278knnmj5f5i'
       init={{
+        // Keep only essential, lightweight plugins to speed up load
         plugins: [
-          // Core editing features
-          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-          // Your account includes a free trial of TinyMCE premium features
-          // Try the most popular premium features until Sep 2, 2025:
-          'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+          'autolink', 'lists', 'link', 'table', 'charmap', 'searchreplace', 'visualblocks', 'wordcount'
         ],
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-        tinycomments_mode: 'embedded',
-        tinycomments_author: 'Author name',
-        mergetags_list: [
-          { value: 'First.Name', title: 'First Name' },
-          { value: 'Email', title: 'Email' },
-        ],
-        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-        uploadcare_public_key: 'a973eb38c95cb97f9bd3',
+        toolbar: 'undo redo | bold italic underline | numlist bullist outdent indent | link table | removeformat',
+        menubar: false,
+        statusbar: false,
+        branding: false,
+        content_style: 'body{font-size:12px; line-height:1.4; margin:0;} ol,ul{margin:0 0 0.5rem 1.25rem; padding:0;} li{margin:0.15rem 0;}',
       }}
       initialValue="
-      1. Price above excluded VAT 11%.
-		2. Term of payment must be pay DP Rp. 35.000.000,- (for 250 Sheet) before the work is carried out.
-		3. The price above are excluded:
-		- Mob Demob Transport and Ticket From Jakarta to Site provided by client
-		- Hotel/Mess and Meals provided by client
-		- PCR/SWAB Mob Demob provided by client
-		- Working Permit are provided by client
-		- Local transportations are supplied by client
-		- Over baggage are provided by client
-		4. If any Quarantine manpower because Special situation will be charge 100% quarantine rate price and Hotel Meal
-Supplied by Client
-		5. Work will be start if SPK/WO/PO is received by PT. Gamma Buana Persada.
-		6. Working hours is 8 (eight) hours per day, overtime will be charge 100% from daily rates.
-		7. Stand by team and equipment caused by any delays schedule or non-productive time caused by other operations of
-circumstances out of the control of PT. Gamma Buana Persada (including weather) will be charge 50% daily rate price.
-		8. Work instruction or client specification, scaffolding electrical and lighting, safety tools for high risk work, dark room
-facility, bunker/boom feet facility supplied by client.
-		9. Starting time sheet counted when our equipment and technician go from PT. Gamma Buana Persada and go back to
-PT. Gamma Buana Persada.
-		10. This quotation is valid for one (1) week from the date of quotation.
-
+<ol>
+  <li>Price above excluded VAT 11%.</li>
+  <li>Term of payment must be pay DP Rp. 35.000.000,- (for 250 Sheet) before the work is carried out.</li>
+  <li>The price above are excluded:
+    <ul>
+      <li>Mob Demob Transport and Ticket From Jakarta to Site provided by client</li>
+      <li>Hotel/Mess and Meals provided by client</li>
+      <li>PCR/SWAB Mob Demob provided by client</li>
+      <li>Working Permit are provided by client</li>
+      <li>Local transportations are supplied by client</li>
+      <li>Over baggage are provided by client</li>
+    </ul>
+  </li>
+  <li>If any Quarantine manpower because special situation will be charged 100% quarantine rate price and Hotel Meal supplied by Client.</li>
+  <li>Work will be start if SPK/WO/PO is received by PT. Gamma Buana Persada.</li>
+  <li>Working hours is 8 (eight) hours per day, overtime will be charged 100% from daily rates.</li>
+  <li>Stand by team and equipment caused by any delays schedule or non-productive time caused by other operations or circumstances out of the control of PT. Gamma Buana Persada (including weather) will be charged 50% daily rate price.</li>
+  <li>Work instruction or client specification, scaffolding, electrical and lighting, safety tools for high risk work, dark room facility, bunker/boom feet facility supplied by client.</li>
+  <li>Starting timesheet counted when our equipment and technician go from and return to PT. Gamma Buana Persada.</li>
+  <li>This quotation is valid for one (1) week from the date of quotation.</li>
+</ol>
       "
     />
                   </div>
@@ -644,8 +568,8 @@ PT. Gamma Buana Persada.
 
                 {/* Supply Table */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-xs font-medium text-gray-700">
                       Supply
                     </label>
                   </div>
@@ -654,67 +578,67 @@ PT. Gamma Buana Persada.
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Item</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Description</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">QTY</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Unit Price</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total Price</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Item</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Description</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">QTY</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Unit Price</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Total Price</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {formData.supplies.map((supply, index) => (
                           <tr key={index}>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <input
                                 type="text"
                                 value={supply.item}
                                 onChange={(e) => handleSupplyChange(index, 'item', e.target.value)}
-                                className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
+                                className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Item"
                               />
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <input
                                 type="text"
                                 value={supply.description}
                                 onChange={(e) => handleSupplyChange(index, 'description', e.target.value)}
-                                className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
+                                className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Description"
                               />
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <input
                                 type="number"
                                 value={supply.qty}
                                 onChange={(e) => handleSupplyChange(index, 'qty', e.target.value)}
-                                className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
+                                className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Qty"
                               />
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <input
                                 type="number"
                                 value={supply.unitPrice}
                                 onChange={(e) => handleSupplyChange(index, 'unitPrice', e.target.value)}
-                                className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
+                                className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Unit Price"
                               />
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <input
                                 type="text"
                                 value={supply.totalPrice}
                                 readOnly
-                                className="w-full px-2 py-1 border border-gray-200 rounded text-sm bg-gray-50"
+                                className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                                 placeholder="Total Price"
                               />
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-2">
                               <button
                                 type="button"
                                 onClick={() => removeSupply(index)}
-                                className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+                                className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 transition-colors"
                                 disabled={formData.supplies.length === 1}
                               >
                                 Remove
@@ -730,7 +654,7 @@ PT. Gamma Buana Persada.
                                         <button
                       type="button"
                       onClick={addSupply}
-                      className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                      className="px-2.5 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       Add Supply
                     </button>

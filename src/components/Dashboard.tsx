@@ -70,6 +70,7 @@ import ARDashboard from './ARDashboard';
 import ProsesPembayaranARDashboard from './ProsesPembayaranARDashboard';
 import LaporanARDashboard from './LaporanARDashboard';
 import FinancePembayaranGajiPage from './FinancePembayaranGajiPage';
+import ReportKontrakDashboard from './ReportKontrakDashboard';
 
 // Gudang Dashboards
 import MasterBarangDashboard from './MasterBarangDashboard';
@@ -536,6 +537,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/marketing/sales-order/dashboard') {
       return <SalesOrderDashboard />;
+    }
+    if (currentPage === '/marketing/report-kontrak') {
+      return <ReportKontrakDashboard />;
     }
     // Marketing General Routes
     if (currentPage === '/marketing/general/kpi/dashboard') {
