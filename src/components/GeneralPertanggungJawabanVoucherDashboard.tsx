@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Search, CalendarDays, FileText, FileSpreadsheet, FileDown } from 'lucide-react';
 import PertanggungJawabanEntryModal from './PertanggungJawabanEntryModal'; // Import the new modal
-import { VoucherEntry } from '../types'; // Only import VoucherEntry
+import { VoucherEntry, PTJDetailItem } from '../types'; // Only import VoucherEntry
+import PTJDetailModal from './PTJDetailModal';
 
 const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState<VoucherEntry | null>(null); // Change type to VoucherEntry | null
+  const [isPTJModalOpen, setIsPTJModalOpen] = useState(false);
+  const [ptjDetails, setPtjDetails] = useState<PTJDetailItem[]>([]);
 
   const voucherData: VoucherEntry[] = [
     {
@@ -21,6 +24,11 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
       tglLaporanExpense: '30-01-2025',
       nominal: 'Rp 20,000,000',
       keterangan: 'Tugas Luar Kota',
+      ptjNominal: 'Rp 5,000,000',
+      ptjDetails: [
+        { deskripsi: 'Transport', nominal: 3000000 },
+        { deskripsi: 'Makan', nominal: 2000000 },
+      ],
     },
     {
       no: 2,
@@ -35,6 +43,11 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
       tglLaporanExpense: '30-01-2025',
       nominal: 'Rp 25,000,000',
       keterangan: 'Tugas Luar Kota',
+      ptjNominal: 'Rp 12,000,000',
+      ptjDetails: [
+        { deskripsi: 'Hotel', nominal: 7000000 },
+        { deskripsi: 'BBM', nominal: 5000000 },
+      ],
     },
     {
       no: 3,
@@ -49,6 +62,8 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
       tglLaporanExpense: '05-03-2025',
       nominal: 'Rp 15,000,000',
       keterangan: 'Perjalanan Dinas ke Site',
+      ptjNominal: 'Rp 0',
+      ptjDetails: [],
     },
     {
       no: 4,
@@ -104,73 +119,92 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
     setSelectedVoucher(null);
   };
 
+  const parseCurrency = (val: string | undefined): number => {
+    if (!val) return 0;
+    return parseInt(val.replace(/[^0-9]/g, '') || '0', 10);
+  };
+
+  const formatCurrency = (num: number): string => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+  };
+
+  const handleOpenPTJ = (entry: VoucherEntry) => {
+    setPtjDetails(entry.ptjDetails || []);
+    setIsPTJModalOpen(true);
+  };
+
+  const handleClosePTJ = () => {
+    setIsPTJModalOpen(false);
+    setPtjDetails([]);
+  };
+
   return (
     <div className="min-h-screen bg-background text-text p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <h1 className="text-4xl font-bold text-text mb-8">Pertanggung Jawaban Voucher</h1>
+        <h1 className="text-2xl font-semibold text-text mb-4">Pertanggung Jawaban Voucher</h1>
 
         {/* Filter Section */}
-        <div className="bg-surface rounded-2xl shadow-lg border border-border p-8 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div className="bg-surface rounded-2xl shadow-lg border border-border p-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
             {/* Cari No Voucher */}
             <div>
-              <label htmlFor="noVoucher" className="block text-sm font-medium text-textSecondary mb-2">Cari No Voucher</label>
+              <label htmlFor="noVoucher" className="block text-xs font-medium text-textSecondary mb-1">Cari No Voucher</label>
               <div className="relative">
                 <input
                   type="text"
                   id="noVoucher"
-                  className="w-full px-4 py-2 pr-10 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                  className="w-full px-3 py-1.5 pr-8 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
                   placeholder="VCH001"
                 />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-textSecondary" />
+                <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary" />
               </div>
             </div>
             {/* Cari No SO */}
             <div>
-              <label htmlFor="noSO" className="block text-sm font-medium text-textSecondary mb-2">Cari No SO</label>
+              <label htmlFor="noSO" className="block text-xs font-medium text-textSecondary mb-1">Cari No SO</label>
               <div className="relative">
                 <input
                   type="text"
                   id="noSO"
-                  className="w-full px-4 py-2 pr-10 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                  className="w-full px-3 py-1.5 pr-8 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
                   placeholder="SO001"
                 />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-textSecondary" />
+                <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary" />
               </div>
             </div>
             {/* Cari No SO Turunan */}
             <div>
-              <label htmlFor="noSOTurunan" className="block text-sm font-medium text-textSecondary mb-2">Cari No SO Turunan</label>
+              <label htmlFor="noSOTurunan" className="block text-xs font-medium text-textSecondary mb-1">Cari No SO Turunan</label>
               <div className="relative">
                 <input
                   type="text"
                   id="noSOTurunan"
-                  className="w-full px-4 py-2 pr-10 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                  className="w-full px-3 py-1.5 pr-8 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
                   placeholder="SO001.12"
                 />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-textSecondary" />
+                <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary" />
               </div>
             </div>
             {/* Cari Nama Project */}
             <div>
-              <label htmlFor="namaProject" className="block text-sm font-medium text-textSecondary mb-2">Cari Nama Project</label>
+              <label htmlFor="namaProject" className="block text-xs font-medium text-textSecondary mb-1">Cari Nama Project</label>
               <div className="relative">
                 <input
                   type="text"
                   id="namaProject"
-                  className="w-full px-4 py-2 pr-10 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                  className="w-full px-3 py-1.5 pr-8 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
                   placeholder="Proyek Medco"
                 />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-textSecondary" />
+                <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary" />
               </div>
             </div>
             {/* Cari Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-textSecondary mb-2">Cari Status</label>
+              <label htmlFor="status" className="block text-xs font-medium text-textSecondary mb-1">Cari Status</label>
               <select
                 id="status"
-                className="w-full px-4 py-2 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                className="w-full px-3 py-1.5 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
               >
                 <option>--Pilih Status--</option>
                 <option>Approved</option>
@@ -181,58 +215,58 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
           </div>
 
           {/* Periode and Search Button */}
-          <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col md:flex-row items-end md:items-center gap-3">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="periodeStart" className="block text-sm font-medium text-textSecondary mb-2">Periode</label>
+                <label htmlFor="periodeStart" className="block text-xs font-medium text-textSecondary mb-1">Periode</label>
                 <div className="relative">
                   <input
                     type="text"
                     id="periodeStart"
-                    className="w-full px-4 py-2 pr-10 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                    className="w-full px-3 py-1.5 pr-8 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
                     placeholder="03/03/2025"
                   />
-                  <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-textSecondary pointer-events-none" />
+                  <CalendarDays className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary pointer-events-none" />
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-textSecondary text-sm md:mt-8">s.d</span>
+                <span className="text-textSecondary text-xs md:mt-7">s.d</span>
                 <div className="relative flex-1">
                   <input
                     type="text"
                     id="periodeEnd"
-                    className="w-full px-4 py-2 pr-10 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-text bg-background"
+                    className="w-full px-3 py-1.5 pr-8 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
                     placeholder="03/03/2025"
                   />
-                  <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-textSecondary pointer-events-none" />
+                  <CalendarDays className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary pointer-events-none" />
                 </div>
               </div>
             </div>
-            <button className="px-6 py-2 bg-primary text-white font-medium rounded-xl shadow-md hover:bg-primary/80 transition-colors duration-300 w-full md:w-auto">
+            <button className="px-4 py-1.5 bg-primary text-white text-sm font-medium rounded-xl shadow-md hover:bg-primary/80 transition-colors duration-300 w-full md:w-auto">
               Search
             </button>
           </div>
         </div>
 
         {/* Export Buttons */}
-        <div className="flex justify-end space-x-3 mb-6">
-          <button className="inline-flex items-center px-4 py-2 bg-success text-white font-medium rounded-xl shadow-md hover:bg-success/80 transition-colors duration-300">
-            <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
+        <div className="flex justify-end space-x-2 mb-4">
+          <button className="inline-flex items-center px-3 py-1.5 bg-success text-white text-sm font-medium rounded-xl shadow-md hover:bg-success/80 transition-colors duration-300">
+            <FileSpreadsheet className="h-3 w-3 mr-2" /> Export Excel
           </button>
-          <button className="inline-flex items-center px-4 py-2 bg-secondary text-white font-medium rounded-xl shadow-md hover:bg-secondary/80 transition-colors duration-300">
-            <FileText className="h-4 w-4 mr-2" /> Export CSV
+          <button className="inline-flex items-center px-3 py-1.5 bg-secondary text-white text-sm font-medium rounded-xl shadow-md hover:bg-secondary/80 transition-colors duration-300">
+            <FileText className="h-3 w-3 mr-2" /> Export CSV
           </button>
-          <button className="inline-flex items-center px-4 py-2 bg-error text-white font-medium rounded-xl shadow-md hover:bg-error/80 transition-colors duration-300">
-            <FileDown className="h-4 w-4 mr-2" /> Export PDF
+          <button className="inline-flex items-center px-3 py-1.5 bg-error text-white text-sm font-medium rounded-xl shadow-md hover:bg-error/80 transition-colors duration-300">
+            <FileDown className="h-3 w-3 mr-2" /> Export PDF
           </button>
         </div>
 
         {/* Voucher Table */}
-        <div className="bg-surface rounded-2xl shadow-lg border border-border p-8">
+        <div className="bg-surface rounded-2xl shadow-lg border border-border p-4">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center space-x-2 text-textSecondary">
+            <div className="flex items-center space-x-2 text-textSecondary text-xs">
               <span>Show</span>
-              <select className="border border-border rounded-md px-2 py-1 text-sm bg-background text-text">
+              <select className="border border-border rounded-md px-2 py-1 text-xs bg-background text-text">
                 <option>10</option>
                 <option>25</option>
                 <option>50</option>
@@ -242,40 +276,48 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-surface rounded-xl shadow-sm border border-border">
+            <table className="min-w-full bg-surface rounded-xl shadow-sm border border-border whitespace-nowrap">
               <thead>
-                <tr className="bg-background border-b border-border text-textSecondary text-sm font-semibold uppercase tracking-wider">
-                  <th className="px-4 py-3 text-left">No <span className="text-primary">↑</span></th>
-                  <th className="px-4 py-3 text-left">No Voucher</th>
-                  <th className="px-4 py-3 text-left">No SO</th>
-                  <th className="px-4 py-3 text-left">No SO Turunan</th>
-                  <th className="px-4 py-3 text-left">Nama Project</th>
-                  <th className="px-4 py-3 text-left">Nama Pemohon</th>
-                  <th className="px-4 py-3 text-left">Tgl Pengajuan Voucher</th>
-                  <th className="px-4 py-3 text-left">Tgl Pembayaran Voucher</th>
-                  <th className="px-4 py-3 text-left">Tgl Expired</th>
-                  <th className="px-4 py-3 text-left">Tgl Laporan Expense</th>
-                  <th className="px-4 py-3 text-left">Nominal</th>
-                  <th className="px-4 py-3 text-left">Keterangan</th>
-                  <th className="px-4 py-3 text-left">Aksi</th> {/* New Action Column Header */}
+                <tr className="bg-background border-b border-border text-textSecondary text-xs font-semibold uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left">No <span className="text-primary">↑</span></th>
+                  <th className="px-3 py-2 text-left">No Voucher</th>
+                  <th className="px-3 py-2 text-left">No SO</th>
+                  <th className="px-3 py-2 text-left">No SO Turunan</th>
+                  <th className="px-3 py-2 text-left">Nama Project</th>
+                  <th className="px-3 py-2 text-left">Nama Pemohon</th>
+                  <th className="px-3 py-2 text-left">Tgl Pengajuan Voucher</th>
+                  <th className="px-3 py-2 text-left">Tgl Pembayaran Voucher</th>
+                  <th className="px-3 py-2 text-left">Tgl Expired</th>
+                  <th className="px-3 py-2 text-left">Tgl Laporan Expense</th>
+                  <th className="px-3 py-2 text-left">UM</th>
+                  <th className="px-3 py-2 text-left">PTJ</th>
+                  <th className="px-3 py-2 text-left">Sisa</th>
+                  <th className="px-3 py-2 text-left">Keterangan</th>
+                  <th className="px-3 py-2 text-left">Aksi</th> {/* New Action Column Header */}
                 </tr>
               </thead>
               <tbody>
                 {voucherData.map((entry) => (
                   <tr key={entry.no} className="border-b border-border last:border-b-0 hover:bg-background transition-colors duration-150">
-                    <td className="px-4 py-3 text-sm text-text">{entry.no}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.noVoucher}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.noSOTurunan}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.namaProject}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.namaPemohon}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.tglPengajuanVoucher}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.tglPembayaranVoucher}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.tglExpired}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.tglLaporanExpense}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.nominal}</td>
-                    <td className="px-4 py-3 text-sm text-text">{entry.keterangan}</td>
-                    <td className="px-4 py-3 text-sm text-text">
+                    <td className="px-3 py-2 text-xs text-text">{entry.no}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.noVoucher}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.noSO}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.noSOTurunan}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.namaProject}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.namaPemohon}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.tglPengajuanVoucher}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.tglPembayaranVoucher}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.tglExpired}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.tglLaporanExpense}</td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.nominal}</td>
+                    <td className="px-3 py-2 text-xs text-primary underline cursor-pointer" onClick={() => handleOpenPTJ(entry)}>
+                      {entry.ptjNominal ?? 'Rp 0'}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {formatCurrency(Math.max(parseCurrency(entry.nominal) - parseCurrency(entry.ptjNominal), 0))}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">{entry.keterangan}</td>
+                    <td className="px-3 py-2 text-xs text-text">
                       <button
                         onClick={() => handleViewDetail(entry)}
                         className="px-3 py-1 bg-primary text-white rounded-lg text-xs hover:bg-primary/80 transition-colors duration-200"
@@ -290,12 +332,12 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-between items-center mt-6 text-sm text-textSecondary">
+          <div className="flex justify-between items-center mt-4 text-xs text-textSecondary">
             <span>Showing 1 to {voucherData.length} of {voucherData.length} entries</span>
             <div className="flex space-x-2">
-              <button className="px-4 py-2 border border-border rounded-xl hover:bg-background transition-colors duration-200">Previous</button>
-              <button className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/80 transition-colors duration-200">1</button>
-              <button className="px-4 py-2 border border-border rounded-xl hover:bg-background transition-colors duration-200">Next</button>
+              <button className="px-3 py-1.5 border border-border rounded-xl hover:bg-background transition-colors duration-200">Previous</button>
+              <button className="px-3 py-1.5 bg-primary text-white rounded-xl hover:bg-primary/80 transition-colors duration-200">1</button>
+              <button className="px-3 py-1.5 border border-border rounded-xl hover:bg-background transition-colors duration-200">Next</button>
             </div>
           </div>
         </div>
@@ -306,6 +348,13 @@ const GeneralPertanggungJawabanVoucherDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         voucherData={selectedVoucher}
+      />
+
+      <PTJDetailModal
+        isOpen={isPTJModalOpen}
+        onClose={handleClosePTJ}
+        details={ptjDetails}
+        title="Detail Pertanggungjawaban"
       />
     </div>
   );

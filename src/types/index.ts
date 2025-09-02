@@ -1,3 +1,8 @@
+export interface PTJDetailItem {
+  deskripsi: string;
+  nominal: number;
+}
+
 export interface VoucherEntry {
   no: number;
   noVoucher: string;
@@ -11,6 +16,8 @@ export interface VoucherEntry {
   tglLaporanExpense: string;
   nominal: string;
   keterangan: string;
+  ptjNominal?: string; // e.g. "Rp 5,000,000"
+  ptjDetails?: PTJDetailItem[];
 }
 
 export interface ReimburseDetailItem {
