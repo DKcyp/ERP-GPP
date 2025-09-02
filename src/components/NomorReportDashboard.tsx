@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Search, PlusCircle, Download, Clock, FileText } from 'lucide-react';
+import { Search, PlusCircle, Download, Clock, FileText, Pencil, Trash2, X } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface ReportRecord {
   jenis: string; // Jenis Report
@@ -32,13 +33,21 @@ const NomorReportDashboard: React.FC = () => {
   const [filterJenis, setFilterJenis] = useState('');
   const [showEntries, setShowEntries] = useState<string>('10');
 
+  // Data & UI state
+  const [data, setData] = useState<ReportRecord[]>(sampleData);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<ReportRecord | null>(null);
+  const [form, setForm] = useState<ReportRecord>({ jenis: '', nomor: '', tanggal: '', document: '' });
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ReportRecord | null>(null);
+
   const filtered = useMemo(() => {
-    return sampleData.filter((row) => {
+    return data.filter((row) => {
       const byNomor = row.nomor.toLowerCase().includes(searchNomor.toLowerCase());
       const byJenis = filterJenis ? row.jenis === filterJenis : true;
       return byNomor && byJenis;
     });
-  }, [searchNomor, filterJenis]);
+  }, [searchNomor, filterJenis, data]);
 
   const displayed = useMemo(() => {
     const limit = parseInt(showEntries, 10);
@@ -46,7 +55,58 @@ const NomorReportDashboard: React.FC = () => {
   }, [filtered, showEntries]);
 
   const handleSearch = () => alert(`Cari: ${searchNomor || '-'} | Jenis: ${filterJenis || 'Semua'}`);
-  const handleAdd = () => alert('Tambah Nomor Report');
+  // Add/Edit/Delete handlers
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ jenis: '', nomor: '', tanggal: '', document: '' });
+    setShowForm(true);
+  };
+
+  const openEdit = (row: ReportRecord) => {
+    setEditing(row);
+    setForm(row);
+    setShowForm(true);
+  };
+
+  const saveForm = () => {
+    const payload: ReportRecord = {
+      jenis: form.jenis.trim(),
+      nomor: form.nomor.trim(),
+      tanggal: form.tanggal,
+      document: form.document?.trim() || undefined,
+    };
+    if (!payload.jenis || !payload.nomor || !payload.tanggal) {
+      alert('Jenis, Nomor, dan Tanggal wajib diisi');
+      return;
+    }
+    if (isNaN(new Date(payload.tanggal).getTime())) {
+      alert('Format tanggal tidak valid');
+      return;
+    }
+    if (editing) {
+      setData(prev => prev.map(r => (
+        r.jenis === editing.jenis && r.nomor === editing.nomor && r.tanggal === editing.tanggal && r.document === editing.document
+          ? payload
+          : r
+      )));
+    } else {
+      setData(prev => [payload, ...prev]);
+    }
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const askDelete = (row: ReportRecord) => {
+    setDeleteTarget(row);
+    setShowDelete(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    setData(prev => prev.filter(r => !(r.jenis === deleteTarget.jenis && r.nomor === deleteTarget.nomor && r.tanggal === deleteTarget.tanggal && r.document === deleteTarget.document)));
+    setShowDelete(false);
+    setDeleteTarget(null);
+  };
   const handleExport = (type: string) => alert(`Export ${type}`);
   const handleOpenDoc = (doc?: string) => alert(doc ? `Buka dokumen: ${doc}` : 'Dokumen belum tersedia');
 
@@ -113,7 +173,7 @@ const NomorReportDashboard: React.FC = () => {
 
           <div className="flex justify-end space-x-3">
             <button
-              onClick={handleAdd}
+              onClick={openAdd}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah Report
@@ -175,6 +235,7 @@ const NomorReportDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor Report</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document</th>
+                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -191,17 +252,106 @@ const NomorReportDashboard: React.FC = () => {
                         <FileText className="h-4 w-4 mr-2" /> {row.document ? 'Lihat Dokumen' : 'Belum Ada'}
                       </button>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                      <div className="inline-flex items-center space-x-2">
+                        <button
+                          onClick={() => openEdit(row)}
+                          className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
+                          title="Edit"
+                        >
+                          <Pencil className="h-4 w-4 mr-1" /> Edit
+                        </button>
+                        <button
+                          onClick={() => askDelete(row)}
+                          className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 border border-red-200"
+                          title="Hapus"
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {displayed.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td>
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
         </div>
+
+        {/* Modal Tambah/Edit */}
+        {showForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                <h2 className="text-xl font-bold text-gray-900">{editing ? 'Edit Nomor Report' : 'Tambah Nomor Report'}</h2>
+                <button onClick={() => setShowForm(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Report</label>
+                    <select
+                      value={form.jenis}
+                      onChange={(e)=>setForm(prev=>({...prev, jenis: e.target.value}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    >
+                      <option value="">Pilih jenis...</option>
+                      {JENIS_OPTIONS.map(j => (
+                        <option key={j} value={j}>{j}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Report</label>
+                    <input
+                      value={form.nomor}
+                      onChange={(e)=>setForm(prev=>({...prev, nomor: e.target.value}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      placeholder="Contoh: UT-001/IX/2025"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <input
+                      type="date"
+                      value={form.tanggal}
+                      onChange={(e)=>setForm(prev=>({...prev, tanggal: e.target.value}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Document (opsional)</label>
+                    <input
+                      value={form.document || ''}
+                      onChange={(e)=>setForm(prev=>({...prev, document: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      placeholder="Nama file atau URL"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50">
+                <button onClick={()=>setShowForm(false)} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium">Batal</button>
+                <button onClick={saveForm} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Simpan</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Konfirmasi Hapus */}
+        <ConfirmDeleteModal
+          isOpen={showDelete}
+          title="Hapus Nomor Report?"
+          message={deleteTarget ? `Apakah Anda yakin ingin menghapus nomor report ${deleteTarget.nomor} (${deleteTarget.jenis})?` : ''}
+          onClose={() => setShowDelete(false)}
+          onConfirm={confirmDelete}
+        />
       </div>
     </div>
   );

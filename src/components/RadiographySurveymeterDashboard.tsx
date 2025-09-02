@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { Clock, Download, PlusCircle, Search } from "lucide-react";
+import { Clock, Download, PlusCircle, Search, Pencil, Trash2, X } from "lucide-react";
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 type Item = {
   id: string;
@@ -21,15 +22,71 @@ const daysTo = (dateStr: string) => {
 };
 
 const RadiographySurveymeterDashboard: React.FC = () => {
-  const [rows] = useState<Item[]>(initialData);
+  const [rows, setRows] = useState<Item[]>(initialData);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [showEntries, setShowEntries] = useState("10");
   const [page, setPage] = useState(1);
 
+  // Modal & CRUD state
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Item | null>(null);
+  const [form, setForm] = useState<{ noSurveymeter: string; masaBerlaku: string }>({ noSurveymeter: '', masaBerlaku: '' });
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Item | null>(null);
+
   const openAdd = () => {
-    // Placeholder until real modal is implemented
-    alert("Tambah Surveymeter (dummy)");
+    setEditing(null);
+    setForm({ noSurveymeter: '', masaBerlaku: '' });
+    setShowForm(true);
+  };
+
+  const openEdit = (row: Item) => {
+    setEditing(row);
+    setForm({ noSurveymeter: row.noSurveymeter, masaBerlaku: row.masaBerlaku });
+    setShowForm(true);
+  };
+
+  const genId = () => {
+    const nums = rows.map(r => Number(r.id.replace(/^[^0-9]*/,'').split('-').pop() || '0')).filter(n=>!isNaN(n));
+    const next = (nums.length ? Math.max(...nums) : 0) + 1;
+    return `S-${next}`;
+  };
+
+  const saveForm = () => {
+    const payload: Item = {
+      id: editing ? editing.id : genId(),
+      noSurveymeter: form.noSurveymeter.trim(),
+      masaBerlaku: form.masaBerlaku,
+    };
+    if (!payload.noSurveymeter || !payload.masaBerlaku) {
+      alert('No. Surveymeter dan Masa Berlaku wajib diisi');
+      return;
+    }
+    if (isNaN(new Date(payload.masaBerlaku).getTime())) {
+      alert('Format tanggal tidak valid');
+      return;
+    }
+    if (editing) {
+      setRows(prev => prev.map(r => (r.id === editing.id ? payload : r)));
+    } else {
+      setRows(prev => [payload, ...prev]);
+      setPage(1);
+    }
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const askDelete = (row: Item) => {
+    setDeleteTarget(row);
+    setShowDelete(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    setRows(prev => prev.filter(r => r.id !== deleteTarget.id));
+    setShowDelete(false);
+    setDeleteTarget(null);
   };
 
   const filtered = useMemo(() => {
@@ -147,12 +204,13 @@ const RadiographySurveymeterDashboard: React.FC = () => {
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Surveymeter</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {paged.map((row) => {
                     const dt = daysTo(row.masaBerlaku);
-                    const danger = dt > 60; // highlight merah jika sisa hari > 60
+                    const danger = dt <= 60; // highlight merah jika sisa hari <= 60 (konsisten dengan halaman lain)
                     return (
                       <tr key={row.id} className={danger ? "bg-red-50 hover:bg-red-100 transition-colors" : "hover:bg-gray-50 transition-colors"}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.noSurveymeter}</td>
@@ -160,9 +218,27 @@ const RadiographySurveymeterDashboard: React.FC = () => {
                           {new Date(row.masaBerlaku).toLocaleDateString("id-ID")}
                           {danger && (
                             <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              {dt} hari
+                              {dt < 0 ? `${Math.abs(dt)} hari lewat` : `${dt} hari`}
                             </span>
                           )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                          <div className="inline-flex items-center space-x-2">
+                            <button
+                              onClick={() => openEdit(row)}
+                              className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
+                              title="Edit"
+                            >
+                              <Pencil className="h-4 w-4 mr-1" /> Edit
+                            </button>
+                            <button
+                              onClick={() => askDelete(row)}
+                              className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 border border-red-200"
+                              title="Hapus"
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -171,6 +247,55 @@ const RadiographySurveymeterDashboard: React.FC = () => {
               </table>
             </div>
           </div>
+
+          {/* Modal Tambah/Edit */}
+          {showForm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+                <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                  <h2 className="text-xl font-bold text-gray-900">{editing ? 'Edit Surveymeter' : 'Tambah Surveymeter'}</h2>
+                  <button onClick={() => setShowForm(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">No. Surveymeter</label>
+                      <input
+                        value={form.noSurveymeter}
+                        onChange={(e)=>setForm(prev=>({...prev, noSurveymeter: e.target.value}))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        placeholder="Contoh: SM-1001"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Masa Berlaku</label>
+                      <input
+                        type="date"
+                        value={form.masaBerlaku}
+                        onChange={(e)=>setForm(prev=>({...prev, masaBerlaku: e.target.value}))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50">
+                  <button onClick={()=>setShowForm(false)} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium">Batal</button>
+                  <button onClick={saveForm} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Simpan</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Konfirmasi Hapus */}
+          <ConfirmDeleteModal
+            isOpen={showDelete}
+            title="Hapus Data Surveymeter?"
+            message={deleteTarget ? `Hapus data ${deleteTarget.noSurveymeter} (berlaku sampai ${new Date(deleteTarget.masaBerlaku).toLocaleDateString('id-ID')})?` : ''}
+            onClose={() => setShowDelete(false)}
+            onConfirm={confirmDelete}
+          />
 
           {/* Pagination */}
           <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
