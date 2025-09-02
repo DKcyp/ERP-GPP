@@ -86,3 +86,37 @@ export interface RealisasiDocumentUploadFormData {
   documentFile: File | null;
   keterangan: string;
 }
+
+// ================= Penawaran Detail (Marketing) =================
+export interface PenawaranDetailData {
+  kategoriPajak: string;
+  noRefReq: string;
+  kodeCustomer: string;
+  namaCustomer: string;
+  pajak: string;
+  noPenawaran: string;
+  tanggalPenawaran: string;
+  tanggalPenawaranEnd: string;
+  tanggalKirim: string;
+  tanggalKirimEnd: string;
+  statusDok: string;
+  namaDivisi: string;
+  jenisPenawaran: string;
+  kodeBarang: string;
+  statusSO: string;
+  statusPenawaran: string;
+  jenisPekerjaan: string;
+  statusKOM: string;
+}
+
+// ================= Generic Update Status Modal =================
+export interface UpdateStatusFormData {
+  status: 'Pending' | 'Accepted' | 'Rejected' | 'Interview' | 'Hired';
+  keterangan: string;
+}
+
+export interface LamaranData {
+  id: string;
+  status: UpdateStatusFormData['status'];
+  keterangan: string;
+}

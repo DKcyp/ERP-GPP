@@ -10,8 +10,6 @@ import {
   File,
   Edit,
   Trash2,
-  Eye,
-  MoreHorizontal,
   ChevronDown,
   Calendar,
   Clock,
@@ -287,90 +285,88 @@ const KontrakDealDashboard: React.FC = () => {
 
   return (
     <>
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 text-sm">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+              <h1 className="text-2xl font-bold text-gray-900 tracking-wide mb-1">
                 DAFTAR KONTRAK DEAL
               </h1>
-              <nav className="text-sm text-gray-600">
+              <nav className="text-xs text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Kontrak Deal</span>
-                <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Dashboard</span>
+                <span className="text-blue-600 font-medium">Kontrak Deal</span>
               </nav>
             </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
+            <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <Clock className="h-3 w-3" />
               <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
         {/* Filter & Action Panel */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 relative">
           {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-10 -mt-10"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             {/* Cari No Penawaran */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari No Kontrak
               </label>
               <input
                 type="text"
                 value={searchNoKontrak}
                 onChange={(e) => setSearchNoKontrak(e.target.value)}
-                className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                 placeholder="Cari No Kontrak..."
               />
             </div>
 
             {/* Cari PIC */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari PIC
               </label>
               <input
                 type="text"
                 value={searchPIC}
                 onChange={(e) => setSearchPIC(e.target.value)}
-                className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                 placeholder="Cari PIC..."
               />
             </div>
 
             {/* Cari Jenis Pekerjaan Dropdown */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Jenis Pekerjaan
               </label>
               <div className="relative">
                 <button
                   onClick={() => setJenisKontrakDropdownOpen(!jenisKontrakDropdownOpen)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-xs"
                 >
                   <span className={selectedJenisKontrak ? 'text-gray-900' : 'text-gray-500'}>
                     {selectedJenisKontrak || 'Cari Jenis Pekerjaan...'}
                   </span>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisKontrakDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3 w-3 text-gray-400 transition-transform duration-200 ${jenisKontrakDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
                 {jenisKontrakDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
                     <button
                       onClick={() => {
                         setSelectedJenisKontrak('');
                         setJenisKontrakDropdownOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-xs"
                     >
                       Semua Jenis Pekerjaan
                     </button>
@@ -381,9 +377,9 @@ const KontrakDealDashboard: React.FC = () => {
                           setSelectedJenisKontrak(jenis);
                           setJenisKontrakDropdownOpen(false);
                         }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2 text-xs"
                       >
-                        <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                         <span>{jenis}</span>
                       </button>
                     ))}
@@ -394,42 +390,42 @@ const KontrakDealDashboard: React.FC = () => {
 
             {/* Cari Lokasi Kerja */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Lokasi Kerja
               </label>
               <input
                 type="text"
                 value={searchLokasiPekerjaan}
                 onChange={(e) => setSearchLokasiPekerjaan(e.target.value)}
-                className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                 placeholder="Cari Lokasi Kerja..."
               />
             </div>
 
             {/* Pilih Status Penawaran Dropdown */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Pilih Status Penawaran
               </label>
               <div className="relative">
                 <button
                   onClick={() => setStatusKontrakDropdownOpen(!statusKontrakDropdownOpen)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-xs"
                 >
                   <span className={selectedStatusKontrak ? 'text-gray-900' : 'text-gray-500'}>
                     {selectedStatusKontrak || 'Pilih status penawaran...'}
                   </span>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusKontrakDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3 w-3 text-gray-400 transition-transform duration-200 ${statusKontrakDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
                 {statusKontrakDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
                     <button
                       onClick={() => {
                         setSelectedStatusKontrak('');
                         setStatusKontrakDropdownOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-xs"
                     >
                       Semua Status
                     </button>
@@ -440,9 +436,9 @@ const KontrakDealDashboard: React.FC = () => {
                           setSelectedStatusKontrak(status);
                           setStatusKontrakDropdownOpen(false);
                         }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2 text-xs"
                       >
-                        <span className={`w-3 h-3 rounded-full ${
+                        <span className={`w-2.5 h-2.5 rounded-full ${
                           status === 'Deal' ? 'bg-green-500' : 
                           status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500'
                         }`}></span>
@@ -456,7 +452,7 @@ const KontrakDealDashboard: React.FC = () => {
 
             {/* Periode Dari */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Periode Dari
               </label>
               <div className="relative">
@@ -464,15 +460,15 @@ const KontrakDealDashboard: React.FC = () => {
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                 />
-                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
             {/* Periode Sampai */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Periode Sampai
               </label>
               <div className="relative">
@@ -480,9 +476,9 @@ const KontrakDealDashboard: React.FC = () => {
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                 />
-                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -490,52 +486,52 @@ const KontrakDealDashboard: React.FC = () => {
             <div className="flex items-end">
               <button 
                 onClick={handleSearch}
-                className="w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2 text-sm"
+                className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-md hover:shadow-blue-600/20 transition-all duration-200 flex items-center justify-center space-x-2 text-xs"
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-3 w-3" />
                 <span>Cari</span>
               </button>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-100">
+          <div className="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-100">
             <button 
               onClick={handleAddClick} // Use new handler
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-md hover:shadow-blue-600/20 flex items-center space-x-2 text-xs"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3 w-3" />
               <span>Tambah Kontrak Deal</span>
             </button>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
-              <FileSpreadsheet className="h-4 w-4" />
+            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-md hover:shadow-green-600/20 flex items-center space-x-2 text-xs">
+              <FileSpreadsheet className="h-3 w-3" />
               <span>Export Excel</span>
             </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
-              <FileText className="h-4 w-4" />
+            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-md hover:shadow-red-600/20 flex items-center space-x-2 text-xs">
+              <FileText className="h-3 w-3" />
               <span>Export PDF</span>
             </button>
           </div>
         </div>
 
         {/* Kontrak Deal Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No Kontrak</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Client</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">PIC</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Kontrak</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Jenis Kontrak</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Tanggal Kontrak</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Durasi Kontrak</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nilai Kontrak</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Lokasi Pekerjaan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status Penawaran</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Aksi</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No Kontrak</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Client</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">PIC</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Kontrak</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Jenis Kontrak</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Tanggal Kontrak</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Durasi Kontrak</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nilai Kontrak</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Lokasi Pekerjaan</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status Penawaran</th>
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -550,46 +546,46 @@ const KontrakDealDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-3">
+                    <td className="px-3 py-2">
+                      <div className="flex items-center space-x-2">
                         <div className="h-2 w-2 bg-green-500 rounded-full flex-shrink-0">
                           <Info className="h-2 w-2 text-green-600" />
                         </div>
-                        <span className="font-medium text-gray-900">{kontrak.no}</span>
+                        <span className="font-medium text-gray-900 text-xs">{kontrak.no}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{kontrak.id}</td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{kontrak.namaClient}</td>
-                    <td className="px-6 py-4 text-gray-600">{kontrak.pic}</td>
-                    <td className="px-6 py-4 text-gray-600">{kontrak.namaKontrak}</td>
-                    <td className="px-6 py-4 text-gray-600">{kontrak.jenisKontrak}</td>
-                    <td className="px-6 py-4 text-gray-600">{kontrak.tanggalKontrak}</td>
-                    <td className="px-6 py-4 text-gray-600">{kontrak.durasiKontrak}</td>
-                    <td className="px-6 py-4 text-gray-600 font-medium">{kontrak.nilaiKontrak}</td>
-                    <td className="px-6 py-4 text-gray-600">{kontrak.lokasiPekerjaan}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusPenawaranColor(kontrak.statusPenawaran)}`}>
+                    <td className="px-3 py-2 font-medium text-gray-900 text-xs">{kontrak.id}</td>
+                    <td className="px-3 py-2 font-medium text-gray-900 text-xs">{kontrak.namaClient}</td>
+                    <td className="px-3 py-2 text-gray-600 text-xs">{kontrak.pic}</td>
+                    <td className="px-3 py-2 text-gray-600 text-xs">{kontrak.namaKontrak}</td>
+                    <td className="px-3 py-2 text-gray-600 text-xs">{kontrak.jenisKontrak}</td>
+                    <td className="px-3 py-2 text-gray-600 text-xs">{kontrak.tanggalKontrak}</td>
+                    <td className="px-3 py-2 text-gray-600 text-xs">{kontrak.durasiKontrak}</td>
+                    <td className="px-3 py-2 text-gray-600 font-medium text-xs">{kontrak.nilaiKontrak}</td>
+                    <td className="px-3 py-2 text-gray-600 text-xs">{kontrak.lokasiPekerjaan}</td>
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusPenawaranColor(kontrak.statusPenawaran)}`}>
                         {kontrak.statusPenawaran}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center space-x-2">
+                    <td className="px-3 py-2">
+                      <div className="flex items-center justify-center space-x-1.5">
                         <button 
                           onClick={() => handleEditClick(kontrak)} // Use new handler
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
-                          <Edit className="h-4 w-4" />
+                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
+                          <Edit className="h-3 w-3" />
                         </button>
                         <button 
                           onClick={() => handleDeleteClick(kontrak)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-all duration-200"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3" />
                         </button>
                         <button 
                           onClick={() => setIsKickOffModalOpen(true)}
-                          className="p-2 text-green-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-green-600 hover:bg-yellow-50 rounded-md transition-all duration-200"
                         >
-                          <File className="h-4 w-4" />
+                          <File className="h-3 w-3" />
                         </button>
                       </div>
                     </td>
@@ -600,25 +596,25 @@ const KontrakDealDashboard: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-xs">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-xs text-gray-700">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredKontrakDeals.length)} of {filteredKontrakDeals.length} results
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-3 w-3" />
                 </button>
                 
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
                       currentPage === page
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
                         : 'text-gray-700 hover:bg-white hover:text-blue-600'
@@ -631,9 +627,9 @@ const KontrakDealDashboard: React.FC = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3 w-3" />
                 </button>
               </div>
             </div>

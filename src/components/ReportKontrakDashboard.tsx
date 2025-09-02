@@ -3,7 +3,8 @@ import { Clock, Search, FileSpreadsheet, FileText } from 'lucide-react';
 
 interface SalesOrderItem {
   soNumber: string;
-  tanggal: string;
+  tanggalMOB: string;
+  tanggalDemob?: string;
   nilai: number;
   status: 'Open' | 'Closed';
 }
@@ -27,8 +28,8 @@ const sampleData: KontrakItem[] = [
     tglKontrak: '2025-08-18',
     nilaiKontrak: 175000000,
     salesOrders: [
-      { soNumber: 'SO-2025-0001', tanggal: '2025-08-20', nilai: 75000000, status: 'Open' },
-      { soNumber: 'SO-2025-0003', tanggal: '2025-08-29', nilai: 100000000, status: 'Closed' },
+      { soNumber: 'SO-2025-0001', tanggalMOB: '2025-08-20', tanggalDemob: '2025-09-05', nilai: 75000000, status: 'Open' },
+      { soNumber: 'SO-2025-0003', tanggalMOB: '2025-08-29', tanggalDemob: '2025-09-12', nilai: 100000000, status: 'Closed' },
     ],
   },
   {
@@ -38,7 +39,7 @@ const sampleData: KontrakItem[] = [
     tglKontrak: '2025-08-21',
     nilaiKontrak: 98000000,
     salesOrders: [
-      { soNumber: 'SO-2025-0005', tanggal: '2025-08-25', nilai: 98000000, status: 'Closed' },
+      { soNumber: 'SO-2025-0005', tanggalMOB: '2025-08-25', tanggalDemob: '2025-09-03', nilai: 98000000, status: 'Closed' },
     ],
   },
   {
@@ -48,8 +49,8 @@ const sampleData: KontrakItem[] = [
     tglKontrak: '2025-10-05',
     nilaiKontrak: 200000000,
     salesOrders: [
-      { soNumber: 'SO-2025-0010', tanggal: '2025-10-10', nilai: 80000000, status: 'Open' },
-      { soNumber: 'SO-2025-0015', tanggal: '2025-10-15', nilai: 40000000, status: 'Closed' },
+      { soNumber: 'SO-2025-0010', tanggalMOB: '2025-10-10', tanggalDemob: '2025-10-25', nilai: 80000000, status: 'Open' },
+      { soNumber: 'SO-2025-0015', tanggalMOB: '2025-10-15', tanggalDemob: '2025-10-29', nilai: 40000000, status: 'Closed' },
     ],
   },
 ];
@@ -347,25 +348,39 @@ const ReportKontrakDashboard: React.FC = () => {
                   <thead className="bg-gray-50 text-gray-600">
                     <tr>
                       <th className="text-left px-3 py-2">No. SO</th>
-                      <th className="text-left px-3 py-2">Tanggal</th>
+                      <th className="text-left px-3 py-2">Tanggal MOB</th>
+                      <th className="text-left px-3 py-2">Tanggal Demob</th>
                       <th className="text-right px-3 py-2">Nilai</th>
                       <th className="text-left px-3 py-2">Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {[...selected.salesOrders]
-                      .sort((a, b) => (a.status === 'Open' ? 1 : 0) - (b.status === 'Open' ? 1 : 0))
-                      .map((so) => (
-                      <tr key={so.soNumber} className="border-t">
-                        <td className="px-3 py-2">{so.soNumber}</td>
-                        <td className="px-3 py-2">{so.tanggal}</td>
-                        <td className="px-3 py-2 text-right">{currency(so.nilai)}</td>
-                        <td className="px-3 py-2"><StatusBadge status={so.status} /></td>
-                      </tr>
-                    ))}
+                    {(() => {
+                      const sorted = [...selected.salesOrders].sort((a, b) => a.tanggalMOB.localeCompare(b.tanggalMOB));
+                      const lastIdx = sorted.length - 1;
+                      let prevDisplayDemob: string | undefined = undefined;
+                      return sorted.map((so, idx) => {
+                        // derive display MOB from previous row's displayed Demob when available
+                        const baseMOB = so.tanggalMOB;
+                        const displayMOB = idx === 0 ? baseMOB : (prevDisplayDemob || baseMOB);
+                        // ensure Demob is not earlier than MOB; if missing, use MOB
+                        let displayDemob = so.tanggalDemob && so.tanggalDemob >= displayMOB ? so.tanggalDemob : displayMOB;
+                        prevDisplayDemob = displayDemob;
+                        const displayStatus: 'Open' | 'Closed' = idx === lastIdx ? 'Open' : 'Closed';
+                        return (
+                          <tr key={so.soNumber} className="border-t">
+                            <td className="px-3 py-2">{so.soNumber}</td>
+                            <td className="px-3 py-2">{displayMOB}</td>
+                            <td className="px-3 py-2">{displayDemob || '-'}</td>
+                            <td className="px-3 py-2 text-right">{currency(so.nilai)}</td>
+                            <td className="px-3 py-2"><StatusBadge status={displayStatus} /></td>
+                          </tr>
+                        );
+                      });
+                    })()}
                     {selected.salesOrders.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-3 py-6 text-center text-gray-500">Belum ada Sales Order</td>
+                        <td colSpan={5} className="px-3 py-6 text-center text-gray-500">Belum ada Sales Order</td>
                       </tr>
                     )}
                   </tbody>

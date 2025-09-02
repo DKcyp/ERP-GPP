@@ -178,17 +178,17 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
         {/* Form Content */}
         <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Nama Perusahaan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Nama Perusahaan <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.namaPerusahaan}
                   onChange={(e) => handleInputChange('namaPerusahaan', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaPerusahaan ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Masukkan Nama Perusahaan"
@@ -200,28 +200,28 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
 
               {/* Topik Pembicaraan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Topik Pembicaraan
                 </label>
                 <input
                   type="text"
                   value={formData.topikPembicaraan}
                   onChange={(e) => handleInputChange('topikPembicaraan', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Masukkan topik pembicaraan"
                 />
               </div>
 
               {/* PIC */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   PIC <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.pic}
                   onChange={(e) => handleInputChange('pic', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.pic ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Masukkan nama PIC"
@@ -233,28 +233,28 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
 
               {/* Tindak Lanjut */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Tindak Lanjut
                 </label>
                 <input
                   type="text"
                   value={formData.tindakLanjut}
                   onChange={(e) => handleInputChange('tindakLanjut', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Masukkan tindak lanjut"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.email ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="contoh@email.com"
@@ -266,28 +266,28 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
 
               {/* Hasil */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Hasil
                 </label>
                 <input
                   type="text"
                   value={formData.hasil}
                   onChange={(e) => handleInputChange('hasil', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Masukkan hasil"
                 />
               </div>
 
               {/* No. Telp */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   No. Telp <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
                   value={formData.noTelp}
                   onChange={(e) => handleInputChange('noTelp', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.noTelp ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="08xxxxxxxxxx"
@@ -297,70 +297,9 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
                 )}
               </div>
 
-              {/* Catatan */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Catatan
-                </label>
-                <textarea
-                  value={formData.catatan}
-                  onChange={(e) => handleInputChange('catatan', e.target.value)}
-                  rows={3}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] border-gray-200`}
-                  placeholder="Masukkan catatan"
-									style={{ minHeight: '50px', resize: 'vertical' }}
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = Math.max(50, target.scrollHeight) + 'px';
-                  }}
-                />
-              </div>
-
-              {/* Deadline Prospect */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Deadline Prospect <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={formData.deadlineProspect}
-                    onChange={(e) => handleInputChange('deadlineProspect', e.target.value)}
-                    className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.deadlineProspect ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}
-                  />
-                  <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-                {errors.deadlineProspect && (
-                  <p className="mt-1 text-sm text-red-600">{errors.deadlineProspect}</p>
-                )}
-              </div>
-
-              {/* Keterangan */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Keterangan
-                </label>
-                <textarea
-                  value={formData.keterangan}
-                  onChange={(e) => handleInputChange('keterangan', e.target.value)}
-                  rows={3}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] border-gray-200`}
-                  placeholder="Masukkan Keterangan"
-									style={{ minHeight: '50px', resize: 'vertical' }}
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = 'auto';
-                    target.style.height = Math.max(50, target.scrollHeight) + 'px';
-                  }}
-                />
-              </div>
-
               {/* Tanggal Update */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Tanggal Update
                 </label>
                 <div className="relative">
@@ -368,7 +307,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
                     type="date"
                     value={formData.tanggalUpdate}
                     onChange={(e) => handleInputChange('tanggalUpdate', e.target.value)}
-                    className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                   <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>

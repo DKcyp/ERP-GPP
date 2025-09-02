@@ -6,15 +6,12 @@ import {
   Plus,
   FileSpreadsheet,
   FileText,
-  File,
   Edit,
   Trash2,
   Truck,
-  MoreHorizontal,
   ChevronDown,
   Calendar,
   Clock,
-  Info,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -227,9 +224,7 @@ const SalesOrderDashboard: React.FC = () => {
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Sales Order</span>
-                <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Dashboard</span>
+                <span className="text-blue-600 font-semibold">Sales Order</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
