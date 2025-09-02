@@ -95,6 +95,12 @@ export const marketingMenu: MenuSection[] = [
     items: [],
     directPath: '/marketing/sales-order/dashboard'
   },
+  {
+    title: 'Report Kontrak',
+    icon: 'FileText',
+    items: [],
+    directPath: '/marketing/report-kontrak'
+  },
   createGeneralMenu('marketing')
 ];
 
