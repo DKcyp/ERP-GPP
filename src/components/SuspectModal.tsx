@@ -138,8 +138,8 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, in
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">{modalTitle}</h2>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+          <h2 className="text-base font-semibold text-gray-900">{modalTitle}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -151,92 +151,92 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, in
         {/* Form Content */}
         <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4 text-sm">
               {/* Nama Perusahaan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Nama Perusahaan <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.namaPerusahaan}
                   onChange={(e) => handleInputChange('namaPerusahaan', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaPerusahaan ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Masukkan Nama Perusahaan"
                 />
                 {errors.namaPerusahaan && (
-                  <p className="mt-1 text-sm text-red-600">{errors.namaPerusahaan}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.namaPerusahaan}</p>
                 )}
               </div>
 
               {/* Bidang Usaha */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Bidang Usaha <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.bidangUsaha}
                   onChange={(e) => handleInputChange('bidangUsaha', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.bidangUsaha ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Masukkan Bidang Usaha"
                 />
                 {errors.bidangUsaha && (
-                  <p className="mt-1 text-sm text-red-600">{errors.bidangUsaha}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.bidangUsaha}</p>
                 )}
               </div>
 
               {/* No. Telp */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   No. Telp <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
                   value={formData.noTelp}
                   onChange={(e) => handleInputChange('noTelp', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.noTelp ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="08xxxxxxxxxx"
                 />
                 {errors.noTelp && (
-                  <p className="mt-1 text-sm text-red-600">{errors.noTelp}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.noTelp}</p>
                 )}
               </div>
 
               {/* PIC */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   PIC <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.pic}
                   onChange={(e) => handleInputChange('pic', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.pic ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Masukkan Nama PIC"
                 />
                 {errors.pic && (
-                  <p className="mt-1 text-sm text-red-600">{errors.pic}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.pic}</p>
                 )}
               </div>
 
               {/* Alamat Perusahaan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Alamat Perusahaan <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={formData.alamatPerusahaan}
                   onChange={(e) => handleInputChange('alamatPerusahaan', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] ${
+                  className={`w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] ${
                     errors.alamatPerusahaan ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="Masukkan Alamat Lengkap Perusahaan"
@@ -248,19 +248,19 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, in
                   }}
                 />
                 {errors.alamatPerusahaan && (
-                  <p className="mt-1 text-sm text-red-600">{errors.alamatPerusahaan}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.alamatPerusahaan}</p>
                 )}
               </div>
 
               {/* Email PIC */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Email PIC <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={formData.emailPIC}
                   onChange={(e) => handleInputChange('emailPIC', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] ${
+                  className={`w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none h-[36px] ${
                     errors.emailPIC ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                   placeholder="contoh@email.com"
@@ -272,7 +272,7 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, in
                   }}
                 />
                 {errors.emailPIC && (
-                  <p className="mt-1 text-sm text-red-600">{errors.emailPIC}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.emailPIC}</p>
                 )}
               </div>
             </div>
@@ -280,11 +280,11 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, in
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="flex items-center justify-end space-x-2 p-3 border-t border-gray-200 bg-gray-50 flex-shrink-0 text-xs">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-sm"
+            className="px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-xs"
           >
             Close
           </button>
@@ -292,7 +292,7 @@ const SuspectModal: React.FC<SuspectModalProps> = ({ isOpen, onClose, onSave, in
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs"
           >
             {isLoading ? (
               <>

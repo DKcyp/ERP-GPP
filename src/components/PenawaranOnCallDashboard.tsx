@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import PenawaranTwoStepModal, { PenawaranTwoStepFormData } from './PenawaranTwoStepModal';
 import PenawaranDetailModal from './PenawaranDetailModal';
-import UpdateStatusModal, { UpdateStatusFormData } from './UpdateStatusModal';
+import UpdateStatusModal from './UpdateStatusModal';
 import HistoryPenawaranModal from './HistoryPenawaranModal';
-import { PenawaranDetailData } from '../types';
+import { PenawaranDetailData, UpdateStatusFormData, LamaranData } from '../types';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { 
   Search, 
   Plus, 
   FileSpreadsheet, 
   FileText, 
-  File,
   Edit,
   Trash2,
   Eye,
-  MoreHorizontal,
   ChevronDown,
   Calendar,
   Clock,
@@ -22,7 +20,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
-  Lock,
   Printer
   
 } from 'lucide-react';
@@ -45,22 +42,17 @@ const PenawaranOnCallDashboard: React.FC = () => {
   const [searchSales, setSearchSales] = useState('');
   const [searchLokasiKerja, setSearchLokasiKerja] = useState(''); // New state for 'Cari Lokasi Kerja'
   const [selectedStatusPenawaran, setSelectedStatusPenawaran] = useState('');
-  const [selectedStatusDokumen, setSelectedStatusDokumen] = useState('');
+  const [selectedStatusDokumen] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [statusPenawaranDropdownOpen, setStatusPenawaranDropdownOpen] = useState(false);
-  const [statusDokumenDropdownOpen, setStatusDokumenDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isUpdateStatusModalOpen, setIsUpdateStatusModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [selectedPenawaranForDetail, setSelectedPenawaranForDetail] = useState<PenawaranDetailData | null>(null);
-  const [selectedItemForStatusUpdate, setSelectedItemForStatusUpdate] = useState<{
-    id: string;
-    namaClient: string;
-    statusPenawaran: string;
-  } | null>(null);
+  const [selectedItemForStatusUpdate, setSelectedItemForStatusUpdate] = useState<LamaranData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -176,25 +168,44 @@ const PenawaranOnCallDashboard: React.FC = () => {
     setIsDetailModalOpen(true);
   };
 
+  // Map Penawaran status <-> Modal status
+  const mapPenawaranToModalStatus = (status: 'Deal' | 'Pending' | 'Cancel'): UpdateStatusFormData['status'] => {
+    switch (status) {
+      case 'Deal': return 'Accepted';
+      case 'Pending': return 'Pending';
+      case 'Cancel': return 'Rejected';
+    }
+  };
+
+  const mapModalToPenawaranStatus = (status: UpdateStatusFormData['status']): 'Deal' | 'Pending' | 'Cancel' => {
+    switch (status) {
+      case 'Accepted': return 'Deal';
+      case 'Pending': return 'Pending';
+      case 'Rejected': return 'Cancel';
+      // Fallbacks for other statuses used by the generic modal
+      case 'Interview': return 'Pending';
+      case 'Hired': return 'Deal';
+      default: return 'Pending';
+    }
+  };
+
   const handleUpdateStatus = (item: PenawaranOnCall) => {
     setSelectedItemForStatusUpdate({
       id: item.id,
-      namaClient: item.namaClient,
-      statusPenawaran: item.statusPenawaran
+      status: mapPenawaranToModalStatus(item.statusPenawaran),
+      keterangan: ''
     });
     setIsUpdateStatusModalOpen(true);
   };
 
-  const handleSaveStatusUpdate = (formData: UpdateStatusFormData) => {
-    if (selectedItemForStatusUpdate) {
-      setPenawaranOnCall(prev => 
-        prev.map(item => 
-          item.id === selectedItemForStatusUpdate.id 
-            ? { ...item, statusPenawaran: formData.status as 'Deal' | 'Pending' | 'Cancel' }
-            : item
-        )
-      );
-    }
+  const handleSaveStatusUpdate = (id: string, data: UpdateStatusFormData) => {
+    setPenawaranOnCall(prev =>
+      prev.map(item =>
+        item.id === id
+          ? { ...item, statusPenawaran: mapModalToPenawaranStatus(data.status) }
+          : item
+      )
+    );
     setSelectedItemForStatusUpdate(null);
   };
 
@@ -228,7 +239,6 @@ const PenawaranOnCallDashboard: React.FC = () => {
   };
 
   const statusPenawaranOptions = ['Deal', 'Pending', 'Cancel'];
-  const statusDokumenOptions = ['Open', 'Close'];
 
   // Filter data based on search criteria
   const filteredData = penawaranOnCall.filter(item => {
@@ -262,16 +272,16 @@ const PenawaranOnCallDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 text-sm">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+              <h1 className="text-2xl font-semibold text-gray-900 tracking-wide mb-1">
                 DAFTAR PENAWARAN ON CALL
               </h1>
-              <nav className="text-sm text-gray-600">
+              <nav className="text-xs text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
                 <span className="mx-2">›</span>
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Penawaran</span>
@@ -279,24 +289,24 @@ const PenawaranOnCallDashboard: React.FC = () => {
                 <span className="text-blue-600 font-medium">Penawaran On Call</span>
               </nav>
             </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
+            <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <Clock className="h-3.5 w-3.5" />
               <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
         {/* Filter & Action Panel */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
+        <div className="bg-white rounded-xl shadow border border-gray-100 p-4 relative">
           {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-10 -mt-10"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             {/* Cari Nama Client (equivalent to Cari No SPK) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Nama Client
               </label>
               <div className="relative">
@@ -304,7 +314,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   type="text"
                   value={searchNamaClient}
                   onChange={(e) => setSearchNamaClient(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan nama client..."
                 />
               </div>
@@ -312,7 +322,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
 
             {/* Cari PIC (equivalent to Cari Nama Pegawai) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari PIC
               </label>
               <div className="relative">
@@ -320,7 +330,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   type="text"
                   value={searchPIC}
                   onChange={(e) => setSearchPIC(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan nama PIC..."
                 />
               </div>
@@ -328,7 +338,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
 
             {/* Cari Sales (equivalent to Cari Jenis Pekerjaan) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Sales
               </label>
               <div className="relative">
@@ -336,7 +346,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   type="text"
                   value={searchSales}
                   onChange={(e) => setSearchSales(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan nama sales..."
                 />
               </div>
@@ -344,7 +354,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
 
             {/* Cari Lokasi Kerja (New Input) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Lokasi Kerja
               </label>
               <div className="relative">
@@ -352,7 +362,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   type="text"
                   value={searchLokasiKerja}
                   onChange={(e) => setSearchLokasiKerja(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-3 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan lokasi kerja..."
                 />
               </div>
@@ -360,28 +370,28 @@ const PenawaranOnCallDashboard: React.FC = () => {
 
             {/* Status Penawaran Dropdown (equivalent to Pilih Status SPK) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Pilih Status Penawaran
               </label>
               <div className="relative">
                 <button
                   onClick={() => setStatusPenawaranDropdownOpen(!statusPenawaranDropdownOpen)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
                 >
                   <span className={selectedStatusPenawaran ? 'text-gray-900' : 'text-gray-500'}>
                     {selectedStatusPenawaran || 'Pilih status penawaran...'}
                   </span>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusPenawaranDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 text-gray-400 transition-transform duration-200 ${statusPenawaranDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
                 {statusPenawaranDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden text-sm">
                     <button
                       onClick={() => {
                         setSelectedStatusPenawaran('');
                         setStatusPenawaranDropdownOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500"
                     >
                       Semua Status
                     </button>
@@ -392,9 +402,9 @@ const PenawaranOnCallDashboard: React.FC = () => {
                           setSelectedStatusPenawaran(status);
                           setStatusPenawaranDropdownOpen(false);
                         }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
                       >
-                        <span className={`w-3 h-3 rounded-full ${
+                        <span className={`w-2.5 h-2.5 rounded-full ${
                           status === 'Deal' ? 'bg-green-500' : 
                           status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500'
                         }`}></span>
@@ -408,7 +418,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
 
             {/* Periode Awal (Date From) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Periode Awal
               </label>
               <div className="relative">
@@ -416,15 +426,15 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                 />
-                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
             {/* Periode Akhir (Date To) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Periode Akhir
               </label>
               <div className="relative">
@@ -432,9 +442,9 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                 />
-                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -442,9 +452,9 @@ const PenawaranOnCallDashboard: React.FC = () => {
             <div className="space-y-2 flex items-end">
               <button 
                 onClick={handleSearch}
-                className="w-full h-[46px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center justify-center space-x-2"
+                className="w-full h-[38px] bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center justify-center space-x-2 text-sm"
               >
-                <Search className="h-5 w-5" />
+                <Search className="h-4 w-4" />
                 <span>Cari</span>
               </button>
             </div>
@@ -462,20 +472,20 @@ const PenawaranOnCallDashboard: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3 mt-6">
+          <div className="flex justify-end space-x-2 mt-4">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
               <span>Tambah Penawaran</span>
             </button>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
-              <FileSpreadsheet className="h-4 w-4" />
+            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
+              <FileSpreadsheet className="h-3.5 w-3.5" />
               <span>Export Excel</span>
             </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
-              <FileText className="h-4 w-4" />
+            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
+              <FileText className="h-3.5 w-3.5" />
               <span>Export PDF</span>
             </button>
           </div>
@@ -488,19 +498,19 @@ const PenawaranOnCallDashboard: React.FC = () => {
         */}
 
         {/* Data Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Client</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">PIC</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Sales</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Terakhir Update</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status Penawaran</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status Dokumen</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Aksi</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Client</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">PIC</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Sales</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Terakhir Update</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status Penawaran</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status Dokumen</th>
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -515,59 +525,59 @@ const PenawaranOnCallDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <div className="flex items-center space-x-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0">
-                          <Info className="h-2 w-2 text-blue-600" />
+                        <div className="h-1.5 w-1.5 bg-blue-500 rounded-full flex-shrink-0">
+                          <Info className="h-1.5 w-1.5 text-blue-600" />
                         </div>
                         <span className="font-medium text-gray-900">{item.no}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{item.namaClient}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.pic}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.namaSales}</td>
-                    <td className="px-6 py-4 text-gray-600">{item.terakhirUpdate}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusPenawaranColor(item.statusPenawaran)}`}>
+                    <td className="px-3 py-2 font-medium text-gray-900">{item.namaClient}</td>
+                    <td className="px-3 py-2 text-gray-600">{item.pic}</td>
+                    <td className="px-3 py-2 text-gray-600">{item.namaSales}</td>
+                    <td className="px-3 py-2 text-gray-600">{item.terakhirUpdate}</td>
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusPenawaranColor(item.statusPenawaran)}`}>
                         {item.statusPenawaran}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusDokumenColor(item.statusDokumen)}`}>
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusDokumenColor(item.statusDokumen)}`}>
                         {item.statusDokumen}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <div className="flex items-center justify-center space-x-1">
                         <button 
                           onClick={() => handleViewDetail(item)}
-                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded-md transition-all duration-200"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setIsModalOpen(true)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
+                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleUpdateStatus(item)}
-                          className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-gray-600 hover:bg-gray-50 rounded-md transition-all duration-200"
                         >
                           <Settings className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleDeleteClick(item)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-all duration-200"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 hover:scale-110">
+                        <button className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-md transition-all duration-200">
                           <Printer className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => setIsHistoryModalOpen(true)}
-                          className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-teal-600 hover:bg-teal-50 rounded-md transition-all duration-200"
                         >
                           <Clock className="h-4 w-4" />
                         </button>
@@ -580,25 +590,25 @@ const PenawaranOnCallDashboard: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-xs">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-xs text-gray-700">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} results
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
                       currentPage === page
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
                         : 'text-gray-700 hover:bg-white hover:text-blue-600'
@@ -611,9 +621,9 @@ const PenawaranOnCallDashboard: React.FC = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
@@ -641,7 +651,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
         isOpen={isUpdateStatusModalOpen}
         onClose={() => setIsUpdateStatusModalOpen(false)}
         onSave={handleSaveStatusUpdate}
-        currentItem={selectedItemForStatusUpdate}
+        initialData={selectedItemForStatusUpdate}
+        isEditable={true}
       />
 
       {/* History Penawaran Modal */}

@@ -5,19 +5,14 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { 
   Search, 
   Plus, 
-  FileSpreadsheet, 
-  FileText, 
-  File,
+  FileSpreadsheet,
+  FileText,
   Edit,
   Trash2,
   Eye,
-  MoreHorizontal,
   ChevronDown,
   Calendar,
-  Clock,
-  Info,
-  ChevronLeft,
-  ChevronRight
+  Clock
 } from 'lucide-react';
 
 interface Prospect {
@@ -48,7 +43,7 @@ const ProspectDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Prospect | null>(null);
   const [editingProspect, setEditingProspect] = useState<Prospect | null>(null); // New state for editing
@@ -169,11 +164,6 @@ const ProspectDashboard: React.FC = () => {
       ...prospect,
       deadlineProspect: formattedDeadline,
       tanggalUpdate: formattedUpdateDate,
-      // Map other fields from Prospect to ProspectFormData
-      topikPembicaraan: prospect.keterangan, // Using keterangan as placeholder for topikPembicaraan
-      tindakLanjut: '', // Placeholder
-      hasil: '', // Placeholder
-      catatan: prospect.keterangan, // Using keterangan as placeholder for catatan
     });
     setModalTitle('Edit Prospect');
     setIsModalOpen(true);
@@ -190,6 +180,16 @@ const ProspectDashboard: React.FC = () => {
       setItemToDelete(null);
     }
   };
+
+  // Handlers extracted from inline JSX to avoid any parsing ambiguity
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingProspect(null); // Clear editing state on close
+    setModalTitle('Entry Prospect'); // Reset title on close
+  };
+
+  const handleHistoryClose = () => setIsHistoryModalOpen(false);
+  const handleDeleteClose = () => setDeleteModalOpen(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -233,6 +233,23 @@ const ProspectDashboard: React.FC = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
 
+  // Precompute initial data for edit modal to avoid inline object in JSX
+  const initialFormData: ProspectFormData | null = editingProspect
+    ? {
+        namaPerusahaan: editingProspect!.namaPerusahaan,
+        pic: editingProspect!.pic,
+        email: editingProspect!.email,
+        noTelp: editingProspect!.noTelp,
+        deadlineProspect: editingProspect!.deadlineProspect,
+        topikPembicaraan: editingProspect!.keterangan,
+        tindakLanjut: '',
+        hasil: '',
+        catatan: editingProspect!.keterangan,
+        keterangan: editingProspect!.keterangan,
+        tanggalUpdate: editingProspect!.tanggalUpdate,
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
@@ -247,8 +264,6 @@ const ProspectDashboard: React.FC = () => {
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
                 <span className="mx-2">›</span>
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Prospect</span>
-                <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Dashboard</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -265,11 +280,11 @@ const ProspectDashboard: React.FC = () => {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
           
-          {/* Filter Inputs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {/* Filter Inputs Grid + Actions Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-2">
             {/* Cari Nama Perusahaan (equivalent to Cari No SPK) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Nama Perusahaan
               </label>
               <div className="relative">
@@ -277,7 +292,7 @@ const ProspectDashboard: React.FC = () => {
                   type="text"
                   value={searchNama}
                   onChange={(e) => setSearchNama(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Cari Nama Perusahaan..."
                 />
               </div>
@@ -285,7 +300,7 @@ const ProspectDashboard: React.FC = () => {
 
             {/* Cari PIC (equivalent to Cari Nama Pegawai) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari PIC
               </label>
               <div className="relative">
@@ -293,7 +308,7 @@ const ProspectDashboard: React.FC = () => {
                   type="text"
                   value={searchPIC}
                   onChange={(e) => setSearchPIC(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Cari PIC..."
                 />
               </div>
@@ -301,7 +316,7 @@ const ProspectDashboard: React.FC = () => {
 
             {/* Cari Jenis Pekerjaan */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Jenis Pekerjaan
               </label>
               <div className="relative">
@@ -309,7 +324,7 @@ const ProspectDashboard: React.FC = () => {
                   type="text"
                   value={searchJenisPekerjaan}
                   onChange={(e) => setSearchJenisPekerjaan(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Cari Jenis Pekerjaan..."
                 />
               </div>
@@ -317,7 +332,7 @@ const ProspectDashboard: React.FC = () => {
 
             {/* Cari Lokasi Kerja */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Lokasi Kerja
               </label>
               <div className="relative">
@@ -325,7 +340,7 @@ const ProspectDashboard: React.FC = () => {
                   type="text"
                   value={searchLokasiKerja}
                   onChange={(e) => setSearchLokasiKerja(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Cari Lokasi Kerja..."
                 />
               </div>
@@ -333,13 +348,13 @@ const ProspectDashboard: React.FC = () => {
 
             {/* Pilih Status (equivalent to Pilih Status SPK) */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Pilih Status
               </label>
               <div className="relative">
                 <button
                   onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white"
                 >
                   <span className={selectedStatus ? 'text-gray-900' : 'text-gray-500'}>
                     {selectedStatus || 'Semua Status'}
@@ -354,7 +369,7 @@ const ProspectDashboard: React.FC = () => {
                         setSelectedStatus('');
                         setStatusDropdownOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-gray-500"
+                      className="w-full px-3 py-1.5 text-left hover:bg-gray-50 transition-colors text-gray-500"
                     >
                       Semua Status
                     </button>
@@ -365,7 +380,7 @@ const ProspectDashboard: React.FC = () => {
                           setSelectedStatus(status);
                           setStatusDropdownOpen(false);
                         }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                        className="w-full px-3 py-1.5 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2"
                       >
                         <span className={`w-3 h-3 rounded-full ${
                           status === 'Hot' ? 'bg-red-500' : 
@@ -381,7 +396,7 @@ const ProspectDashboard: React.FC = () => {
 
             {/* Periode Awal */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Periode Awal
               </label>
               <div className="relative">
@@ -389,7 +404,7 @@ const ProspectDashboard: React.FC = () => {
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="w-full px-3 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                 />
                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
@@ -397,7 +412,7 @@ const ProspectDashboard: React.FC = () => {
 
             {/* Periode Akhir */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Periode Akhir
               </label>
               <div className="relative">
@@ -405,68 +420,66 @@ const ProspectDashboard: React.FC = () => {
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="w-full px-3 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                 />
                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
-            {/* Cari Button - Spanning 2 columns */}
-            <div className="space-y-2 lg:col-span-1 flex items-end"> {/* Adjusted to col-span-1 for proper grid flow, but visually it aligns as in the image */}
-              <button 
+            {/* Tombol Cari sejajar dengan Periode Akhir */}
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-transparent">Cari</label>
+              <button
                 onClick={handleSearch}
-                className="w-full h-[46px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center justify-center space-x-2"
+                className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2"
               >
-                <Search className="h-5 w-5" />
+                <Search className="h-4 w-4" />
                 <span>Cari</span>
               </button>
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-3 mt-6">
-            <button 
-              onClick={() => {
-                setEditingProspect(null); // Ensure no prospect is being edited
-                setModalTitle('Entry Prospect');
-                setIsModalOpen(true);
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah Prospect</span>
-            </button>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export Excel</span>
-            </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
-              <FileText className="h-4 w-4" />
-              <span>Export PDF</span>
-            </button>
-          </div>
-        </div>
+            {/* Actions Bar: single row for all buttons */}
+            <div className="lg:col-span-4 flex flex-wrap items-center gap-3 lg:justify-end">
+              <button 
+                onClick={() => {
+                  setEditingProspect(null);
+                  setModalTitle('Entry Prospect');
+                  setIsModalOpen(true);
+                }}
+                className="px-3 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-600/25 flex items-center justify-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
 
-        {/* Quick Export Bar - Removed as its functionality is now integrated */}
+              <button className="px-3 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-600/25 flex items-center justify-center space-x-2">
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Excel</span>
+              </button>
 
-        {/* Prospect Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              <button className="px-3 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg hover:shadow-red-600/25 flex items-center justify-center space-x-2">
+                <FileText className="h-4 w-4" />
+                <span className="uppercase">PDF</span>
+              </button>
+            </div>
+</div>
+</div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Perusahaan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">PIC</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Jabatan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No Telp</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Deadline Prospect</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Alamat</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Email</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Keterangan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Tanggal Update</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Aksi</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">No</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Nama Perusahaan</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">PIC</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Jabatan</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">No Telp</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Deadline Prospect</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Alamat</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Email</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Keterangan</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Tanggal Update</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900 whitespace-nowrap">Status</th>
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900 whitespace-nowrap">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -481,14 +494,14 @@ const ProspectDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2 whitespace-nowrap">
                       <span className="font-medium text-gray-900">{prospect.no}</span>
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{prospect.namaPerusahaan}</td>
-                    <td className="px-6 py-4 text-gray-600">{prospect.pic}</td>
-                    <td className="px-6 py-4 text-gray-600">{prospect.jabatan}</td>
-                    <td className="px-6 py-4 text-gray-600">{prospect.noTelp}</td>
-                    <td className="px-6 py-4 text-gray-600">
+                    <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{prospect.namaPerusahaan}</td>
+                    <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{prospect.pic}</td>
+                    <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{prospect.jabatan}</td>
+                    <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{prospect.noTelp}</td>
+                    <td className="px-3 py-2 text-gray-600 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <span>{prospect.deadlineProspect}</span>
                         <div className="w-4 h-4 bg-yellow-400 rounded flex items-center justify-center">
@@ -496,8 +509,8 @@ const ProspectDashboard: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{prospect.alamat}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{prospect.alamat}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
                       <a 
                         href={`mailto:${prospect.email}`}
                         className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -505,16 +518,16 @@ const ProspectDashboard: React.FC = () => {
                         {prospect.email}
                       </a>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 max-w-xs truncate" title={prospect.keterangan}>
+                    <td className="px-3 py-2 text-gray-600 max-w-xs truncate whitespace-nowrap" title={prospect.keterangan}>
                       {prospect.keterangan}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{prospect.tanggalUpdate}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{prospect.tanggalUpdate}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(prospect.status)}`}>
                         {prospect.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2 whitespace-nowrap">
                       <div className="flex items-center justify-center space-x-1">
                         <button 
                           onClick={() => handleEditClick(prospect)} 
@@ -552,16 +565,16 @@ const ProspectDashboard: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-xs">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-xs text-gray-700">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredProspects.length)} of {filteredProspects.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
@@ -583,10 +596,10 @@ const ProspectDashboard: React.FC = () => {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-2 py-1 text-sm font-medium rounded transition-all duration-200 ${
+                        className={`px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
                           currentPage === page
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                            : 'text-gray-700 hover:bg-white hover:text-blue-600'
                         }`}
                       >
                         {page}
@@ -598,7 +611,7 @@ const ProspectDashboard: React.FC = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
@@ -606,43 +619,23 @@ const ProspectDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Prospect Modal */}
+      
       <ProspectModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingProspect(null); // Clear editing state on close
-          setModalTitle('Entry Prospect'); // Reset title on close
-        }}
+        onClose={handleModalClose}
         onSave={handleSaveProspect}
-        initialData={editingProspect ? {
-          namaPerusahaan: editingProspect.namaPerusahaan,
-          pic: editingProspect.pic,
-          email: editingProspect.email,
-          noTelp: editingProspect.noTelp,
-          deadlineProspect: editingProspect.deadlineProspect, // Already formatted in handleEditClick
-          topikPembicaraan: editingProspect.keterangan, // Using keterangan as placeholder
-          tindakLanjut: '', // Placeholder
-          hasil: '', // Placeholder
-          catatan: editingProspect.keterangan, // Using keterangan as placeholder
-          keterangan: editingProspect.keterangan,
-          tanggalUpdate: editingProspect.tanggalUpdate, // Already formatted in handleEditClick
-        } : null}
+        initialData={initialFormData}
         title={modalTitle}
       />
-
-      {/* History Prospect Modal */}
+      
       <HistoryProspectModal
         isOpen={isHistoryModalOpen}
-        onClose={() => setIsHistoryModalOpen(false)}
+        onClose={handleHistoryClose}
       />
-
-      {/* Delete Confirmation Modal */}
+      
       <ConfirmDeleteModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={handleDeleteClose}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaPerusahaan}
       />
