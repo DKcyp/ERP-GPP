@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { FileText, AlertTriangle, Clock, Search, PlusCircle, Download } from 'lucide-react';
-import EntryAuditModal from './EntryAuditModal'; // Import the new modal component
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  FileText,
+  AlertTriangle,
+  Clock,
+  Search,
+  PlusCircle,
+  Download,
+} from "lucide-react";
+import EntryAuditModal from "./EntryAuditModal"; // Import the new modal component
 
 interface AuditItem {
   id: string;
@@ -17,55 +24,58 @@ const AuditDashboard: React.FC = () => {
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
-  const [auditData, setAuditData] = useState<AuditItem[]>([ // Use state for dummyData
+  const [auditData, setAuditData] = useState<AuditItem[]>([
+    // Use state for dummyData
     {
-      id: 'AUD001',
-      namaPegawai: 'Budi Santoso',
-      jenisAudit: 'Internal QMS',
-      tanggalAudit: '2024-07-10', // Example: Past date
-      documentUrl: '#'
+      id: "AUD001",
+      namaPegawai: "Budi Santoso",
+      jenisAudit: "Internal QMS",
+      tanggalAudit: "2024-07-10", // Example: Past date
+      documentUrl: "#",
     },
     {
-      id: 'AUD002',
-      namaPegawai: 'Siti Aminah',
-      jenisAudit: 'Eksternal ISO 45001',
-      tanggalAudit: '2024-06-25', // Example: Past date
-      documentUrl: '#'
+      id: "AUD002",
+      namaPegawai: "Siti Aminah",
+      jenisAudit: "Eksternal ISO 45001",
+      tanggalAudit: "2024-06-25", // Example: Past date
+      documentUrl: "#",
     },
     {
-      id: 'AUD003',
-      namaPegawai: 'Joko Susilo',
-      jenisAudit: 'Internal EMS',
-      tanggalAudit: '2024-07-22', // Example: Future date (assuming today is before 2024-07-22)
-      documentUrl: '#'
+      id: "AUD003",
+      namaPegawai: "Joko Susilo",
+      jenisAudit: "Internal EMS",
+      tanggalAudit: "2024-07-22", // Example: Future date (assuming today is before 2024-07-22)
+      documentUrl: "#",
     },
     {
-      id: 'AUD004',
-      namaPegawai: 'Dewi Lestari',
-      jenisAudit: 'Supplier Audit',
-      tanggalAudit: '2024-05-15', // Example: Past date
-      documentUrl: '#'
+      id: "AUD004",
+      namaPegawai: "Dewi Lestari",
+      jenisAudit: "Supplier Audit",
+      tanggalAudit: "2024-05-15", // Example: Past date
+      documentUrl: "#",
     },
     {
-      id: 'AUD005',
-      namaPegawai: 'Rudi Hartono',
-      jenisAudit: 'Internal QMS',
-      tanggalAudit: '2024-08-05', // Example: Future date
-      documentUrl: '#'
+      id: "AUD005",
+      namaPegawai: "Rudi Hartono",
+      jenisAudit: "Internal QMS",
+      tanggalAudit: "2024-08-05", // Example: Future date
+      documentUrl: "#",
     },
     {
-      id: 'AUD006',
-      namaPegawai: 'Fajar Pratama',
-      jenisAudit: 'Audit Keamanan Data',
-      tanggalAudit: '2024-10-20', // NEW: Example future date
-      documentUrl: '#'
+      id: "AUD006",
+      namaPegawai: "Fajar Pratama",
+      jenisAudit: "Audit Keamanan Data",
+      tanggalAudit: "2024-10-20", // NEW: Example future date
+      documentUrl: "#",
     },
   ]);
 
   // Function to check if audit date is in the current month
   const isAuditInCurrentMonth = (auditDate: string): boolean => {
     const date = new Date(auditDate);
-    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    return (
+      date.getMonth() === currentMonth && date.getFullYear() === currentYear
+    );
   };
 
   // Function to check if audit date is in the future (greater than today)
@@ -79,17 +89,19 @@ const AuditDashboard: React.FC = () => {
   };
 
   // State for search and filter
-  const [searchNamaPegawai, setSearchNamaPegawai] = useState('');
-  const [jenisAuditFilter, setJenisAuditFilter] = useState('');
+  const [searchNamaPegawai, setSearchNamaPegawai] = useState("");
+  const [jenisAuditFilter, setJenisAuditFilter] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [showEntries, setShowEntries] = useState('10');
+  const [showEntries, setShowEntries] = useState("10");
 
   // State for modal visibility
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleSearch = () => {
-    alert(`Searching for Nama Pegawai: ${searchNamaPegawai}, Jenis Audit: ${jenisAuditFilter}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`);
+    alert(
+      `Searching for Nama Pegawai: ${searchNamaPegawai}, Jenis Audit: ${jenisAuditFilter}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`
+    );
     // Implement actual search logic here
   };
 
@@ -101,12 +113,12 @@ const AuditDashboard: React.FC = () => {
     setIsAddModalOpen(false);
   };
 
-  const handleSaveNewAudit = (newAudit: Omit<AuditItem, 'id'>) => {
+  const handleSaveNewAudit = (newAudit: Omit<AuditItem, "id">) => {
     // Generate a simple unique ID for the new audit
-    const newId = `AUD${String(auditData.length + 1).padStart(3, '0')}`;
+    const newId = `AUD${String(auditData.length + 1).padStart(3, "0")}`;
     const auditWithId: AuditItem = { ...newAudit, id: newId };
     setAuditData((prevData) => [...prevData, auditWithId]);
-    console.log('New Audit Added:', auditWithId);
+    console.log("New Audit Added:", auditWithId);
     // In a real application, you would send this data to a backend API
   };
 
@@ -117,7 +129,6 @@ const AuditDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
@@ -126,14 +137,16 @@ const AuditDashboard: React.FC = () => {
                 AUDIT
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">QHSE</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  QHSE
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Audit</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {today.toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -144,7 +157,12 @@ const AuditDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label htmlFor="searchNamaPegawai" className="block text-sm font-medium text-gray-700 mb-2">Cari Nama Pegawai</label>
+              <label
+                htmlFor="searchNamaPegawai"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Cari Nama Pegawai
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -159,7 +177,12 @@ const AuditDashboard: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="jenisAuditFilter" className="block text-sm font-medium text-gray-700 mb-2">Pilih Jenis Audit</label>
+              <label
+                htmlFor="jenisAuditFilter"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Pilih Jenis Audit
+              </label>
               <div className="relative">
                 <select
                   id="jenisAuditFilter"
@@ -169,17 +192,25 @@ const AuditDashboard: React.FC = () => {
                 >
                   <option value="">Pilih jenis...</option>
                   <option value="Internal QMS">Internal QMS</option>
-                  <option value="Eksternal ISO 45001">Eksternal ISO 45001</option>
+                  <option value="Eksternal ISO 45001">
+                    Eksternal ISO 45001
+                  </option>
                   <option value="Internal EMS">Internal EMS</option>
                   <option value="Supplier Audit">Supplier Audit</option>
                   {/* Add more options as needed */}
                 </select>
-                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rotate-180" /> {/* Chevron down */}
+                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rotate-180" />{" "}
+                {/* Chevron down */}
               </div>
             </div>
 
             <div className="lg:col-span-2">
-              <label htmlFor="periode" className="block text-sm font-medium text-gray-700 mb-2">Periode Audit</label>
+              <label
+                htmlFor="periode"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Periode Audit
+              </label>
               <div className="flex space-x-4">
                 <div className="relative flex-1">
                   <DatePicker
@@ -246,19 +277,19 @@ const AuditDashboard: React.FC = () => {
           </div>
           <div className="flex space-x-3">
             <button
-              onClick={() => handleExport('Excel')}
+              onClick={() => handleExport("Excel")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> Excel
             </button>
             <button
-              onClick={() => handleExport('CSV')}
+              onClick={() => handleExport("CSV")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> CSV
             </button>
             <button
-              onClick={() => handleExport('PDF')}
+              onClick={() => handleExport("PDF")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> PDF
@@ -272,39 +303,69 @@ const AuditDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Nama Pegawai
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Jenis Audit
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tanggal Audit
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Document
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {auditData.map((audit) => { // Use auditData state here
-                  const isCurrentMonth = isAuditInCurrentMonth(audit.tanggalAudit);
+                {auditData.map((audit) => {
+                  // Use auditData state here
+                  const isCurrentMonth = isAuditInCurrentMonth(
+                    audit.tanggalAudit
+                  );
                   const isFutureDate = isAuditDateInFuture(audit.tanggalAudit); // New condition for future dates
                   return (
-                    <tr key={audit.id} className={isFutureDate ? 'bg-red-50 hover:bg-red-100 transition-colors' : 'hover:bg-gray-50 transition-colors'}>
+                    <tr
+                      key={audit.id}
+                      className={
+                        isFutureDate
+                          ? "bg-red-50 hover:bg-red-100 transition-colors"
+                          : "hover:bg-gray-50 transition-colors"
+                      }
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {audit.namaPegawai}
                         {isCurrentMonth && ( // This tag still uses the 'current month' logic
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            <AlertTriangle className="h-3 w-3 mr-1" /> Audit Bulan Ini
+                            <AlertTriangle className="h-3 w-3 mr-1" /> Audit
+                            Bulan Ini
                           </span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(audit.tanggalAudit).toLocaleDateString('id-ID')}
+                        {new Date(audit.tanggalAudit).toLocaleDateString(
+                          "id-ID"
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <a href={audit.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 flex items-center">
+                        <a
+                          href={audit.documentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 flex items-center"
+                        >
                           <FileText className="h-4 w-4 mr-1" /> View Document
                         </a>
                       </td>
