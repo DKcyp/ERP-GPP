@@ -1,41 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Loader2, ChevronDown } from 'lucide-react';
-import { UpdateStatusFormData, LamaranData } from '../types';
+import { X, Save, Loader2 } from 'lucide-react';
+
+export interface UpdateStatusFormData {
+  status: 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel' | '';
+  keterangan: string;
+}
 
 interface UpdateStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, data: UpdateStatusFormData) => void;
-  initialData: LamaranData | null;
-  isEditable: boolean;
+  onSave: (data: UpdateStatusFormData) => void;
+  currentItem: {
+    id: string;
+    namaClient: string;
+    statusPenawaran: 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel';
+  } | null;
 }
 
-const statusOptions: Array<UpdateStatusFormData['status']> = ['Pending', 'Accepted', 'Rejected', 'Interview', 'Hired'];
+const statusOptions: Array<NonNullable<UpdateStatusFormData['status']>> = [
+  'Minat',
+  'Register',
+  'Pra-kualifikasi',
+  'Evaluasi',
+  'Tender',
+  'Deal',
+  'Cancel',
+];
 
 const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  initialData,
-  isEditable,
+  currentItem,
 }) => {
   const [formData, setFormData] = useState<UpdateStatusFormData>({
-    status: 'Pending',
+    status: '',
     keterangan: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
   useEffect(() => {
-    if (isOpen && initialData) {
+    if (isOpen && currentItem) {
       setFormData({
-        status: initialData.status,
-        keterangan: initialData.keterangan,
+        status: currentItem.statusPenawaran,
+        keterangan: '',
       });
     } else if (!isOpen) {
       // Reset form when modal closes
       setFormData({
-        status: 'Pending',
+        status: '',
         keterangan: '',
       });
     }
@@ -55,7 +68,7 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose, initialData]);
+  }, [isOpen, onClose, currentItem]);
 
   const handleInputChange = (field: keyof UpdateStatusFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -63,12 +76,12 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!initialData || !isEditable) return;
+    if (!currentItem) return;
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
 
-    onSave(initialData.id, formData);
+    onSave(formData);
 
     setIsLoading(false);
     onClose();
@@ -102,44 +115,21 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
         {/* Form Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {/* Status Dropdown */}
+            {/* Status Select */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
+                Status Penawaran
               </label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => isEditable && setStatusDropdownOpen(!statusDropdownOpen)}
-                  className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 flex items-center justify-between bg-white text-sm ${
-                    isEditable
-                      ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                      : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
-                  }`}
-                  disabled={!isEditable}
-                >
-                  <span className="text-gray-900">{formData.status}</span>
-                  {isEditable && <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />}
-                </button>
-
-                {isEditable && statusDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-lg z-50 overflow-hidden">
-                    {statusOptions.map((status) => (
-                      <button
-                        type="button"
-                        key={status}
-                        onClick={() => {
-                          handleInputChange('status', status);
-                          setStatusDropdownOpen(false);
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors text-sm"
-                      >
-                        {status}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <select
+                value={formData.status}
+                onChange={(e) => handleInputChange('status', e.target.value as UpdateStatusFormData['status'])}
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">Pilih Status</option>
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
             </div>
 
             {/* Keterangan */}
@@ -151,13 +141,8 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
                 value={formData.keterangan}
                 onChange={(e) => handleInputChange('keterangan', e.target.value)}
                 rows={3}
-                className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 ${
-                  isEditable
-                    ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                    : 'border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed'
-                }`}
+                className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 placeholder="Tambahkan keterangan..."
-                disabled={!isEditable}
               ></textarea>
             </div>
           </form>
@@ -172,26 +157,24 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
           >
             Close
           </button>
-          {isEditable && (
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  <span>Menyimpan...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-3.5 w-3.5" />
-                  <span>Simpan</span>
-                </>
-              )}
-            </button>
-          )}
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-3.5 w-3.5" />
+                <span>Simpan</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
