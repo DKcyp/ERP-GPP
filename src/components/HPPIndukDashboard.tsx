@@ -7,11 +7,9 @@ import {
   Plus,
   FileSpreadsheet,
   FileText,
-  File,
   Edit,
   Trash2,
   Eye,
-  MoreHorizontal,
   ChevronDown,
   Calendar,
   Clock,
@@ -50,7 +48,7 @@ const HPPIndukDashboard: React.FC = () => {
   const [selectedHPPForDetail, setSelectedHPPForDetail] = useState<HPPIndukDetailData | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<HPPInduk | null>(null);
-  const [editingHPP, setEditingHPP] = useState<HPPIndukFormData | null>(null); // For edit functionality
+  // Note: editing functionality disabled for now to match HPPIndukModal props
 
   // Sample data
   const [hppIndukData, setHppIndukData] = useState<HPPInduk[]>([
@@ -111,57 +109,31 @@ const HPPIndukDashboard: React.FC = () => {
   }, []);
 
   const handleSaveHPPInduk = (formData: HPPIndukFormData) => {
-    if (editingHPP) {
-      // Edit existing HPP
-      setHppIndukData(prev =>
-        prev.map(hpp =>
-          hpp.id === formData.noHPP
-            ? {
-                ...hpp,
-                pic: formData.pic,
-                jenisPekerjaan: formData.jenisPekerjaan,
-                lokasi: formData.lokasiPekerjaan,
-                estimasiHPP: formData.estimasiNilaiKontrak,
-                tanggalUpdate: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })
-              }
-            : hpp
-        )
-      );
-      setEditingHPP(null);
-    } else {
-      // Add new HPP
-      const newHPPInduk: HPPInduk = {
-        id: formData.noHPP, // Use noHPP from form as ID
-        no: hppIndukData.length + 1, // Simple sequential number
-        pic: formData.pic,
-        jenisPekerjaan: formData.jenisPekerjaan,
-        lokasi: formData.lokasiPekerjaan,
-        estimasiHPP: formData.estimasiNilaiKontrak || 'Rp 0',
-        statusDokumen: 'Open',
-        tanggalUpdate: new Date().toLocaleDateString('id-ID', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        })
-      };
-      setHppIndukData(prev => [newHPPInduk, ...prev.map(h => ({ ...h, no: h.no + 1 }))]);
-    }
+    // Map fields from HPPIndukModal to dashboard model
+    const newHPPInduk: HPPInduk = {
+      id: formData.noKontrak || `HPP${String(Date.now()).slice(-3)}`,
+      no: hppIndukData.length + 1,
+      pic: formData.namaClient || '-',
+      jenisPekerjaan: formData.jenisPekerjaan || '-',
+      lokasi: formData.lokasiPekerjaan || '-',
+      estimasiHPP: formData.estimasiNilaiKontrak || 'Rp 0',
+      statusDokumen: 'Open',
+      tanggalUpdate: new Date().toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    };
+    setHppIndukData(prev => [newHPPInduk, ...prev.map(h => ({ ...h, no: h.no + 1 }))]);
     setIsModalOpen(false);
   };
 
   const handleAddClick = () => {
-    setEditingHPP(null); // Clear any previous edit data
     setIsModalOpen(true);
   };
 
-  const handleEditClick = (hpp: HPPInduk) => {
-    setEditingHPP({
-      noHPP: hpp.id,
-      pic: hpp.pic,
-      jenisPekerjaan: hpp.jenisPekerjaan,
-      lokasiPekerjaan: hpp.lokasi,
-      estimasiNilaiKontrak: hpp.estimasiHPP,
-    });
+  const handleEditClick = (_hpp: HPPInduk) => {
+    // Open modal without prefill (HPPIndukModal does not support initialData)
     setIsModalOpen(true);
   };
 
@@ -541,9 +513,7 @@ const HPPIndukDashboard: React.FC = () => {
       <HPPIndukModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveHPPInduk} // Changed from handleAddHPPInduk
-        initialData={editingHPP} // Pass initial data for editing
-        title={editingHPP ? "Edit HPP Induk" : "Tambah HPP Induk"} // Dynamic title
+        onSave={handleSaveHPPInduk}
       />
 
       {/* HPP Induk Detail Modal */}
