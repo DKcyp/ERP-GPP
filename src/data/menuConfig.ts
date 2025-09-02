@@ -1,706 +1,1189 @@
-import { MenuSection, MenuSubSection, MenuItem } from '../types';
+import { MenuSection, MenuSubSection, MenuItem } from "../types";
 
 // Helper to create the General menu section with sub-sections
 const createGeneralMenu = (role: string): MenuSection => ({
-  title: 'General',
-  icon: 'Settings',
+  title: "General",
+  icon: "Settings",
   subSections: [
     {
-      title: 'KPI',
-      icon: 'BarChart',
+      title: "KPI",
+      icon: "BarChart",
       items: [
-        { title: 'Dashboard KPI', icon: 'LayoutDashboard', path: `/${role}/general/kpi/dashboard` },
-        { title: 'Master KPI', icon: 'Database', path: `/${role}/general/kpi/master` },
-        { title: 'List KPI', icon: 'List', path: `/${role}/general/kpi/list` },
-      ]
+        {
+          title: "Dashboard KPI",
+          icon: "LayoutDashboard",
+          path: `/${role}/general/kpi/dashboard`,
+        },
+        {
+          title: "Master KPI",
+          icon: "Database",
+          path: `/${role}/general/kpi/master`,
+        },
+        { title: "List KPI", icon: "List", path: `/${role}/general/kpi/list` },
+      ],
     },
     {
-      title: 'Voucher',
-      icon: 'Ticket',
+      title: "Voucher",
+      icon: "Ticket",
       items: [
-        { title: 'Dashboard Voucher', icon: 'LayoutDashboard', path: `/${role}/general/voucher/dashboard` },
-        { title: 'Proses Voucher', icon: 'Workflow', path: `/${role}/general/voucher/proses` },
-        { title: 'Pertanggung jawaban voucher', icon: 'FileText', path: `/${role}/general/voucher/pertanggungjawaban` } // NEW: Pertanggung jawaban voucher
-      ]
+        {
+          title: "Dashboard Voucher",
+          icon: "LayoutDashboard",
+          path: `/${role}/general/voucher/dashboard`,
+        },
+        {
+          title: "Proses Voucher",
+          icon: "Workflow",
+          path: `/${role}/general/voucher/proses`,
+        },
+        {
+          title: "Pertanggung jawaban voucher",
+          icon: "FileText",
+          path: `/${role}/general/voucher/pertanggungjawaban`,
+        }, // NEW: Pertanggung jawaban voucher
+      ],
     },
     {
-      title: 'Reimburse',
-      icon: 'Wallet',
+      title: "Reimburse",
+      icon: "Wallet",
       items: [
-        { title: 'Dashboard Reimburse', icon: 'LayoutDashboard', path: `/${role}/general/reimburse/dashboard` },
-        { title: 'Proses Reimburse', icon: 'FileEdit', path: `/${role}/general/reimburse/proses` },
-      ]
+        {
+          title: "Dashboard Reimburse",
+          icon: "LayoutDashboard",
+          path: `/${role}/general/reimburse/dashboard`,
+        },
+        {
+          title: "Proses Reimburse",
+          icon: "FileEdit",
+          path: `/${role}/general/reimburse/proses`,
+        },
+      ],
     },
     {
-      title: 'Cash Advance',
-      icon: 'Banknote',
+      title: "Cash Advance",
+      icon: "Banknote",
       items: [
-        { title: 'Dashboard Cash Advance', icon: 'LayoutDashboard', path: `/${role}/general/cash-advance/dashboard` },
-        { title: 'Proses Cash Advance', icon: 'Send', path: `/${role}/general/cash-advance/proses` },
-      ]
+        {
+          title: "Dashboard Cash Advance",
+          icon: "LayoutDashboard",
+          path: `/${role}/general/cash-advance/dashboard`,
+        },
+        {
+          title: "Proses Cash Advance",
+          icon: "Send",
+          path: `/${role}/general/cash-advance/proses`,
+        },
+      ],
     },
     {
-      title: 'Purchase Request',
-      icon: 'ShoppingCart',
+      title: "Purchase Request",
+      icon: "ShoppingCart",
       items: [
-        { title: 'Dashboard Purchasing Request', icon: 'LayoutDashboard', path: `/${role}/general/purchase-request/dashboard` },
-        { title: 'Proses Purchasing Request', icon: 'FilePlus', path: `/${role}/general/purchase-request/proses` },
-      ]
-    }
-  ]
+        {
+          title: "Dashboard Purchasing Request",
+          icon: "LayoutDashboard",
+          path: `/${role}/general/purchase-request/dashboard`,
+        },
+        {
+          title: "Proses Purchasing Request",
+          icon: "FilePlus",
+          path: `/${role}/general/purchase-request/proses`,
+        },
+      ],
+    },
+  ],
 });
 
 export const marketingMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard', // NEW: Main Dashboard for Marketing
-    icon: 'Home',
+    title: "Main Dashboard", // NEW: Main Dashboard for Marketing
+    icon: "Home",
     items: [],
-    directPath: '/marketing/dashboard'
+    directPath: "/marketing/dashboard",
   },
   {
-    title: 'Suspect',
-    icon: 'Search',
+    title: "Suspect",
+    icon: "Search",
     items: [],
-    directPath: '/marketing/suspect/dashboard'
+    directPath: "/marketing/suspect/dashboard",
   },
   {
-    title: 'Prospect',
-    icon: 'Target',
+    title: "Prospect",
+    icon: "Target",
     items: [],
-    directPath: '/marketing/prospect/dashboard'
+    directPath: "/marketing/prospect/dashboard",
   },
   {
-    title: 'Penawaran',
-    icon: 'DollarSign',
+    title: "Penawaran",
+    icon: "DollarSign",
     items: [
-      { title: 'Penawaran On Call', icon: 'Phone', path: '/marketing/penawaran/on-call' },
-      { title: 'Penawaran Tender', icon: 'Award', path: '/marketing/penawaran/tender' }
-    ]
+      {
+        title: "Penawaran On Call",
+        icon: "Phone",
+        path: "/marketing/penawaran/on-call",
+      },
+      {
+        title: "Penawaran Tender",
+        icon: "Award",
+        path: "/marketing/penawaran/tender",
+      },
+    ],
   },
   {
-    title: 'Kontrak Deal',
-    icon: 'FileCheck',
+    title: "Kontrak Deal",
+    icon: "FileCheck",
     items: [],
-    directPath: '/marketing/kontrak-deal/dashboard'
+    directPath: "/marketing/kontrak-deal/dashboard",
   },
   {
-    title: 'HPP Induk',
-    icon: 'Calculator',
+    title: "HPP Induk",
+    icon: "Calculator",
     items: [],
-    directPath: '/marketing/hpp-induk/dashboard'
+    directPath: "/marketing/hpp-induk/dashboard",
   },
   {
-    title: 'Sales Order',
-    icon: 'ShoppingCart',
+    title: "Sales Order",
+    icon: "ShoppingCart",
     items: [],
-    directPath: '/marketing/sales-order/dashboard'
+    directPath: "/marketing/sales-order/dashboard",
   },
-  createGeneralMenu('marketing')
+  createGeneralMenu("marketing"),
 ];
 
 export const operationalMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard', // NEW: Main Dashboard for Operational
-    icon: 'Home',
+    title: "Main Dashboard", // NEW: Main Dashboard for Operational
+    icon: "Home",
     items: [],
-    directPath: '/operational/dashboard'
+    directPath: "/operational/dashboard",
   },
   {
-    title: 'Kontrak',
-    icon: 'FileSignature',
+    title: "Kontrak",
+    icon: "FileSignature",
     items: [],
-    directPath: '/operational/kontrak/dashboard'
+    directPath: "/operational/kontrak/dashboard",
   },
   {
-    title: 'Sales Order',
-    icon: 'ShoppingCart',
+    title: "Sales Order",
+    icon: "ShoppingCart",
     items: [
-      { title: 'SO', icon: 'List', path: '/operational/sales-order/so' },
-      { title: 'SO Turunan', icon: 'GitBranch', path: '/operational/sales-order/so-turunan' }
-    ]
+      { title: "SO", icon: "List", path: "/operational/sales-order/so" },
+      {
+        title: "SO Turunan",
+        icon: "GitBranch",
+        path: "/operational/sales-order/so-turunan",
+      },
+    ],
   },
   {
-    title: 'Man Power',
-    icon: 'Users',
+    title: "Man Power",
+    icon: "Users",
     items: [
-      { title: 'Man Power', icon: 'User', path: '/operational/man-power/man-power' },
-      { title: 'Man Power Plan', icon: 'Calendar', path: '/operational/man-power/plan' }
-    ]
+      {
+        title: "Man Power",
+        icon: "User",
+        path: "/operational/man-power/man-power",
+      },
+      {
+        title: "Man Power Plan",
+        icon: "Calendar",
+        path: "/operational/man-power/plan",
+      },
+    ],
   },
   {
-    title: 'HPP Turunan',
-    icon: 'Calculator',
+    title: "HPP Turunan",
+    icon: "Calculator",
     items: [],
-    directPath: '/operational/hpp-turunan/dashboard'
+    directPath: "/operational/hpp-turunan/dashboard",
   },
   {
-    title: 'Produksi',
-    icon: 'Factory',
+    title: "Produksi",
+    icon: "Factory",
     items: [
-      { title: 'Dashboard', icon: 'BarChart3', path: '/operational/produksi/dashboard' },
-      { title: 'Proses Produksi', icon: 'Cog', path: '/operational/produksi/proses' }
-    ]
+      {
+        title: "Dashboard",
+        icon: "BarChart3",
+        path: "/operational/produksi/dashboard",
+      },
+      {
+        title: "Proses Produksi",
+        icon: "Cog",
+        path: "/operational/produksi/proses",
+      },
+    ],
   },
   {
-    title: 'TimeSheet',
-    icon: 'Clock',
+    title: "TimeSheet",
+    icon: "Clock",
     items: [
-      { title: 'Dashboard', icon: 'BarChart3', path: '/operational/timesheet/dashboard' },
-      { title: 'Timesheet Pegawai', icon: 'UserCheck', path: '/operational/timesheet/pegawai' },
-      { title: 'Timesheet Barang', icon: 'Package', path: '/operational/timesheet/barang' }
-    ]
+      {
+        title: "Dashboard",
+        icon: "BarChart3",
+        path: "/operational/timesheet/dashboard",
+      },
+      {
+        title: "Timesheet Pegawai",
+        icon: "UserCheck",
+        path: "/operational/timesheet/pegawai",
+      },
+      {
+        title: "Timesheet Barang",
+        icon: "Package",
+        path: "/operational/timesheet/barang",
+      },
+    ],
   },
   {
-    title: 'Training',
-    icon: 'GraduationCap',
+    title: "Training",
+    icon: "GraduationCap",
     items: [
-      { title: 'Dashboard', icon: 'BarChart3', path: '/operational/training/dashboard' },
-      { title: 'Proses Training', icon: 'BarChart3' ,path: '/operational/training/proses' }
-    ]
+      {
+        title: "Dashboard",
+        icon: "BarChart3",
+        path: "/operational/training/dashboard",
+      },
+      {
+        title: "Proses Training",
+        icon: "BarChart3",
+        path: "/operational/training/proses",
+      },
+    ],
   },
   {
-    title: 'PBG',
-    icon: 'Shield',
+    title: "PBG",
+    icon: "Shield",
     items: [],
-    directPath: '/operational/pbg/dashboard'
+    directPath: "/operational/pbg/dashboard",
   },
-  createGeneralMenu('operational')
+  createGeneralMenu("operational"),
 ];
 
 export const hrdMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/hrd/dashboard'
+    directPath: "/hrd/dashboard",
   },
   {
-    title: 'Tunjangan Unit',
-    icon: 'Building',
+    title: "Tunjangan Unit",
+    icon: "Building",
     items: [],
-    directPath: '/hrd/tunjangan-unit/dashboard'
+    directPath: "/hrd/tunjangan-unit/dashboard",
   },
   {
-    title: 'Tunjangan',
-    icon: 'Gift',
+    title: "Tunjangan",
+    icon: "Gift",
     items: [],
-    directPath: '/hrd/tunjangan/dashboard'
+    directPath: "/hrd/tunjangan/dashboard",
   },
   {
-    title: 'Resign',
-    icon: 'LogOut',
+    title: "Resign",
+    icon: "LogOut",
     items: [],
-    directPath: '/hrd/resign/dashboard'
+    directPath: "/hrd/resign/dashboard",
   },
   {
-    title: 'Rekrutmen',
-    icon: 'Users',
+    title: "Rekrutmen",
+    icon: "Users",
     items: [
-      { title: 'List Rekrutmen', icon: 'ClipboardList', path: '/hrd/rekrutmen/dashboard' },
-      { title: 'List Lamaran', icon: 'FileText', path: '/hrd/rekrutmen/list-lamaran' },
-      { title: 'Kontrak Kerja', icon: 'FileCheck', path: '/hrd/rekrutmen/kontrak-kerja' },
-      { title: 'History Lamaran', icon: 'History', path: '/hrd/rekrutmen/history-lamaran' }
-    ]
+      {
+        title: "List Rekrutmen",
+        icon: "ClipboardList",
+        path: "/hrd/rekrutmen/dashboard",
+      },
+      {
+        title: "List Lamaran",
+        icon: "FileText",
+        path: "/hrd/rekrutmen/list-lamaran",
+      },
+      {
+        title: "Kontrak Kerja",
+        icon: "FileCheck",
+        path: "/hrd/rekrutmen/kontrak-kerja",
+      },
+      {
+        title: "History Lamaran",
+        icon: "History",
+        path: "/hrd/rekrutmen/history-lamaran",
+      },
+    ],
   },
   {
-    title: 'Marketing',
-    icon: 'Briefcase',
+    title: "Marketing",
+    icon: "Briefcase",
     items: [],
-    directPath: '/hrd/marketing/dashboard'
+    directPath: "/hrd/marketing/dashboard",
   },
   {
-    title: 'Lembur',
-    icon: 'Clock',
+    title: "Lembur",
+    icon: "Clock",
     items: [],
-    directPath: '/hrd/lembur/dashboard'
+    directPath: "/hrd/lembur/dashboard",
   },
   {
-    title: 'Pegawai',
-    icon: 'UserRound',
+    title: "Pegawai",
+    icon: "UserRound",
     items: [
-      { title: 'Daftar Pegawai', icon: 'Users', path: '/hrd/pegawai/daftar' },
-      { title: 'Master UMR', icon: 'Banknote', path: '/hrd/pegawai/master-umr' },
-      { title: 'PR Training', icon: 'GraduationCap', path: '/hrd/pegawai/pr-training' } // NEW: PR Training submenu
-    ]
+      { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
+      {
+        title: "Master UMR",
+        icon: "Banknote",
+        path: "/hrd/pegawai/master-umr",
+      },
+      {
+        title: "PR Training",
+        icon: "GraduationCap",
+        path: "/hrd/pegawai/pr-training",
+      }, // NEW: PR Training submenu
+    ],
   },
   {
-    title: 'Gaji',
-    icon: 'Wallet',
+    title: "Gaji",
+    icon: "Wallet",
     items: [
-      { title: 'Daftar Gaji', icon: 'FileText', path: '/hrd/gaji/daftar' },
-      { title: 'Pengajian', icon: 'Calculator', path: '/hrd/gaji/pengajian' },
-      { title: 'Potongan Gaji', icon: 'Scissors', path: '/hrd/gaji/potongan' },
-      { title: 'History Peminjaman', icon: 'History', path: '/hrd/gaji/history-peminjaman' },
-      { title: 'Daftar Peminjam Karyawan', icon: 'UsersRound', path: '/hrd/gaji/daftar-peminjam-karyawan' }
-    ]
+      { title: "Daftar Gaji", icon: "FileText", path: "/hrd/gaji/daftar" },
+      { title: "Pengajian", icon: "Calculator", path: "/hrd/gaji/pengajian" },
+      { title: "Potongan Gaji", icon: "Scissors", path: "/hrd/gaji/potongan" },
+      {
+        title: "History Peminjaman",
+        icon: "History",
+        path: "/hrd/gaji/history-peminjaman",
+      },
+      {
+        title: "Daftar Peminjam Karyawan",
+        icon: "UsersRound",
+        path: "/hrd/gaji/daftar-peminjam-karyawan",
+      },
+    ],
   },
   {
-    title: 'Absensi',
-    icon: 'CalendarCheck',
+    title: "Absensi",
+    icon: "CalendarCheck",
     items: [
-      { title: 'Absensi Teknisi', icon: 'CalendarDays', path: '/hrd/absensi/teknisi' },
-      { title: 'Approval Timesheet', icon: 'CheckCircle', path: '/hrd/absensi/approval-timesheet' }
-    ]
+      {
+        title: "Absensi Teknisi",
+        icon: "CalendarDays",
+        path: "/hrd/absensi/teknisi",
+      },
+      {
+        title: "Approval Timesheet",
+        icon: "CheckCircle",
+        path: "/hrd/absensi/approval-timesheet",
+      },
+    ],
   },
   {
-    title: 'Penilaian',
-    icon: 'Star',
+    title: "Penilaian",
+    icon: "Star",
     items: [
-      { title: 'Daftar Penilaian', icon: 'ClipboardCheck', path: '/hrd/penilaian/daftar' },
-      { title: 'Master KPI HRD', icon: 'BarChart', path: '/hrd/penilaian/master-kpi-hrd' },
-      { title: 'Master Indikator HRD', icon: 'Target', path: '/hrd/penilaian/master-indikator-hrd' }
-    ]
+      {
+        title: "Daftar Penilaian",
+        icon: "ClipboardCheck",
+        path: "/hrd/penilaian/daftar",
+      },
+      {
+        title: "Master KPI HRD",
+        icon: "BarChart",
+        path: "/hrd/penilaian/master-kpi-hrd",
+      },
+      {
+        title: "Master Indikator HRD",
+        icon: "Target",
+        path: "/hrd/penilaian/master-indikator-hrd",
+      },
+    ],
   },
   {
-    title: 'SPK', // Moved SPK Section to HRD
-    icon: 'FileSignature',
+    title: "SPK", // Moved SPK Section to HRD
+    icon: "FileSignature",
     items: [
-      { title: 'Approve SPK', icon: 'CheckCircle', path: '/hrd/spk/approve' },
-    ]
+      { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+    ],
   },
-  createGeneralMenu('hrd')
+  createGeneralMenu("hrd"),
 ];
 
 export const pengadaanMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/pengadaan/dashboard'
+    directPath: "/pengadaan/dashboard",
   },
   {
-    title: 'Vendor / Supplier',
-    icon: 'Factory',
+    title: "Vendor / Supplier",
+    icon: "Factory",
     items: [
-      { title: 'List Vendor', icon: 'List', path: '/pengadaan/vendor/list' },
-      { title: 'Master Vendor', icon: 'FileCog', path: '/pengadaan/vendor/master' },
-      { title: 'Evaluasi Vendor', icon: 'CheckCircle', path: '/pengadaan/vendor/evaluasi' }, // NEW: Evaluasi Vendor sub-menu
-      { title: 'Laporan', icon: 'BarChart', path: '/pengadaan/vendor/laporan' }
-    ]
+      { title: "List Vendor", icon: "List", path: "/pengadaan/vendor/list" },
+      {
+        title: "Master Vendor",
+        icon: "FileCog",
+        path: "/pengadaan/vendor/master",
+      },
+      {
+        title: "Evaluasi Vendor",
+        icon: "CheckCircle",
+        path: "/pengadaan/vendor/evaluasi",
+      }, // NEW: Evaluasi Vendor sub-menu
+      { title: "Laporan", icon: "BarChart", path: "/pengadaan/vendor/laporan" },
+    ],
   },
   {
-    title: 'Seleksi Supplier / Bidding',
-    icon: 'Handshake',
+    title: "Seleksi Supplier / Bidding",
+    icon: "Handshake",
     items: [
-      { title: 'Dashboard Seleksi Supplier / Bidding', icon: 'ClipboardCheck', path: '/pengadaan/seleksi/seleksi' },
-      { title: 'Daftar Seleksi Supplier / Bidding', icon: 'ClipboardList', path: '/pengadaan/seleksi/daftar' },
-      { title: 'Laporan', icon: 'FileText', path: '/pengadaan/seleksi/laporan' }
-    ]
+      {
+        title: "Dashboard Seleksi Supplier / Bidding",
+        icon: "ClipboardCheck",
+        path: "/pengadaan/seleksi/seleksi",
+      },
+      {
+        title: "Daftar Seleksi Supplier / Bidding",
+        icon: "ClipboardList",
+        path: "/pengadaan/seleksi/daftar",
+      },
+      {
+        title: "Laporan",
+        icon: "FileText",
+        path: "/pengadaan/seleksi/laporan",
+      },
+    ],
   },
   {
-    title: 'Daftar PO',
-    icon: 'FileBox',
+    title: "Daftar PO",
+    icon: "FileBox",
     items: [
-      { title: 'Dashboard PO', icon: 'LayoutDashboard', path: '/pengadaan/po/dashboard' },
-      { title: 'PO Barang', icon: 'Package', path: '/pengadaan/po/barang' },
-      { title: 'PO Jasa', icon: 'Wrench', path: '/pengadaan/po/jasa' },
-      { title: 'Laporan', icon: 'FileBarChart', path: '/pengadaan/po/laporan' }
-    ]
+      {
+        title: "Dashboard PO",
+        icon: "LayoutDashboard",
+        path: "/pengadaan/po/dashboard",
+      },
+      { title: "PO Barang", icon: "Package", path: "/pengadaan/po/barang" },
+      { title: "PO Jasa", icon: "Wrench", path: "/pengadaan/po/jasa" },
+      { title: "Laporan", icon: "FileBarChart", path: "/pengadaan/po/laporan" },
+    ],
   },
   {
-    title: 'Penerimaan Barang',
-    icon: 'Truck',
+    title: "Penerimaan Barang",
+    icon: "Truck",
     items: [
-      { title: 'Daftar Penerimaan Barang', icon: 'ListChecks', path: '/pengadaan/penerimaan/daftar' },
-      { title: 'Purchasing', icon: 'ShoppingCart', path: '/pengadaan/penerimaan/purchasing' },
-      { title: 'Gudang', icon: 'Warehouse', path: '/pengadaan/penerimaan/gudang' }, // NEW: Gudang sub-menu
-      { title: 'Invoice', icon: 'FileInvoice', path: '/pengadaan/penerimaan/invoice' },
-      { title: 'Laporan', icon: 'BarChart2', path: '/pengadaan/penerimaan/laporan' }
-    ]
+      {
+        title: "Daftar Penerimaan Barang",
+        icon: "ListChecks",
+        path: "/pengadaan/penerimaan/daftar",
+      },
+      {
+        title: "Purchasing",
+        icon: "ShoppingCart",
+        path: "/pengadaan/penerimaan/purchasing",
+      },
+      {
+        title: "Gudang",
+        icon: "Warehouse",
+        path: "/pengadaan/penerimaan/gudang",
+      }, // NEW: Gudang sub-menu
+      {
+        title: "Invoice",
+        icon: "FileInvoice",
+        path: "/pengadaan/penerimaan/invoice",
+      },
+      {
+        title: "Laporan",
+        icon: "BarChart2",
+        path: "/pengadaan/penerimaan/laporan",
+      },
+    ],
   },
-  createGeneralMenu('pengadaan')
+  createGeneralMenu("pengadaan"),
 ];
 
 export const financeMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/finance/dashboard'
+    directPath: "/finance/dashboard",
   },
   {
-    title: 'AP',
-    icon: 'CreditCard', // Icon for Accounts Payable
+    title: "AP",
+    icon: "CreditCard", // Icon for Accounts Payable
     subSections: [
       {
-        title: 'AP Management',
-        icon: 'ClipboardList',
+        title: "AP Management",
+        icon: "ClipboardList",
         items: [
-          { title: 'Dashboard AP', icon: 'LayoutDashboard', path: '/finance/ap/dashboard' },
-          { title: 'Laporan AP', icon: 'FileText', path: '/finance/ap/laporan' },
-          { title: 'Pembayaran Gaji', icon: 'Banknote', path: '/finance/ap/pembayaran-gaji' }, // NEW: Pembayaran Gaji submenu
-        ]
-      }
-    ]
+          {
+            title: "Dashboard AP",
+            icon: "LayoutDashboard",
+            path: "/finance/ap/dashboard",
+          },
+          {
+            title: "Laporan AP",
+            icon: "FileText",
+            path: "/finance/ap/laporan",
+          },
+          {
+            title: "Pembayaran Gaji",
+            icon: "Banknote",
+            path: "/finance/ap/pembayaran-gaji",
+          }, // NEW: Pembayaran Gaji submenu
+        ],
+      },
+    ],
   },
   {
-    title: 'Reimburse / Voucher',
-    icon: 'Wallet', // Icon for Reimburse / Voucher
+    title: "Reimburse / Voucher",
+    icon: "Wallet", // Icon for Reimburse / Voucher
     items: [],
-    directPath: '/finance/reimburse-voucher'
+    directPath: "/finance/reimburse-voucher",
   },
   {
-    title: 'AR',
-    icon: 'ReceiptText', // Icon for Accounts Receivable
+    title: "AR",
+    icon: "ReceiptText", // Icon for Accounts Receivable
     subSections: [
       {
-        title: 'AR Management',
-        icon: 'ClipboardCheck',
+        title: "AR Management",
+        icon: "ClipboardCheck",
         items: [
-          { title: 'Dashboard AR', icon: 'LayoutDashboard', path: '/finance/ar/dashboard' },
-          { title: 'Proses Pembayaran AR', icon: 'Handshake', path: '/finance/ar/proses-pembayaran' },
-          { title: 'Laporan AR', icon: 'FileBarChart', path: '/finance/ar/laporan' },
-        ]
-      }
-    ]
+          {
+            title: "Dashboard AR",
+            icon: "LayoutDashboard",
+            path: "/finance/ar/dashboard",
+          },
+          {
+            title: "Proses Pembayaran AR",
+            icon: "Handshake",
+            path: "/finance/ar/proses-pembayaran",
+          },
+          {
+            title: "Laporan AR",
+            icon: "FileBarChart",
+            path: "/finance/ar/laporan",
+          },
+        ],
+      },
+    ],
   },
   {
-    title: 'Approval',
-    icon: 'CheckCircle',
+    title: "Approval",
+    icon: "CheckCircle",
     items: [
-      { title: 'Approval Tiket', icon: 'TicketCheck', path: '/finance/approval/tiket' },
-      { title: 'Approval Invoice', icon: 'FileCheck', path: '/finance/approval/invoice' },
-      { title: 'Approval Penggajian', icon: 'Wallet', path: '/finance/approval/penggajian' },
-      { title: 'Approval PO Training', icon: 'Award', path: '/finance/approval/po-training' },
-      { title: 'Approval Voucher', icon: 'Ticket', path: '/finance/approval/voucher' },
-    ]
+      {
+        title: "Approval Tiket",
+        icon: "TicketCheck",
+        path: "/finance/approval/tiket",
+      },
+      {
+        title: "Approval Invoice",
+        icon: "FileCheck",
+        path: "/finance/approval/invoice",
+      },
+      {
+        title: "Approval Penggajian",
+        icon: "Wallet",
+        path: "/finance/approval/penggajian",
+      },
+      {
+        title: "Approval PO Training",
+        icon: "Award",
+        path: "/finance/approval/po-training",
+      },
+      {
+        title: "Approval Voucher",
+        icon: "Ticket",
+        path: "/finance/approval/voucher",
+      },
+    ],
   },
   {
-    title: 'Voucher',
-    icon: 'Ticket',
+    title: "Voucher",
+    icon: "Ticket",
     items: [
-      { title: 'Daftar Pembayaran', icon: 'CreditCard', path: '/finance/voucher/daftar-pembayaran' },
-      { title: 'Daftar Voucher', icon: 'TicketPercent', path: '/finance/voucher/daftar-voucher' },
-      { title: 'Laporan Hutang Usaha', icon: 'FileText', path: '/finance/voucher/laporan-hutang-usaha' },
-    ]
-  }
+      {
+        title: "Daftar Pembayaran",
+        icon: "CreditCard",
+        path: "/finance/voucher/daftar-pembayaran",
+      },
+      {
+        title: "Daftar Voucher",
+        icon: "TicketPercent",
+        path: "/finance/voucher/daftar-voucher",
+      },
+      {
+        title: "Laporan Hutang Usaha",
+        icon: "FileText",
+        path: "/finance/voucher/laporan-hutang-usaha",
+      },
+    ],
+  },
 ];
 
 export const gudangMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/gudang/dashboard'
+    directPath: "/gudang/dashboard",
   },
   {
-    title: 'Barang',
-    icon: 'Box',
+    title: "Barang",
+    icon: "Box",
     items: [
-      { title: 'Master Barang', icon: 'List', path: '/gudang/barang/master' },
-      { title: 'Kategori Barang', icon: 'Tag', path: '/gudang/barang/kategori' },
-      { title: 'Satuan Barang', icon: 'Grid', path: '/gudang/barang/satuan' },
-      { title: 'Expired Barang', icon: 'AlertTriangle', path: '/gudang/barang/expired' },
-      { title: 'Restock Expired Barang', icon: 'RotateCw', path: '/gudang/barang/restock-expired' },
-      { title: 'Stock Barang', icon: 'Layers', path: '/gudang/barang/stock' }
-    ]
+      { title: "Master Barang", icon: "List", path: "/gudang/barang/master" },
+      {
+        title: "Kategori Barang",
+        icon: "Tag",
+        path: "/gudang/barang/kategori",
+      },
+      { title: "Satuan Barang", icon: "Grid", path: "/gudang/barang/satuan" },
+      {
+        title: "Expired Barang",
+        icon: "AlertTriangle",
+        path: "/gudang/barang/expired",
+      },
+      {
+        title: "Restock Expired Barang",
+        icon: "RotateCw",
+        path: "/gudang/barang/restock-expired",
+      },
+      { title: "Stock Barang", icon: "Layers", path: "/gudang/barang/stock" },
+    ],
   },
   {
-    title: 'Gudang Proyek',
-    icon: 'Building',
+    title: "Gudang Proyek",
+    icon: "Building",
     items: [],
-    directPath: '/gudang/gudang-proyek/dashboard'
+    directPath: "/gudang/gudang-proyek/dashboard",
   },
   {
-    title: 'Penerimaan Barang Masuk',
-    icon: 'Download',
+    title: "Penerimaan Barang Masuk",
+    icon: "Download",
     items: [],
-    directPath: '/gudang/penerimaan-barang-masuk/dashboard'
+    directPath: "/gudang/penerimaan-barang-masuk/dashboard",
   },
   {
-    title: 'Mutasi Barang',
-    icon: 'Shuffle',
+    title: "Mutasi Barang",
+    icon: "Shuffle",
     items: [],
-    directPath: '/gudang/mutasi-barang/dashboard'
+    directPath: "/gudang/mutasi-barang/dashboard",
   },
   {
-    title: 'Pengembalian Barang',
-    icon: 'RotateCcw',
+    title: "Pengembalian Barang",
+    icon: "RotateCcw",
     items: [
-      { title: 'Pengembalian Barang', icon: 'RotateCcw', path: '/gudang/pengembalian-barang/pengembalian' },
-      { title: 'Barang Karantina', icon: 'Shield', path: '/gudang/pengembalian-barang/karantina' },
-      { title: 'Barang Dibuang', icon: 'Trash', path: '/gudang/pengembalian-barang/dibuang' },
-      { title: 'Timesheet Barang', icon: 'Clock', path: '/gudang/pengembalian-barang/timesheet' }
-    ]
+      {
+        title: "Pengembalian Barang",
+        icon: "RotateCcw",
+        path: "/gudang/pengembalian-barang/pengembalian",
+      },
+      {
+        title: "Barang Karantina",
+        icon: "Shield",
+        path: "/gudang/pengembalian-barang/karantina",
+      },
+      {
+        title: "Barang Dibuang",
+        icon: "Trash",
+        path: "/gudang/pengembalian-barang/dibuang",
+      },
+      {
+        title: "Timesheet Barang",
+        icon: "Clock",
+        path: "/gudang/pengembalian-barang/timesheet",
+      },
+    ],
   },
   {
-    title: 'Stock Opname',
-    icon: 'ClipboardCheck',
+    title: "Stock Opname",
+    icon: "ClipboardCheck",
     items: [
-      { title: 'Stock Opname', icon: 'ClipboardCheck', path: '/gudang/stock-opname/stock-opname' },
-      { title: 'Verifikasi Stock Opname', icon: 'CheckCircle', path: '/gudang/stock-opname/verifikasi' },
-      { title: 'Laporan Semua Stock', icon: 'FileText', path: '/gudang/stock-opname/laporan' }
-    ]
+      {
+        title: "Stock Opname",
+        icon: "ClipboardCheck",
+        path: "/gudang/stock-opname/stock-opname",
+      },
+      {
+        title: "Verifikasi Stock Opname",
+        icon: "CheckCircle",
+        path: "/gudang/stock-opname/verifikasi",
+      },
+      {
+        title: "Laporan Semua Stock",
+        icon: "FileText",
+        path: "/gudang/stock-opname/laporan",
+      },
+    ],
   },
   {
-    title: 'Monitoring Alat Proyek',
-    icon: 'Monitor',
+    title: "Monitoring Alat Proyek",
+    icon: "Monitor",
     items: [],
-    directPath: '/gudang/monitoring-alat-proyek/dashboard'
+    directPath: "/gudang/monitoring-alat-proyek/dashboard",
   },
   {
-    title: 'Permintaan Barang Gudang',
-    icon: 'ShoppingCart',
+    title: "Permintaan Barang Gudang",
+    icon: "ShoppingCart",
     items: [],
-    directPath: '/gudang/permintaan-barang-gudang/dashboard'
+    directPath: "/gudang/permintaan-barang-gudang/dashboard",
   },
   // Grouped 'Izin Alat' menu
   {
-    title: 'Izin Alat', // Parent menu title
-    icon: 'Tool', // Parent menu icon
+    title: "Izin Alat", // Parent menu title
+    icon: "Tool", // Parent menu icon
     subSections: [
       {
-        title: 'Manajemen Izin Alat', // Sub-section title
-        icon: 'Tool', // Sub-section icon
+        title: "Manajemen Izin Alat", // Sub-section title
+        icon: "Tool", // Sub-section icon
         items: [
           // { title: 'Monitoring Izin Alat', icon: 'Tool', path: '/gudang/monitoring-izin-alat' },
-          { title: 'Perizinan Alat', icon: 'FileText', path: '/gudang/perizinan-alat' },
-          { title: 'Monitoring Perizinan', icon: 'ClipboardCheck', path: '/gudang/monitoring-perizinan' }
-        ]
-      }
-    ]
+          {
+            title: "Perizinan Alat",
+            icon: "FileText",
+            path: "/gudang/perizinan-alat",
+          },
+          {
+            title: "Monitoring Perizinan",
+            icon: "ClipboardCheck",
+            path: "/gudang/monitoring-perizinan",
+          },
+        ],
+      },
+    ],
   },
-  createGeneralMenu('gudang')
+  createGeneralMenu("gudang"),
 ];
 
 export const managementMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
-    subSections: [ // Changed to subSections as requested
+    title: "Main Dashboard",
+    icon: "Home",
+    subSections: [
+      // Changed to subSections as requested
       {
-        title: 'Dashboards by Role',
-        icon: 'LayoutDashboard',
+        title: "Dashboards by Role",
+        icon: "LayoutDashboard",
         items: [
-          { title: 'Management Dashboard', icon: 'Briefcase', path: '/management/dashboard' },
-          { title: 'Procon Dashboard', icon: 'HardHat', path: '/procon/dashboard' },
-          { title: 'Accounting Dashboard', icon: 'Calculator', path: '/accounting/dashboard' },
-          { title: 'QHSE Dashboard', icon: 'ShieldCheck', path: '/qhse/dashboard' },
-          { title: 'Gudang Dashboard', icon: 'Warehouse', path: '/gudang/dashboard' },
-          { title: 'Finance Dashboard', icon: 'DollarSign', path: '/finance/dashboard' },
-          { title: 'Pengadaan Dashboard', icon: 'ShoppingCart', path: '/pengadaan/dashboard' },
-          { title: 'HRD Dashboard', icon: 'Users', path: '/hrd/dashboard' },
-          { title: 'Operational Dashboard', icon: 'Settings', path: '/operational/dashboard' },
-          { title: 'Marketing Dashboard', icon: 'Megaphone', path: '/marketing/dashboard' }
-        ]
-      }
-    ]
+          {
+            title: "Management Dashboard",
+            icon: "Briefcase",
+            path: "/management/dashboard",
+          },
+          {
+            title: "Procon Dashboard",
+            icon: "HardHat",
+            path: "/procon/dashboard",
+          },
+          {
+            title: "Accounting Dashboard",
+            icon: "Calculator",
+            path: "/accounting/dashboard",
+          },
+          {
+            title: "QHSE Dashboard",
+            icon: "ShieldCheck",
+            path: "/qhse/dashboard",
+          },
+          {
+            title: "Gudang Dashboard",
+            icon: "Warehouse",
+            path: "/gudang/dashboard",
+          },
+          {
+            title: "Finance Dashboard",
+            icon: "DollarSign",
+            path: "/finance/dashboard",
+          },
+          {
+            title: "Pengadaan Dashboard",
+            icon: "ShoppingCart",
+            path: "/pengadaan/dashboard",
+          },
+          { title: "HRD Dashboard", icon: "Users", path: "/hrd/dashboard" },
+          {
+            title: "Operational Dashboard",
+            icon: "Settings",
+            path: "/operational/dashboard",
+          },
+          {
+            title: "Marketing Dashboard",
+            icon: "Megaphone",
+            path: "/marketing/dashboard",
+          },
+        ],
+      },
+    ],
   },
   {
-    title: 'Approve Kontrak',
-    icon: 'FileSignature', // Using FileSignature for contract approval
+    title: "Approve Kontrak",
+    icon: "FileSignature", // Using FileSignature for contract approval
     items: [],
-    directPath: '/management/approve-kontrak'
+    directPath: "/management/approve-kontrak",
   },
   {
-    title: 'Approve gaji',
-    icon: 'Wallet', // Using Wallet for payroll
+    title: "Approve gaji",
+    icon: "Wallet", // Using Wallet for payroll
     items: [],
-    directPath: '/management/penggajian'
+    directPath: "/management/penggajian",
   },
   {
-    title: 'Approval Training', // New menu item
-    icon: 'CheckCircle', // Icon for approval
+    title: "Approval Training", // New menu item
+    icon: "CheckCircle", // Icon for approval
     items: [],
-    directPath: '/management/training' // Path to Proses Training page
+    directPath: "/management/training", // Path to Proses Training page
   },
-	  {
-    title: 'Approve SPK', 
-    icon: 'CheckCircle',
+  {
+    title: "Approve SPK",
+    icon: "CheckCircle",
     items: [],
-		directPath: '/hrd/spk/approve'
+    directPath: "/hrd/spk/approve",
   },
-		  {
-    title: 'Approve PO Barang', 
-    icon: 'Package',
-		items: [],
-		directPath: '/management/po/barang'
+  {
+    title: "Approve PO Barang",
+    icon: "Package",
+    items: [],
+    directPath: "/management/po/barang",
   },
-		  {
-    title: 'Approve PO Jasa', 
-    icon: 'Wrench',
-		items: [],
-		directPath: '/management/po/jasa'
+  {
+    title: "Approve PO Jasa",
+    icon: "Wrench",
+    items: [],
+    directPath: "/management/po/jasa",
   },
 ];
 
 export const qhseMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/qhse/dashboard'
+    directPath: "/qhse/dashboard",
   },
   {
-    title: 'Perizinan Alat',
-    icon: 'Tool',
+    title: "Perizinan Alat",
+    icon: "Tool",
     items: [],
-    directPath: '/qhse/perizinan-alat'
+    directPath: "/qhse/perizinan-alat",
   },
   {
-    title: 'Monitoring MCU',
-    icon: 'HeartPulse',
+    title: "Legalitas Perusahaan",
+    icon: "ShieldCheck",
     items: [],
-    directPath: '/qhse/monitoring-mcu'
+    directPath: "/qhse/legalitas-perusahaan",
   },
   {
-    title: 'Monitoring Training',
-    icon: 'GraduationCap',
+    title: "QHSE Performance",
+    icon: "BarChart3",
     items: [],
-    directPath: '/qhse/monitoring-training'
+    directPath: "/qhse/performance",
   },
   {
-    title: 'Audit',
-    icon: 'ClipboardCheck',
+    title: "Monitoring MCU",
+    icon: "HeartPulse",
     items: [],
-    directPath: '/qhse/audit'
+    directPath: "/qhse/monitoring-mcu",
   },
   {
-    title: 'Monitoring ISOTOP',
-    icon: 'Atom',
+    title: "Monitoring Daftar Alat Ukur",
+    icon: "ListChecks",
     items: [],
-    directPath: '/qhse/monitoring-isotop'
+    directPath: "/qhse/monitoring-daftar-alat-ukur",
   },
   {
-    title: 'Monitoring PTI',
-    icon: 'ShieldCheck',
-    items: [],
-    directPath: '/qhse/monitoring-pti'
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Purchase Request",
+        icon: "ShoppingCart",
+        path: "/qhse/monitoring/pr",
+      },
+      {
+        title: "Cash Advance",
+        icon: "Banknote",
+        path: "/qhse/monitoring/cash-advance",
+      },
+      {
+        title: "Voucher",
+        icon: "Ticket",
+        path: "/qhse/monitoring/voucher",
+      },
+      {
+        title: "Endorse Certificate",
+        icon: "FileCheck",
+        path: "/qhse/monitoring/endorse-certificate",
+      },
+      {
+        title: "Reimburse",
+        icon: "Wallet",
+        path: "/qhse/monitoring/reimburse",
+      },
+    ],
   },
   {
-    title: 'Monitoring Alat Safety',
-    icon: 'HardHat',
-    items: [],
-    directPath: '/qhse/monitoring-alat-safety'
+    title: "Monitoring Gudang",
+    icon: "Boxes",
+    items: [
+      {
+        title: "Monitoring Manifest Barang",
+        icon: "Package",
+        path: "/qhse/monitoring-gudang/manifest-barang",
+      },
+      {
+        title: "Monitoring PBG",
+        icon: "ClipboardList",
+        path: "/qhse/monitoring-gudang/pbg",
+      },
+      {
+        title: "Monitoring RFI",
+        icon: "FileSearch",
+        path: "/qhse/monitoring-gudang/rfi",
+      },
+    ],
   },
   {
-    title: 'Jadwal & Realisasi Program',
-    icon: 'CalendarCheck',
-    items: [],
-    directPath: '/qhse/jadwal-realisasi-program'
-  }
+    title: "Monitoring Personnel",
+    icon: "Users",
+    subSections: [
+      {
+        title: "Monitoring Personnel",
+        icon: "Users",
+        items: [
+          {
+            title: "Dashboard",
+            icon: "LayoutDashboard",
+            path: "/qhse/monitoring-personnel",
+          },
+          {
+            title: "Training Matrix",
+            icon: "GraduationCap",
+            path: "/qhse/monitoring-personnel/training-matrix",
+          },
+          {
+            title: "Medical Check Up",
+            icon: "HeartPulse",
+            path: "/qhse/monitoring-personnel/mcu",
+          },
+          {
+            title: "APD",
+            icon: "Shield",
+            path: "/qhse/monitoring-personnel/apd",
+          },
+          {
+            title: "Nomor Report",
+            icon: "FileText",
+            path: "/qhse/monitoring-personnel/nomor-report",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "RADIOGRAPHY",
+    icon: "Camera",
+    subSections: [
+      {
+        title: "Radiography",
+        icon: "Camera",
+        items: [
+          {
+            title: "Monitoring Kamera Radiography",
+            icon: "Camera",
+            path: "/qhse/radiography/monitoring-kamera-radiography",
+          },
+          {
+            title: "SIB Personnel Radiasi",
+            icon: "UserCheck",
+            path: "/qhse/radiography/sib-personnel-radiasi",
+          },
+          {
+            title: "Dosimeter Saku",
+            icon: "ClipboardCheck",
+            path: "/qhse/radiography/dosimeter-saku",
+          },
+          {
+            title: "Surveymeter",
+            icon: "Activity",
+            path: "/qhse/radiography/surveymeter",
+          },
+          {
+            title: "ThermoLuminescent Dosimeter (TLD) Badge",
+            icon: "Tag",
+            path: "/qhse/radiography/tld-badge",
+          },
+          {
+            title: "Uji Usap Kamera",
+            icon: "ClipboardCheck",
+            path: "/qhse/radiography/uji-usap-kamera",
+          },
+          {
+            title: "Masa berlaku kontrak SIB",
+            icon: "FileSignature",
+            path: "/qhse/radiography/kontrak-sib",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const accountingMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/accounting/dashboard'
+    directPath: "/accounting/dashboard",
   },
   {
-    title: 'Master COA',
-    icon: 'BookText',
+    title: "Master COA",
+    icon: "BookText",
     items: [],
-    directPath: '/accounting/master-coa'
+    directPath: "/accounting/master-coa",
   },
   {
-    title: 'Kas',
-    icon: 'Wallet',
+    title: "Kas",
+    icon: "Wallet",
     subSections: [
       {
-        title: 'Kas',
-        icon: 'Wallet',
+        title: "Kas",
+        icon: "Wallet",
         items: [
-          { title: 'Kas Masuk', icon: 'Wallet', path: '/accounting/kas-masuk' },
-          { title: 'Kas Keluar', icon: 'CreditCard', path: '/accounting/kas-keluar' },
-        ]
-      }
-    ]
+          { title: "Kas Masuk", icon: "Wallet", path: "/accounting/kas-masuk" },
+          {
+            title: "Kas Keluar",
+            icon: "CreditCard",
+            path: "/accounting/kas-keluar",
+          },
+        ],
+      },
+    ],
   },
   {
-    title: 'Bank',
-    icon: 'Banknote',
+    title: "Bank",
+    icon: "Banknote",
     subSections: [
       {
-        title: 'Bank',
-        icon: 'Banknote',
+        title: "Bank",
+        icon: "Banknote",
         items: [
-          { title: 'Bank Masuk', icon: 'Banknote', path: '/accounting/bank-masuk' },
-          { title: 'Bank Keluar', icon: 'Landmark', path: '/accounting/bank-keluar' },
-        ]
-      }
-    ]
+          {
+            title: "Bank Masuk",
+            icon: "Banknote",
+            path: "/accounting/bank-masuk",
+          },
+          {
+            title: "Bank Keluar",
+            icon: "Landmark",
+            path: "/accounting/bank-keluar",
+          },
+        ],
+      },
+    ],
   },
   {
-    title: 'Jurnal',
-    icon: 'ClipboardList',
+    title: "Jurnal",
+    icon: "ClipboardList",
     subSections: [
       {
-        title: 'Jurnal',
-        icon: 'ClipboardList',
+        title: "Jurnal",
+        icon: "ClipboardList",
         items: [
-          { title: 'Posting Jurnal', icon: 'ClipboardList', path: '/accounting/posting-jurnal' },
-          { title: 'Laporan Jurnal', icon: 'FileText', path: '/accounting/laporan-jurnal' },
-        ]
-      }
-    ]
+          {
+            title: "Posting Jurnal",
+            icon: "ClipboardList",
+            path: "/accounting/posting-jurnal",
+          },
+          {
+            title: "Laporan Jurnal",
+            icon: "FileText",
+            path: "/accounting/laporan-jurnal",
+          },
+        ],
+      },
+    ],
   },
   {
-    title: 'Tutup Buku',
-    icon: 'BookX', // Icon for closing books
+    title: "Tutup Buku",
+    icon: "BookX", // Icon for closing books
     items: [],
-    directPath: '/accounting/tutup-buku'
+    directPath: "/accounting/tutup-buku",
   },
   {
-    title: 'Laba Rugi',
-    icon: 'TrendingUp', // Icon for profit/loss
+    title: "Laba Rugi",
+    icon: "TrendingUp", // Icon for profit/loss
     items: [],
-    directPath: '/accounting/laba-rugi'
+    directPath: "/accounting/laba-rugi",
   },
   {
-    title: 'Neraca',
-    icon: 'Scale', // Icon for balance sheet
+    title: "Neraca",
+    icon: "Scale", // Icon for balance sheet
     items: [],
-    directPath: '/accounting/neraca'
+    directPath: "/accounting/neraca",
   },
-	createGeneralMenu('gudang')
+  createGeneralMenu("gudang"),
 ];
 
 // Refined Tax Menu
 export const taxMenu: MenuSection[] = [
   {
-    title: 'Pajak',
-    icon: 'Scale', // Icon for general tax section
+    title: "Pajak",
+    icon: "Scale", // Icon for general tax section
     subSections: [
       {
-        title: 'Pajak', // Sub-section title, can be same as main section or more specific
-        icon: 'Scale', // Sub-section icon
+        title: "Pajak", // Sub-section title, can be same as main section or more specific
+        icon: "Scale", // Sub-section icon
         items: [
-          { title: 'Pajak Masukan', icon: 'ArrowDownCircle', path: '/tax/pajak-masukan' },
-          { title: 'Pajak Keluaran', icon: 'ArrowUpCircle', path: '/tax/pajak-keluaran' },
-        ]
-      }
-    ]
+          {
+            title: "Pajak Masukan",
+            icon: "ArrowDownCircle",
+            path: "/tax/pajak-masukan",
+          },
+          {
+            title: "Pajak Keluaran",
+            icon: "ArrowUpCircle",
+            path: "/tax/pajak-keluaran",
+          },
+        ],
+      },
+    ],
   },
   {
-    title: 'PPh 21',
-    icon: 'FileText',
+    title: "PPh 21",
+    icon: "FileText",
     items: [],
-    directPath: '/tax/pph-21'
-  }
+    directPath: "/tax/pph-21",
+  },
 ];
 
 // Procon Menu
 export const proconMenu: MenuSection[] = [
   {
-    title: 'Main Dashboard',
-    icon: 'Home',
+    title: "Main Dashboard",
+    icon: "Home",
     items: [],
-    directPath: '/procon/dashboard'
+    directPath: "/procon/dashboard",
   },
   {
-    title: 'Invoice',
-    icon: 'FileInvoice',
+    title: "Invoice",
+    icon: "FileInvoice",
     items: [],
-    directPath: '/procon/invoice'
+    directPath: "/procon/invoice",
   },
   {
-    title: 'Approval', // New section
-    icon: 'CheckCircle', // Appropriate icon for Approval
+    title: "Approval", // New section
+    icon: "CheckCircle", // Appropriate icon for Approval
     items: [
-      { title: 'Approval PO Jasa', icon: 'Wrench', path: '/procon/approval/po-jasa' }, // New item
-      { title: 'Approval Timesheet', icon: 'Clock', path: '/procon/approval/timesheet' } // New item
-    ]
-  }
+      {
+        title: "Approval PO Jasa",
+        icon: "Wrench",
+        path: "/procon/approval/po-jasa",
+      }, // New item
+      {
+        title: "Approval Timesheet",
+        icon: "Clock",
+        path: "/procon/approval/timesheet",
+      }, // New item
+    ],
+  },
 ];

@@ -115,6 +115,29 @@ import MonitoringISOTOPDashboard from './MonitoringISOTOPDashboard';
 import MonitoringPTIDashboard from './MonitoringPTIDashboard';
 import MonitoringAlatSafetyDashboard from './MonitoringAlatSafetyDashboard';
 import JadwalRealisasiProgramDashboard from './JadwalRealisasiProgramDashboard';
+import LegalitasPerusahaanDashboard from './LegalitasPerusahaanDashboard';
+import QHSEPerformanceDashboard from './QHSEPerformanceDashboard';
+import RadiographyMonitoringKameraDashboard from './RadiographyMonitoringKameraDashboard';
+import RadiographySIBPersonnelRadiasiDashboard from './RadiographySIBPersonnelRadiasiDashboard';
+import RadiographyDosimeterSakuDashboard from './RadiographyDosimeterSakuDashboard';
+import RadiographySurveymeterDashboard from './RadiographySurveymeterDashboard';
+import RadiographyTLDBadgeDashboard from './RadiographyTLDBadgeDashboard';
+import RadiographyUjiUsapKameraDashboard from './RadiographyUjiUsapKameraDashboard';
+import RadiographyKontrakSIBDashboard from './RadiographyKontrakSIBDashboard';
+import MonitoringDaftarAlatUkurDashboard from './MonitoringDaftarAlatUkurDashboard';
+import MonitoringPersonnelDashboard from './MonitoringPersonnelDashboard';
+import TrainingMatrixDashboard from './TrainingMatrixDashboard';
+import MedicalCheckUpDashboard from './MedicalCheckUpDashboard';
+import APDDashboard from './APDDashboard';
+import NomorReportDashboard from './NomorReportDashboard';
+import MonitoringPRDashboard from './MonitoringPRDashboard';
+import MonitoringCADashboard from './MonitoringCADashboard';
+import MonitoringVoucherDashboard from './MonitoringVoucherDashboard';
+import MonitoringEndorseCertificateDashboard from './MonitoringEndorseCertificateDashboard';
+import MonitoringReimburseDashboard from './MonitoringReimburseDashboard';
+import MonitoringManifestBarangDashboard from './MonitoringManifestBarangDashboard';
+import MonitoringPBGDashboard from './MonitoringPBGDashboard';
+import MonitoringRFIDashboard from './MonitoringRFIDashboard';
 
 // Accounting Dashboards
 import AccountingMainDashboard from './AccountingMainDashboard';
@@ -731,8 +754,74 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/qhse/perizinan-alat') {
       return <PerizinanAlatDashboard />;
     }
+    if (currentPage === '/qhse/performance') {
+      return <QHSEPerformanceDashboard />;
+    }
     if (currentPage === '/qhse/monitoring-mcu') {
       return <MonitoringMCUDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-daftar-alat-ukur') {
+      return <MonitoringDaftarAlatUkurDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-personnel') {
+      return <MonitoringPersonnelDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-personnel/training-matrix') {
+      return <TrainingMatrixDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-personnel/mcu') {
+      return <MedicalCheckUpDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-personnel/apd') {
+      return <APDDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-personnel/nomor-report') {
+      return <NomorReportDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring/pr') {
+      return <MonitoringPRDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring/cash-advance') {
+      return <MonitoringCADashboard />;
+    }
+    if (currentPage === '/qhse/monitoring/voucher') {
+      return <MonitoringVoucherDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring/endorse-certificate') {
+      return <MonitoringEndorseCertificateDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring/reimburse') {
+      return <MonitoringReimburseDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-gudang/manifest-barang') {
+      return <MonitoringManifestBarangDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-gudang/pbg') {
+      return <MonitoringPBGDashboard />;
+    }
+    if (currentPage === '/qhse/monitoring-gudang/rfi') {
+      return <MonitoringRFIDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/monitoring-kamera-radiography') {
+      return <RadiographyMonitoringKameraDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/sib-personnel-radiasi') {
+      return <RadiographySIBPersonnelRadiasiDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/dosimeter-saku') {
+      return <RadiographyDosimeterSakuDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/surveymeter') {
+      return <RadiographySurveymeterDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/tld-badge') {
+      return <RadiographyTLDBadgeDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/uji-usap-kamera') {
+      return <RadiographyUjiUsapKameraDashboard />;
+    }
+    if (currentPage === '/qhse/radiography/kontrak-sib') {
+      return <RadiographyKontrakSIBDashboard />;
     }
     if (currentPage === '/qhse/monitoring-training') {
       return <MonitoringTrainingDashboard />;
@@ -751,6 +840,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/qhse/jadwal-realisasi-program') {
       return <JadwalRealisasiProgramDashboard />;
+    }
+    if (currentPage === '/qhse/legalitas-perusahaan') {
+      return <LegalitasPerusahaanDashboard />;
     }
 
     // Accounting Routes
