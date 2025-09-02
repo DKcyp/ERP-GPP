@@ -139,6 +139,8 @@ import MonitoringReimburseDashboard from './MonitoringReimburseDashboard';
 import MonitoringManifestBarangDashboard from './MonitoringManifestBarangDashboard';
 import MonitoringPBGDashboard from './MonitoringPBGDashboard';
 import MonitoringRFIDashboard from './MonitoringRFIDashboard';
+import QHSEMasterKPIDashboard from './QHSEMasterKPIDashboard';
+import QHSEListKPIDashboard from './QHSEListKPIDashboard';
 
 // Accounting Dashboards
 import AccountingMainDashboard from './AccountingMainDashboard';
@@ -848,6 +850,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === '/qhse/legalitas-perusahaan') {
       return <LegalitasPerusahaanDashboard />;
+    }
+    if (currentPage === '/qhse/general/kpi/master') {
+      return <QHSEMasterKPIDashboard />;
+    }
+    if (currentPage === '/qhse/general/kpi/list') {
+      return <QHSEListKPIDashboard />;
     }
 
     // Accounting Routes

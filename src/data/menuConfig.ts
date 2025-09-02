@@ -897,6 +897,14 @@ export const qhseMenu: MenuSection[] = [
     directPath: "/qhse/monitoring-daftar-alat-ukur",
   },
   {
+    title: "KPI",
+    icon: "BarChart",
+    items: [
+      { title: "Master KPI", icon: "Database", path: "/qhse/general/kpi/master" },
+      { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
+    ],
+  },
+  {
     title: "Monitoring",
     icon: "Monitor",
     items: [
