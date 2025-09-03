@@ -213,25 +213,6 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Jenis Barang
-              </label>
-              <div className="relative">
-                <select
-                  className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                  value={jenisBarang}
-                  onChange={(e) => setJenisBarang(e.target.value)}
-                >
-                  <option value="">Semua Jenis</option>
-                  <option value="Instrument">Instrument</option>
-                  <option value="Safety">Safety</option>
-                  <option value="Consumable">Consumable</option>
-                </select>
-                <Tag className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300 pointer-events-none" />
-              </div>
-            </div>
-
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Periode Masa Berlaku
@@ -420,20 +401,16 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Jenis Barang
+                      Posisi Barang
                     </label>
-                    <select
+                    <input
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                      value={form.jenisBarang}
+                      value={form.posisiBarang}
                       onChange={(e) =>
-                        setForm((f) => ({ ...f, jenisBarang: e.target.value }))
+                        setForm((f) => ({ ...f, posisiBarang: e.target.value }))
                       }
-                    >
-                      <option value="">Pilih jenis</option>
-                      <option value="Instrument">Instrument</option>
-                      <option value="Safety">Safety</option>
-                      <option value="Consumable">Consumable</option>
-                    </select>
+                      placeholder="Lokasi alat"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -446,19 +423,6 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                       onChange={(e) =>
                         setForm((f) => ({ ...f, masaBerlaku: e.target.value }))
                       }
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Posisi Barang
-                    </label>
-                    <input
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                      value={form.posisiBarang}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, posisiBarang: e.target.value }))
-                      }
-                      placeholder="Lokasi alat"
                     />
                   </div>
                   <div className="md:col-span-2">

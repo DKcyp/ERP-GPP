@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Clock,
   Download,
@@ -7,6 +7,7 @@ import {
   Trash2,
   Search,
   AlertTriangle,
+  AlertCircle,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
@@ -57,12 +58,43 @@ export default function RadiographyUjiUsapKameraDashboard() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState<UjiUsap | null>(null);
 
+  // Expiration alerts (<= 60 hari)
+  const [expiringAlerts, setExpiringAlerts] = useState<{ id: string; noKamera: string; daysLeft: number }[]>([]);
+  const [showAlerts, setShowAlerts] = useState(true);
+
   const daysTo = (dateStr: string) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const d = new Date(dateStr);
     d.setHours(0, 0, 0, 0);
     return Math.ceil((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  // Build alert list for items expiring within 60 days
+  useEffect(() => {
+    const alerts = rows
+      .map((r) => ({ id: r.id, noKamera: r.noKamera, daysLeft: daysTo(r.masaBerlaku) }))
+      .filter((a) => a.daysLeft <= 60 && a.daysLeft >= 0)
+      .sort((a, b) => a.daysLeft - b.daysLeft);
+    setExpiringAlerts(alerts);
+  }, [rows]);
+
+  const getAlertSeverity = (daysLeft: number) => {
+    if (daysLeft <= 7) return "bg-red-50 border-red-200 text-red-800";
+    if (daysLeft <= 30) return "bg-amber-50 border-amber-200 text-amber-800";
+    return "bg-blue-50 border-blue-200 text-blue-800"; // 31-60 hari
+  };
+
+  const getAlertIcon = (daysLeft: number) => {
+    if (daysLeft <= 7) return <AlertTriangle className="h-5 w-5 text-red-500" />;
+    if (daysLeft <= 30) return <AlertCircle className="h-5 w-5 text-amber-500" />;
+    return <Clock className="h-5 w-5 text-blue-500" />;
+  };
+
+  const getAlertMessage = (item: { noKamera: string; daysLeft: number }) => {
+    if (item.daysLeft === 0) return `Uji Usap ${item.noKamera} kedaluwarsa hari ini!`;
+    if (item.daysLeft === 1) return `Uji Usap ${item.noKamera} kedaluwarsa besok!`;
+    return `Uji Usap ${item.noKamera} akan kedaluwarsa dalam ${item.daysLeft} hari`;
   };
 
   const filtered = useMemo(() => {
@@ -149,6 +181,42 @@ export default function RadiographyUjiUsapKameraDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Expiration Alerts (<=60 hari) */}
+      {expiringAlerts.length > 0 && showAlerts && (
+        <div className="max-w-7xl mx-auto px-6 pt-4">
+          <div className="flex items-center justify-between bg-white border rounded-lg shadow-sm p-4 mb-4">
+            <div className="flex-1">
+              <div className="flex items-center">
+                <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
+                  Pemberitahuan Masa Berlaku Uji Usap Kamera (≤ 60 hari)
+                </h3>
+                <span className="ml-3 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  {expiringAlerts.length} peringatan
+                </span>
+              </div>
+              <div className="mt-2 space-y-2">
+                {expiringAlerts.slice(0, 3).map((item) => (
+                  <div key={item.id} className={`flex items-center text-sm p-2 rounded-md ${getAlertSeverity(item.daysLeft)}`}>
+                    <div className="flex-shrink-0 mr-2">{getAlertIcon(item.daysLeft)}</div>
+                    <div className="flex-1">{getAlertMessage(item)}</div>
+                  </div>
+                ))}
+                {expiringAlerts.length > 3 && (
+                  <div className="text-sm text-gray-500 mt-1">+ {expiringAlerts.length - 3} peringatan lainnya...</div>
+                )}
+              </div>
+            </div>
+            <button onClick={() => setShowAlerts(false)} className="text-gray-400 hover:text-gray-500 ml-4">
+              <span className="sr-only">Tutup</span>
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Filters */}
@@ -267,13 +335,16 @@ export default function RadiographyUjiUsapKameraDashboard() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map((row) => {
                   const dt = daysTo(row.masaBerlaku);
-                  const danger = dt > 60; // highlight merah jika masa berlaku >
+                  const isExpired = dt < 0;
+                  const isWarning = dt >= 0 && dt <= 60;
                   return (
                     <tr
                       key={row.id}
                       className={
-                        danger
+                        isExpired
                           ? "bg-red-50 hover:bg-red-100 transition-colors"
+                          : isWarning
+                          ? "bg-amber-50 hover:bg-amber-100 transition-colors"
                           : "hover:bg-gray-50 transition-colors"
                       }
                     >
@@ -285,9 +356,9 @@ export default function RadiographyUjiUsapKameraDashboard() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(row.masaBerlaku).toLocaleDateString("id-ID")}
-                        {danger && (
-                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            <AlertTriangle className="h-3 w-3 mr-1" /> {dt} hari
+                        {(isExpired || isWarning) && (
+                          <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isExpired ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>
+                            <AlertTriangle className="h-3 w-3 mr-1" /> {dt >= 0 ? `${dt} hari` : `Expired ${Math.abs(dt)} hari`}
                           </span>
                         )}
                       </td>

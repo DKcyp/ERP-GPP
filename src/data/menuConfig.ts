@@ -273,22 +273,20 @@ export const hrdMenu: MenuSection[] = [
     directPath: "/hrd/dashboard",
   },
   {
-    title: "Tunjangan Unit",
-    icon: "Building",
-    items: [],
-    directPath: "/hrd/tunjangan-unit/dashboard",
-  },
-  {
     title: "Tunjangan",
     icon: "Gift",
-    items: [],
-    directPath: "/hrd/tunjangan/dashboard",
-  },
-  {
-    title: "Resign",
-    icon: "LogOut",
-    items: [],
-    directPath: "/hrd/resign/dashboard",
+    items: [
+      {
+        title: "Tunjangan",
+        icon: "Gift",
+        path: "/hrd/tunjangan/dashboard",
+      },
+      {
+        title: "Tunjangan Unit",
+        icon: "Building",
+        path: "/hrd/tunjangan-unit/dashboard",
+      },
+    ],
   },
   {
     title: "Rekrutmen",
@@ -334,6 +332,11 @@ export const hrdMenu: MenuSection[] = [
     items: [
       { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
       {
+        title: "Resign",
+        icon: "LogOut",
+        path: "/hrd/resign/dashboard",
+      },
+      {
         title: "Master UMR",
         icon: "Banknote",
         path: "/hrd/pegawai/master-umr",
@@ -342,7 +345,7 @@ export const hrdMenu: MenuSection[] = [
         title: "PR Training",
         icon: "GraduationCap",
         path: "/hrd/pegawai/pr-training",
-      }, // NEW: PR Training submenu
+      },
     ],
   },
   {
@@ -406,6 +409,17 @@ export const hrdMenu: MenuSection[] = [
     icon: "FileSignature",
     items: [
       { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+    ],
+  },
+  {
+    title: "Monitoring", // Moved SPK Section to HRD
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring",
+        icon: "Monitor",
+        path: "/hrd/monitoring/endorse-certificate",
+      },
     ],
   },
   createGeneralMenu("hrd"),
@@ -900,7 +914,11 @@ export const qhseMenu: MenuSection[] = [
     title: "KPI",
     icon: "BarChart",
     items: [
-      { title: "Master KPI", icon: "Database", path: "/qhse/general/kpi/master" },
+      {
+        title: "Master KPI",
+        icon: "Database",
+        path: "/qhse/general/kpi/master",
+      },
       { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
     ],
   },

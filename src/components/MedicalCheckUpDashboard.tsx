@@ -7,14 +7,15 @@ interface MCURecord {
   posisi: string;
   provider: string; // Medical Provider
   expiry: string; // ISO date string (Masa Berlaku)
+  keterangan?: string; // catatan tambahan
 }
 
 const sampleData: MCURecord[] = [
-  { nama: 'Andi Wijaya', posisi: 'Radiographer', provider: 'RS Medika Sejahtera', expiry: '2025-01-15' },
-  { nama: 'Budi Santoso', posisi: 'Assistant Radiographer', provider: 'Klinik Prima', expiry: '2024-10-20' },
-  { nama: 'Citra Lestari', posisi: 'QHSE Officer', provider: 'RSU Harapan', expiry: '2025-12-31' },
-  { nama: 'Dewi Puspita', posisi: 'Technician', provider: 'Klinik Mitra', expiry: '2024-11-05' },
-  { nama: 'Eko Prasetyo', posisi: 'Supervisor', provider: 'RS Duta', expiry: '2024-12-10' },
+  { nama: 'Andi Wijaya', posisi: 'Radiographer', provider: 'RS Medika Sejahtera', expiry: '2025-01-15', keterangan: 'Fit to work' },
+  { nama: 'Budi Santoso', posisi: 'Assistant Radiographer', provider: 'Klinik Prima', expiry: '2024-10-20', keterangan: 'Perlu kontrol ulang' },
+  { nama: 'Citra Lestari', posisi: 'QHSE Officer', provider: 'RSU Harapan', expiry: '2025-12-31', keterangan: '' },
+  { nama: 'Dewi Puspita', posisi: 'Technician', provider: 'Klinik Mitra', expiry: '2024-11-05', keterangan: 'Catatan alergi' },
+  { nama: 'Eko Prasetyo', posisi: 'Supervisor', provider: 'RS Duta', expiry: '2024-12-10', keterangan: '' },
 ];
 
 // rows state will be the source of truth; positions derived from it
@@ -66,7 +67,7 @@ const MedicalCheckUpDashboard: React.FC = () => {
 
   const openAdd = () => {
     setModalMode('add');
-    setForm({ nama: '', posisi: '', provider: '', expiry: '' });
+    setForm({ nama: '', posisi: '', provider: '', expiry: '', keterangan: '' });
     setModalOpen(true);
   };
   const openEdit = (item: MCURecord) => {
@@ -84,12 +85,13 @@ const MedicalCheckUpDashboard: React.FC = () => {
         posisi: String(form.posisi),
         provider: String(form.provider),
         expiry: String(form.expiry),
+        keterangan: (form.keterangan ?? '').toString(),
       };
       setRows(prev => [newItem, ...prev]);
     } else if (modalMode === 'edit' && editIndex !== null) {
       setRows(prev => prev.map((p, i) => (
         i === editIndex
-          ? { nama: String(form.nama), posisi: String(form.posisi), provider: String(form.provider), expiry: String(form.expiry) }
+          ? { nama: String(form.nama), posisi: String(form.posisi), provider: String(form.provider), expiry: String(form.expiry), keterangan: (form.keterangan ?? '').toString() }
           : p
       )));
     }
@@ -230,6 +232,7 @@ const MedicalCheckUpDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Medical Provider</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -256,6 +259,9 @@ const MedicalCheckUpDashboard: React.FC = () => {
                           <span className="text-xs">{remaining >= 0 ? `${remaining} hari lagi` : `${Math.abs(remaining)} hari lewat`}</span>
                         </div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" title={row.keterangan || ''}>
+                        {row.keterangan && row.keterangan.trim() !== '' ? row.keterangan : '-'}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex items-center gap-2">
                           <button
@@ -279,7 +285,7 @@ const MedicalCheckUpDashboard: React.FC = () => {
                 })}
                 {displayedData.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">Tidak ada data</td>
                   </tr>
                 )}
               </tbody>
@@ -332,6 +338,16 @@ const MedicalCheckUpDashboard: React.FC = () => {
                 value={form.expiry || ''}
                 onChange={e => setForm(f => ({ ...f, expiry: e.target.value }))}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Keterangan</label>
+              <textarea
+                value={form.keterangan || ''}
+                onChange={e => setForm(f => ({ ...f, keterangan: e.target.value }))}
+                rows={3}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Catatan tambahan..."
               />
             </div>
           </div>
