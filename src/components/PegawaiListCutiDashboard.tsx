@@ -1,0 +1,333 @@
+import React, { useMemo, useState } from "react";
+import { Search, Clock, FileSpreadsheet, FileText } from "lucide-react";
+
+interface CutiListRecord {
+  id: string;
+  nama: string;
+  jabatan: string;
+  departemen: string;
+  jenisCuti: "Tahunan" | "Sakit" | "Melahirkan" | "Izin" | "Lainnya";
+  tanggalMulai: string; // ISO
+  tanggalSelesai: string; // ISO
+  alasan: string;
+  status: "Pending" | "Disetujui" | "Ditolak";
+}
+
+const initialListData: CutiListRecord[] = [
+  {
+    id: "CUTI-REQ-021",
+    nama: "Budi Santoso",
+    jabatan: "Staff HR",
+    departemen: "HRD",
+    jenisCuti: "Tahunan",
+    tanggalMulai: "2025-09-10",
+    tanggalSelesai: "2025-09-12",
+    alasan: "Urusan keluarga",
+    status: "Disetujui",
+  },
+  {
+    id: "CUTI-REQ-022",
+    nama: "Siti Mawar",
+    jabatan: "Teknisi",
+    departemen: "Operational",
+    jenisCuti: "Sakit",
+    tanggalMulai: "2025-09-03",
+    tanggalSelesai: "2025-09-04",
+    alasan: "Sakit demam",
+    status: "Pending",
+  },
+];
+
+const PegawaiListCutiDashboard: React.FC = () => {
+  const [rows] = useState<CutiListRecord[]>(initialListData);
+  const [showEntries, setShowEntries] = useState(10);
+  const [filters, setFilters] = useState({
+    nama: "",
+    departemen: "",
+    jenisCuti: "",
+    status: "",
+    tglAwal: "",
+    tglAkhir: "",
+  });
+
+  const filtered = useMemo(() => {
+    return rows.filter((r) => {
+      const matchNama = filters.nama
+        ? r.nama.toLowerCase().includes(filters.nama.toLowerCase())
+        : true;
+      const matchDept = filters.departemen
+        ? r.departemen === filters.departemen
+        : true;
+      const matchJenis = filters.jenisCuti
+        ? r.jenisCuti === (filters.jenisCuti as CutiListRecord["jenisCuti"])
+        : true;
+      const matchStatus = filters.status
+        ? r.status === (filters.status as CutiListRecord["status"])
+        : true;
+      const startOk = filters.tglAwal
+        ? new Date(r.tanggalMulai) >= new Date(filters.tglAwal)
+        : true;
+      const endOk = filters.tglAkhir
+        ? new Date(r.tanggalSelesai) <= new Date(filters.tglAkhir)
+        : true;
+      return (
+        matchNama && matchDept && matchJenis && matchStatus && startOk && endOk
+      );
+    });
+  }, [rows, filters]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFilters((p) => ({ ...p, [name]: value }));
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+      <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+                LIST CUTI PEGAWAI
+              </h1>
+              <nav className="text-sm text-gray-600">
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Pegawai
+                </span>
+                <span className="mx-2">›</span>
+                <span className="text-blue-600 font-medium">List Cuti</span>
+              </nav>
+            </div>
+            <div className="flex items-center space-x-3 text-sm text-gray-500">
+              <Clock className="h-4 w-4" />
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
+          {/* Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nama
+              </label>
+              <input
+                name="nama"
+                value={filters.nama}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
+                placeholder="Cari nama..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Departemen
+              </label>
+              <select
+                name="departemen"
+                value={filters.departemen}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
+              >
+                <option value="">Semua</option>
+                <option value="HRD">HRD</option>
+                <option value="Pengadaan">Pengadaan</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Operational">Operational</option>
+                <option value="Gudang">Gudang</option>
+                <option value="QHSE">QHSE</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Jenis Cuti
+              </label>
+              <select
+                name="jenisCuti"
+                value={filters.jenisCuti}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
+              >
+                <option value="">Semua</option>
+                <option value="Tahunan">Tahunan</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Melahirkan">Melahirkan</option>
+                <option value="Izin">Izin</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                name="status"
+                value={filters.status}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
+              >
+                <option value="">Semua</option>
+                <option value="Pending">Pending</option>
+                <option value="Disetujui">Disetujui</option>
+                <option value="Ditolak">Ditolak</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tanggal Mulai ≥
+              </label>
+              <input
+                type="date"
+                name="tglAwal"
+                value={filters.tglAwal}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tanggal Selesai ≤
+              </label>
+              <input
+                type="date"
+                name="tglAkhir"
+                value={filters.tglAkhir}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
+              />
+            </div>
+            <div className="flex items-end">
+              <button className="w-full px-4 py-2 bg-primary text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors text-sm flex items-center justify-center space-x-2">
+                <Search className="h-4 w-4" />
+                <span>Cari</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="p-4 flex justify-between items-center">
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <span>Show</span>
+                <select
+                  className="border border-gray-300 rounded-md px-2 py-1"
+                  value={showEntries}
+                  onChange={(e) => setShowEntries(Number(e.target.value))}
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div className="flex gap-2">
+                <button className="flex items-center space-x-2 px-3 py-2 bg-green-500 text-white rounded-lg shadow-sm hover:bg-green-600 text-xs">
+                  <FileSpreadsheet className="h-4 w-4" />
+                  <span>Export Excel</span>
+                </button>
+                <button className="flex items-center space-x-2 px-3 py-2 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 text-xs">
+                  <FileText className="h-4 w-4" />
+                  <span>Export PDF</span>
+                </button>
+              </div>
+            </div>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jabatan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Departemen
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jenis Cuti
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Periode
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Alasan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filtered.slice(0, showEntries).map((r) => (
+                  <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {r.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {r.nama}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {r.jabatan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {r.departemen}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {r.jenisCuti}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
+                    <td
+                      className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate"
+                      title={r.alasan}
+                    >
+                      {r.alasan || "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full ${
+                          r.status === "Pending"
+                            ? "bg-yellow-500 text-white"
+                            : r.status === "Disetujui"
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                        }`}
+                      >
+                        {r.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="p-4 flex justify-between items-center text-sm text-gray-600">
+              <span>
+                Showing 1 to {Math.min(filtered.length, showEntries)} of {filtered.length} entries
+              </span>
+              <div className="flex space-x-2">
+                <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
+                  Previous
+                </button>
+                <button className="px-3 py-1 border border-primary bg-primary text-white rounded-md">
+                  1
+                </button>
+                <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PegawaiListCutiDashboard;

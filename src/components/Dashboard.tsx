@@ -106,6 +106,9 @@ import GeneralPurchasingRequestDashboard from "./GeneralPurchasingRequestDashboa
 import GeneralProsesPurchasingRequest from "./GeneralProsesPurchasingRequest"; // Import the new Proses Purchasing Request component
 import PengajianActiveDashboard from "./PengajianActiveDashboard"; // Import the new PengajianActiveDashboard
 import GeneralPertanggungJawabanVoucherDashboard from "./GeneralPertanggungJawabanVoucherDashboard"; // Import the new PengajianActiveDashboard
+import GeneralPengajuanCutiDashboard from "./GeneralPengajuanCutiDashboard"; // NEW: Pengajuan Cuti
+import GeneralApproveCutiDashboard from "./GeneralApproveCutiDashboard"; // NEW: Approve Cuti
+import PegawaiListCutiDashboard from "./PegawaiListCutiDashboard"; // NEW: HRD Pegawai List Cuti
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -366,6 +369,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/gudang/general/purchase-request/proses") {
       return <GeneralProsesPurchasingRequest />;
     }
+    // NEW Gudang General Cuti Routes
+    if (currentPage === "/gudang/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/gudang/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
+    }
 
     // Pengadaan Routes
     if (currentPage === "/pengadaan/dashboard") {
@@ -446,6 +456,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/pengadaan/general/purchase-request/proses") {
       return <GeneralProsesPurchasingRequest />;
     }
+    // NEW Pengadaan General Cuti Routes
+    if (currentPage === "/pengadaan/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/pengadaan/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
+    }
 
     // HRD Routes
     if (currentPage === "/hrd/dashboard") {
@@ -487,6 +504,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/pegawai/pr-training") {
       // NEW: Route for PR Training
       return <ProsesPengajuanTrainingDashboard role="hrd" />; // Pass role prop
+    }
+    if (currentPage === "/hrd/pegawai/list-cuti") {
+      return <PegawaiListCutiDashboard />;
     }
     if (currentPage === "/hrd/gaji/daftar") {
       return <DaftarGajiDashboard />;
@@ -561,6 +581,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/general/purchase-request/proses") {
       return <GeneralProsesPurchasingRequest />;
     }
+    // NEW HRD General Cuti Routes
+    if (currentPage === "/hrd/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/hrd/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
+    }
 
     // Marketing Routes
     if (currentPage === "/marketing/dashboard") {
@@ -624,6 +651,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/general/purchase-request/proses") {
       return <GeneralProsesPurchasingRequest />;
+    }
+    // NEW Marketing General Cuti Routes
+    if (currentPage === "/marketing/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/marketing/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
     }
 
     // Operational Routes
@@ -709,6 +743,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/operational/general/purchase-request/proses") {
       return <GeneralProsesPurchasingRequest />;
+    }
+    // NEW Operational General Cuti Routes
+    if (currentPage === "/operational/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/operational/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
     }
 
     // Finance Routes

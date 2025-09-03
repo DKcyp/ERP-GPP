@@ -91,6 +91,22 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    {
+      title: "Cuti",
+      icon: "Calendar",
+      items: [
+        {
+          title: "Pengajuan Cuti",
+          icon: "FilePlus",
+          path: `/${role}/general/cuti/pengajuan`,
+        },
+        {
+          title: "Approve Cuti",
+          icon: "CheckCircle",
+          path: `/${role}/general/cuti/approve`,
+        },
+      ],
+    },
   ],
 });
 
@@ -331,6 +347,7 @@ export const hrdMenu: MenuSection[] = [
     icon: "UserRound",
     items: [
       { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
+      { title: "List Cuti", icon: "Calendar", path: "/hrd/pegawai/list-cuti" },
       {
         title: "Resign",
         icon: "LogOut",

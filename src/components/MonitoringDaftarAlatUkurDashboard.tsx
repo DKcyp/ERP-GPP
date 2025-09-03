@@ -7,6 +7,7 @@ import {
   Calendar,
   Tag,
   MapPin,
+  AlertTriangle,
   X,
 } from "lucide-react";
 
@@ -68,6 +69,62 @@ const initialData: AlatUkur[] = [
     posisiBarang: "Office Lantai 2",
     kategori: "equipment",
   },
+  // Contoh untuk setiap tab/subkategori
+  {
+    id: "4",
+    serialNumber: "SN-MPT-001",
+    namaBarang: "Yoke MPT-200",
+    jenisBarang: "Instrument",
+    masaBerlaku: new Date(Date.now() + 45 * 24 * 3600 * 1000)
+      .toISOString()
+      .slice(0, 10),
+    posisiBarang: "Warehouse B",
+    kategori: "mpt",
+  },
+  {
+    id: "5",
+    serialNumber: "SN-PT-001",
+    namaBarang: "Kit Penetrant A",
+    jenisBarang: "Consumable",
+    masaBerlaku: new Date(Date.now() + 20 * 24 * 3600 * 1000)
+      .toISOString()
+      .slice(0, 10),
+    posisiBarang: "Gudang Kimia",
+    kategori: "pt",
+  },
+  {
+    id: "6",
+    serialNumber: "SN-PNT-001",
+    namaBarang: "Paint Gauge 300",
+    jenisBarang: "Instrument",
+    masaBerlaku: new Date(Date.now() + 70 * 24 * 3600 * 1000)
+      .toISOString()
+      .slice(0, 10),
+    posisiBarang: "Workshop Painting",
+    kategori: "painting",
+  },
+  {
+    id: "7",
+    serialNumber: "SN-HYD-001",
+    namaBarang: "Hydro Pump H1",
+    jenisBarang: "Equipment",
+    masaBerlaku: new Date(Date.now() + 10 * 24 * 3600 * 1000)
+      .toISOString()
+      .slice(0, 10),
+    posisiBarang: "Yard",
+    kategori: "hydrotest",
+  },
+  {
+    id: "8",
+    serialNumber: "SN-LNY-001",
+    namaBarang: "Tangga Inspeksi",
+    jenisBarang: "Equipment",
+    masaBerlaku: new Date(Date.now() + 58 * 24 * 3600 * 1000)
+      .toISOString()
+      .slice(0, 10),
+    posisiBarang: "Office Belakang",
+    kategori: "lainnya",
+  },
 ];
 
 const daysTo = (dateStr: string) => {
@@ -110,6 +167,12 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
       return matchQ && matchJenis && inStart && inEnd;
     });
   }, [rows, activeSub, query, jenisBarang, startDate, endDate]);
+
+  const expiringItems = useMemo(() => {
+    return filtered
+      .filter((r) => daysTo(r.masaBerlaku) <= 60)
+      .sort((a, b) => daysTo(a.masaBerlaku) - daysTo(b.masaBerlaku));
+  }, [filtered]);
 
   const handleExport = (fmt: string) => alert(`Export ${fmt} (dummy)`);
 
@@ -173,6 +236,29 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Expiring Warning */}
+      {expiringItems.length > 0 && (
+        <div className="max-w-7xl mx-auto px-6 -mt-4 mb-4">
+          <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-yellow-800">
+            <div className="flex items-start">
+              <AlertTriangle className="h-5 w-5 mr-2 mt-0.5" />
+              <div>
+                <p className="font-semibold">
+                  {expiringItems.length} item akan habis masa berlaku dalam ≤ 60 hari pada tab ini.
+                </p>
+                <ul className="mt-1 text-sm list-disc pl-5">
+                  {expiringItems.slice(0, 5).map((it) => (
+                    <li key={it.id}>
+                      {it.namaBarang} — {daysTo(it.masaBerlaku)} hari lagi (SN: {it.serialNumber})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Subkategori Tabs */}
