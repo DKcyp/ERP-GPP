@@ -120,3 +120,28 @@ export interface LamaranData {
   status: UpdateStatusFormData['status'];
   keterangan: string;
 }
+
+// ================= Evaluasi Vendor =================
+export type YaTidak = 'Ya' | 'Tidak';
+export type MutuKategori = 'Baik' | 'Cukup' | 'Kurang';
+
+export interface EvaluasiVendorData {
+  id: string;
+  no: number;
+  namaVendor: string;
+  onTime: YaTidak;
+  sesuaiSpesifikasi: YaTidak;
+  jumlahBarangSesuaiPO: number;
+  tanggalEvaluasi: string;
+  mutu: MutuKategori;
+  k3: YaTidak;
+}
+
+export interface EvaluasiVendorFormData {
+  namaVendor: string;
+  barangOnTime: YaTidak;
+  sesuaiSpesifikasi: YaTidak;
+  jumlahBarangSesuaiPO: string; // keep as string for input, parse to number on save
+  mutu: MutuKategori;
+  k3: YaTidak;
+}
