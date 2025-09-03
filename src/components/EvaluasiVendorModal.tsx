@@ -14,6 +14,8 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
     barangOnTime: 'Ya',
     sesuaiSpesifikasi: 'Ya',
     jumlahBarangSesuaiPO: '',
+    mutu: 'Baik',
+    k3: 'Ya',
   });
 
   const vendorOptions = [
@@ -35,6 +37,8 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
       barangOnTime: 'Ya',
       sesuaiSpesifikasi: 'Ya',
       jumlahBarangSesuaiPO: '',
+      mutu: 'Baik',
+      k3: 'Ya',
     });
     onClose();
   };
@@ -42,15 +46,15 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 p-4">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 p-3 text-xs">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto">
-        <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">Tambah Evaluasi Vendor</h2>
+        <div className="flex justify-between items-center p-3 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800">Tambah Evaluasi Vendor</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X size={24} />
+            <X size={18} />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 space-y-3">
           <div>
             <label htmlFor="namaVendor" className="block text-sm font-medium text-gray-700 mb-1">
               Nama Vendor
@@ -60,7 +64,7 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
               name="namaVendor"
               value={formData.namaVendor}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs"
               required
             >
               <option value="">Pilih Vendor</option>
@@ -81,7 +85,7 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
               name="barangOnTime"
               value={formData.barangOnTime}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs"
               required
             >
               <option value="Ya">Ya</option>
@@ -98,7 +102,42 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
               name="sesuaiSpesifikasi"
               value={formData.sesuaiSpesifikasi}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs"
+              required
+            >
+              <option value="Ya">Ya</option>
+              <option value="Tidak">Tidak</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="mutu" className="block text-sm font-medium text-gray-700 mb-1">
+              Mutu
+            </label>
+            <select
+              id="mutu"
+              name="mutu"
+              value={formData.mutu}
+              onChange={handleChange}
+              className="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs"
+              required
+            >
+              <option value="Baik">Baik</option>
+              <option value="Cukup">Cukup</option>
+              <option value="Kurang">Kurang</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="k3" className="block text-sm font-medium text-gray-700 mb-1">
+              K3 (Keselamatan & Kesehatan Kerja)
+            </label>
+            <select
+              id="k3"
+              name="k3"
+              value={formData.k3}
+              onChange={handleChange}
+              className="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs"
               required
             >
               <option value="Ya">Ya</option>
@@ -116,23 +155,23 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
               name="jumlahBarangSesuaiPO"
               value={formData.jumlahBarangSesuaiPO}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-xs"
               placeholder="Masukkan jumlah barang"
               required
             />
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 -mx-6 px-6">
+          <div className="flex justify-end space-x-2 pt-3 border-t border-gray-200 -mx-4 px-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="px-3 py-1.5 rounded-md text-xs font-medium text-gray-700 bg-gray-200 hover:bg-gray-300"
             >
               Close
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-blue-600 hover:bg-blue-700"
             >
               Simpan
             </button>
