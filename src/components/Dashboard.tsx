@@ -165,6 +165,8 @@ import PPh21Dashboard from './PPh21Dashboard';
 import ProconMainDashboard from './ProconMainDashboard';
 import ProconInvoiceDashboard from './ProconInvoiceDashboard';
 import ProconOverviewDashboard from './ProconOverviewDashboard';
+import LaporanLabaRugi from './LaporanLabaRugi';
+import LaporanPerSO from './LaporanPerSO';
 // NEW: Procon Approval Dashboards
 import ApprovalPoJasa from '../pages/procon/approval/ApprovalPoJasa';
 import ApprovalTimesheet from '../pages/procon/approval/ApprovalTimesheet';
@@ -917,7 +919,15 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === '/procon/overview') {
       return <ProconOverviewDashboard />;
     }
-    // NEW: Procon Approval Routes
+    // Procon Laporan Routes
+    if (currentPage === '/procon/laporan/laba-rugi') {
+      return <LaporanLabaRugi />;
+    }
+    if (currentPage === '/procon/laporan/per-so') {
+      return <LaporanPerSO />;
+    }
+    
+    // Procon Approval Routes
     if (currentPage === '/procon/approval/po-jasa') {
       return <POJasaDashboard role="management" />; // Pass role prop
     }

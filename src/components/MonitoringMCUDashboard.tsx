@@ -10,6 +10,7 @@ interface MCUPegawai {
   jenisMCU: string;
   masaBerlaku: string;
   documentUrl: string;
+  keterangan: string;
 }
 
 const MonitoringMCUDashboard: React.FC = () => {
@@ -21,36 +22,41 @@ const MonitoringMCUDashboard: React.FC = () => {
       id: 'MCU001',
       namaPegawai: 'Budi Santoso',
       jenisMCU: 'General Check-up',
-      masaBerlaku: '2024-08-20', // Contoh: Expired jika hari ini setelah 20 Agustus 2024
-      documentUrl: '#'
+      masaBerlaku: '2024-08-20',
+      documentUrl: '#',
+      keterangan: 'MCU tahunan rutin'
     },
     {
       id: 'MCU002',
       namaPegawai: 'Siti Aminah',
       jenisMCU: 'Medical Fitness',
-      masaBerlaku: '2025-03-10', // Contoh: Tidak expired, tidak expiring soon (jika hari ini Oct/Nov 2024)
-      documentUrl: '#'
+      masaBerlaku: '2025-03-10',
+      documentUrl: '#',
+      keterangan: 'MCU pra kerja'
     },
     {
       id: 'MCU003',
       namaPegawai: 'Joko Susilo',
       jenisMCU: 'General Check-up',
-      masaBerlaku: '2024-07-01', // Contoh: Expired
-      documentUrl: '#'
+      masaBerlaku: '2024-07-01',
+      documentUrl: '#',
+      keterangan: 'MCU berkala 6 bulanan'
     },
     {
       id: 'MCU004',
       namaPegawai: 'Dewi Lestari',
       jenisMCU: 'Medical Fitness',
-      masaBerlaku: '2025-01-25', // Contoh: Expiring Soon (jika hari ini Oct/Nov 2024)
-      documentUrl: '#'
+      masaBerlaku: '2025-01-25',
+      documentUrl: '#',
+      keterangan: 'MCU kenaikan jabatan'
     },
     {
       id: 'MCU005',
       namaPegawai: 'Rudi Hartono',
       jenisMCU: 'General Check-up',
-      masaBerlaku: '2024-09-15', // Contoh: Expired
-      documentUrl: '#'
+      masaBerlaku: '2024-09-15',
+      documentUrl: '#',
+      keterangan: 'MCU tahunan rutin'
     },
   ];
 
@@ -61,7 +67,8 @@ const MonitoringMCUDashboard: React.FC = () => {
     namaPegawai: '',
     jenisMCU: '',
     masaBerlaku: '',
-    documentUrl: ''
+    documentUrl: '',
+    keterangan: ''
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<MCUPegawai | null>(null);
@@ -94,7 +101,7 @@ const MonitoringMCUDashboard: React.FC = () => {
 
   const openAddModal = () => {
     setEditingItem(null);
-    setForm({ namaPegawai: '', jenisMCU: '', masaBerlaku: '', documentUrl: '' });
+    setForm({ namaPegawai: '', jenisMCU: '', masaBerlaku: '', documentUrl: '', keterangan: '' });
     setShowFormModal(true);
   };
 
@@ -105,6 +112,7 @@ const MonitoringMCUDashboard: React.FC = () => {
       jenisMCU: item.jenisMCU,
       masaBerlaku: item.masaBerlaku,
       documentUrl: item.documentUrl,
+      keterangan: item.keterangan || '',
     });
     setShowFormModal(true);
   };
@@ -320,6 +328,9 @@ const MonitoringMCUDashboard: React.FC = () => {
                     Document
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Keterangan
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
@@ -363,6 +374,9 @@ const MonitoringMCUDashboard: React.FC = () => {
                         <a href={mcu.documentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 flex items-center">
                           <FileText className="h-4 w-4 mr-1" /> View Document
                         </a>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {mcu.keterangan || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex items-center gap-2">
@@ -439,6 +453,16 @@ const MonitoringMCUDashboard: React.FC = () => {
                     onChange={(e) => setForm((f) => ({ ...f, documentUrl: e.target.value }))}
                     className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                     placeholder="# atau tautan dokumen"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                  <textarea
+                    value={form.keterangan}
+                    onChange={(e) => setForm((f) => ({ ...f, keterangan: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm h-24"
+                    placeholder="Masukkan keterangan tambahan"
+                    rows={3}
                   />
                 </div>
               </div>

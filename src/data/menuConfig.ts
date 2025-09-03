@@ -1185,19 +1185,35 @@ export const proconMenu: MenuSection[] = [
     directPath: "/procon/invoice",
   },
   {
-    title: "Approval", // New section
-    icon: "CheckCircle", // Appropriate icon for Approval
+    title: "Laporan",
+    icon: "FileText",
+    items: [
+      {
+        title: "Laporan Laba Rugi",
+        icon: "LineChart",
+        path: "/procon/laporan/laba-rugi",
+      },
+      {
+        title: "Laporan Per SO",
+        icon: "FileText",
+        path: "/procon/laporan/per-so",
+      },
+    ],
+  },
+  {
+    title: "Approval",
+    icon: "CheckCircle",
     items: [
       {
         title: "Approval PO Jasa",
         icon: "Wrench",
         path: "/procon/approval/po-jasa",
-      }, // New item
+      },
       {
         title: "Approval Timesheet",
         icon: "Clock",
         path: "/procon/approval/timesheet",
-      }, // New item
+      },
     ],
   },
 ];
