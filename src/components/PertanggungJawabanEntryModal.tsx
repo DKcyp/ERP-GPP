@@ -202,9 +202,9 @@ const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> 
           </div>
         </div>
 
-        {/* Detail Reimburse Section */}
+        {/* Detail Pertanggungjawaban Voucher Section */}
         <div className="mt-8">
-          <h3 className="text-lg font-semibold text-text mb-3">Detail Reimburse</h3>
+          <h3 className="text-lg font-semibold text-text mb-3">Detail Pertanggungjawaban Voucher</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-surface rounded-xl shadow-sm border border-border">
               <thead>
