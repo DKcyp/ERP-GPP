@@ -21,6 +21,7 @@ export interface VendorFormData {
   noTelp: string;
   email: string;
   noNPWP: string;
+  status: string;
 }
 
 const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -37,7 +38,8 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
     picVendor: '',
     noTelp: '',
     email: '',
-    noNPWP: ''
+    noNPWP: '',
+    status: ''
   });
 
   const [errors, setErrors] = useState<Partial<VendorFormData>>({});
@@ -47,6 +49,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
   const kodeGroupSupplierOptions = ['Group A', 'Group B', 'Group C'];
   const mataUangOptions = ['IDR', 'USD', 'EUR'];
   const pajakOptions = ['PPN 11%', 'PPH 23', 'Tidak Kena Pajak'];
+  const statusOptions = ['Aktif', 'Tidak Aktif'];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -126,7 +129,8 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
       picVendor: '',
       noTelp: '',
       email: '',
-      noNPWP: ''
+      noNPWP: '',
+      status: ''
     });
     setErrors({});
     onClose();
@@ -145,10 +149,10 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300 text-xs">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Vendor</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Entry Vendor</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -159,7 +163,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
 
         {/* Form Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
-          <form onSubmit={handleSubmit} className="p-6">
+          <form onSubmit={handleSubmit} className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
               {/* Left Column */}
               <div className="space-y-6">
@@ -173,7 +177,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                       type="date"
                       value={formData.tanggal}
                       onChange={(e) => handleInputChange('tanggal', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 pr-10 ${
+                      className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 pr-10 ${
                         errors.tanggal ? 'border-red-300 bg-red-50' : 'border-gray-200'
                       }`}
                     />
@@ -193,7 +197,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="text"
                     value={formData.namaVendor}
                     onChange={(e) => handleInputChange('namaVendor', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.namaVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="PT Maju Jaya"
@@ -212,7 +216,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="text"
                     value={formData.kodeVendor}
                     onChange={(e) => handleInputChange('kodeVendor', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.kodeVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="VND001"
@@ -230,7 +234,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <select
                     value={formData.kodeGroupSupplier}
                     onChange={(e) => handleInputChange('kodeGroupSupplier', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Pilih Kode Group</option>
                     {kodeGroupSupplierOptions.map((option) => (
@@ -247,7 +251,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <select
                     value={formData.mataUang}
                     onChange={(e) => handleInputChange('mataUang', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Pilih Mata Uang</option>
                     {mataUangOptions.map((option) => (
@@ -264,10 +268,27 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <select
                     value={formData.pajak}
                     onChange={(e) => handleInputChange('pajak', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Pilih Pajak</option>
                     {pajakOptions.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => handleInputChange('status', e.target.value)}
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  >
+                    <option value="">Pilih Status</option>
+                    {statusOptions.map((option) => (
                       <option key={option} value={option}>{option}</option>
                     ))}
                   </select>
@@ -282,7 +303,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     value={formData.alamatVendor}
                     onChange={(e) => handleInputChange('alamatVendor', e.target.value)}
                     rows={3}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${
                       errors.alamatVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="Jl. Merdeka No. 1, Jakarta"
@@ -304,7 +325,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="text"
                     value={formData.kota}
                     onChange={(e) => handleInputChange('kota', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.kota ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="Jakarta"
@@ -323,7 +344,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="text"
                     value={formData.negara}
                     onChange={(e) => handleInputChange('negara', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.negara ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="Indonesia"
@@ -342,7 +363,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="text"
                     value={formData.picVendor}
                     onChange={(e) => handleInputChange('picVendor', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.picVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="Andi Saputra"
@@ -361,7 +382,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="tel"
                     value={formData.noTelp}
                     onChange={(e) => handleInputChange('noTelp', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.noTelp ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="081234567890"
@@ -380,7 +401,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                       errors.email ? 'border-red-300 bg-red-50' : 'border-gray-200'
                     }`}
                     placeholder="vendor@email.com"
@@ -399,7 +420,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     type="text"
                     value={formData.noNPWP}
                     onChange={(e) => handleInputChange('noNPWP', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="XX.XXX.XXX.X-XXX.XXX"
                   />
                 </div>
@@ -409,11 +430,11 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="flex items-center justify-end space-x-3 p-3 border-t border-gray-200 bg-gray-50 flex-shrink-0 text-xs">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-sm"
+            className="px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-xs"
           >
             Close
           </button>
@@ -421,16 +442,16 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs"
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-3 w-3 animate-spin" />
                 <span>Saving...</span>
               </>
             ) : (
               <>
-                <Save className="h-3.5 w-3.5" />
+                <Save className="h-3 w-3" />
                 <span>Save changes</span>
               </>
             )}
