@@ -48,6 +48,8 @@ const ProspectDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<Prospect | null>(null);
   const [editingProspect, setEditingProspect] = useState<Prospect | null>(null); // New state for editing
   const [modalTitle, setModalTitle] = useState('Entry Prospect'); // New state for modal title
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewProspect, setViewProspect] = useState<Prospect | null>(null);
 
   // Sample data matching the image
   const [prospects, setProspects] = useState<Prospect[]>([
@@ -172,6 +174,11 @@ const ProspectDashboard: React.FC = () => {
   const handleDeleteClick = (prospect: Prospect) => {
     setItemToDelete(prospect);
     setDeleteModalOpen(true);
+  };
+
+  const handleViewClick = (prospect: Prospect) => {
+    setViewProspect(prospect);
+    setIsViewModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
@@ -544,6 +551,7 @@ const ProspectDashboard: React.FC = () => {
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                         <button 
+                          onClick={() => handleViewClick(prospect)}
                           className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded transition-all duration-200 hover:scale-110"
                           title="View"
                         >
@@ -639,6 +647,77 @@ const ProspectDashboard: React.FC = () => {
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaPerusahaan}
       />
+      
+      {/* View Details Modal */}
+      {isViewModalOpen && viewProspect && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setIsViewModalOpen(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Detail Prospect</h3>
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-500">Nama Perusahaan</div>
+                <div className="font-medium text-gray-900">{viewProspect.namaPerusahaan}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">PIC</div>
+                <div className="font-medium text-gray-900">{viewProspect.pic}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Jabatan</div>
+                <div className="font-medium text-gray-900">{viewProspect.jabatan}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">No Telp</div>
+                <div className="font-medium text-gray-900">{viewProspect.noTelp}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Deadline Prospect</div>
+                <div className="font-medium text-gray-900">{viewProspect.deadlineProspect}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Tanggal Update</div>
+                <div className="font-medium text-gray-900">{viewProspect.tanggalUpdate}</div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="text-gray-500">Alamat</div>
+                <div className="font-medium text-gray-900">{viewProspect.alamat}</div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="text-gray-500">Email</div>
+                <div className="font-medium text-blue-600">{viewProspect.email}</div>
+              </div>
+              <div className="sm:col-span-2">
+                <div className="text-gray-500">Keterangan</div>
+                <div className="font-medium text-gray-900">{viewProspect.keterangan}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Status</div>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(viewProspect.status)}`}>
+                  {viewProspect.status}
+                </span>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-end">
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

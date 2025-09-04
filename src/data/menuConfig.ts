@@ -435,7 +435,7 @@ export const hrdMenu: MenuSection[] = [
       {
         title: "Monitoring",
         icon: "Monitor",
-        path: "/hrd/monitoring/endorse-certificate",
+        path: "/qhse/monitoring/endorse-certificate",
       },
     ],
   },

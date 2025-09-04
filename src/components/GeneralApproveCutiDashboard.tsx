@@ -8,6 +8,8 @@ import {
   ThumbsDown,
   Plus,
   X,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 
 interface CutiApprovalRecord {
@@ -42,6 +44,17 @@ const initialApprovalData: CutiApprovalRecord[] = [
     alasan: "Pemulihan pasca rawat jalan",
     status: "Pending",
   },
+  // Extra dummy for the same employee to exceed limit (LIMIT_PER_EMPLOYEE = 1)
+  {
+    id: "CUTI-REQ-013",
+    nama: "Citra Lestari",
+    jabatan: "QHSE Officer",
+    jenisCuti: "Izin",
+    tanggalMulai: "2025-09-22",
+    tanggalSelesai: "2025-09-22",
+    alasan: "Urusan pribadi",
+    status: "Pending",
+  },
 ];
 
 const GeneralApproveCutiDashboard: React.FC = () => {
@@ -63,6 +76,7 @@ const GeneralApproveCutiDashboard: React.FC = () => {
     tanggalSelesai: "",
     alasan: "",
   });
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -87,6 +101,52 @@ const GeneralApproveCutiDashboard: React.FC = () => {
       );
     });
   }, [rows, filters]);
+
+  // Group per employee (by nama|jabatan) to avoid name collisions.
+  const grouped = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        key: string;
+        nama: string;
+        jabatan: string;
+        total: number;
+        pending: number;
+        disetujui: number;
+        ditolak: number;
+        details: CutiApprovalRecord[];
+      }
+    >();
+    for (const r of filtered) {
+      const key = `${r.nama}|${r.jabatan}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          nama: r.nama,
+          jabatan: r.jabatan,
+          total: 0,
+          pending: 0,
+          disetujui: 0,
+          ditolak: 0,
+          details: [],
+        });
+      }
+      const g = map.get(key)!;
+      g.total += 1;
+      if (r.status === "Pending") g.pending += 1;
+      else if (r.status === "Disetujui") g.disetujui += 1;
+      else g.ditolak += 1;
+      g.details.push(r);
+    }
+    return Array.from(map.values());
+  }, [filtered]);
+
+  const LIMIT_PER_EMPLOYEE = 1;
+  const exceededGroups = useMemo(() => grouped.filter((g) => g.total > LIMIT_PER_EMPLOYEE), [grouped]);
+  const pagedGroups = useMemo(() => grouped.slice(0, showEntries), [grouped, showEntries]);
+
+  const toggleExpand = (key: string) =>
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -297,9 +357,18 @@ const GeneralApproveCutiDashboard: React.FC = () => {
                 </div>
               </div>
             )}
-            <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={openModal}
+                className="flex items-center space-x-2 px-3 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-blue-600 text-xs"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+              <div className="flex items-center space-x-3 text-sm text-gray-500">
+                <Clock className="h-4 w-4" />
+                <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -387,8 +456,18 @@ const GeneralApproveCutiDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Table */}
+          {/* Table (Grouped per Pegawai) */}
           <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+            {exceededGroups.length > 0 && (
+              <div className="px-4 pt-4">
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                  <span className="font-semibold">Peringatan:</span>
+                  <span>
+                    Pegawai berikut melebihi batas pengajuan cuti ({LIMIT_PER_EMPLOYEE}): {exceededGroups.map((g) => g.nama).join(", ")}
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="p-4 flex justify-between items-center">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <span>Show</span>
@@ -417,83 +496,112 @@ const GeneralApproveCutiDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jabatan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jenis Cuti
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Periode
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Alasan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Aksi
-                  </th>
+                  <th className="w-10 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cuti</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Disetujui</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ditolak</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filtered.slice(0, showEntries).map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {r.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.jabatan}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.jenisCuti}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
-                    <td
-                      className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate"
-                      title={r.alasan}
-                    >
-                      {r.alasan || "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {statusBadge(r.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => approve(r.id)}
-                          className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
-                          title="Approve"
-                        >
-                          <ThumbsUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => reject(r.id)}
-                          className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
-                          title="Reject"
-                        >
-                          <ThumbsDown className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {pagedGroups.map((g) => {
+                  const isOpen = !!expanded[g.key];
+                  const overLimit = g.total > LIMIT_PER_EMPLOYEE;
+                  return (
+                    <React.Fragment key={g.key}>
+                      <tr
+                        className={`transition-colors cursor-pointer ${overLimit ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}`}
+                        onClick={() => toggleExpand(g.key)}
+                      >
+                        <td className="px-4 py-3 align-middle">
+                          {isOpen ? (
+                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-gray-500" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {g.nama}
+                          {overLimit && (
+                            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 align-middle">Limit terlampaui</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{g.jabatan}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">{g.total}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">{g.pending}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">{g.disetujui}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">{g.ditolak}</span>
+                        </td>
+                      </tr>
+                      {isOpen && (
+                        <tr>
+                          <td colSpan={7} className="bg-gray-50">
+                            <div className="px-6 py-4">
+                              <div className="text-xs text-gray-500 mb-2">Detail Cuti {g.nama}</div>
+                              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <table className="min-w-full">
+                                  <thead className="bg-gray-100">
+                                    <tr>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alasan</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white divide-y divide-gray-200">
+                                    {g.details.map((r) => (
+                                      <tr key={r.id} className="hover:bg-white">
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{r.id}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{r.jenisCuti}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate" title={r.alasan}>{r.alasan || "-"}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm">{statusBadge(r.status)}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm">
+                                          <div className="flex items-center space-x-2">
+                                            <button
+                                              onClick={() => approve(r.id)}
+                                              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+                                              title="Approve"
+                                            >
+                                              <ThumbsUp className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                              onClick={() => reject(r.id)}
+                                              className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                                              title="Reject"
+                                            >
+                                              <ThumbsDown className="h-4 w-4" />
+                                            </button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
             <div className="p-4 flex justify-between items-center text-sm text-gray-600">
               <span>
-                Showing 1 to {Math.min(filtered.length, showEntries)} of{" "}
-                {filtered.length} entries
+                Showing 1 to {Math.min(grouped.length, showEntries)} of {grouped.length} employees
               </span>
               <div className="flex space-x-2">
                 <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">

@@ -226,13 +226,6 @@ const ProsesProduksiDashboard: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">
               PROSES PRODUKSI
             </h1>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Tambah</span>
-            </button>
           </div>
 
           {/* Search and Filter Section */}
@@ -396,8 +389,15 @@ const ProsesProduksiDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Export Buttons */}
+          {/* Export Buttons + Tambah */}
           <div className="flex justify-end space-x-2 mb-4">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Tambah</span>
+            </button>
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1">
               <FileSpreadsheet className="h-3.5 w-3.5" />
               <span>Export Excel</span>

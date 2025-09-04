@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Search, Clock, FileSpreadsheet, FileText } from "lucide-react";
+import {
+  Search,
+  Clock,
+  FileSpreadsheet,
+  FileText,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
 interface CutiListRecord {
   id: string;
@@ -49,6 +56,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
     tglAwal: "",
     tglAkhir: "",
   });
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -75,6 +83,54 @@ const PegawaiListCutiDashboard: React.FC = () => {
       );
     });
   }, [rows, filters]);
+
+  // Group filtered data per employee (by name). If there might be duplicate names,
+  // we could key by `${nama}|${departemen}` to be safer.
+  const grouped = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        key: string;
+        nama: string;
+        departemen: string;
+        jabatan?: string;
+        total: number;
+        pending: number;
+        disetujui: number;
+        ditolak: number;
+        details: CutiListRecord[];
+      }
+    >();
+
+    for (const r of filtered) {
+      const key = `${r.nama}|${r.departemen}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          nama: r.nama,
+          departemen: r.departemen,
+          jabatan: r.jabatan,
+          total: 0,
+          pending: 0,
+          disetujui: 0,
+          ditolak: 0,
+          details: [],
+        });
+      }
+      const g = map.get(key)!;
+      g.total += 1;
+      if (r.status === "Pending") g.pending += 1;
+      else if (r.status === "Disetujui") g.disetujui += 1;
+      else g.ditolak += 1;
+      g.details.push(r);
+    }
+    return Array.from(map.values());
+  }, [filtered]);
+
+  const pagedGroups = useMemo(() => grouped.slice(0, showEntries), [grouped, showEntries]);
+
+  const toggleExpand = (key: string) =>
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -209,7 +265,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Table */}
+          {/* Table (Grouped per Pegawai) */}
           <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="p-4 flex justify-between items-center">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -239,77 +295,125 @@ const PegawaiListCutiDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
+                  <th className="w-10 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jabatan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Departemen
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jenis Cuti
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Cuti
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Periode
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Pending
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Alasan
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Disetujui
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ditolak
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filtered.slice(0, showEntries).map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {r.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.nama}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.jabatan}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.departemen}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {r.jenisCuti}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
-                    <td
-                      className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate"
-                      title={r.alasan}
-                    >
-                      {r.alasan || "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span
-                        className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full ${
-                          r.status === "Pending"
-                            ? "bg-yellow-500 text-white"
-                            : r.status === "Disetujui"
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
+                {pagedGroups.map((g) => {
+                  const isOpen = !!expanded[g.key];
+                  return (
+                    <React.Fragment key={g.key}>
+                      <tr
+                        className="hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => toggleExpand(g.key)}
                       >
-                        {r.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                        <td className="px-4 py-3 align-middle">
+                          {isOpen ? (
+                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-gray-500" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {g.nama}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {g.departemen}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                            {g.total}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+                            {g.pending}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                            {g.disetujui}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                            {g.ditolak}
+                          </span>
+                        </td>
+                      </tr>
+                      {isOpen && (
+                        <tr>
+                          <td colSpan={7} className="bg-gray-50">
+                            <div className="px-6 py-4">
+                              <div className="text-xs text-gray-500 mb-2">Detail Cuti {g.nama}</div>
+                              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <table className="min-w-full">
+                                  <thead className="bg-gray-100">
+                                    <tr>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alasan</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white divide-y divide-gray-200">
+                                    {g.details.map((r) => (
+                                      <tr key={r.id} className="hover:bg-white">
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{r.id}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{r.jenisCuti}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate" title={r.alasan}>
+                                          {r.alasan || "-"}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm">
+                                          <span
+                                            className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${
+                                              r.status === "Pending"
+                                                ? "bg-yellow-500 text-white"
+                                                : r.status === "Disetujui"
+                                                ? "bg-green-500 text-white"
+                                                : "bg-red-500 text-white"
+                                            }`}
+                                          >
+                                            {r.status}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
             <div className="p-4 flex justify-between items-center text-sm text-gray-600">
               <span>
-                Showing 1 to {Math.min(filtered.length, showEntries)} of {filtered.length} entries
+                Showing 1 to {Math.min(grouped.length, showEntries)} of {grouped.length} employees
               </span>
               <div className="flex space-x-2">
                 <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Search, Calendar, Plus, FileText, FileSpreadsheet, FileDown, Eye, History, Edit, Trash2 } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 // Sample Data for the table
-const cashAdvanceData = [
+const initialCashAdvanceData = [
   {
     id: 1,
     no: 1,
@@ -86,15 +87,97 @@ const GeneralProsesCashAdvance: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [data, setData] = useState(initialCashAdvanceData);
+  const [isEntryOpen, setIsEntryOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<any | null>(null);
+  const [form, setForm] = useState({
+    namaDepartemen: '',
+    noCA: '',
+    tanggal: '',
+    noSO: '',
+    noSOTurunan: '',
+    namaProyek: '',
+    namaPemohon: '',
+    nominal: '',
+    keperluan: '',
+    tglPembayaran: '',
+    tglLaporanExpense: '',
+  });
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyItem, setHistoryItem] = useState<any | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteItem, setDeleteItem] = useState<any | null>(null);
+
+  const openAdd = () => {
+    setEditingItem(null);
+    setForm({
+      namaDepartemen: '',
+      noCA: '',
+      tanggal: '',
+      noSO: '',
+      noSOTurunan: '',
+      namaProyek: '',
+      namaPemohon: '',
+      nominal: '',
+      keperluan: '',
+      tglPembayaran: '',
+      tglLaporanExpense: '',
+    });
+    setIsEntryOpen(true);
+  };
+
+  const openEdit = (item: any) => {
+    setEditingItem(item);
+    setForm({
+      namaDepartemen: item.namaDepartemen,
+      noCA: item.noCA,
+      tanggal: item.tanggal,
+      noSO: item.noSO,
+      noSOTurunan: item.noSOTurunan,
+      namaProyek: item.namaProyek,
+      namaPemohon: item.namaPemohon,
+      nominal: item.nominal,
+      keperluan: item.keperluan,
+      tglPembayaran: item.tglPembayaran,
+      tglLaporanExpense: item.tglLaporanExpense,
+    });
+    setIsEntryOpen(true);
+  };
+
+  const saveForm = () => {
+    if (editingItem) {
+      setData(prev => prev.map((row: any) => row.id === editingItem.id ? { ...row, ...form } : row));
+    } else {
+      const newId = (data.reduce((max: number, r: any) => Math.max(max, r.id), 0) || 0) + 1;
+      const newNo = (data.reduce((max: number, r: any) => Math.max(max, r.no), 0) || 0) + 1;
+      setData(prev => [...prev, { id: newId, no: newNo, ...form }]);
+    }
+    setIsEntryOpen(false);
+    setEditingItem(null);
+  };
+
+  const openHistory = (item: any) => {
+    setHistoryItem(item);
+    setHistoryOpen(true);
+  };
+
+  const openDelete = (item: any) => {
+    setDeleteItem(item);
+    setDeleteOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteItem) {
+      setData(prev => prev.filter((row: any) => row.id !== deleteItem.id));
+      setDeleteItem(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 font-sans">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Cash Advance</h1>
-        <button className="flex items-center px-4 py-2 bg-emerald-500 text-white rounded-lg shadow-md hover:bg-emerald-600 transition-colors duration-200">
-          <Plus className="w-5 h-5 mr-2" /> Tambah
-        </button>
       </div>
 
       {/* Filter and Search Section */}
@@ -201,8 +284,14 @@ const GeneralProsesCashAdvance: React.FC = () => {
         </div>
       </div>
 
-      {/* Export Buttons */}
+      {/* Export Buttons + Tambah on the left */}
       <div className="flex justify-end space-x-3 mb-6">
+        <button
+          onClick={openAdd}
+          className="flex items-center px-4 py-2 bg-emerald-500 text-white rounded-lg shadow-md hover:bg-emerald-600 transition-colors duration-200 text-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" /> Tambah
+        </button>
         <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-colors duration-200 text-sm">
           <FileSpreadsheet className="w-4 h-4 mr-2" /> Export Excel
         </button>
@@ -255,7 +344,7 @@ const GeneralProsesCashAdvance: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {cashAdvanceData.map((item) => (
+              {data.map((item) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.no}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.namaDepartemen}</td>
@@ -276,13 +365,13 @@ const GeneralProsesCashAdvance: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 bg-green-100 text-green-600 rounded-md hover:bg-green-200 transition-colors duration-200">
+                      <button onClick={() => openHistory(item)} className="p-2 bg-green-100 text-green-600 rounded-md hover:bg-green-200 transition-colors duration-200" title="History">
                         <History className="w-4 h-4" />
                       </button>
-                      <button className="p-2 bg-yellow-100 text-yellow-600 rounded-md hover:bg-yellow-200 transition-colors duration-200">
+                      <button onClick={() => openEdit(item)} className="p-2 bg-yellow-100 text-yellow-600 rounded-md hover:bg-yellow-200 transition-colors duration-200" title="Edit">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200">
+                      <button onClick={() => openDelete(item)} className="p-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors duration-200" title="Hapus">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -296,7 +385,7 @@ const GeneralProsesCashAdvance: React.FC = () => {
         {/* Pagination */}
         <div className="flex justify-between items-center mt-4">
           <div className="text-sm text-gray-700">
-            Showing 1 to {cashAdvanceData.length} of {cashAdvanceData.length} entries
+            Showing 1 to {data.length} of {data.length} entries
           </div>
           <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <button className="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
@@ -314,6 +403,113 @@ const GeneralProsesCashAdvance: React.FC = () => {
           </nav>
         </div>
       </div>
+
+      {/* Entry Modal (Tambah/Edit) */}
+      {isEntryOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setIsEntryOpen(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">{editingItem ? 'Edit Cash Advance' : 'Tambah Cash Advance'}</h3>
+              <button onClick={() => setIsEntryOpen(false)} className="text-gray-400 hover:text-gray-600" aria-label="Close">✕</button>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nama Departemen</label>
+                  <input value={form.namaDepartemen} onChange={e => setForm({ ...form, namaDepartemen: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">No CA</label>
+                  <input value={form.noCA} onChange={e => setForm({ ...form, noCA: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Tanggal</label>
+                  <input type="date" value={form.tanggal} onChange={e => setForm({ ...form, tanggal: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">No SO</label>
+                  <input value={form.noSO} onChange={e => setForm({ ...form, noSO: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">No SO Turunan</label>
+                  <input value={form.noSOTurunan} onChange={e => setForm({ ...form, noSOTurunan: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nama Proyek</label>
+                  <input value={form.namaProyek} onChange={e => setForm({ ...form, namaProyek: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nama Pemohon</label>
+                  <input value={form.namaPemohon} onChange={e => setForm({ ...form, namaPemohon: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nominal</label>
+                  <input value={form.nominal} onChange={e => setForm({ ...form, nominal: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Rp ..." />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Keperluan</label>
+                  <input value={form.keperluan} onChange={e => setForm({ ...form, keperluan: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Tgl Pembayaran</label>
+                  <input type="date" value={form.tglPembayaran} onChange={e => setForm({ ...form, tglPembayaran: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Tgl Laporan Expense</label>
+                  <input type="date" value={form.tglLaporanExpense} onChange={e => setForm({ ...form, tglLaporanExpense: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
+              <button onClick={() => setIsEntryOpen(false)} className="px-4 py-2 text-sm rounded-lg border">Batal</button>
+              <button onClick={saveForm} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Simpan</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {historyOpen && historyItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setHistoryOpen(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-xl mx-4">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">History Perubahan</h3>
+              <button onClick={() => setHistoryOpen(false)} className="text-gray-400 hover:text-gray-600" aria-label="Close">✕</button>
+            </div>
+            <div className="p-6">
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 h-2 w-2 rounded-full bg-emerald-500"></span>
+                  <div>
+                    <div className="text-gray-900">Entry dibuat untuk CA {historyItem.noCA}</div>
+                    <div className="text-gray-500">Oleh System • {new Date().toLocaleString('id-ID')}</div>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 h-2 w-2 rounded-full bg-blue-500"></span>
+                  <div>
+                    <div className="text-gray-900">Terakhir diubah: Nominal/Keperluan</div>
+                    <div className="text-gray-500">Oleh System • {new Date().toLocaleString('id-ID')}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-end">
+              <button onClick={() => setHistoryOpen(false)} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmDeleteModal
+        isOpen={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={confirmDelete}
+        itemName={deleteItem?.noCA}
+      />
     </div>
   );
 };
