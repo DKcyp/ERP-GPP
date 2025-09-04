@@ -6,6 +6,10 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  ThumbsUp,
+  ThumbsDown,
+  Plus,
+  X,
 } from "lucide-react";
 
 interface CutiListRecord {
@@ -43,10 +47,22 @@ const initialListData: CutiListRecord[] = [
     alasan: "Sakit demam",
     status: "Pending",
   },
+  // Extra dummy to trigger alert (exceed per-employee limit)
+  {
+    id: "CUTI-REQ-023",
+    nama: "Budi Santoso",
+    jabatan: "Staff HR",
+    departemen: "HRD",
+    jenisCuti: "Izin",
+    tanggalMulai: "2025-09-20",
+    tanggalSelesai: "2025-09-20",
+    alasan: "Keperluan pribadi",
+    status: "Pending",
+  },
 ];
 
 const PegawaiListCutiDashboard: React.FC = () => {
-  const [rows] = useState<CutiListRecord[]>(initialListData);
+  const [rows, setRows] = useState<CutiListRecord[]>(initialListData);
   const [showEntries, setShowEntries] = useState(10);
   const [filters, setFilters] = useState({
     nama: "",
@@ -55,6 +71,16 @@ const PegawaiListCutiDashboard: React.FC = () => {
     status: "",
     tglAwal: "",
     tglAkhir: "",
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form, setForm] = useState({
+    nama: "",
+    jabatan: "",
+    departemen: "",
+    jenisCuti: "" as CutiListRecord["jenisCuti"] | "",
+    tanggalMulai: "",
+    tanggalSelesai: "",
+    alasan: "",
   });
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -127,6 +153,11 @@ const PegawaiListCutiDashboard: React.FC = () => {
     return Array.from(map.values());
   }, [filtered]);
 
+  const LIMIT_PER_EMPLOYEE = 1;
+  const exceededGroups = useMemo(
+    () => grouped.filter((g) => g.total > LIMIT_PER_EMPLOYEE),
+    [grouped]
+  );
   const pagedGroups = useMemo(
     () => grouped.slice(0, showEntries),
     [grouped, showEntries]
@@ -140,6 +171,81 @@ const PegawaiListCutiDashboard: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     setFilters((p) => ({ ...p, [name]: value }));
+  };
+
+  const handleFormChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setForm((p) => ({ ...p, [name]: value }));
+  };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const saveForm = () => {
+    if (
+      !form.nama ||
+      !form.jabatan ||
+      !form.departemen ||
+      !form.jenisCuti ||
+      !form.tanggalMulai ||
+      !form.tanggalSelesai
+    )
+      return;
+    const newItem: CutiListRecord = {
+      id: `CUTI-REQ-${String(rows.length + 21).padStart(3, "0")}`,
+      nama: form.nama,
+      jabatan: form.jabatan,
+      departemen: form.departemen,
+      jenisCuti: form.jenisCuti as CutiListRecord["jenisCuti"],
+      tanggalMulai: form.tanggalMulai,
+      tanggalSelesai: form.tanggalSelesai,
+      alasan: form.alasan,
+      status: "Pending",
+    };
+    setRows((prev) => [newItem, ...prev]);
+    setIsModalOpen(false);
+    setForm({
+      nama: "",
+      jabatan: "",
+      departemen: "",
+      jenisCuti: "",
+      tanggalMulai: "",
+      tanggalSelesai: "",
+      alasan: "",
+    });
+  };
+
+  const approve = (id: string) => {
+    setRows((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, status: "Disetujui" } : x))
+    );
+  };
+
+  const reject = (id: string) => {
+    const reason = prompt("Alasan penolakan (opsional):") || "";
+    console.log("Reject reason:", reason);
+    setRows((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, status: "Ditolak" } : x))
+    );
+  };
+
+  const statusBadge = (s: CutiListRecord["status"]) => {
+    const map: Record<CutiListRecord["status"], string> = {
+      Pending: "bg-yellow-500 text-white",
+      Disetujui: "bg-green-500 text-white",
+      Ditolak: "bg-red-500 text-white",
+    };
+    return (
+      <span
+        className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full ${map[s]}`}
+      >
+        {s}
+      </span>
+    );
   };
 
   return (
@@ -159,9 +265,142 @@ const PegawaiListCutiDashboard: React.FC = () => {
                 <span className="text-blue-600 font-medium">List Cuti</span>
               </nav>
             </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+            {/* Modal Tambah */}
+            {isModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="bg-white w-full max-w-2xl rounded-xl shadow-xl border border-gray-200">
+                  <div className="flex items-center justify-between px-6 py-4 border-b">
+                    <h3 className="text-lg font-semibold">Tambah Data Cuti</h3>
+                    <button
+                      onClick={closeModal}
+                      className="p-2 hover:bg-gray-100 rounded-md"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Nama
+                      </label>
+                      <input
+                        name="nama"
+                        value={form.nama}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        placeholder="Nama pegawai"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Jabatan
+                      </label>
+                      <input
+                        name="jabatan"
+                        value={form.jabatan}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        placeholder="Jabatan"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Departemen
+                      </label>
+                      <select
+                        name="departemen"
+                        value={form.departemen}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                      >
+                        <option value="">Pilih departemen</option>
+                        <option value="HRD">HRD</option>
+                        <option value="Pengadaan">Pengadaan</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Operational">Operational</option>
+                        <option value="Gudang">Gudang</option>
+                        <option value="QHSE">QHSE</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Jenis Cuti
+                      </label>
+                      <select
+                        name="jenisCuti"
+                        value={form.jenisCuti}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                      >
+                        <option value="">Pilih jenis</option>
+                        <option value="Tahunan">Tahunan</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Melahirkan">Melahirkan</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal Mulai
+                      </label>
+                      <input
+                        type="date"
+                        name="tanggalMulai"
+                        value={form.tanggalMulai}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal Selesai
+                      </label>
+                      <input
+                        type="date"
+                        name="tanggalSelesai"
+                        value={form.tanggalSelesai}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Alasan
+                      </label>
+                      <textarea
+                        name="alasan"
+                        value={form.alasan}
+                        onChange={handleFormChange}
+                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                        rows={3}
+                        placeholder="Alasan cuti"
+                      />
+                    </div>
+                  </div>
+                  <div className="px-6 py-4 border-t flex justify-end gap-3">
+                    <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+                      Batal
+                    </button>
+                    <button onClick={saveForm} className="px-4 py-2 bg-primary text-white rounded-lg">
+                      Simpan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={openModal}
+                className="flex items-center space-x-2 px-3 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-blue-600 text-xs"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+              <div className="flex items-center space-x-3 text-sm text-gray-500">
+                <Clock className="h-4 w-4" />
+                <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -270,6 +509,17 @@ const PegawaiListCutiDashboard: React.FC = () => {
 
           {/* Table (Grouped per Pegawai) */}
           <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+            {exceededGroups.length > 0 && (
+              <div className="px-4 pt-4">
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                  <span className="font-semibold">Peringatan:</span>
+                  <span>
+                    Pegawai berikut melebihi batas pengajuan cuti (
+                    {LIMIT_PER_EMPLOYEE}): {exceededGroups.map((g) => g.nama).join(", ")}
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="p-4 flex justify-between items-center">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <span>Show</span>
@@ -322,10 +572,13 @@ const PegawaiListCutiDashboard: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {pagedGroups.map((g) => {
                   const isOpen = !!expanded[g.key];
+                  const overLimit = g.total > LIMIT_PER_EMPLOYEE;
                   return (
                     <React.Fragment key={g.key}>
                       <tr
-                        className="hover:bg-gray-50 transition-colors cursor-pointer"
+                        className={`transition-colors cursor-pointer ${
+                          overLimit ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"
+                        }`}
                         onClick={() => toggleExpand(g.key)}
                       >
                         <td className="px-4 py-3 align-middle">
@@ -337,6 +590,11 @@ const PegawaiListCutiDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {g.nama}
+                          {overLimit && (
+                            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 align-middle">
+                              Limit terlampaui
+                            </span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                           {g.departemen}
@@ -388,6 +646,9 @@ const PegawaiListCutiDashboard: React.FC = () => {
                                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
                                       </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Aksi
+                                      </th>
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200">
@@ -407,17 +668,31 @@ const PegawaiListCutiDashboard: React.FC = () => {
                                           {r.alasan || "-"}
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm">
-                                          <span
-                                            className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${
-                                              r.status === "Pending"
-                                                ? "bg-yellow-500 text-white"
-                                                : r.status === "Disetujui"
-                                                ? "bg-green-500 text-white"
-                                                : "bg-red-500 text-white"
-                                            }`}
-                                          >
-                                            {r.status}
-                                          </span>
+                                          {statusBadge(r.status)}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm">
+                                          <div className="flex items-center space-x-2">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                approve(r.id);
+                                              }}
+                                              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+                                              title="Approve"
+                                            >
+                                              <ThumbsUp className="h-4 w-4" />
+                                            </button>
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                reject(r.id);
+                                              }}
+                                              className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                                              title="Reject"
+                                            >
+                                              <ThumbsDown className="h-4 w-4" />
+                                            </button>
+                                          </div>
                                         </td>
                                       </tr>
                                     ))}

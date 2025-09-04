@@ -10,6 +10,7 @@ import {
   File,
   ArrowUp,
   ChevronDown,
+  Plus,
 } from "lucide-react";
 
 interface ProsesProduksiData {

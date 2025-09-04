@@ -363,7 +363,7 @@ export const hrdMenu: MenuSection[] = [
         path: "/hrd/pegawai/master-umr",
       },
       {
-        title: "PR Training",
+        title: "Approve PR Training",
         icon: "GraduationCap",
         path: "/hrd/pegawai/pr-training",
       },
