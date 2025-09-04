@@ -1,15 +1,53 @@
-import React from 'react';
-import { Clock, FileText, FileBarChart, FileSpreadsheet, Eye, CalendarDays, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, FileText, FileBarChart, FileSpreadsheet, Eye, CalendarDays, AlertTriangle, Plus } from 'lucide-react';
+import EntryBarangDibuangModal, { BarangDibuangItemInput } from './EntryBarangDibuangModal';
 
 const BarangDibuangDashboard: React.FC = () => {
-  const barangDibuangItems = [
+  const [barangDibuangItems, setBarangDibuangItems] = useState<Array<{
+    no: number;
+    kodeBarang: string;
+    namaBarang: string;
+    kategori: string;
+    satuan: string;
+    sumber: string;
+    tanggalDibuang: string;
+    catatan: string;
+    jumlah?: number;
+  }>>([
     { no: 1, kodeBarang: 'BRG001', namaBarang: 'Body Shiled', kategori: 'APD', satuan: 'Unit', sumber: 'Karantina', tanggalDibuang: '01-02-2025', catatan: 'Tidak dapat diperbaiki' },
     { no: 2, kodeBarang: 'BRG003', namaBarang: 'Sepatu Boot', kategori: 'APD', satuan: 'Unit', sumber: 'Timesheet', tanggalDibuang: '02-02-2025', catatan: 'Tidak dapat diperbaiki' },
     { no: 3, kodeBarang: 'BRG002', namaBarang: 'Helm Proyek', kategori: 'APD', satuan: 'Unit', sumber: 'Pengembalian Barang', tanggalDibuang: '02-02-2025', catatan: 'Retak tidak aman' },
     // Sample items to trigger warning badge
     { no: 4, kodeBarang: 'CHM001', namaBarang: 'Solvent X', kategori: 'Chemical', satuan: 'Liter', sumber: 'Karantina', tanggalDibuang: '03-02-2025', catatan: 'Melebihi tanggal kadaluarsa' },
     { no: 5, kodeBarang: 'B3001', namaBarang: 'Baterai Industri', kategori: 'B3', satuan: 'Unit', sumber: 'Pengembalian Barang', tanggalDibuang: '04-02-2025', catatan: 'Kerusakan berat' },
-  ];
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const formatToDDMMYYYY = (yyyyMmDd: string) => {
+    const [y, m, d] = yyyyMmDd.split('-');
+    if (!y || !m || !d) return yyyyMmDd;
+    return `${d}-${m}-${y}`;
+  };
+
+  const handleSave = (data: BarangDibuangItemInput) => {
+    const nextNo = (barangDibuangItems[0]?.no || 0) + 1;
+    const newItem = {
+      no: nextNo,
+      kodeBarang: data.kodeBarang || `NEW${String(Date.now()).slice(-3)}`,
+      namaBarang: data.namaBarang,
+      kategori: data.kategori,
+      satuan: data.satuan,
+      sumber: data.sumber,
+      tanggalDibuang: formatToDDMMYYYY(data.tanggalDibuang),
+      catatan: data.catatan || '-',
+      jumlah: data.jumlah ?? 1,
+    };
+    setBarangDibuangItems(prev => [
+      newItem,
+      ...prev.map(p => ({ ...p, no: p.no + 1 })),
+    ]);
+  };
 
   const isB3Category = (kategori: string) => {
     const key = (kategori || '').toLowerCase();
@@ -75,8 +113,8 @@ const BarangDibuangDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Periode and Search Button */}
-          <div className="flex items-end space-x-3 mb-4">
+          {/* Periode and Search/Tambah Buttons */}
+          <div className="flex items-end space-x-2 mb-4">
             <div className="relative flex-1">
               <label htmlFor="periodeStart" className="block text-xs font-medium text-gray-700 mb-1">Periode</label>
               <div className="flex items-center space-x-2">
@@ -84,25 +122,32 @@ const BarangDibuangDashboard: React.FC = () => {
                   <input
                     type="date"
                     id="periodeStart"
-                    className="pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                    className="pl-7 pr-2 py-1 h-7 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-[11px]"
                     defaultValue="2025-03-03"
                   />
-                  <CalendarDays className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <CalendarDays className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
                 </div>
-                <span className="text-gray-500 text-xs">s.d</span>
+                <span className="text-gray-500 text-[11px]">s.d</span>
                 <div className="relative w-1/2">
                   <input
                     type="date"
                     id="periodeEnd"
-                    className="pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                    className="pl-7 pr-2 py-1 h-7 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-[11px]"
                     defaultValue="2025-03-03"
                   />
-                  <CalendarDays className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <CalendarDays className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-3.5 w-3.5" />
                 </div>
               </div>
             </div>
-            <button className="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 text-xs shadow-sm">
+            <button className="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-xs shadow-sm">
               Search
+            </button>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 text-xs shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Tambah</span>
             </button>
           </div>
 
@@ -151,6 +196,7 @@ const BarangDibuangDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Warning</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Sumber</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Tanggal Dibuang</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Catatan</th>
@@ -175,6 +221,7 @@ const BarangDibuangDashboard: React.FC = () => {
                       )}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.satuan}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.jumlah ?? 1}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.sumber}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.tanggalDibuang}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.catatan}</td>
@@ -208,6 +255,13 @@ const BarangDibuangDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Modal */}
+      <EntryBarangDibuangModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+      />
+
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500 flex justify-between items-center">
         <span>2023 © Mazer</span>
