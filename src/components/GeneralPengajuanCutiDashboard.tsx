@@ -10,6 +10,7 @@ import {
   CheckCircle,
   X,
 } from "lucide-react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface CutiRecord {
   id: string;
@@ -65,6 +66,9 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
     tanggalSelesai: "",
     alasan: "",
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<CutiRecord | null>(null);
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -106,7 +110,19 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
     setForm((p) => ({ ...p, [name]: value }));
   };
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    // Open as add mode (reset editing state and clear form)
+    setEditingId(null);
+    setForm({
+      nama: "",
+      jabatan: "",
+      jenisCuti: "",
+      tanggalMulai: "",
+      tanggalSelesai: "",
+      alasan: "",
+    });
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
 
   const saveForm = () => {
@@ -118,18 +134,39 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
       !form.tanggalSelesai
     )
       return;
-    const newItem: CutiRecord = {
-      id: `CUTI-${String(rows.length + 1).padStart(3, "0")}`,
-      nama: form.nama,
-      jabatan: form.jabatan,
-      jenisCuti: form.jenisCuti as CutiRecord["jenisCuti"],
-      tanggalMulai: form.tanggalMulai,
-      tanggalSelesai: form.tanggalSelesai,
-      alasan: form.alasan,
-      status: "Diajukan",
-    };
-    setRows((prev) => [newItem, ...prev]);
+    if (editingId) {
+      // Update existing item
+      setRows((prev) =>
+        prev.map((x) =>
+          x.id === editingId
+            ? {
+                ...x,
+                nama: form.nama,
+                jabatan: form.jabatan,
+                jenisCuti: form.jenisCuti as CutiRecord["jenisCuti"],
+                tanggalMulai: form.tanggalMulai,
+                tanggalSelesai: form.tanggalSelesai,
+                alasan: form.alasan,
+              }
+            : x
+        )
+      );
+    } else {
+      // Add new item
+      const newItem: CutiRecord = {
+        id: `CUTI-${String(rows.length + 1).padStart(3, "0")}`,
+        nama: form.nama,
+        jabatan: form.jabatan,
+        jenisCuti: form.jenisCuti as CutiRecord["jenisCuti"],
+        tanggalMulai: form.tanggalMulai,
+        tanggalSelesai: form.tanggalSelesai,
+        alasan: form.alasan,
+        status: "Diajukan",
+      };
+      setRows((prev) => [newItem, ...prev]);
+    }
     setIsModalOpen(false);
+    setEditingId(null);
     setForm({
       nama: "",
       jabatan: "",
@@ -141,19 +178,28 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
   };
 
   const editItem = (id: string) => {
-    alert(`Edit CUTI ${id} (mock). Anda bisa menambahkan modal form nanti.)`);
+    const item = rows.find((x) => x.id === id);
+    if (!item) return;
+    setEditingId(id);
+    setForm({
+      nama: item.nama,
+      jabatan: item.jabatan,
+      jenisCuti: item.jenisCuti,
+      tanggalMulai: item.tanggalMulai,
+      tanggalSelesai: item.tanggalSelesai,
+      alasan: item.alasan,
+    });
+    setIsModalOpen(true);
   };
 
   const deleteItem = (id: string) => {
-    if (!confirm("Hapus pengajuan cuti ini?")) return;
-    setRows((prev) => prev.filter((x) => x.id !== id));
+    const item = rows.find((x) => x.id === id) || null;
+    setDeleteTarget(item);
+    setIsDeleteOpen(true);
   };
 
   const submitItem = (id: string) => {
-    setRows((prev) =>
-      prev.map((x) => (x.id === id ? { ...x, status: "Diajukan" } : x))
-    );
-    alert("Pengajuan dikirim untuk persetujuan.");
+    alert(`Pengajuan ${id} dikirim (demo).`);
   };
 
   const statusBadge = (s: CutiRecord["status"]) => {
@@ -301,13 +347,13 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Modal Tambah */}
+          {/* Modal Tambah/Edit */}
           {isModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
               <div className="bg-white w-full max-w-2xl rounded-xl shadow-xl border border-gray-200">
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                   <h3 className="text-lg font-semibold">
-                    Tambah Pengajuan Cuti
+                    {editingId ? "Edit Pengajuan Cuti" : "Tambah Pengajuan Cuti"}
                   </h3>
                   <button
                     onClick={closeModal}
@@ -414,6 +460,24 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* Modal Konfirmasi Hapus */}
+          <ConfirmDeleteModal
+            isOpen={isDeleteOpen}
+            onClose={() => {
+              setIsDeleteOpen(false);
+              setDeleteTarget(null);
+            }}
+            onConfirm={() => {
+              if (deleteTarget) {
+                setRows((prev) => prev.filter((x) => x.id !== deleteTarget.id));
+              }
+              setDeleteTarget(null);
+            }}
+            title="Konfirmasi Hapus Pengajuan Cuti"
+            message="Apakah Anda yakin ingin menghapus pengajuan cuti ini?"
+            itemName={deleteTarget?.id}
+          />
 
           {/* Table */}
           <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
