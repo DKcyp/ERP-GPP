@@ -199,7 +199,9 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
   };
 
   const submitItem = (id: string) => {
-    alert(`Pengajuan ${id} dikirim (demo).`);
+    setRows((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, status: "Diajukan" } : x))
+    );
   };
 
   const statusBadge = (s: CutiRecord["status"]) => {
@@ -353,7 +355,9 @@ const GeneralPengajuanCutiDashboard: React.FC = () => {
               <div className="bg-white w-full max-w-2xl rounded-xl shadow-xl border border-gray-200">
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                   <h3 className="text-lg font-semibold">
-                    {editingId ? "Edit Pengajuan Cuti" : "Tambah Pengajuan Cuti"}
+                    {editingId
+                      ? "Edit Pengajuan Cuti"
+                      : "Tambah Pengajuan Cuti"}
                   </h3>
                   <button
                     onClick={closeModal}
