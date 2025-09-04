@@ -347,7 +347,11 @@ export const hrdMenu: MenuSection[] = [
     icon: "UserRound",
     items: [
       { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
-      { title: "List Cuti", icon: "Calendar", path: "/hrd/pegawai/list-cuti" },
+      {
+        title: "Daftar Cuti Pegawai",
+        icon: "Calendar",
+        path: "/hrd/pegawai/list-cuti",
+      },
       {
         title: "Resign",
         icon: "LogOut",

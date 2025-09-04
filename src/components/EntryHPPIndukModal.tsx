@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { Calendar } from 'lucide-react';
 import HPPDetailTabs from './HPPDetailTabs'; // Import the new component
@@ -6,10 +6,24 @@ import HPPDetailTabs from './HPPDetailTabs'; // Import the new component
 interface EntryHPPIndukModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // hppData?: any; // Jika modal membutuhkan data dari baris tabel
+  // Mode untuk menyesuaikan perilaku modal (buat/edit/lihat)
+  mode?: 'create' | 'edit' | 'view';
+  // Data awal untuk prefilling ketika edit/lihat
+  initialData?: {
+    noKontrak?: string;
+    durasiFrom?: string;
+    durasiTo?: string;
+    namaClient?: string;
+    lokasiPekerjaan?: string;
+    namaProject?: string;
+    jenisPekerjaan?: string;
+    estimasiNilaiKontrak?: string;
+  };
+  // Jika true, semua input menjadi read-only
+  readOnly?: boolean;
 }
 
-const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose }) => {
+const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose, mode = 'create', initialData, readOnly }) => {
   const [noKontrak, setNoKontrak] = useState('');
   const [durasiFrom, setDurasiFrom] = useState('');
   const [durasiTo, setDurasiTo] = useState('');
@@ -18,6 +32,32 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
   const [namaProject, setNamaProject] = useState('');
   const [jenisPekerjaan, setJenisPekerjaan] = useState('');
   const [estimasiNilaiKontrak, setEstimasiNilaiKontrak] = useState('');
+
+  const isReadOnly = readOnly || mode === 'view';
+
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setNoKontrak(initialData.noKontrak || '');
+      setDurasiFrom(initialData.durasiFrom || '');
+      setDurasiTo(initialData.durasiTo || '');
+      setNamaClient(initialData.namaClient || '');
+      setLokasiPekerjaan(initialData.lokasiPekerjaan || '');
+      setNamaProject(initialData.namaProject || '');
+      setJenisPekerjaan(initialData.jenisPekerjaan || '');
+      setEstimasiNilaiKontrak(initialData.estimasiNilaiKontrak || '');
+    }
+    if (isOpen && !initialData && mode === 'create') {
+      // reset form saat create
+      setNoKontrak('');
+      setDurasiFrom('');
+      setDurasiTo('');
+      setNamaClient('');
+      setLokasiPekerjaan('');
+      setNamaProject('');
+      setJenisPekerjaan('');
+      setEstimasiNilaiKontrak('');
+    }
+  }, [isOpen, initialData, mode]);
 
   const handleSave = () => {
     // Implementasi logika penyimpanan di sini
@@ -39,7 +79,7 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
   const jenisPekerjaanOptions = ['On Call', 'Project Based', 'Maintenance'];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Entry HPP Turunan" size="6xl"> {/* Changed size to 6xl */}
+    <Modal isOpen={isOpen} onClose={onClose} title={mode === 'view' ? 'Detail HPP Turunan' : 'Entry HPP Turunan'} size="6xl"> {/* Changed size to 6xl */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* No Kontrak */}
         <div className="space-y-2">
@@ -50,7 +90,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
             id="noKontrak"
             value={noKontrak}
             onChange={(e) => setNoKontrak(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+            disabled={isReadOnly}
+            className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <option value="">Pilih No Kontrak</option>
             {kontrakOptions.map((option) => (
@@ -70,7 +111,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
                 type="date"
                 value={durasiFrom}
                 onChange={(e) => setDurasiFrom(e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm pr-8"
+                disabled={isReadOnly}
+                className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm pr-8 ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
               />
               <Calendar className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary pointer-events-none" />
             </div>
@@ -80,7 +122,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
                 type="date"
                 value={durasiTo}
                 onChange={(e) => setDurasiTo(e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm pr-8"
+                disabled={isReadOnly}
+                className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm pr-8 ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
               />
               <Calendar className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-textSecondary pointer-events-none" />
             </div>
@@ -96,7 +139,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
             id="namaClient"
             value={namaClient}
             onChange={(e) => setNamaClient(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+            disabled={isReadOnly}
+            className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <option value="">Pilih Nama Client</option>
             {clientOptions.map((option) => (
@@ -115,7 +159,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
             id="lokasiPekerjaan"
             value={lokasiPekerjaan}
             onChange={(e) => setLokasiPekerjaan(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+            disabled={isReadOnly}
+            className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
             placeholder="Jl. Perintis Kemerdekaan, Jakarta"
           />
         </div>
@@ -130,7 +175,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
             id="namaProject"
             value={namaProject}
             onChange={(e) => setNamaProject(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+            disabled={isReadOnly}
+            className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
             placeholder="Masukkan nama project"
           />
         </div>
@@ -144,7 +190,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
             id="jenisPekerjaan"
             value={jenisPekerjaan}
             onChange={(e) => setJenisPekerjaan(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+            disabled={isReadOnly}
+            className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <option value="">Pilih Jenis Pekerjaan</option>
             {jenisPekerjaanOptions.map((option) => (
@@ -163,7 +210,8 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
             id="estimasiNilaiKontrak"
             value={estimasiNilaiKontrak}
             onChange={(e) => setEstimasiNilaiKontrak(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+            disabled={isReadOnly}
+            className={`w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
             placeholder="Rp 0"
           />
         </div>
@@ -179,12 +227,14 @@ const EntryHPPIndukModal: React.FC<EntryHPPIndukModalProps> = ({ isOpen, onClose
         >
           Close
         </button>
-        <button
-          onClick={handleSave}
-          className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors text-sm font-medium"
-        >
-          Simpan
-        </button>
+        {!isReadOnly && (
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors text-sm font-medium"
+          >
+            Simpan
+          </button>
+        )}
       </div>
     </Modal>
   );
