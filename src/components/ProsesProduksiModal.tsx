@@ -5,6 +5,7 @@ interface ProsesProduksiModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: ProsesProduksiFormData) => void;
+  initialData?: Partial<ProsesProduksiFormData>;
 }
 
 export interface ProsesProduksiFormData {
@@ -21,7 +22,7 @@ export interface ProsesProduksiFormData {
   fileName?: string;
 }
 
-const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClose, onSave }) => {
+const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
   const [formData, setFormData] = useState<ProsesProduksiFormData>({
     noSOTurunan: '',
     namaProyek: '',
@@ -71,6 +72,16 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
+
+  // Prefill when editing
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData(prev => ({
+        ...prev,
+        ...initialData,
+      }));
+    }
+  }, [isOpen, initialData]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ProsesProduksiFormData> = {};
