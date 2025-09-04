@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { 
-  Search, 
   FileSpreadsheet, 
   FileText, 
   File,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  Info,
-  ChevronLeft,
-  ChevronRight,
   ArrowUp
 } from 'lucide-react';
 
@@ -31,6 +23,8 @@ interface ProduksiData {
 }
 
 const ProduksiDashboard: React.FC = () => {
+  const auth = useAuth() as any;
+  const user = auth?.user as { username: string; role: string } | undefined;
   const [searchSO, setSearchSO] = useState('');
   const [searchSOTurunan, setSearchSOTurunan] = useState('');
   const [searchNamaProject, setSearchNamaProject] = useState('');
@@ -44,6 +38,17 @@ const ProduksiDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<ProduksiData | null>(null);
   const [sortField, setSortField] = useState<keyof ProduksiData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  
+  const handleAdd = () => {
+    // TODO: Implement add flow (open modal / navigate)
+    // Placeholder to keep UI consistent
+    console.log('Tambah clicked');
+  };
+
+  const handleEditClick = (item: ProduksiData) => {
+    // TODO: Implement edit modal/flow
+    console.log('Edit clicked for', item);
+  };
 
   // Sample data matching the first image
   const [produksiData, setProduksiData] = useState<ProduksiData[]>([
@@ -204,9 +209,9 @@ const ProduksiDashboard: React.FC = () => {
                   />
                   <button 
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors text-sm"
                   >
-                    <Search className="h-4 w-4" />
+                    Search
                   </button>
                 </div>
               </div>
@@ -226,9 +231,9 @@ const ProduksiDashboard: React.FC = () => {
                   />
                   <button 
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors text-sm"
                   >
-                    <Search className="h-4 w-4" />
+                    Search
                   </button>
                 </div>
               </div>
@@ -248,9 +253,9 @@ const ProduksiDashboard: React.FC = () => {
                   />
                   <button 
                     onClick={handleSearch}
-                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
+                    className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors text-sm"
                   >
-                    <Search className="h-4 w-4" />
+                    Search
                   </button>
                 </div>
               </div>
@@ -299,18 +304,24 @@ const ProduksiDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Search Button */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 opacity-0">
-                  Search
-                </label>
-                <button 
-                  onClick={handleSearch}
-                  className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
-                >
-                  <Search className="h-4 w-4" />
-                  Search
-                </button>
+              {/* Search and Tambah Buttons (below Status Report) */}
+              <div className="flex items-end lg:col-start-4">
+                <div className="w-full flex items-center gap-2 justify-end">
+                  <button 
+                    onClick={handleSearch}
+                    className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm"
+                  >
+                    Search
+                  </button>
+                  {user?.role === 'operational' && (
+                    <button 
+                      onClick={handleAdd}
+                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors text-sm"
+                    >
+                      Tambah
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -395,6 +406,7 @@ const ProduksiDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tgl Penerimaan Final Report</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Produksi</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Report</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -421,6 +433,26 @@ const ProduksiDashboard: React.FC = () => {
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(item.statusReport)}`}>
                         {item.statusReport}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-2">
+                        {user?.role === 'operational' && (
+                          <>
+                            <button
+                              onClick={() => handleEditClick(item)}
+                              className="px-2.5 py-1 text-sm text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(item)}
+                              className="px-2.5 py-1 text-sm text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
+                            >
+                              Hapus
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import ProsesProduksiModal, { ProsesProduksiFormData } from './ProsesProduksiModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { 
-  Search, 
-  Plus, 
   FileSpreadsheet, 
   FileText, 
   File,
@@ -28,6 +27,8 @@ interface ProsesProduksiData {
 }
 
 const ProsesProduksiDashboard: React.FC = () => {
+  const auth = useAuth() as any;
+  const user = auth?.user as { username: string; role: string } | undefined;
   const [searchSO, setSearchSO] = useState('');
   const [searchSOTurunan, setSearchSOTurunan] = useState('');
   const [searchNamaProject, setSearchNamaProject] = useState('');
@@ -41,6 +42,7 @@ const ProsesProduksiDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ProsesProduksiData | null>(null);
+  const [editItem, setEditItem] = useState<ProsesProduksiData | null>(null);
   const [sortField, setSortField] = useState<keyof ProsesProduksiData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -108,39 +110,41 @@ const ProsesProduksiDashboard: React.FC = () => {
   }, []);
 
   const handleAddProsesProduksi = (formData: ProsesProduksiFormData) => {
-    const newProsesProduksi: ProsesProduksiData = {
-      id: (produksiData.length + 1).toString(),
-      no: produksiData.length + 1,
-      noSO: `SO${String(Date.now()).slice(-3)}`,
+    // Map form data to display format
+    const mapped = {
       soTurunan: formData.noSOTurunan,
       namaProyek: formData.namaProyek,
-      mob: new Date(formData.mob).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      demob: new Date(formData.demob).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      tglPenerimaanReportTeknisi: new Date(formData.tglPenerimaanReportTeknisi).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      tglPenerimaanFinalReport: formData.tglPenerimaanFinalReport ? new Date(formData.tglPenerimaanFinalReport).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }) : '-',
+      mob: new Date(formData.mob).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      demob: new Date(formData.demob).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      tglPenerimaanReportTeknisi: new Date(formData.tglPenerimaanReportTeknisi).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      tglPenerimaanFinalReport: formData.tglPenerimaanFinalReport ? new Date(formData.tglPenerimaanFinalReport).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-',
       nilaiProduksi: formData.nilaiProduksi,
       statusReport: formData.statusReport,
       fileUrl: formData.fileUrl,
       fileName: formData.fileName
     };
 
+    if (editItem) {
+      // Update existing item
+      setProduksiData(prev => prev.map(p => p.id === editItem.id ? { ...p, ...mapped } : p));
+      setEditItem(null);
+      setIsModalOpen(false);
+      return;
+    }
+
+    const newProsesProduksi: ProsesProduksiData = {
+      id: (produksiData.length + 1).toString(),
+      no: produksiData.length + 1,
+      noSO: `SO${String(Date.now()).slice(-3)}`,
+      ...mapped
+    } as ProsesProduksiData;
+
     setProduksiData(prev => [newProsesProduksi, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
+  };
+
+  const handleEditClick = (item: ProsesProduksiData) => {
+    setEditItem(item);
+    setIsModalOpen(true);
   };
 
   const handleDeleteClick = (produksi: ProsesProduksiData) => {
@@ -242,15 +246,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                     type="text"
                     value={searchSO}
                     onChange={(e) => setSearchSO(e.target.value)}
-                    className="w-full px-2.5 py-1.5 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="SO001"
                   />
-                  <button 
-                    onClick={handleSearch}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-white bg-cyan-500 rounded hover:bg-cyan-600 transition-colors"
-                  >
-                    <Search className="h-3.5 w-3.5" />
-                  </button>
                 </div>
               </div>
 
@@ -264,15 +262,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                     type="text"
                     value={searchSOTurunan}
                     onChange={(e) => setSearchSOTurunan(e.target.value)}
-                    className="w-full px-2.5 py-1.5 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="SO001.12"
                   />
-                  <button 
-                    onClick={handleSearch}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-white bg-cyan-500 rounded hover:bg-cyan-600 transition-colors"
-                  >
-                    <Search className="h-3.5 w-3.5" />
-                  </button>
                 </div>
               </div>
 
@@ -286,15 +278,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                     type="text"
                     value={searchNamaProject}
                     onChange={(e) => setSearchNamaProject(e.target.value)}
-                    className="w-full px-2.5 py-1.5 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="Proyek Medco"
                   />
-                  <button 
-                    onClick={handleSearch}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-white bg-cyan-500 rounded hover:bg-cyan-600 transition-colors"
-                  >
-                    <Search className="h-3.5 w-3.5" />
-                  </button>
                 </div>
               </div>
 
@@ -373,18 +359,24 @@ const ProsesProduksiDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Search Button */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-gray-700 opacity-0">
-                  Search
-                </label>
-                <button 
-                  onClick={handleSearch}
-                  className="w-full px-4 py-1.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-xs flex items-center justify-center gap-2"
-                >
-                  <Search className="h-3.5 w-3.5" />
-                  Search
-                </button>
+              {/* Search and Tambah Buttons (below Status Report) */}
+              <div className="flex items-end lg:col-start-4">
+                <div className="w-full flex items-center gap-2 justify-end">
+                  <button 
+                    onClick={handleSearch}
+                    className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm"
+                  >
+                    Search
+                  </button>
+                  {user?.role === 'operational' && (
+                    <button 
+                      onClick={() => setIsModalOpen(true)}
+                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors text-sm"
+                    >
+                      Tambah
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -505,15 +497,30 @@ const ProsesProduksiDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => handleViewFile(item)}
-                          disabled={!item.fileUrl}
-                          title={item.fileName || (item.fileUrl ? 'Lihat File' : 'Tidak ada file')}
-                          className={`p-1.5 rounded-md transition-all duration-200 ${item.fileUrl ? 'text-emerald-600 hover:bg-emerald-50' : 'text-gray-300 cursor-not-allowed'}`}
+                          title={item.fileName || 'Lihat File'}
+                          className="px-2 py-1 rounded-md transition-all duration-200 text-xs text-blue-700 bg-blue-50 hover:bg-blue-100"
                         >
-                          <File className="h-3 w-3" />
+                          Lihat
                         </button>
+                        {user?.role === 'operational' && (
+                          <>
+                            <button
+                              onClick={() => handleEditClick(item)}
+                              className="px-2 py-1 rounded-md transition-all duration-200 text-xs text-blue-700 bg-blue-50 hover:bg-blue-100"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(item)}
+                              className="px-2 py-1 rounded-md transition-all duration-200 text-xs text-red-700 bg-red-50 hover:bg-red-100"
+                            >
+                              Hapus
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
