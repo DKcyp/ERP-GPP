@@ -422,14 +422,6 @@ const ProsesProduksiDashboard: React.FC = () => {
                   >
                     Search
                   </button>
-                  {user?.role === "operational" && (
-                    <button
-                      onClick={() => setIsModalOpen(true)}
-                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors text-sm"
-                    >
-                      Tambah
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
