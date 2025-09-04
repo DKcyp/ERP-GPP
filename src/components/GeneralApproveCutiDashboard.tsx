@@ -142,8 +142,14 @@ const GeneralApproveCutiDashboard: React.FC = () => {
   }, [filtered]);
 
   const LIMIT_PER_EMPLOYEE = 1;
-  const exceededGroups = useMemo(() => grouped.filter((g) => g.total > LIMIT_PER_EMPLOYEE), [grouped]);
-  const pagedGroups = useMemo(() => grouped.slice(0, showEntries), [grouped, showEntries]);
+  const exceededGroups = useMemo(
+    () => grouped.filter((g) => g.total > LIMIT_PER_EMPLOYEE),
+    [grouped]
+  );
+  const pagedGroups = useMemo(
+    () => grouped.slice(0, showEntries),
+    [grouped, showEntries]
+  );
 
   const toggleExpand = (key: string) =>
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -463,7 +469,9 @@ const GeneralApproveCutiDashboard: React.FC = () => {
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
                   <span className="font-semibold">Peringatan:</span>
                   <span>
-                    Pegawai berikut melebihi batas pengajuan cuti ({LIMIT_PER_EMPLOYEE}): {exceededGroups.map((g) => g.nama).join(", ")}
+                    Pegawai berikut melebihi batas pengajuan cuti (
+                    {LIMIT_PER_EMPLOYEE}):{" "}
+                    {exceededGroups.map((g) => g.nama).join(", ")}
                   </span>
                 </div>
               </div>
@@ -497,12 +505,24 @@ const GeneralApproveCutiDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="w-10 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Cuti</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Disetujui</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ditolak</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jabatan
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Cuti
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Pending
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Disetujui
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ditolak
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -512,7 +532,11 @@ const GeneralApproveCutiDashboard: React.FC = () => {
                   return (
                     <React.Fragment key={g.key}>
                       <tr
-                        className={`transition-colors cursor-pointer ${overLimit ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}`}
+                        className={`transition-colors cursor-pointer ${
+                          overLimit
+                            ? "bg-red-50 hover:bg-red-100"
+                            : "hover:bg-gray-50"
+                        }`}
                         onClick={() => toggleExpand(g.key)}
                       >
                         <td className="px-4 py-3 align-middle">
@@ -525,48 +549,85 @@ const GeneralApproveCutiDashboard: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {g.nama}
                           {overLimit && (
-                            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 align-middle">Limit terlampaui</span>
+                            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 align-middle">
+                              Limit terlampaui
+                            </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{g.jabatan}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                          <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">{g.total}</span>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {g.jabatan}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                          <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">{g.pending}</span>
+                          <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                            {g.total}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                          <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">{g.disetujui}</span>
+                          <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+                            {g.pending}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                          <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">{g.ditolak}</span>
+                          <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                            {g.disetujui}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                            {g.ditolak}
+                          </span>
                         </td>
                       </tr>
                       {isOpen && (
                         <tr>
                           <td colSpan={7} className="bg-gray-50">
                             <div className="px-6 py-4">
-                              <div className="text-xs text-gray-500 mb-2">Detail Cuti {g.nama}</div>
+                              <div className="text-xs text-gray-500 mb-2">
+                                Detail Cuti {g.nama}
+                              </div>
                               <div className="overflow-x-auto border border-gray-200 rounded-lg">
                                 <table className="min-w-full">
                                   <thead className="bg-gray-100">
                                     <tr>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alasan</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ID
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Jenis
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Periode
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Alasan
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Aksi
+                                      </th>
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200">
                                     {g.details.map((r) => (
                                       <tr key={r.id} className="hover:bg-white">
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{r.id}</td>
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{r.jenisCuti}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                                          {r.id}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                                          {r.jenisCuti}
+                                        </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate" title={r.alasan}>{r.alasan || "-"}</td>
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm">{statusBadge(r.status)}</td>
+                                        <td
+                                          className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate"
+                                          title={r.alasan}
+                                        >
+                                          {r.alasan || "-"}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm">
+                                          {statusBadge(r.status)}
+                                        </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm">
                                           <div className="flex items-center space-x-2">
                                             <button
@@ -601,7 +662,8 @@ const GeneralApproveCutiDashboard: React.FC = () => {
             </table>
             <div className="p-4 flex justify-between items-center text-sm text-gray-600">
               <span>
-                Showing 1 to {Math.min(grouped.length, showEntries)} of {grouped.length} employees
+                Showing 1 to {Math.min(grouped.length, showEntries)} of{" "}
+                {grouped.length} employees
               </span>
               <div className="flex space-x-2">
                 <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">

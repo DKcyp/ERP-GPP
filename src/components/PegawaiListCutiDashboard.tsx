@@ -127,7 +127,10 @@ const PegawaiListCutiDashboard: React.FC = () => {
     return Array.from(map.values());
   }, [filtered]);
 
-  const pagedGroups = useMemo(() => grouped.slice(0, showEntries), [grouped, showEntries]);
+  const pagedGroups = useMemo(
+    () => grouped.slice(0, showEntries),
+    [grouped, showEntries]
+  );
 
   const toggleExpand = (key: string) =>
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -363,25 +366,44 @@ const PegawaiListCutiDashboard: React.FC = () => {
                         <tr>
                           <td colSpan={7} className="bg-gray-50">
                             <div className="px-6 py-4">
-                              <div className="text-xs text-gray-500 mb-2">Detail Cuti {g.nama}</div>
+                              <div className="text-xs text-gray-500 mb-2">
+                                Detail Cuti {g.nama}
+                              </div>
                               <div className="overflow-x-auto border border-gray-200 rounded-lg">
                                 <table className="min-w-full">
                                   <thead className="bg-gray-100">
                                     <tr>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alasan</th>
-                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        ID
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Jenis
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Periode
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Alasan
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                      </th>
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200">
                                     {g.details.map((r) => (
                                       <tr key={r.id} className="hover:bg-white">
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{r.id}</td>
-                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{r.jenisCuti}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                                          {r.id}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                                          {r.jenisCuti}
+                                        </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate" title={r.alasan}>
+                                        <td
+                                          className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate"
+                                          title={r.alasan}
+                                        >
                                           {r.alasan || "-"}
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm">
@@ -413,7 +435,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
             </table>
             <div className="p-4 flex justify-between items-center text-sm text-gray-600">
               <span>
-                Showing 1 to {Math.min(grouped.length, showEntries)} of {grouped.length} employees
+                Showing 1 to {Math.min(grouped.length, showEntries)} of{" "}
+                {grouped.length} employees
               </span>
               <div className="flex space-x-2">
                 <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">

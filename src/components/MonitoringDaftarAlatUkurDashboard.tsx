@@ -245,12 +245,14 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
               <AlertTriangle className="h-5 w-5 mr-2 mt-0.5" />
               <div>
                 <p className="font-semibold">
-                  {expiringItems.length} item akan habis masa berlaku dalam ≤ 60 hari pada tab ini.
+                  {expiringItems.length} item akan habis masa berlaku dalam ≤ 60
+                  hari pada tab ini.
                 </p>
                 <ul className="mt-1 text-sm list-disc pl-5">
                   {expiringItems.slice(0, 5).map((it) => (
                     <li key={it.id}>
-                      {it.namaBarang} — {daysTo(it.masaBerlaku)} hari lagi (SN: {it.serialNumber})
+                      {it.namaBarang} — {daysTo(it.masaBerlaku)} hari lagi (SN:{" "}
+                      {it.serialNumber})
                     </li>
                   ))}
                 </ul>
