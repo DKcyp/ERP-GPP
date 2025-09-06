@@ -278,6 +278,12 @@ export const operationalMenu: MenuSection[] = [
     items: [],
     directPath: "/operational/pbg/dashboard",
   },
+  {
+    title: "Nomor Report",
+    icon: "FileText",
+    items: [],
+    directPath: "/qhse/monitoring-personnel/nomor-report",
+  },
   createGeneralMenu("operational"),
 ];
 
@@ -901,12 +907,12 @@ export const qhseMenu: MenuSection[] = [
     items: [],
     directPath: "/qhse/dashboard",
   },
-  {
-    title: "Perizinan Alat",
-    icon: "Tool",
-    items: [],
-    directPath: "/qhse/perizinan-alat",
-  },
+  // {
+  //   title: "Perizinan Alat",
+  //   icon: "Tool",
+  //   items: [],
+  //   directPath: "/qhse/perizinan-alat",
+  // },
   {
     title: "Legalitas Perusahaan",
     icon: "ShieldCheck",
@@ -919,30 +925,30 @@ export const qhseMenu: MenuSection[] = [
     items: [],
     directPath: "/qhse/performance",
   },
-  {
-    title: "Monitoring MCU",
-    icon: "HeartPulse",
-    items: [],
-    directPath: "/qhse/monitoring-mcu",
-  },
+  // {
+  //   title: "Monitoring MCU",
+  //   icon: "HeartPulse",
+  //   items: [],
+  //   directPath: "/qhse/monitoring-mcu",
+  // },
   {
     title: "Monitoring Daftar Alat Ukur",
     icon: "ListChecks",
     items: [],
     directPath: "/qhse/monitoring-daftar-alat-ukur",
   },
-  {
-    title: "KPI",
-    icon: "BarChart",
-    items: [
-      {
-        title: "Master KPI",
-        icon: "Database",
-        path: "/qhse/general/kpi/master",
-      },
-      { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
-    ],
-  },
+  // {
+  //   title: "KPI",
+  //   icon: "BarChart",
+  //   items: [
+  //     {
+  //       title: "Master KPI",
+  //       icon: "Database",
+  //       path: "/qhse/general/kpi/master",
+  //     },
+  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
+  //   ],
+  // },
   {
     title: "Monitoring",
     icon: "Monitor",
@@ -952,11 +958,11 @@ export const qhseMenu: MenuSection[] = [
         icon: "ShoppingCart",
         path: "/qhse/monitoring/pr",
       },
-      {
-        title: "Cash Advance",
-        icon: "Banknote",
-        path: "/qhse/monitoring/cash-advance",
-      },
+      // {
+      //   title: "Cash Advance",
+      //   icon: "Banknote",
+      //   path: "/qhse/monitoring/cash-advance",
+      // },
       {
         title: "Voucher",
         icon: "Ticket",
@@ -1003,11 +1009,6 @@ export const qhseMenu: MenuSection[] = [
         title: "Monitoring Personnel",
         icon: "Users",
         items: [
-          {
-            title: "Dashboard",
-            icon: "LayoutDashboard",
-            path: "/qhse/monitoring-personnel",
-          },
           {
             title: "Training Matrix",
             icon: "GraduationCap",
@@ -1079,6 +1080,7 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
+  createGeneralMenu("operational"),
 ];
 
 export const accountingMenu: MenuSection[] = [
