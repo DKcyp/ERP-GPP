@@ -697,25 +697,12 @@ const KontrakDealDashboard: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-3 py-2">
-                        <div className="flex items-center justify-center space-x-1.5">
-                          <button
-                            onClick={() => handleEditClick(kontrak)} // Use new handler
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200"
-                          >
-                            <Edit className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(kontrak)}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-all duration-200"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => setIsKickOffModalOpen(true)}
-                            className="p-1.5 text-green-500 hover:bg-green-30 rounded-md transition-all duration-200"
-                          >
-                            EntryKickOff
-                          </button>
+                        <div className="flex items-center justify-center gap-3 text-xs">
+                          <button onClick={() => setIsKickOffModalOpen(true)} className="text-green-700 hover:underline">Entry Kick Off</button>
+                          <span className="text-gray-300">|</span>
+                          <button onClick={() => handleEditClick(kontrak)} className="text-blue-700 hover:underline">Edit</button>
+                          <span className="text-gray-300">|</span>
+                          <button onClick={() => handleDeleteClick(kontrak)} className="text-red-700 hover:underline">Delete</button>
                         </div>
                       </td>
                     </tr>
