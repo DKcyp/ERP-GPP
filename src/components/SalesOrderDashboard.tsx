@@ -482,8 +482,7 @@ const SalesOrderDashboard: React.FC = () => {
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">SOW</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Lokasi</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jenis Pekerjaan</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal MOB</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal DeMOB</th>
+                  
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal Dibuat</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Estimasi SO</th>
                   <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
@@ -515,8 +514,7 @@ const SalesOrderDashboard: React.FC = () => {
                         {item.jenisPekerjaan}
                       </span>
                     </td>
-                    <td className="px-2 py-1 text-gray-600">{item.tanggalMOB}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.tanggalDeMOB}</td>
+                    
                     <td className="px-2 py-1 text-gray-600">{item.tanggalDibuat}</td>
                     <td className="px-2 py-1 text-gray-600 font-medium">{item.estimasiSO}</td>
                     <td className="px-2 py-1">

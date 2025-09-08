@@ -854,31 +854,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 )}
               </div>
 
-              {/* Durasi Kontrak (MOB s.d DeMOB) */}
-              <div className="lg:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Durasi Kontrak</label>
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="date"
-                      value={formData.tanggalMOB}
-                      onChange={(e) => handleInputChange("tanggalMOB", e.target.value)}
-                      className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                  <span className="text-gray-500 text-xs">s.d</span>
-                  <div className="relative flex-1">
-                    <input
-                      type="date"
-                      value={formData.tanggalDeMOB}
-                      onChange={(e) => handleInputChange("tanggalDeMOB", e.target.value)}
-                      className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-              </div>
 
               {/* Tanggal Dibuat */}
               <div>

@@ -241,8 +241,6 @@ const SalesOrderDetailModal: React.FC<SalesOrderDetailModalProps> = ({ isOpen, o
             <Row label="Nama Proyek" value={data.namaProyek} />
             <Row label="Lokasi" value={data.lokasi} />
             <Row label="Jenis Pekerjaan" value={data.jenisPekerjaan} />
-            <Row label="Tanggal MOB" value={data.tanggalMOB} />
-            <Row label="Tanggal DeMOB" value={data.tanggalDeMOB} />
             <Row label="Tanggal Dibuat" value={data.tanggalDibuat} />
             <Row label="Estimasi SO" value={data.estimasiSO} />
           </div>
