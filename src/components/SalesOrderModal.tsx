@@ -146,6 +146,107 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
 
   // removed unused lokasiOptions
 
+  // Searchable options for first column of each tab
+  const tenagaOptions = [
+    'Supervisor',
+    'Engineer',
+    'Technician',
+    'Helper',
+    'Safety Officer',
+  ];
+  const jasaOptions = [
+    'Jasa Inspeksi',
+    'Jasa Maintenance',
+    'Jasa Kalibrasi',
+  ];
+  const alatOptions = [
+    'Forklift',
+    'Crane',
+    'Truck',
+    'Compressor',
+  ];
+  const barangOptions = [
+    'Pipa 2 inch',
+    'Valve 1 inch',
+    'Kabel NYA',
+    'Baut M8',
+  ];
+  const transportOptions = [
+    'Truck Wingbox',
+    'Truck Engkel',
+    'Pickup',
+    'Bus',
+    'Pesawat',
+  ];
+  const biayaOptions = [
+    'Biaya Perjalanan',
+    'Biaya Akomodasi',
+    'Biaya Konsumsi',
+    'Biaya Lainnya',
+  ];
+
+  // Lightweight searchable select (combobox) component
+  const SearchSelect: React.FC<{
+    value: string;
+    onChange: (val: string) => void;
+    options: string[];
+    placeholder?: string;
+  }> = ({ value, onChange, options, placeholder }) => {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState(value);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const handler = (e: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+          setOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handler);
+      return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    useEffect(() => {
+      setQuery(value);
+    }, [value]);
+
+    const filtered = options.filter(opt => opt.toLowerCase().includes((query || '').toLowerCase()));
+
+    return (
+      <div className="relative" ref={containerRef}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+          placeholder={placeholder}
+        />
+        {open && (
+          <div className="absolute z-50 mt-1 w-full max-h-44 overflow-auto bg-white border border-gray-200 rounded shadow-lg">
+            {filtered.length === 0 ? (
+              <div className="px-2 py-1 text-xs text-gray-500">Tidak ada hasil</div>
+            ) : (
+              filtered.map((opt) => (
+                <button
+                  type="button"
+                  key={opt}
+                  onClick={() => { onChange(opt); setQuery(opt); setOpen(false); }}
+                  className={`w-full text-left px-2 py-1 text-xs hover:bg-blue-50 ${opt === value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                >
+                  {opt}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -535,7 +636,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                       {tenagaKerja.map((item, index) => (
                         <tr key={index}>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.tenaga} onChange={(e) => handleTabDataChange(index, 'tenaga', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Nama Tenaga" />
+                            <SearchSelect
+                              value={item.tenaga}
+                              onChange={(val) => handleTabDataChange(index, 'tenaga', val)}
+                              options={tenagaOptions}
+                              placeholder="Nama Tenaga"
+                            />
                           </td>
                           <td className="px-2 py-1">
                             <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
@@ -585,7 +691,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                       {jasa.map((item, index) => (
                         <tr key={index}>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.jasa} onChange={(e) => handleTabDataChange(index, 'jasa', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Jasa Tenaga" />
+                            <SearchSelect
+                              value={item.jasa}
+                              onChange={(val) => handleTabDataChange(index, 'jasa', val)}
+                              options={jasaOptions}
+                              placeholder="Jasa Tenaga"
+                            />
                           </td>
                           <td className="px-2 py-1">
                             <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
@@ -637,7 +748,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                       {alat.map((item, index) => (
                         <tr key={index}>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.alat} onChange={(e) => handleTabDataChange(index, 'alat', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Nama Alat" />
+                            <SearchSelect
+                              value={item.alat}
+                              onChange={(val) => handleTabDataChange(index, 'alat', val)}
+                              options={alatOptions}
+                              placeholder="Nama Alat"
+                            />
                           </td>
                           <td className="px-2 py-1">
                             <input type="number" value={item.harga} onChange={(e) => handleTabDataChange(index, 'harga', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga" />
@@ -695,7 +811,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                       {barang.map((item, index) => (
                         <tr key={index}>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.namaBarang} onChange={(e) => handleTabDataChange(index, 'namaBarang', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Nama Barang" />
+                            <SearchSelect
+                              value={item.namaBarang}
+                              onChange={(val) => handleTabDataChange(index, 'namaBarang', val)}
+                              options={barangOptions}
+                              placeholder="Nama Barang"
+                            />
                           </td>
                           <td className="px-2 py-1">
                             <input type="number" value={item.harga} onChange={(e) => handleTabDataChange(index, 'harga', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga" />
@@ -751,7 +872,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                       {mobDemob.map((item, index) => (
                         <tr key={index}>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.namaTransportasi} onChange={(e) => handleTabDataChange(index, 'namaTransportasi', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Nama Transportasi" />
+                            <SearchSelect
+                              value={item.namaTransportasi}
+                              onChange={(val) => handleTabDataChange(index, 'namaTransportasi', val)}
+                              options={transportOptions}
+                              placeholder="Nama Transportasi"
+                            />
                           </td>
                           <td className="px-2 py-1">
                             <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
@@ -801,7 +927,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                       {biayaLainLain.map((item, index) => (
                         <tr key={index}>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.namaBiaya} onChange={(e) => handleTabDataChange(index, 'namaBiaya', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Nama Biaya" />
+                            <SearchSelect
+                              value={item.namaBiaya}
+                              onChange={(val) => handleTabDataChange(index, 'namaBiaya', val)}
+                              options={biayaOptions}
+                              placeholder="Nama Biaya"
+                            />
                           </td>
                           <td className="px-2 py-1">
                             <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />

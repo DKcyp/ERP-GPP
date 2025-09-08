@@ -187,7 +187,7 @@ export const marketingMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Kontrak Deal",
+    title: "Kontrak/SPK/PO",
     icon: "FileCheck",
     items: [],
     directPath: "/marketing/kontrak-deal/dashboard",
@@ -1408,8 +1408,16 @@ export const proconMenu: MenuSection[] = [
     title: "Proforma Invoice",
     icon: "ReceiptText",
     items: [
-      { title: "Dashboard", icon: "LayoutDashboard", path: "/procon/proforma-invoice/dashboard" },
-      { title: "Pembuatan PI", icon: "FilePlus", path: "/procon/proforma-invoice/pembuatan" },
+      {
+        title: "Dashboard",
+        icon: "LayoutDashboard",
+        path: "/procon/proforma-invoice/dashboard",
+      },
+      {
+        title: "Pembuatan PI",
+        icon: "FilePlus",
+        path: "/procon/proforma-invoice/pembuatan",
+      },
     ],
   },
   {

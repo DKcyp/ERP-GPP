@@ -79,7 +79,35 @@ const MarketingMainDashboard: React.FC = () => {
           <h3 className="text-2xl font-bold text-gray-900 mb-6">Nilai Penjualan</h3>
           <div className="space-y-4">
             {/* Card 1: On Call */}
-            <div className="flex items-center space-x-4 p-4 rounded-xl bg-red-500 text-white shadow-md hover:shadow-lg transition-all duration-300">
+            <div
+              className="flex items-center space-x-4 p-4 rounded-xl bg-red-500 text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                const path = "/marketing/penawaran/on-call";
+                try {
+                  // Try hash-based navigation first
+                  window.location.hash = path;
+                  // Also pushState for pathname-based routers
+                  window.history.pushState({}, "", path);
+                  // Dispatch common navigation events some shells listen for
+                  window.dispatchEvent(new Event("popstate"));
+                  window.dispatchEvent(new Event("hashchange"));
+                } catch (e) {
+                  // no-op
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  const path = "/marketing/penawaran/on-call";
+                  window.location.hash = path;
+                  window.history.pushState({}, "", path);
+                  window.dispatchEvent(new Event("popstate"));
+                  window.dispatchEvent(new Event("hashchange"));
+                }
+              }}
+            >
               <div className="p-3 bg-red-600 rounded-xl">
                 <Phone className="h-6 w-6" />
               </div>
@@ -89,7 +117,30 @@ const MarketingMainDashboard: React.FC = () => {
               </div>
             </div>
             {/* Card 2: Tender */}
-            <div className="flex items-center space-x-4 p-4 rounded-xl bg-cyan-500 text-white shadow-md hover:shadow-lg transition-all duration-300">
+            <div
+              className="flex items-center space-x-4 p-4 rounded-xl bg-cyan-500 text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                const path = "/marketing/penawaran/tender";
+                try {
+                  window.location.hash = path;
+                  window.history.pushState({}, "", path);
+                  window.dispatchEvent(new Event("popstate"));
+                  window.dispatchEvent(new Event("hashchange"));
+                } catch (e) {}
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  const path = "/marketing/penawaran/tender";
+                  window.location.hash = path;
+                  window.history.pushState({}, "", path);
+                  window.dispatchEvent(new Event("popstate"));
+                  window.dispatchEvent(new Event("hashchange"));
+                }
+              }}
+            >
               <div className="p-3 bg-cyan-600 rounded-xl">
                 <Megaphone className="h-6 w-6" />
               </div>
