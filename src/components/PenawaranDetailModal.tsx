@@ -67,14 +67,16 @@ const PenawaranDetailModal: React.FC<PenawaranDetailModalProps> = ({ isOpen, onC
               </div>
 
               {/* No. Ref. Req */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
-                <label className="text-sm font-medium text-gray-700">No. Ref. Req</label>
-                <div className="lg:col-span-2">
-                  <div className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-900">
-                    {penawaranData.noRefReq}
+              {penawaranData.noRefReq && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
+                  <label className="text-sm font-medium text-gray-700">No. Ref. Req</label>
+                  <div className="lg:col-span-2">
+                    <div className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-900">
+                      {penawaranData.noRefReq}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Kode Customer */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
@@ -107,14 +109,16 @@ const PenawaranDetailModal: React.FC<PenawaranDetailModalProps> = ({ isOpen, onC
               </div>
 
               {/* No Penawaran */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
-                <label className="text-sm font-medium text-gray-700">No Penawaran</label>
-                <div className="lg:col-span-2">
-                  <div className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-900">
-                    {penawaranData.noPenawaran}
+              {penawaranData.noPenawaran && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
+                  <label className="text-sm font-medium text-gray-700">No Penawaran</label>
+                  <div className="lg:col-span-2">
+                    <div className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-gray-900">
+                      {penawaranData.noPenawaran}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Tanggal Penawaran */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">

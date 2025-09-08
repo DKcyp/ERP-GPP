@@ -75,6 +75,7 @@ import ProsesPembayaranARDashboard from "./ProsesPembayaranARDashboard";
 import LaporanARDashboard from "./LaporanARDashboard";
 import FinancePembayaranGajiPage from "./FinancePembayaranGajiPage";
 import ReportKontrakDashboard from "./ReportKontrakDashboard";
+import InsentifMarketingDashboard from "./InsentifMarketingDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -724,6 +725,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/sales-order/dashboard") {
       return <SalesOrderDashboard />;
+    }
+    if (currentPage === "/marketing/insentif-marketing/dashboard") {
+      return <InsentifMarketingDashboard />;
     }
     // Procon Routes
     if (currentPage === "/procon/sales-order/dashboard") {

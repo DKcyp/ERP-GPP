@@ -53,7 +53,8 @@ const PenawaranOnCallDashboard: React.FC = () => {
   const [isUpdateStatusModalOpen, setIsUpdateStatusModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [selectedPenawaranForDetail, setSelectedPenawaranForDetail] = useState<PenawaranDetailData | null>(null);
-  const [selectedItemForStatusUpdate, setSelectedItemForStatusUpdate] = useState<LamaranData | null>(null);
+  const [selectedItemForStatusUpdate, setSelectedItemForStatusUpdate] = useState<PenawaranOnCall | null>(null);
+  const [localStatusChoice, setLocalStatusChoice] = useState<'On Going' | 'Deal' | 'Cancel'>('On Going');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -146,11 +147,11 @@ const PenawaranOnCallDashboard: React.FC = () => {
   const handleViewDetail = (item: PenawaranOnCall) => {
     const detailData: PenawaranDetailData = {
       kategoriPajak: 'Pajak Barang Mewah',
-      noRefReq: 'REG2025112',
+      noRefReq: '',
       kodeCustomer: 'CUST01',
       namaCustomer: item.namaClient,
       pajak: 'PPN (10%)',
-      noPenawaran: 'PEN66567',
+      noPenawaran: '',
       tanggalPenawaran: '01/12/2024',
       tanggalPenawaranEnd: '15/01/2025',
       tanggalKirim: '03/01/2025',
@@ -170,43 +171,31 @@ const PenawaranOnCallDashboard: React.FC = () => {
   };
 
   // Map Penawaran status <-> Modal status
-  const mapPenawaranToModalStatus = (status: 'Deal' | 'Pending' | 'Cancel'): UpdateStatusFormData['status'] => {
-    switch (status) {
-      case 'Deal': return 'Accepted';
-      case 'Pending': return 'Pending';
-      case 'Cancel': return 'Rejected';
-    }
-  };
+  const toDisplayStatus = (status: 'Deal' | 'Pending' | 'Cancel') => (status === 'Pending' ? 'On Going' : status);
+  const toInternalStatus = (display: 'On Going' | 'Deal' | 'Cancel'): 'Deal' | 'Pending' | 'Cancel' =>
+    display === 'On Going' ? 'Pending' : (display as 'Deal' | 'Cancel');
 
-  const mapModalToPenawaranStatus = (status: UpdateStatusFormData['status']): 'Deal' | 'Pending' | 'Cancel' => {
-    switch (status) {
-      case 'Accepted': return 'Deal';
-      case 'Pending': return 'Pending';
-      case 'Rejected': return 'Cancel';
-      // Fallbacks for other statuses used by the generic modal
-      case 'Interview': return 'Pending';
-      case 'Hired': return 'Deal';
-      default: return 'Pending';
+  const getDisplayBadgeClass = (displayStatus: 'On Going' | 'Deal' | 'Cancel') => {
+    switch (displayStatus) {
+      case 'Deal':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'Cancel':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default: // On Going
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     }
   };
 
   const handleUpdateStatus = (item: PenawaranOnCall) => {
-    setSelectedItemForStatusUpdate({
-      id: item.id,
-      status: mapPenawaranToModalStatus(item.statusPenawaran),
-      keterangan: ''
-    });
+    setSelectedItemForStatusUpdate(item);
+    setLocalStatusChoice(toDisplayStatus(item.statusPenawaran));
     setIsUpdateStatusModalOpen(true);
   };
-
-  const handleSaveStatusUpdate = (id: string, data: UpdateStatusFormData) => {
-    setPenawaranOnCall(prev =>
-      prev.map(item =>
-        item.id === id
-          ? { ...item, statusPenawaran: mapModalToPenawaranStatus(data.status) }
-          : item
-      )
-    );
+  const handleSaveLocalStatus = () => {
+    if (!selectedItemForStatusUpdate) return;
+    const newStatus = toInternalStatus(localStatusChoice);
+    setPenawaranOnCall(prev => prev.map(p => p.id === selectedItemForStatusUpdate.id ? { ...p, statusPenawaran: newStatus } : p));
+    setIsUpdateStatusModalOpen(false);
     setSelectedItemForStatusUpdate(null);
   };
 
@@ -511,7 +500,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
         {/* Data Table */}
         <div className="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full whitespace-nowrap">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No</th>
@@ -520,7 +509,6 @@ const PenawaranOnCallDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Sales</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Terakhir Update</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status Penawaran</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status Dokumen</th>
                   <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -549,49 +537,28 @@ const PenawaranOnCallDashboard: React.FC = () => {
                     <td className="px-3 py-2 text-gray-600">{item.namaSales}</td>
                     <td className="px-3 py-2 text-gray-600">{item.terakhirUpdate}</td>
                     <td className="px-3 py-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusPenawaranColor(item.statusPenawaran)}`}>
-                        {item.statusPenawaran}
-                      </span>
+                      {(() => {
+                        const ds = toDisplayStatus(item.statusPenawaran) as 'On Going' | 'Deal' | 'Cancel';
+                        return (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getDisplayBadgeClass(ds)}`}>
+                            {ds}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-3 py-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusDokumenColor(item.statusDokumen)}`}>
-                        {item.statusDokumen}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex items-center justify-center space-x-1">
-                        <button 
-                          onClick={() => handleViewDetail(item)}
-                          className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded-md transition-all duration-200"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => setIsModalOpen(true)}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleUpdateStatus(item)}
-                          className="p-1.5 text-gray-600 hover:bg-gray-50 rounded-md transition-all duration-200"
-                        >
-                          <Settings className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteClick(item)}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-all duration-200"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <button className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-md transition-all duration-200">
-                          <Printer className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => setIsHistoryModalOpen(true)}
-                          className="p-1.5 text-teal-600 hover:bg-teal-50 rounded-md transition-all duration-200"
-                        >
-                          <Clock className="h-4 w-4" />
-                        </button>
+                      <div className="flex items-center justify-center gap-3 text-xs">
+                        <button onClick={() => handleViewDetail(item)} className="text-yellow-700 hover:underline">View</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={handleExportPDF} className="text-purple-700 hover:underline">Print</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => handleUpdateStatus(item)} className="text-gray-700 hover:underline">Update Status</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => setIsHistoryModalOpen(true)} className="text-teal-700 hover:underline">History</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => setIsModalOpen(true)} className="text-blue-700 hover:underline">Edit</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => handleDeleteClick(item)} className="text-red-700 hover:underline">Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -657,14 +624,33 @@ const PenawaranOnCallDashboard: React.FC = () => {
         penawaranData={selectedPenawaranForDetail}
       />
 
-      {/* Update Status Modal */}
-      <UpdateStatusModal
-        isOpen={isUpdateStatusModalOpen}
-        onClose={() => setIsUpdateStatusModalOpen(false)}
-        onSave={handleSaveStatusUpdate}
-        initialData={selectedItemForStatusUpdate}
-        isEditable={true}
-      />
+      {/* Update Status Modal (On Call: limited options) */}
+      {isUpdateStatusModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h3 className="text-lg font-semibold text-gray-900">Update Status Penawaran (On Call)</h3>
+              <button className="text-gray-500 hover:text-gray-700" onClick={() => setIsUpdateStatusModalOpen(false)}>✕</button>
+            </div>
+            <div className="p-4 space-y-3">
+              <label className="block text-sm font-medium text-gray-700">Status</label>
+              <select
+                value={localStatusChoice}
+                onChange={(e) => setLocalStatusChoice(e.target.value as 'On Going' | 'Deal' | 'Cancel')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="On Going">On Going</option>
+                <option value="Deal">Deal</option>
+                <option value="Cancel">Cancel</option>
+              </select>
+            </div>
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-gray-200 bg-gray-50">
+              <button className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg" onClick={() => setIsUpdateStatusModalOpen(false)}>Close</button>
+              <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg" onClick={handleSaveLocalStatus}>Simpan</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* History Penawaran Modal */}
       <HistoryPenawaranModal
