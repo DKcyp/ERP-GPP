@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { CalendarDays } from 'lucide-react';
-import { EntryPurchasingRequestFormData } from '../types';
+import { EntryPurchasingRequestFormData, PRDetailItem } from '../types';
 
 interface EntryPurchasingRequestModalProps {
   isOpen: boolean;
@@ -16,9 +16,35 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
     noSO: '',
     departemen: '',
     keterangan: '',
-    statusPR: '',
-    statusPO: '',
+    kategori: 'Barang',
+    detailItems: [
+      { id: crypto.randomUUID(), namaItem: '', qty: 1, satuan: '', keterangan: '' }
+    ],
   });
+
+  // Preset options for No SO selection (can be wired to API later)
+  const soOptions = ['SO001.22', 'SO002.12', 'SO003.33', 'SO004.90', 'SO005.55'];
+
+  // Auto-generate No PR when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => {
+        // If already filled (e.g., re-open), keep existing number
+        if (prev.noPR && prev.noPR.trim() !== '') return prev;
+
+        const now = new Date();
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const y = now.getFullYear();
+        const m = pad(now.getMonth() + 1);
+        const d = pad(now.getDate());
+        const hh = pad(now.getHours());
+        const mm = pad(now.getMinutes());
+        const ss = pad(now.getSeconds());
+        const genNoPR = `PR-${y}${m}${d}-${hh}${mm}${ss}`;
+        return { ...prev, noPR: genNoPR };
+      });
+    }
+  }, [isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -35,14 +61,37 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
       noSO: '',
       departemen: '',
       keterangan: '',
-      statusPR: '',
-      statusPO: '',
+      kategori: 'Barang',
+      detailItems: [{ id: crypto.randomUUID(), namaItem: '', qty: 1, satuan: '', keterangan: '' }],
     });
     onClose();
   };
 
+  const addDetailRow = () => {
+    setFormData(prev => ({
+      ...prev,
+      detailItems: [...prev.detailItems, { id: crypto.randomUUID(), namaItem: '', qty: 1, satuan: '', keterangan: '' }]
+    }));
+  };
+
+  const removeDetailRow = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      detailItems: prev.detailItems.length > 1 ? prev.detailItems.filter(it => it.id !== id) : prev.detailItems
+    }));
+  };
+
+  const updateDetail = (id: string, field: keyof PRDetailItem, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      detailItems: prev.detailItems.map(it => it.id === id ? { ...it, [field]: value } : it)
+    }));
+  };
+
+  const firstColLabel = formData.kategori === 'Jasa' ? 'Nama Jasa' : 'Nama Barang';
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Entry Purchasing Request" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="Entry Purchasing Request" size="6xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Tanggal PR */}
@@ -61,7 +110,7 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
             </div>
           </div>
 
-          {/* No PR */}
+          {/* No PR (Auto-generated) */}
           <div>
             <label htmlFor="noPR" className="block text-sm font-medium text-textSecondary mb-1">No PR</label>
             <input
@@ -69,24 +118,29 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
               id="noPR"
               name="noPR"
               value={formData.noPR}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-              placeholder="PR00X"
+              readOnly
+              className="w-full px-3 py-2 border border-border rounded-md bg-gray-100 text-text text-sm"
+              placeholder="Auto"
             />
           </div>
+        </div>
 
-          {/* No SO */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* No SO (Selectable) */}
           <div>
             <label htmlFor="noSO" className="block text-sm font-medium text-textSecondary mb-1">No SO</label>
-            <input
-              type="text"
+            <select
               id="noSO"
               name="noSO"
               value={formData.noSO}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-              placeholder="SO00X.YY"
-            />
+            >
+              <option value="">-- Pilih SO --</option>
+              {soOptions.map(so => (
+                <option key={so} value={so}>{so}</option>
+              ))}
+            </select>
           </div>
 
           {/* Departemen */}
@@ -102,53 +156,101 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
               placeholder="HRD, Finance, Operasional"
             />
           </div>
+        </div>
 
-          {/* Status PR */}
+        {/* Kategori & Keterangan on the same row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Kategori */}
           <div>
-            <label htmlFor="statusPR" className="block text-sm font-medium text-textSecondary mb-1">Status PR</label>
+            <label htmlFor="kategori" className="block text-sm font-medium text-textSecondary mb-1">Kategori</label>
             <select
-              id="statusPR"
-              name="statusPR"
-              value={formData.statusPR}
+              id="kategori"
+              name="kategori"
+              value={formData.kategori}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
             >
-              <option value="">Pilih Status PR</option>
-              <option value="Approve">Approve</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Pending">Pending</option>
+              <option value="Barang">Barang</option>
+              <option value="Jasa">Jasa</option>
             </select>
           </div>
 
-          {/* Status PO */}
+          {/* Keterangan */}
           <div>
-            <label htmlFor="statusPO" className="block text-sm font-medium text-textSecondary mb-1">Status PO</label>
-            <select
-              id="statusPO"
-              name="statusPO"
-              value={formData.statusPO}
+            <label htmlFor="keterangan" className="block text-sm font-medium text-textSecondary mb-1">Keterangan</label>
+            <textarea
+              id="keterangan"
+              name="keterangan"
+              value={formData.keterangan}
               onChange={handleChange}
+              rows={3}
               className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-            >
-              <option value="">Pilih Status PO</option>
-              <option value="PO">PO</option>
-              <option value="-">-</option>
-            </select>
+              placeholder="Masukkan keterangan..."
+            ></textarea>
           </div>
         </div>
 
-        {/* Keterangan */}
-        <div>
-          <label htmlFor="keterangan" className="block text-sm font-medium text-textSecondary mb-1">Keterangan</label>
-          <textarea
-            id="keterangan"
-            name="keterangan"
-            value={formData.keterangan}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-            placeholder="Masukkan keterangan..."
-          ></textarea>
+        {/* Detail Items Table at Bottom */}
+        <div className="border border-border rounded-md">
+          <div className="px-3 py-2 border-b text-sm font-medium">Detail PR</div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-2 text-left">{firstColLabel}</th>
+                  <th className="px-3 py-2 text-left">Qty</th>
+                  <th className="px-3 py-2 text-left">Satuan</th>
+                  <th className="px-3 py-2 text-left">Keterangan</th>
+                  <th className="px-3 py-2 text-left">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {formData.detailItems.map((row) => (
+                  <tr key={row.id}>
+                    <td className="px-3 py-2">
+                      <input
+                        value={row.namaItem}
+                        onChange={(e) => updateDetail(row.id, 'namaItem', e.target.value)}
+                        className="w-full px-2 py-1 border border-border rounded-md"
+                        placeholder={firstColLabel}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        value={row.qty}
+                        onChange={(e) => updateDetail(row.id, 'qty', Number(e.target.value))}
+                        className="w-24 px-2 py-1 border border-border rounded-md"
+                        min={1}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        value={row.satuan}
+                        onChange={(e) => updateDetail(row.id, 'satuan', e.target.value)}
+                        className="w-28 px-2 py-1 border border-border rounded-md"
+                        placeholder="Unit"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        value={row.keterangan || ''}
+                        onChange={(e) => updateDetail(row.id, 'keterangan', e.target.value)}
+                        className="w-full px-2 py-1 border border-border rounded-md"
+                        placeholder="Keterangan"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <button type="button" onClick={() => removeDetailRow(row.id)} className="px-2 py-1 text-xs bg-red-600 text-white rounded-md">Hapus</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="p-2">
+            <button type="button" onClick={addDetailRow} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md">Tambah Baris</button>
+          </div>
         </div>
 
         <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-border">
