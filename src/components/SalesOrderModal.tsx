@@ -7,6 +7,66 @@ interface SalesOrderModalProps {
   onSave: (data: SalesOrderFormData) => void;
 }
 
+// Row types for tabs (shared to detail via onSave)
+export type TenagaKerjaRow = {
+  tenaga: string;
+  tunjangan: string;
+  projectRate: string;
+  hari: string;
+  hargaAwal: string;
+  margin: string;
+  hargaAkhir: string;
+};
+export type JasaRow = {
+  jasa: string;
+  tunjangan: string;
+  projectRate: string;
+  hari: string;
+  hargaAwal: string;
+  margin: string;
+  hargaAkhir: string;
+};
+export type AlatRow = {
+  alat: string;
+  harga: string;
+  jumlah: string;
+  hari: string;
+  satuan: string;
+  hargaSatuan: string;
+  hargaAwal: string;
+  margin: string;
+  hargaAkhir: string;
+};
+export type BarangRow = {
+  namaBarang: string;
+  harga: string;
+  jumlah: string;
+  hari: string;
+  satuan: string;
+  hargaSatuan: string;
+  hargaAwal: string;
+  margin: string;
+  hargaAkhir: string;
+};
+export type MobDemobRow = {
+  namaTransportasi: string;
+  tunjangan: string;
+  projectRate: string;
+  hari: string;
+  hargaAwal: string;
+  margin: string;
+  hargaAkhir: string;
+};
+export type BiayaLainRow = {
+  namaBiaya: string;
+  tunjangan: string;
+  projectRate: string;
+  hari: string;
+  hargaAwal: string;
+  margin: string;
+  hargaAkhir: string;
+};
+
 export interface SalesOrderFormData {
   nomorKontrak: string;
   namaClient: string;
@@ -19,6 +79,13 @@ export interface SalesOrderFormData {
   tanggalDibuat: string;
   estimasiSO: string;
   keterangan: string; // Added new field
+  // Tab data to persist for detail view
+  tenagaKerja?: TenagaKerjaRow[];
+  jasa?: JasaRow[];
+  alat?: AlatRow[];
+  barang?: BarangRow[];
+  mobDemob?: MobDemobRow[];
+  biayaLainLain?: BiayaLainRow[];
 }
 
 const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
@@ -53,64 +120,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     "Biaya Lain-lain",
     "Sisa HPP",
   ];
-  type TenagaKerjaRow = {
-    tenaga: string;
-    tunjangan: string;
-    projectRate: string;
-    hari: string;
-    hargaAwal: string;
-    margin: string;
-    hargaAkhir: string;
-  };
-  type JasaRow = {
-    jasa: string;
-    tunjangan: string;
-    projectRate: string;
-    hari: string;
-    hargaAwal: string;
-    margin: string;
-    hargaAkhir: string;
-  };
-  type AlatRow = {
-    alat: string;
-    harga: string;
-    jumlah: string;
-    hari: string;
-    satuan: string;
-    hargaSatuan: string;
-    hargaAwal: string;
-    margin: string;
-    hargaAkhir: string;
-  };
-  type BarangRow = {
-    namaBarang: string;
-    harga: string;
-    jumlah: string;
-    hari: string;
-    satuan: string;
-    hargaSatuan: string;
-    hargaAwal: string;
-    margin: string;
-    hargaAkhir: string;
-  };
-  type MobDemobRow = {
-    namaTransportasi: string;
-    tunjangan: string;
-    projectRate: string;
-    hari: string;
-    hargaAwal: string;
-    margin: string;
-    hargaAkhir: string;
-  };
-  type BiayaLainRow = {
-    namaBiaya: string;
-    tunjangan: string;
-    projectRate: string;
-    hari: string;
-    hargaAwal: string;
-    margin: string;
-    hargaAkhir: string;
-  };
+  
 
   const [activeTab, setActiveTab] = useState<string>("Tenaga Kerja");
   const [tenagaKerja, setTenagaKerja] = useState<TenagaKerjaRow[]>([
@@ -578,7 +588,15 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    onSave(formData);
+    onSave({
+      ...formData,
+      tenagaKerja,
+      jasa,
+      alat,
+      barang,
+      mobDemob,
+      biayaLainLain,
+    });
     setIsLoading(false);
 
     // Reset form
@@ -714,27 +732,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   Nomor SO akan dibuat otomatis
                 </p>
               </div>
-
-              {/* Jenis Pekerjaan */}
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Jenis Pekerjaan
-                </label>
-                <select
-                  value={formData.jenisPekerjaan}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "jenisPekerjaan",
-                      e.target.value as "On Call" | "Tender"
-                    )
-                  }
-                  className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                >
-                  <option value="On Call">On Call</option>
-                  <option value="Tender">Tender</option>
-                </select>
-              </div>
-
               {/* Nomor Kontrak */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -764,25 +761,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   </p>
                 )}
               </div>
-
-              {/* Tanggal MOB */}
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Tanggal MOB
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={formData.tanggalMOB}
-                    onChange={(e) =>
-                      handleInputChange("tanggalMOB", e.target.value)
-                    }
-                    className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-              </div>
-
               {/* Nama Client */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -813,22 +791,24 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 )}
               </div>
 
-              {/* Tanggal DeMOB */}
+              {/* Jenis Pekerjaan */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Tanggal DeMOB
+                  Jenis Pekerjaan
                 </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={formData.tanggalDeMOB}
-                    onChange={(e) =>
-                      handleInputChange("tanggalDeMOB", e.target.value)
-                    }
-                    className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
+                <select
+                  value={formData.jenisPekerjaan}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "jenisPekerjaan",
+                      e.target.value as "On Call" | "Tender"
+                    )
+                  }
+                  className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                >
+                  <option value="On Call">On Call</option>
+                  <option value="Tender">Tender</option>
+                </select>
               </div>
 
               {/* Nama Proyek */}
@@ -854,6 +834,50 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                     {errors.namaProyek}
                   </p>
                 )}
+              </div>
+              {/* Lokasi - moved next to Nama Proyek */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Lokasi <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.lokasi}
+                  onChange={(e) => handleInputChange("lokasi", e.target.value)}
+                  className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
+                    errors.lokasi ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
+                  placeholder="Lokasi"
+                />
+                {errors.lokasi && (
+                  <p className="mt-1 text-xs text-red-600">{errors.lokasi}</p>
+                )}
+              </div>
+
+              {/* Durasi Kontrak (MOB s.d DeMOB) */}
+              <div className="lg:col-span-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Durasi Kontrak</label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="date"
+                      value={formData.tanggalMOB}
+                      onChange={(e) => handleInputChange("tanggalMOB", e.target.value)}
+                      className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                    />
+                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  <span className="text-gray-500 text-xs">s.d</span>
+                  <div className="relative flex-1">
+                    <input
+                      type="date"
+                      value={formData.tanggalDeMOB}
+                      onChange={(e) => handleInputChange("tanggalDeMOB", e.target.value)}
+                      className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                    />
+                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
               </div>
 
               {/* Tanggal Dibuat */}
@@ -918,49 +942,25 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 )}
               </div>
 
-              {/* Lokasi */}
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Lokasi <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.lokasi}
-                  onChange={(e) => handleInputChange("lokasi", e.target.value)} // Corrected field
-                  className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.lokasi
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-200"
-                  }`}
-                  placeholder="Lokasi"
-                />
-                {errors.lokasi && (
-                  <p className="mt-1 text-xs text-red-600">{errors.lokasi}</p>
-                )}
-              </div>
+              {/* Lokasi - old position hidden to avoid duplicate */}
+              <div className="hidden"></div>
 
-              {/* Estimasi Keterangan */}
+              {/* Keterangan */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Estimasi Keterangan <span className="text-red-500">*</span>
+                  Keterangan <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <textarea
                   value={formData.keterangan}
-                  onChange={(e) =>
-                    handleInputChange("keterangan", e.target.value)
-                  } // Corrected field
+                  onChange={(e) => handleInputChange("keterangan", e.target.value)}
+                  rows={3}
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.keterangan
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-200"
-                  }`}
-                  placeholder="Keterangan"
+                    errors.keterangan ? "border-red-300 bg-red-50" : "border-gray-200"
+                  } resize-none`}
+                  placeholder="Masukkan keterangan"
                 />
                 {errors.keterangan && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {errors.keterangan}
-                  </p> // Corrected error display
+                  <p className="mt-1 text-xs text-red-600">{errors.keterangan}</p>
                 )}
               </div>
             </div>
@@ -1012,9 +1012,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Hari
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Harga Awal
-                        </th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1025,104 +1022,76 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {tenagaKerja.map((item, index) => (
+                    <tbody>
+                      {tenagaKerja.map((row, index) => (
                         <tr key={index}>
-                          <td className="px-2 py-1">
-                            <SearchSelect
-                              value={item.tenaga}
-                              onChange={(val) =>
-                                handleTabDataChange(index, "tenaga", val)
-                              }
-                              options={tenagaOptions}
-                              placeholder="Nama Tenaga"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.tunjangan}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "tunjangan",
-                                  e.target.value
-                                )
-                              }
+                              value={row.tenaga}
+                              onChange={(e) => handleTabDataChange(index, "tenaga", e.target.value)}
+                              list={`tenagaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Tunjangan"
+                              placeholder="Pilih / cari tenaga"
                             />
+                            <datalist id={`tenagaOptions-${index}`}>
+                              {tenagaOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.projectRate}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "projectRate",
-                                  e.target.value
-                                )
-                              }
+                              value={row.tunjangan}
+                              onChange={(e) => handleTabDataChange(index, "tunjangan", e.target.value)}
+                              list={`tunjanganOptions-${index}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Pilih / cari tunjangan"
+                            />
+                            <datalist id={`tunjanganOptions-${index}`}>
+                              {["Uang Makan","Transport","Lembur"].map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.projectRate}
+                              onChange={(e) => handleTabDataChange(index, "projectRate", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Project Rate"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.hari}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hari",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.hari}
+                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hargaAwal",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
-                            <input
-                              type="number"
-                              value={item.margin}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "margin",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.margin}
+                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={row.hargaAkhir}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                               placeholder="Harga Akhir"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <button
                               type="button"
                               onClick={() => removeTabData(index)}
@@ -1156,9 +1125,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Hari
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Harga Awal
-                        </th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1169,104 +1135,76 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {jasa.map((item, index) => (
+                    <tbody>
+                      {jasa.map((row, index) => (
                         <tr key={index}>
-                          <td className="px-2 py-1">
-                            <SearchSelect
-                              value={item.jasa}
-                              onChange={(val) =>
-                                handleTabDataChange(index, "jasa", val)
-                              }
-                              options={jasaOptions}
-                              placeholder="Jasa Tenaga"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.tunjangan}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "tunjangan",
-                                  e.target.value
-                                )
-                              }
+                              value={row.jasa}
+                              onChange={(e) => handleTabDataChange(index, "jasa", e.target.value)}
+                              list={`jasaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Tunjangan"
+                              placeholder="Pilih / cari jasa"
                             />
+                            <datalist id={`jasaOptions-${index}`}>
+                              {jasaOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.projectRate}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "projectRate",
-                                  e.target.value
-                                )
-                              }
+                              value={row.tunjangan}
+                              onChange={(e) => handleTabDataChange(index, "tunjangan", e.target.value)}
+                              list={`tunjanganJasaOptions-${index}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Pilih / cari tunjangan"
+                            />
+                            <datalist id={`tunjanganJasaOptions-${index}`}>
+                              {["Uang Makan","Transport","Lembur"].map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.projectRate}
+                              onChange={(e) => handleTabDataChange(index, "projectRate", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Project Rate"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.hari}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hari",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.hari}
+                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hargaAwal",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
-                            <input
-                              type="number"
-                              value={item.margin}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "margin",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.margin}
+                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={row.hargaAkhir}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                               placeholder="Harga Akhir"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <button
                               type="button"
                               onClick={() => removeTabData(index)}
@@ -1291,9 +1229,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Alat
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Harga
-                        </th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Jumlah
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1306,9 +1241,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Harga Satuan
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Harga Awal
-                        </th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1319,128 +1251,79 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {alat.map((item, index) => (
+                    <tbody>
+                      {alat.map((row, index) => (
                         <tr key={index}>
-                          <td className="px-2 py-1">
-                            <SearchSelect
-                              value={item.alat}
-                              onChange={(val) =>
-                                handleTabDataChange(index, "alat", val)
-                              }
-                              options={alatOptions}
-                              placeholder="Nama Alat"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.harga}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "harga",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.alat}
+                              onChange={(e) => handleTabDataChange(index, "alat", e.target.value)}
+                              list={`alatOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga"
+                              placeholder="Pilih / cari alat"
                             />
+                            <datalist id={`alatOptions-${index}`}>
+                              {alatOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.jumlah}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "jumlah",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.jumlah}
+                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Jumlah"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="number"
-                              value={item.hari}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hari",
-                                  e.target.value
-                                )
-                              }
+                              value={row.hari}
+                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.satuan}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
-                              }
+                              value={row.satuan}
+                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Satuan"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.hargaSatuan}
+                              value={row.hargaSatuan}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                               placeholder="Harga Satuan"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hargaAwal",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
-                            <input
-                              type="number"
-                              value={item.margin}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "margin",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.margin}
+                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={row.hargaAkhir}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                               placeholder="Harga Akhir"
                             />
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <button
                               type="button"
                               onClick={() => removeTabData(index)}
@@ -1465,9 +1348,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Nama Barang
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Harga
-                        </th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Jumlah
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1480,9 +1360,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Harga Satuan
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Harga Awal
-                        </th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1493,45 +1370,29 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {barang.map((item, index) => (
+                    <tbody>
+                      {barang.map((row, index) => (
                         <tr key={index}>
-                          <td className="px-2 py-1">
-                            <SearchSelect
-                              value={item.namaBarang}
-                              onChange={(val) =>
-                                handleTabDataChange(index, "namaBarang", val)
-                              }
-                              options={barangOptions}
-                              placeholder="Nama Barang"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.harga}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "harga",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.namaBarang}
+                              onChange={(e) => handleTabDataChange(index, "namaBarang", e.target.value)}
+                              list={`barangOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga"
+                              placeholder="Pilih / cari barang"
                             />
+                            <datalist id={`barangOptions-${index}`}>
+                              {barangOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-1">
+                          <td className="px-2 py-2">
                             <input
-                              type="number"
-                              value={item.jumlah}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "jumlah",
-                                  e.target.value
-                                )
-                              }
+                              type="text"
+                              value={row.jumlah}
+                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Jumlah"
                             />
@@ -1539,14 +1400,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           <td className="px-2 py-1">
                             <input
                               type="number"
-                              value={item.hari}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hari",
-                                  e.target.value
-                                )
-                              }
+                              value={row.hari}
+                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1554,14 +1409,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           <td className="px-2 py-1">
                             <input
                               type="text"
-                              value={item.satuan}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
-                              }
+                              value={row.satuan}
+                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Satuan"
                             />
@@ -1569,7 +1418,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           <td className="px-2 py-1">
                             <input
                               type="text"
-                              value={item.hargaSatuan}
+                              value={row.hargaSatuan}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                               placeholder="Harga Satuan"
@@ -1578,29 +1427,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           <td className="px-2 py-1">
                             <input
                               type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hargaAwal",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
-                            />
-                          </td>
-                          <td className="px-2 py-1">
-                            <input
-                              type="number"
-                              value={item.margin}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "margin",
-                                  e.target.value
-                                )
-                              }
+                              value={row.margin}
+                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
@@ -1608,7 +1436,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           <td className="px-2 py-1">
                             <input
                               type="text"
-                              value={item.hargaAkhir}
+                              value={row.hargaAkhir}
                               readOnly
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
                               placeholder="Harga Akhir"
