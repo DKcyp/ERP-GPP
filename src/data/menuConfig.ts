@@ -107,6 +107,47 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    // GA-only: Internal Business Process
+    ...(role === "ga"
+      ? [
+          {
+            title: "Internal Business Process",
+            icon: "Workflow",
+            items: [
+              {
+                title: "Suport Operasional",
+                icon: "LifeBuoy",
+                path: `/${role}/ibp/suport-operasional`,
+              },
+              {
+                title: "Maintenance Sarana & Prasarana",
+                icon: "Wrench",
+                path: `/${role}/ibp/maintenance-sapras`,
+              },
+              {
+                title: "Penangan Troubleshoot Sistem Sarana Kerja",
+                icon: "Bug",
+                path: `/${role}/ibp/troubleshoot-sarana-kerja`,
+              },
+              {
+                title: "Persediaan ATK",
+                icon: "Package",
+                path: `/${role}/ibp/persediaan-atk`,
+              },
+              {
+                title: "Kebersihan Lingkungan Kerja",
+                icon: "Leaf",
+                path: `/${role}/ibp/kebersihan-lingkungan`,
+              },
+              {
+                title: "Utility",
+                icon: "Plug",
+                path: `/${role}/general/utility/dashboard`,
+              },
+            ],
+          },
+        ]
+      : []),
   ],
 });
 
@@ -170,6 +211,131 @@ export const marketingMenu: MenuSection[] = [
     directPath: "/marketing/report-kontrak",
   },
   createGeneralMenu("marketing"),
+];
+
+// GA Menu
+export const gaMenu: MenuSection[] = [
+  {
+    title: "Main Dashboard",
+    icon: "Home",
+    items: [],
+    directPath: "/ga/dashboard",
+  },
+  {
+    title: "Monitoring Pajak Kendaraan",
+    icon: "Car",
+    subSections: [
+      {
+        title: "Pajak Kendaraan",
+        icon: "Receipt",
+        items: [
+          {
+            title: "Master Kendaraan",
+            icon: "Car",
+            path: "/ga/pajak-kendaraan/master-kendaraan",
+          },
+          {
+            title: "Pajak Kendaraan",
+            icon: "Receipt",
+            path: "/ga/pajak-kendaraan/pajak-kendaraan",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Legalitas Perusahaan",
+    icon: "ShieldCheck",
+    items: [],
+    directPath: "/ga/legalitas/monitoring",
+  },
+  {
+    title: "GA Performance",
+    icon: "Gauge",
+    items: [],
+    directPath: "/ga/performance",
+  },
+  {
+    title: "Monitoring Sarana dan Prasarana",
+    icon: "Building2",
+    items: [],
+    directPath: "/ga/monitoring/sapras",
+  },
+  {
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Purchase Request (PR)",
+        icon: "ShoppingCart",
+        path: "/qhse/monitoring/pr",
+      },
+      {
+        title: "Monitoring Cash Advance (CA)",
+        icon: "Banknote",
+        path: "/hrd/general/cash-advance/dashboard",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "Ticket",
+        path: "/qhse/monitoring/voucher",
+      },
+      {
+        title: "Monitoring Service Kendaraan",
+        icon: "Wrench",
+        path: "/ga/monitoring/service-kendaraan",
+      },
+      {
+        title: "Monitoring Maintenance Sarana & Prasarana",
+        icon: "Wrench",
+        path: "/ga/monitoring/maintenance-sapras",
+      },
+      {
+        title: "Monitoring Utility",
+        icon: "Plug",
+        path: "/ga/monitoring/utility",
+      },
+    ],
+  },
+  {
+    title: "Monitoring ATK",
+    icon: "Package",
+    items: [
+      {
+        title: "Monitoring Stok ATK",
+        icon: "Package",
+        path: "/ga/atk/monitoring-stok",
+      },
+      {
+        title: "Pengajuan ATK dari User",
+        icon: "FilePlus",
+        path: "/ga/atk/pengajuan",
+      },
+    ],
+  },
+  {
+    title: "Monitoring IT",
+    icon: "Server",
+    items: [
+      {
+        title: "Backup Data Setiap User",
+        icon: "DatabaseBackup",
+        path: "/ga/it/backup",
+      },
+      { title: "Trouble Shoot", icon: "Bug", path: "/ga/it/troubleshoot" },
+      {
+        title: "Maintenance Perangkat Device",
+        icon: "Cpu",
+        path: "/ga/it/maintenance-device",
+      },
+      {
+        title: "Monitoring Server",
+        icon: "Server",
+        path: "/ga/it/monitoring-server",
+      },
+    ],
+  },
+  createGeneralMenu("ga"),
 ];
 
 export const operationalMenu: MenuSection[] = [
@@ -925,114 +1091,6 @@ export const qhseMenu: MenuSection[] = [
     items: [],
     directPath: "/qhse/performance",
   },
-  // {
-  //   title: "Monitoring MCU",
-  //   icon: "HeartPulse",
-  //   items: [],
-  //   directPath: "/qhse/monitoring-mcu",
-  // },
-  {
-    title: "Monitoring Daftar Alat Ukur",
-    icon: "ListChecks",
-    items: [],
-    directPath: "/qhse/monitoring-daftar-alat-ukur",
-  },
-  // {
-  //   title: "KPI",
-  //   icon: "BarChart",
-  //   items: [
-  //     {
-  //       title: "Master KPI",
-  //       icon: "Database",
-  //       path: "/qhse/general/kpi/master",
-  //     },
-  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
-  //   ],
-  // },
-  {
-    title: "Monitoring",
-    icon: "Monitor",
-    items: [
-      {
-        title: "Purchase Request",
-        icon: "ShoppingCart",
-        path: "/qhse/monitoring/pr",
-      },
-      // {
-      //   title: "Cash Advance",
-      //   icon: "Banknote",
-      //   path: "/qhse/monitoring/cash-advance",
-      // },
-      {
-        title: "Voucher",
-        icon: "Ticket",
-        path: "/qhse/monitoring/voucher",
-      },
-      {
-        title: "Endorse Certificate",
-        icon: "FileCheck",
-        path: "/qhse/monitoring/endorse-certificate",
-      },
-      {
-        title: "Reimburse",
-        icon: "Wallet",
-        path: "/qhse/monitoring/reimburse",
-      },
-    ],
-  },
-  {
-    title: "Monitoring Gudang",
-    icon: "Boxes",
-    items: [
-      {
-        title: "Monitoring Manifest Barang",
-        icon: "Package",
-        path: "/qhse/monitoring-gudang/manifest-barang",
-      },
-      {
-        title: "Monitoring PBG",
-        icon: "ClipboardList",
-        path: "/qhse/monitoring-gudang/pbg",
-      },
-      {
-        title: "Monitoring RFI",
-        icon: "FileSearch",
-        path: "/qhse/monitoring-gudang/rfi",
-      },
-    ],
-  },
-  {
-    title: "Monitoring Personnel",
-    icon: "Users",
-    subSections: [
-      {
-        title: "Monitoring Personnel",
-        icon: "Users",
-        items: [
-          {
-            title: "Training Matrix",
-            icon: "GraduationCap",
-            path: "/qhse/monitoring-personnel/training-matrix",
-          },
-          {
-            title: "Medical Check Up",
-            icon: "HeartPulse",
-            path: "/qhse/monitoring-personnel/mcu",
-          },
-          {
-            title: "APD",
-            icon: "Shield",
-            path: "/qhse/monitoring-personnel/apd",
-          },
-          {
-            title: "Nomor Report",
-            icon: "FileText",
-            path: "/qhse/monitoring-personnel/nomor-report",
-          },
-        ],
-      },
-    ],
-  },
   {
     title: "RADIOGRAPHY",
     icon: "Camera",
@@ -1080,6 +1138,115 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
+  // {
+  //   title: "Monitoring MCU",
+  //   icon: "HeartPulse",
+  //   items: [],
+  //   directPath: "/qhse/monitoring-mcu",
+  // },
+  {
+    title: "Monitoring Daftar Alat Ukur",
+    icon: "ListChecks",
+    items: [],
+    directPath: "/qhse/monitoring-daftar-alat-ukur",
+  },
+  // {
+  //   title: "KPI",
+  //   icon: "BarChart",
+  //   items: [
+  //     {
+  //       title: "Master KPI",
+  //       icon: "Database",
+  //       path: "/qhse/general/kpi/master",
+  //     },
+  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
+  //   ],
+  // },
+  {
+    title: "Monitoring Personnel",
+    icon: "Users",
+    subSections: [
+      {
+        title: "Monitoring Personnel",
+        icon: "Users",
+        items: [
+          {
+            title: "Training Matrix (Technical and QHSE)",
+            icon: "GraduationCap",
+            path: "/qhse/monitoring-personnel/training-matrix",
+          },
+          {
+            title: "Medical Check Up (MCU)",
+            icon: "HeartPulse",
+            path: "/qhse/monitoring-personnel/mcu",
+          },
+          {
+            title: "Alat Pelindung Diri (APD)",
+            icon: "Shield",
+            path: "/qhse/monitoring-personnel/apd",
+          },
+          {
+            title: "Nomor Report",
+            icon: "FileText",
+            path: "/qhse/monitoring-personnel/nomor-report",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Purchase Request (PR)",
+        icon: "ShoppingCart",
+        path: "/qhse/monitoring/pr",
+      },
+      {
+        title: "Monitoring Cash Advance (CA)",
+        icon: "Banknote",
+        path: "/qhse/monitoring/cash-advance",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "Ticket",
+        path: "/qhse/monitoring/voucher",
+      },
+      {
+        title: "Monitoring Endorse Certificate",
+        icon: "FileCheck",
+        path: "/qhse/monitoring/endorse-certificate",
+      },
+      {
+        title: "Monitoring Reimburse",
+        icon: "Wallet",
+        path: "/qhse/monitoring/reimburse",
+      },
+    ],
+  },
+  {
+    title: "Monitoring Gudang",
+    icon: "Boxes",
+    items: [
+      {
+        title: "Monitoring Manifest Barang",
+        icon: "Package",
+        path: "/qhse/monitoring-gudang/manifest-barang",
+      },
+      {
+        title: "Monitoring Permintaan Barang Gudang (PBG)",
+        icon: "ClipboardList",
+        path: "/qhse/monitoring-gudang/pbg",
+      },
+      {
+        title: "Monitoring Request for Inspection (RFI)",
+        icon: "FileSearch",
+        path: "/qhse/monitoring-gudang/rfi",
+      },
+    ],
+  },
+
   createGeneralMenu("operational"),
 ];
 

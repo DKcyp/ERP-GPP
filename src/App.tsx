@@ -11,7 +11,11 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      setCurrentPage(`/${user.role}/dashboard`);
+      if (user.role === 'operational') {
+        setCurrentPage('/operational/timesheet/dashboard');
+      } else {
+        setCurrentPage(`/${user.role}/dashboard`);
+      }
     }
   }, [user]);
 

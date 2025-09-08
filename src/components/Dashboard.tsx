@@ -175,6 +175,23 @@ import LaporanPerSO from "./LaporanPerSO";
 import ApprovalPoJasa from "../pages/procon/approval/ApprovalPoJasa";
 import ApprovalTimesheet from "../pages/procon/approval/ApprovalTimesheet";
 
+// GA Template
+import GATemplate from "./GATemplate";
+import GAKendaraanMasterDashboard from "./GAKendaraanMasterDashboard";
+import GAPajakKendaraanDashboard from "./GAPajakKendaraanDashboard";
+import GALegalitasPerusahaanDashboard from "./GALegalitasPerusahaanDashboard";
+import GAPerformanceDashboard from "./GAPerformanceDashboard";
+import GASaranaPrasaranaDashboard from "./GASaranaPrasaranaDashboard";
+import GAServiceKendaraanDashboard from "./GAServiceKendaraanDashboard";
+import GAMaintenanceSaprasDashboard from "./GAMaintenanceSaprasDashboard";
+import GAUtilityDashboard from "./GAUtilityDashboard";
+import GAATKStockDashboard from "./GAATKStockDashboard";
+import GAATKRequestDashboard from "./GAATKRequestDashboard";
+import GABackupDataUserDashboard from "./GABackupDataUserDashboard";
+import GAITTroubleShootDashboard from "./GAITTroubleShootDashboard";
+import GAITMaintenanceDeviceDashboard from "./GAITMaintenanceDeviceDashboard";
+import GAITMonitoringServerDashboard from "./GAITMonitoringServerDashboard";
+
 // NEW: Import your new blank page components
 import MasterKPIHRDDashboard from "./MasterKPIHRDDashboard";
 import MasterIndikatorHRDDashboard from "./MasterIndikatorHRDDashboard";
@@ -184,8 +201,14 @@ import OperationalMainDashboard from "./OperationalMainDashboard"; // NEW: Impor
 import MarketingMainDashboard from "./MarketingMainDashboard"; // NEW: Import MarketingMainDashboard
 import ManagementMainDashboard from "./ManagementMainDashboard"; // NEW: Import ManagementMainDashboard
 import MonitoringIzinAlatDashboard from "./MonitoringIzinAlatDashboard"; // NEW: Import MonitoringIzinAlatDashboard
+import GASuportOperasionalDashboard from "./GASuportOperasionalDashboard";
 import MonitoringPerizinanDashboard from "./MonitoringPerizinanDashboard"; // NEW: Import MonitoringPerizinanDashboard
 import ApproveSPKDashboard from "./ApproveSPKDashboard"; // NEW: Import ApproveSPKDashboard
+import GAIBPMaintenanceSaprasDashboard from "./GAIBPMaintenanceSaprasDashboard";
+import GAIBPTroubleshootSaranaKerjaDashboard from "./GAIBPTroubleshootSaranaKerjaDashboard";
+import GAIBPPersediaanATKDashboard from "./GAIBPPersediaanATKDashboard";
+import GAIBPKebersihanLingkunganDashboard from "./GAIBPKebersihanLingkunganDashboard";
+import GeneralUtilityDashboard from "./GeneralUtilityDashboard";
 
 import {
   BarChart3,
@@ -378,6 +401,57 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/gudang/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
+    }
+
+    if (currentPage === "/ga/general/kpi/dashboard") {
+      console.log(
+        "Dashboard: Rendering DashboardKPIDashboard for path:",
+        currentPage
+      );
+      return <DashboardKPIDashboard />;
+    }
+    if (currentPage === "/ga/general/kpi/master") {
+      return <GeneralMasterKPIDashboard />;
+    }
+    if (currentPage === "/ga/general/kpi/list") {
+      return <GeneralListKPIDashboard />;
+    }
+    if (currentPage === "/ga/general/voucher/dashboard") {
+      return <GeneralVoucherDashboard />;
+    }
+    if (currentPage === "/ga/general/voucher/proses") {
+      return <GeneralProsesVoucherDashboard />;
+    }
+    if (currentPage === "/ga/general/voucher/pertanggungjawaban") {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
+    }
+    if (currentPage === "/ga/general/reimburse/dashboard") {
+      return <GeneralReimburseDashboard />;
+    }
+    if (currentPage === "/ga/general/reimburse/proses") {
+      return <GeneralProsesReimburseDashboard />;
+    }
+    if (currentPage === "/ga/general/cash-advance/dashboard") {
+      return <GeneralCashAdvanceDashboard />;
+    }
+    if (currentPage === "/ga/general/cash-advance/proses") {
+      return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/ga/general/purchase-request/dashboard") {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === "/ga/general/purchase-request/proses") {
+      return <GeneralProsesPurchasingRequest />;
+    }
+    // NEW ga General Cuti Routes
+    if (currentPage === "/ga/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/ga/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
+    }
+    if (currentPage === "/ga/general/utility/dashboard") {
+      return <GeneralUtilityDashboard />;
     }
 
     // Pengadaan Routes
@@ -670,6 +744,151 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
+    }
+
+    // GA Routes
+    if (currentPage === "/ga/dashboard") {
+      return <GATemplate title="GA Main Dashboard" />;
+    }
+    // Monitoring Pajak Kendaraan
+    if (currentPage === "/ga/pajak-kendaraan/master-kendaraan") {
+      return <GAKendaraanMasterDashboard />;
+    }
+    if (currentPage === "/ga/pajak-kendaraan/pajak-kendaraan") {
+      return <GAPajakKendaraanDashboard />;
+    }
+    if (currentPage === "/ga/legalitas/monitoring") {
+      return <GALegalitasPerusahaanDashboard />;
+    }
+    if (currentPage === "/ga/performance") {
+      return <GAPerformanceDashboard />;
+    }
+    if (currentPage === "/ga/monitoring/sapras") {
+      return <GASaranaPrasaranaDashboard />;
+    }
+    if (currentPage === "/ga/monitoring/service-kendaraan") {
+      return <GAServiceKendaraanDashboard />;
+    }
+    if (currentPage === "/ga/monitoring/maintenance-sapras") {
+      return <GAMaintenanceSaprasDashboard />;
+    }
+    if (currentPage === "/ga/monitoring/utility") {
+      return <GAUtilityDashboard />;
+    }
+    if (currentPage === "/ga/atk/monitoring-stok") {
+      return <GAATKStockDashboard />;
+    }
+    if (currentPage === "/ga/atk/pengajuan") {
+      return <GAATKRequestDashboard />;
+    }
+    if (currentPage === "/ga/it/backup") {
+      return <GABackupDataUserDashboard />;
+    }
+    if (currentPage === "/ga/it/troubleshoot") {
+      return <GAITTroubleShootDashboard />;
+    }
+    if (currentPage === "/ga/it/maintenance-device") {
+      return <GAITMaintenanceDeviceDashboard />;
+    }
+    if (currentPage === "/ga/it/monitoring-server") {
+      return <GAITMonitoringServerDashboard />;
+    }
+    // KPI Department
+    if (currentPage === "/ga/kpi/master") {
+      return <GATemplate title="KPI Master" subtitle="KPI Department" />;
+    }
+    if (currentPage === "/ga/kpi/list") {
+      return <GATemplate title="List KPI" subtitle="KPI Department" />;
+    }
+    // Internal Business Process
+    if (currentPage === "/ga/ibp/legalitas-perusahaan") {
+      return (
+        <GATemplate
+          title="Legalitas Perusahaan"
+          subtitle="Internal Business Process"
+        />
+      );
+    }
+    if (currentPage === "/ga/ibp/suport-operasional") {
+      return <GASuportOperasionalDashboard />;
+    }
+    if (currentPage === "/ga/ibp/maintenance-sapras") {
+      return <GAIBPMaintenanceSaprasDashboard />;
+    }
+    if (currentPage === "/ga/ibp/troubleshoot-sarana-kerja") {
+      return <GAIBPTroubleshootSaranaKerjaDashboard />;
+    }
+    if (currentPage === "/ga/ibp/persediaan-atk") {
+      return <GAIBPPersediaanATKDashboard />;
+    }
+    if (currentPage === "/ga/ibp/kebersihan-lingkungan") {
+      return <GAIBPKebersihanLingkunganDashboard />;
+    }
+    if (currentPage === "/ga/ibp/utility") {
+      return (
+        <GATemplate title="Utility" subtitle="Internal Business Process" />
+      );
+    }
+    // Legalitas Perusahaan (Monitoring & LKPM)
+    if (currentPage === "/ga/legalitas/monitoring") {
+      return <GATemplate title="Monitoring Legal Perusahaan & LKPM" />;
+    }
+    // GA Performance
+    if (currentPage === "/ga/performance") {
+      return <GATemplate title="GA Performance" />;
+    }
+    // Monitoring Sarana & Prasarana
+    if (currentPage === "/ga/monitoring/sapras") {
+      return <GATemplate title="Monitoring Sarana & Prasarana" />;
+    }
+    // Monitoring
+    if (currentPage === "/ga/monitoring/pr") {
+      return <GATemplate title="Monitoring Purchase Request (PR)" />;
+    }
+    if (currentPage === "/ga/monitoring/ca") {
+      return <GATemplate title="Monitoring Cash Advance (CA)" />;
+    }
+    if (currentPage === "/ga/monitoring/voucher") {
+      return <GATemplate title="Monitoring Voucher" />;
+    }
+    if (currentPage === "/ga/monitoring/pajak-kendaraan") {
+      return <GATemplate title="Monitoring Pajak Kendaraan" />;
+    }
+    if (currentPage === "/ga/monitoring/service-kendaraan") {
+      return <GATemplate title="Monitoring Service Kendaraan" />;
+    }
+    if (currentPage === "/ga/monitoring/maintenance-sapras") {
+      return <GATemplate title="Monitoring Maintenance Sarana & Prasarana" />;
+    }
+    if (currentPage === "/ga/monitoring/utility") {
+      return <GATemplate title="Monitoring Utility" />;
+    }
+    // Monitoring ATK
+    if (currentPage === "/ga/atk/monitoring-stok") {
+      return <GATemplate title="Monitoring Stok ATK" />;
+    }
+    if (currentPage === "/ga/atk/pengajuan") {
+      return <GATemplate title="Pengajuan ATK dari User" />;
+    }
+    // Monitoring IT
+    if (currentPage === "/ga/it/backup") {
+      return (
+        <GATemplate title="Backup Data Setiap User" subtitle="Monitoring IT" />
+      );
+    }
+    if (currentPage === "/ga/it/troubleshoot") {
+      return <GATemplate title="Trouble Shoot" subtitle="Monitoring IT" />;
+    }
+    if (currentPage === "/ga/it/maintenance-device") {
+      return (
+        <GATemplate
+          title="Maintenance Perangkat Device"
+          subtitle="Monitoring IT"
+        />
+      );
+    }
+    if (currentPage === "/ga/it/monitoring-server") {
+      return <GATemplate title="Monitoring Server" subtitle="Monitoring IT" />;
     }
 
     // Operational Routes

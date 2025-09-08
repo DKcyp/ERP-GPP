@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu, managementMenu, qhseMenu, accountingMenu, taxMenu, proconMenu, MenuSection, MenuSubSection } from '../data/menuConfig'; // Import proconMenu
-import { ChevronDown, BarChart3, Zap, Home, FileSignature, Wallet, Tool, HeartPulse, GraduationCap, ClipboardCheck, Atom, ShieldCheck, HardHat, CalendarCheck } from 'lucide-react'; // Add QHSE icons
+import { marketingMenu, operationalMenu, hrdMenu, pengadaanMenu, financeMenu, gudangMenu, managementMenu, qhseMenu, accountingMenu, taxMenu, proconMenu, gaMenu } from '../data/menuConfig';
+import { MenuSection, MenuSubSection, MenuItem } from '../types';
+import { ChevronDown, BarChart3, Zap } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 interface MenuBarProps {
@@ -25,6 +26,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       user?.role === 'accounting' ? accountingMenu :
                       user?.role === 'tax' ? taxMenu :
                       user?.role === 'procon' ? proconMenu : // Add proconMenu
+                      user?.role === 'ga' ? gaMenu :
                       marketingMenu; // Default to marketingMenu if role is not recognized
 
   // Add these logs to diagnose which menu is being loaded
@@ -105,7 +107,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
           </button>
 
           {/* Menu Section Items */}
-          {menuSections.filter(section => section.title !== 'Main Dashboard').map((section) => (
+          {menuSections.filter(section => section.title !== 'Main Dashboard').map((section: MenuSection) => (
             <div key={section.title} className="relative">
               <button
                 onClick={() => toggleDropdown(section.title)}
@@ -146,7 +148,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                               <span className="text-xs font-semibold text-text uppercase tracking-wide">{subSection.title}</span>
                             </div>
                             <div className="space-y-1 ml-5">
-                              {subSection.items.map((item) => (
+                              {subSection.items.map((item: MenuItem) => (
                                 <button
                                   key={item.path}
                                   onClick={() => handleItemClick(item.path)}
@@ -171,7 +173,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                     ) : (section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR') ? (
                       // Special layout for Finance Approval and Voucher menus
                       <div className="space-y-1">
-                        {section.items?.map((item) => (
+                        {section.items?.map((item: MenuItem) => (
                           <button
                             key={item.path}
                             onClick={() => handleItemClick(item.path)}
@@ -277,7 +279,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                 {menuSections.find(s => s.title === activeDropdown)?.subSections && menuSections.find(s => s.title === activeDropdown)?.subSections?.length > 0 ? (
                   // New mobile layout for General menu with sub-sections
                   <div className="space-y-3">
-                    {menuSections.find(s => s.title === activeDropdown)?.subSections?.map((subSection) => (
+                    {menuSections.find(s => s.title === activeDropdown)?.subSections?.map((subSection: MenuSubSection) => (
                       <div className="px-3 py-1.5" key={subSection.title}>
                         <div className="flex items-center space-x-2 mb-2">
                           <div className="p-1 rounded-md bg-blue-100">
@@ -311,7 +313,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                 ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR') ? (
                   // Special mobile layout for Finance Approval, Voucher, Gudang Pengembalian Barang and Stock Opname menus
                   <div className="space-y-3">
-                    {menuSections.find(s => s.title === activeDropdown)?.items?.map((item) => (
+                    {menuSections.find(s => s.title === activeDropdown)?.items?.map((item: MenuItem) => (
                       <div className="px-3 py-1.5" key={item.path}>
                         <button
                           onClick={() => handleItemClick(item.path)}
@@ -333,7 +335,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                   </div>
                 ) : (
                   // Regular mobile layout for other menus
-                  menuSections.find(s => s.title === activeDropdown)?.items?.map((item, index) => (
+                  menuSections.find(s => s.title === activeDropdown)?.items?.map((item: MenuItem, index: number) => (
                   <button
                     key={item.path}
                     onClick={() => handleItemClick(item.path)}
