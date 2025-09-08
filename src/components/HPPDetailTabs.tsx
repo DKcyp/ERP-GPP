@@ -92,6 +92,7 @@ const HPPDetailTabs: React.FC<HPPDetailTabsProps> = ({ onTotalChange }) => {
   const jasaOptions = ['Instalasi', 'Maintenance', 'Konsultasi', 'Pelatihan'];
   const alatOptions = ['Excavator', 'Crane', 'Forklift', 'Generator'];
   const barangOptions = ['Cable', 'Pipe', 'Bolt', 'Panel'];
+  const tunjanganOptions = ['Uang Makan', 'Transport', 'Lembur'];
 
   // Price maps
 
@@ -219,25 +220,34 @@ const HPPDetailTabs: React.FC<HPPDetailTabsProps> = ({ onTotalChange }) => {
             {tenagaKerja.map((item, index) => (
               <tr key={index}>
                 <td className="px-4 py-2 whitespace-nowrap">
-                  <select
+                  <input
+                    type="text"
                     value={item.tenaga}
                     onChange={(e) => handleTabDataChange(index, 'tenaga', e.target.value)}
+                    list={`tenagaOptionsList-${index}`}
+                    placeholder="Pilih / cari tenaga"
                     className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm focus:ring-secondary focus:border-secondary"
-                  >
-                    <option value="">Pilih Tenaga</option>
+                  />
+                  <datalist id={`tenagaOptionsList-${index}`}>
                     {tenagaOptions.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
+                      <option key={opt} value={opt} />
                     ))}
-                  </select>
+                  </datalist>
                 </td>
                 <td className="px-4 py-2 whitespace-nowrap">
                   <input
                     type="text"
                     value={item.tunjangan}
                     onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)}
+                    list={`tunjanganOptionsList-${index}`}
+                    placeholder="Pilih / cari tunjangan"
                     className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm focus:ring-secondary focus:border-secondary"
-                    placeholder="Tunjangan"
                   />
+                  <datalist id={`tunjanganOptionsList-${index}`}>
+                    {tunjanganOptions.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                  </datalist>
                 </td>
                 <td className="px-4 py-2 whitespace-nowrap text-sm">Rp { (tunjanganMap[item.tunjangan] || 100000).toLocaleString('id-ID') }</td>
                 <td className="px-4 py-2 whitespace-nowrap">

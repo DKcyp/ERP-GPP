@@ -107,6 +107,11 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
   ];
 
   const jenisPekerjaanOptions = ['On Call', 'Project Based', 'Maintenance', 'Consulting'];
+  const tenagaOptions = ['Teknisi', 'Supervisor', 'Engineer', 'Admin'];
+  const tunjanganOptions = ['Uang Makan', 'Transport', 'Lembur'];
+  const jasaOptions = ['Instalasi', 'Maintenance', 'Konsultasi', 'Pelatihan'];
+  const alatOptions = ['Excavator', 'Crane', 'Forklift', 'Generator'];
+  const barangOptions = ['Cable', 'Pipe', 'Bolt', 'Panel'];
 
   const tabs = ['Tenaga Kerja', 'Jasa', 'Alat', 'Barang', 'MobDemob', 'Biaya Lain-lain', 'Sisa HPP'];
 
@@ -571,7 +576,6 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Tunjangan</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Project Rate</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
@@ -585,18 +589,30 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               type="text"
                               value={item.tenaga}
                               onChange={(e) => handleTabDataChange(index, 'tenaga', e.target.value)}
+                              list={`tenagaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Nama Tenaga"
+                              placeholder="Pilih / cari tenaga"
                             />
+                            <datalist id={`tenagaOptions-${index}`}>
+                              {tenagaOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-3 py-2">
                             <input
                               type="text"
                               value={item.tunjangan}
                               onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)}
+                              list={`tunjanganOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Tunjangan"
+                              placeholder="Pilih / cari tunjangan"
                             />
+                            <datalist id={`tunjanganOptions-${index}`}>
+                              {tunjanganOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -614,15 +630,6 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -668,7 +675,6 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Tunjangan</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Project Rate</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
@@ -682,18 +688,30 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               type="text"
                               value={item.jasa}
                               onChange={(e) => handleTabDataChange(index, 'jasa', e.target.value)}
+                              list={`jasaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Jasa Tenaga"
+                              placeholder="Pilih / cari jasa"
                             />
+                            <datalist id={`jasaOptions-${index}`}>
+                              {jasaOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-3 py-2">
                             <input
                               type="text"
                               value={item.tunjangan}
                               onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)}
+                              list={`tunjanganJasaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Tunjangan"
+                              placeholder="Pilih / cari tunjangan"
                             />
+                            <datalist id={`tunjanganJasaOptions-${index}`}>
+                              {tunjanganOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -711,15 +729,6 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -762,12 +771,10 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Alat</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
@@ -781,18 +788,15 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               type="text"
                               value={item.alat}
                               onChange={(e) => handleTabDataChange(index, 'alat', e.target.value)}
+                              list={`alatOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Nama Alat"
+                              placeholder="Pilih / cari alat"
                             />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.harga}
-                              onChange={(e) => handleTabDataChange(index, 'harga', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga"
-                            />
+                            <datalist id={`alatOptions-${index}`}>
+                              {alatOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -825,18 +829,9 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                             <input
                               type="text"
                               value={item.hargaSatuan}
-                              readOnly
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
-                              placeholder="Harga Satuan"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)}
+                              onChange={(e) => handleTabDataChange(index, 'hargaSatuan', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
+                              placeholder="Harga Satuan"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -879,12 +874,10 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Nama Barang</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
@@ -898,18 +891,15 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               type="text"
                               value={item.namaBarang}
                               onChange={(e) => handleTabDataChange(index, 'namaBarang', e.target.value)}
+                              list={`barangOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Nama Barang"
+                              placeholder="Pilih / cari barang"
                             />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.harga}
-                              onChange={(e) => handleTabDataChange(index, 'harga', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga"
-                            />
+                            <datalist id={`barangOptions-${index}`}>
+                              {barangOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -942,18 +932,9 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                             <input
                               type="text"
                               value={item.hargaSatuan}
-                              readOnly
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
-                              placeholder="Harga Satuan"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.hargaAwal}
-                              onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)}
+                              onChange={(e) => handleTabDataChange(index, 'hargaSatuan', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Harga Awal"
+                              placeholder="Harga Satuan"
                             />
                           </td>
                           <td className="px-3 py-2">
