@@ -26,12 +26,15 @@ import ReqrutmenDashboard from "./ReqrutmenDashboard";
 import ListLamaranDashboard from "./ListLamaranDashboard";
 import KontrakKerjaDashboard from "./KontrakKerjaDashboard";
 import HistoryLamaranDashboard from "./HistoryLamaranDashboard";
+import ReqManPowerDashboard from "./ReqManPowerDashboard";
 import TunjanganUnitDashboard from "./TunjanganUnitDashboard";
 import TunjanganDashboard from "./TunjanganDashboard";
 import ResignDashboard from "./ResignDashboard";
 import HRDMarketingDashboard from "./HRDMarketingDashboard";
 import LemburDashboard from "./LemburDashboard";
 import DaftarPegawaiDashboard from "./DaftarPegawaiDashboard";
+import KontrakPegawaiDashboard from "./KontrakPegawaiDashboard";
+import MonitoringKontrakPegawaiDashboard from "./MonitoringKontrakPegawaiDashboard";
 import MasterUMRDashboard from "./MasterUMRDashboard";
 import DaftarGajiDashboard from "./DaftarGajiDashboard";
 import PotonganGajiDashboard from "./PotonganGajiDashboard";
@@ -584,6 +587,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/rekrutmen/history-lamaran") {
       return <HistoryLamaranDashboard />;
     }
+    if (currentPage === "/hrd/rekrutmen/req-man-power") {
+      return <ReqManPowerDashboard />;
+    }
     if (currentPage === "/hrd/marketing/dashboard") {
       return <HRDMarketingDashboard />;
     }
@@ -592,6 +598,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/pegawai/daftar") {
       return <DaftarPegawaiDashboard />;
+    }
+    if (currentPage === "/hrd/pegawai/kontrak-pegawai") {
+      return <KontrakPegawaiDashboard />;
+    }
+    if (currentPage === "/hrd/pegawai/monitoring-kontrak") {
+      return <MonitoringKontrakPegawaiDashboard />;
     }
     if (currentPage === "/hrd/pegawai/master-umr") {
       return <MasterUMRDashboard />;
@@ -1030,6 +1042,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/operational/sales-order/so-turunan") {
       return <SOTurunanDashboard />;
+    }
+    if (currentPage === "/operational2/sales-order/so-turunan") {
+      return <SOTurunanDashboard role="operational2" />;
+    }
+    if (currentPage === "/operational3/sales-order/so-turunan") {
+      return <SOTurunanDashboard role="operational3" />;
     }
     if (currentPage === "/operational/man-power/man-power") {
       return <ManPowerDashboard />;

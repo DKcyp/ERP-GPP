@@ -24,6 +24,8 @@ interface ResignData {
   kelurahan: string;
   tanggalResign: string;
   status: 'Pending' | 'Approved' | 'Rejected';
+  attachmentSuratResignName?: string;
+  attachmentBAName?: string;
 }
 
 const ResignDashboard: React.FC = () => {
@@ -178,14 +180,30 @@ const ResignDashboard: React.FC = () => {
     setSelectedResignForApproval(null);
   };
 
-  const handleConfirmApproval = (id: string, approvalDetails: { alasanResign: string; lampiranSurat: File[] }) => {
+  const handleConfirmApproval = (id: string, approvalDetails: { alasanResign: string; lampiranSurat: File[]; lampiranBA?: File[] }) => {
     setResignData(prev =>
       prev.map(item =>
-        item.id === id ? { ...item, status: 'Approved' as const } : item
+        item.id === id
+          ? {
+              ...item,
+              status: 'Approved' as const,
+              attachmentSuratResignName: approvalDetails.lampiranSurat && approvalDetails.lampiranSurat[0]
+                ? approvalDetails.lampiranSurat[0].name
+                : item.attachmentSuratResignName,
+              attachmentBAName:
+                approvalDetails.lampiranBA && approvalDetails.lampiranBA[0]
+                  ? approvalDetails.lampiranBA[0].name
+                  : item.attachmentBAName,
+            }
+          : item
       )
     );
     // Here you would typically send approvalDetails (alasanResign, lampiranSurat) to your backend
-    console.log(`Resign ID ${id} approved with reason: ${approvalDetails.alasanResign}, files: ${approvalDetails.lampiranSurat.map(f => f.name).join(', ')}`);
+    console.log(
+      `Resign ID ${id} approved with reason: ${approvalDetails.alasanResign}, surat: ${approvalDetails.lampiranSurat
+        .map(f => f.name)
+        .join(', ')}, BA: ${(approvalDetails.lampiranBA || []).map(f => f.name).join(', ')}`
+    );
     handleCloseApprovalResignModal();
   };
   // --- End Approval Resign Modal Handlers ---
@@ -426,6 +444,8 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Surat Resign</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">BA</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
@@ -450,6 +470,24 @@ const ResignDashboard: React.FC = () => {
                       <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(item.status)}`}>
                         {item.status}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentSuratResignName ? (
+                        <span className="underline cursor-pointer" title={item.attachmentSuratResignName}>
+                          {item.attachmentSuratResignName}
+                        </span>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentBAName ? (
+                        <span className="underline cursor-pointer" title={item.attachmentBAName}>
+                          {item.attachmentBAName}
+                        </span>
+                      ) : (
+                        '-'
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-2">

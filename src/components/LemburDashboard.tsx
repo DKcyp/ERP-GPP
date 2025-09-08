@@ -16,8 +16,11 @@ interface LemburData {
   no: number;
   namaDriver: string;
   tanggalLembur: string;
-  jamLembur: string;
+  waktuStart: string;
+  waktuEnd: string;
+  durasiLembur: string;
   keterangan: string;
+  attachmentName?: string;
 }
 
 const LemburDashboard: React.FC = () => {
@@ -38,7 +41,9 @@ const LemburDashboard: React.FC = () => {
       no: 1,
       namaDriver: 'Ahmad',
       tanggalLembur: '01-01-2025',
-      jamLembur: '2 Jam',
+      waktuStart: '18:00',
+      waktuEnd: '20:00',
+      durasiLembur: '2 Jam',
       keterangan: '-'
     },
     {
@@ -46,7 +51,9 @@ const LemburDashboard: React.FC = () => {
       no: 2,
       namaDriver: 'Budi Santoso',
       tanggalLembur: '03-01-2025',
-      jamLembur: '3 Jam',
+      waktuStart: '19:00',
+      waktuEnd: '22:00',
+      durasiLembur: '3 Jam',
       keterangan: 'Mengantar barang ke luar kota'
     },
     {
@@ -54,7 +61,9 @@ const LemburDashboard: React.FC = () => {
       no: 3,
       namaDriver: 'Slamet Riyadi',
       tanggalLembur: '05-01-2025',
-      jamLembur: '4 Jam',
+      waktuStart: '18:30',
+      waktuEnd: '22:30',
+      durasiLembur: '4 Jam',
       keterangan: 'Keterlambatan loading'
     },
     {
@@ -62,7 +71,9 @@ const LemburDashboard: React.FC = () => {
       no: 4,
       namaDriver: 'Agus Prasetyo',
       tanggalLembur: '07-01-2025',
-      jamLembur: '1.5 Jam',
+      waktuStart: '20:00',
+      waktuEnd: '21:30',
+      durasiLembur: '1 Jam 30 Menit',
       keterangan: '-'
     },
     {
@@ -70,7 +81,9 @@ const LemburDashboard: React.FC = () => {
       no: 5,
       namaDriver: 'Rudi Hartono',
       tanggalLembur: '09-01-2025',
-      jamLembur: '2.5 Jam',
+      waktuStart: '18:15',
+      waktuEnd: '20:45',
+      durasiLembur: '2 Jam 30 Menit',
       keterangan: 'Perjalanan macet'
     },
     {
@@ -78,7 +91,9 @@ const LemburDashboard: React.FC = () => {
       no: 6,
       namaDriver: 'Fauzan Malik',
       tanggalLembur: '10-01-2025',
-      jamLembur: '3 Jam',
+      waktuStart: '19:00',
+      waktuEnd: '22:00',
+      durasiLembur: '3 Jam',
       keterangan: 'Menggantikan shift rekan'
     },
     {
@@ -86,7 +101,9 @@ const LemburDashboard: React.FC = () => {
       no: 7,
       namaDriver: 'Joko Widodo',
       tanggalLembur: '12-01-2025',
-      jamLembur: '2 Jam',
+      waktuStart: '18:00',
+      waktuEnd: '20:00',
+      durasiLembur: '2 Jam',
       keterangan: '-'
     },
     {
@@ -94,7 +111,9 @@ const LemburDashboard: React.FC = () => {
       no: 8,
       namaDriver: 'Hariyanto',
       tanggalLembur: '14-01-2025',
-      jamLembur: '5 Jam',
+      waktuStart: '17:00',
+      waktuEnd: '22:00',
+      durasiLembur: '5 Jam',
       keterangan: 'Perjalanan dinas mendadak'
     }
   ]);
@@ -113,8 +132,11 @@ const LemburDashboard: React.FC = () => {
         month: '2-digit',
         year: 'numeric'
       }),
-      jamLembur: formData.jamLembur,
-      keterangan: formData.keterangan || '-'
+      waktuStart: formData.waktuStart,
+      waktuEnd: formData.waktuEnd,
+      durasiLembur: formData.durasiLembur,
+      keterangan: formData.keterangan || '-',
+      attachmentName: formData.attachment ? formData.attachment.name : undefined,
     };
 
     setLemburData(prev => [newLembur, ...prev.map(l => ({ ...l, no: l.no + 1 }))]);
@@ -147,7 +169,7 @@ const LemburDashboard: React.FC = () => {
     return (
       item.namaDriver.toLowerCase().includes(searchLower) ||
       item.tanggalLembur.toLowerCase().includes(searchLower) ||
-      item.jamLembur.toLowerCase().includes(searchLower) ||
+      item.durasiLembur.toLowerCase().includes(searchLower) ||
       item.keterangan.toLowerCase().includes(searchLower)
     );
   });
@@ -271,17 +293,20 @@ const LemburDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Waktu Start</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Waktu End</th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('jamLembur')}
+                    onClick={() => handleSort('durasiLembur')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Jam Lembur</span>
-                      {sortField === 'jamLembur' && (
+                      <span>Durasi Lembur</span>
+                      {sortField === 'durasiLembur' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Attachment</th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('keterangan')}
@@ -311,7 +336,12 @@ const LemburDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaDriver}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalLembur}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.jamLembur}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.waktuStart}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.waktuEnd}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.durasiLembur}</td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentName ? <span title={item.attachmentName} className="underline cursor-pointer">{item.attachmentName}</span> : '-'}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.keterangan}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">

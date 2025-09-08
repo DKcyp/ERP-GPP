@@ -15,7 +15,9 @@ import {
   Info,
   ChevronLeft,
   ChevronRight,
-  ArrowUp
+  ArrowUp,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 
 interface SOTurunan {
@@ -28,13 +30,19 @@ interface SOTurunan {
   total: string;
 }
 
-const SOTurunanDashboard: React.FC = () => {
+interface SOTurunanDashboardProps {
+  role?: string;
+}
+
+const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
   const [searchNoSO, setSearchNoSO] = useState('');
   const [searchNamaProject, setSearchNamaProject] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [readOnlyModal, setReadOnlyModal] = useState(false);
+  const [initialModalData, setInitialModalData] = useState<Partial<SOTurunanFormData> | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -171,6 +179,51 @@ const SOTurunanDashboard: React.FC = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
 
+  const openAddModal = () => {
+    setReadOnlyModal(false);
+    setInitialModalData(null);
+    setIsModalOpen(true);
+  };
+
+  const toISODate = (ddmmyyyy: string) => {
+    // input expected 'DD-MM-YYYY'
+    const parts = ddmmyyyy.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return ddmmyyyy;
+  };
+
+  const openViewModal = (item: SOTurunan) => {
+    setReadOnlyModal(true);
+    setInitialModalData({
+      soInduk: item.noSO,
+      soTurunan: item.soTurunan,
+      namaClient: item.namaClient,
+      tanggalDibuat: toISODate(item.tanggalDibuat),
+      estimasiSO: item.total,
+      // Fields not present in list remain empty
+      nomorKontrak: '',
+      namaProyek: '',
+      jenisPekerjaan: '',
+      tanggalMOB: '',
+      tanggalDemob: '',
+      keterangan: '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const isReadOnly = role === 'operational2';
+  const isApprover = role === 'operational3';
+
+  const handleApprove = (item: SOTurunan) => {
+    console.log('Approved SO Turunan:', item);
+  };
+
+  const handleReject = (item: SOTurunan) => {
+    console.log('Rejected SO Turunan:', item);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
@@ -293,13 +346,15 @@ const SOTurunanDashboard: React.FC = () => {
                           </div>
                             
             <div className="flex justify-end">
-                          <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah</span>
-            </button>
+              {!isReadOnly && (
+                <button 
+                  onClick={openAddModal}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Tambah</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -427,21 +482,56 @@ const SOTurunanDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.total}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
+                        {!isReadOnly && !isApprover && (
+                          <>
+                            <button 
+                              onClick={() => { setReadOnlyModal(false); setInitialModalData({
+                                soInduk: item.noSO,
+                                soTurunan: item.soTurunan,
+                                namaClient: item.namaClient,
+                                tanggalDibuat: toISODate(item.tanggalDibuat),
+                                estimasiSO: item.total,
+                                nomorKontrak: '',
+                                namaProyek: '',
+                                jenisPekerjaan: '',
+                                tanggalMOB: '',
+                                tanggalDemob: '',
+                                keterangan: '',
+                              }); setIsModalOpen(true); }}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110"
+                              title="Edit"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(item)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
+                        {isApprover && (
+                          <>
+                            <button
+                              onClick={() => handleApprove(item)}
+                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 hover:scale-110"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleReject(item)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                              title="Reject"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
                         <button 
-                          onClick={() => setIsModalOpen(true)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110"
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <button 
+                          onClick={() => openViewModal(item)}
                           className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
                           title="View"
                         >
@@ -517,6 +607,8 @@ const SOTurunanDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddSOTurunan}
+        readOnly={readOnlyModal}
+        initialData={initialModalData}
       />
 
       {/* Delete Confirmation Modal */}

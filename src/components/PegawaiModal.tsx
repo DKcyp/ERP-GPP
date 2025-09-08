@@ -15,6 +15,38 @@ export interface PegawaiFormData {
   jenisKontrak: 'Tetap' | 'Freelancer';
   jenisGaji: 'Bulanan' | 'Harian' | 'Proyek';
   gajiPokok: string;
+  // New fields
+  jenisKelamin: 'Pria' | 'Wanita' | '';
+  statusPTKP: string;
+  alamat: string;
+  noHP: string;
+  email: string;
+  barcodeFingerprint: string;
+  department: string;
+  npwp: string;
+  maritalStatus: 'Single' | 'Married' | 'Other' | '';
+  keahlian: string;
+  // Bank
+  bankNama: string;
+  bankNomor: string;
+  bankPemilik: string;
+  // Kontak darurat serumah
+  emergencyInNama: string;
+  emergencyInHubungan: string;
+  emergencyInNoHP: string;
+  emergencyInAlamat: string;
+  // Kontak darurat tidak serumah
+  emergencyOutNama: string;
+  emergencyOutHubungan: string;
+  emergencyOutNoHP: string;
+  emergencyOutAlamat: string;
+  // Attachments
+  attachmentKTP: File | null;
+  attachmentKK: File | null;
+  attachmentNPWP: File | null;
+  attachmentRekening: File | null;
+  attachmentIjazah: File | null;
+  attachmentDokumen: File | null; // general additional docs
 }
 
 const PegawaiModal: React.FC<PegawaiModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -25,7 +57,34 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({ isOpen, onClose, onSave }) 
     wilayahKerja: '',
     jenisKontrak: 'Tetap',
     jenisGaji: 'Bulanan',
-    gajiPokok: ''
+    gajiPokok: '',
+    jenisKelamin: '',
+    statusPTKP: '',
+    alamat: '',
+    noHP: '',
+    email: '',
+    barcodeFingerprint: '',
+    department: '',
+    npwp: '',
+    maritalStatus: '',
+    keahlian: '',
+    bankNama: '',
+    bankNomor: '',
+    bankPemilik: '',
+    emergencyInNama: '',
+    emergencyInHubungan: '',
+    emergencyInNoHP: '',
+    emergencyInAlamat: '',
+    emergencyOutNama: '',
+    emergencyOutHubungan: '',
+    emergencyOutNoHP: '',
+    emergencyOutAlamat: '',
+    attachmentKTP: null,
+    attachmentKK: null,
+    attachmentNPWP: null,
+    attachmentRekening: null,
+    attachmentIjazah: null,
+    attachmentDokumen: null,
   });
 
   const [errors, setErrors] = useState<Partial<PegawaiFormData>>({});
@@ -129,7 +188,34 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({ isOpen, onClose, onSave }) 
       wilayahKerja: '',
       jenisKontrak: 'Tetap',
       jenisGaji: 'Bulanan',
-      gajiPokok: ''
+      gajiPokok: '',
+      jenisKelamin: '',
+      statusPTKP: '',
+      alamat: '',
+      noHP: '',
+      email: '',
+      barcodeFingerprint: '',
+      department: '',
+      npwp: '',
+      maritalStatus: '',
+      keahlian: '',
+      bankNama: '',
+      bankNomor: '',
+      bankPemilik: '',
+      emergencyInNama: '',
+      emergencyInHubungan: '',
+      emergencyInNoHP: '',
+      emergencyInAlamat: '',
+      emergencyOutNama: '',
+      emergencyOutHubungan: '',
+      emergencyOutNoHP: '',
+      emergencyOutAlamat: '',
+      attachmentKTP: null,
+      attachmentKK: null,
+      attachmentNPWP: null,
+      attachmentRekening: null,
+      attachmentIjazah: null,
+      attachmentDokumen: null,
     });
     setErrors({});
     onClose();
@@ -294,6 +380,195 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({ isOpen, onClose, onSave }) 
                 {errors.gajiPokok && (
                   <p className="mt-1 text-sm text-red-600">{errors.gajiPokok}</p>
                 )}
+              </div>
+
+              {/* Jenis Kelamin & Marital Status */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
+                  <select
+                    value={formData.jenisKelamin}
+                    onChange={(e) => handleInputChange('jenisKelamin', e.target.value as 'Pria' | 'Wanita' | '')}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  >
+                    <option value="">Pilih</option>
+                    <option value="Pria">Pria</option>
+                    <option value="Wanita">Wanita</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Marital Status</label>
+                  <select
+                    value={formData.maritalStatus}
+                    onChange={(e) => handleInputChange('maritalStatus', e.target.value as 'Single' | 'Married' | 'Other' | '')}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  >
+                    <option value="">Pilih</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Status PTKP & Department */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Status PTKP</label>
+                  <input
+                    type="text"
+                    value={formData.statusPTKP}
+                    onChange={(e) => handleInputChange('statusPTKP', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="TK0 / K0 / K1 / dst"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                  <input
+                    type="text"
+                    value={formData.department}
+                    onChange={(e) => handleInputChange('department', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="HRD / Operasional / Finance / ..."
+                  />
+                </div>
+              </div>
+
+              {/* Alamat */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                <textarea
+                  value={formData.alamat}
+                  onChange={(e) => handleInputChange('alamat', e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Alamat domisili"
+                />
+              </div>
+
+              {/* Kontak */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">No. HP</label>
+                  <input
+                    type="tel"
+                    value={formData.noHP}
+                    onChange={(e) => handleInputChange('noHP', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="08xxxxxxxxxx"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="nama@perusahaan.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Barcode Fingerprint</label>
+                  <input
+                    type="text"
+                    value={formData.barcodeFingerprint}
+                    onChange={(e) => handleInputChange('barcodeFingerprint', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Kode/Barcode"
+                  />
+                </div>
+              </div>
+
+              {/* NPWP */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">NPWP</label>
+                <input
+                  type="text"
+                  value={formData.npwp}
+                  onChange={(e) => handleInputChange('npwp', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="xx.xxx.xxx.x-xxx.xxx"
+                />
+              </div>
+
+              {/* Rekening */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Rekening</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    type="text"
+                    value={formData.bankNama}
+                    onChange={(e) => handleInputChange('bankNama', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Nama Bank"
+                  />
+                  <input
+                    type="text"
+                    value={formData.bankNomor}
+                    onChange={(e) => handleInputChange('bankNomor', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Nomor Rekening"
+                  />
+                  <input
+                    type="text"
+                    value={formData.bankPemilik}
+                    onChange={(e) => handleInputChange('bankPemilik', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Nama Pemilik"
+                  />
+                </div>
+              </div>
+
+              {/* Keahlian */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Keahlian</label>
+                <input
+                  type="text"
+                  value={formData.keahlian}
+                  onChange={(e) => handleInputChange('keahlian', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Teknisi, Welding, QA/QC, dll"
+                />
+              </div>
+
+              {/* Kontak Darurat - Serumah */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kontak Darurat (Serumah)</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input type="text" value={formData.emergencyInNama} onChange={(e) => handleInputChange('emergencyInNama', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nama" />
+                  <input type="text" value={formData.emergencyInHubungan} onChange={(e) => handleInputChange('emergencyInHubungan', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Hubungan" />
+                  <input type="text" value={formData.emergencyInNoHP} onChange={(e) => handleInputChange('emergencyInNoHP', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="No. HP" />
+                  <input type="text" value={formData.emergencyInAlamat} onChange={(e) => handleInputChange('emergencyInAlamat', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Alamat" />
+                </div>
+              </div>
+
+              {/* Kontak Darurat - Tidak Serumah */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kontak Darurat (Tidak Serumah)</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input type="text" value={formData.emergencyOutNama} onChange={(e) => handleInputChange('emergencyOutNama', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nama" />
+                  <input type="text" value={formData.emergencyOutHubungan} onChange={(e) => handleInputChange('emergencyOutHubungan', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Hubungan" />
+                  <input type="text" value={formData.emergencyOutNoHP} onChange={(e) => handleInputChange('emergencyOutNoHP', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="No. HP" />
+                  <input type="text" value={formData.emergencyOutAlamat} onChange={(e) => handleInputChange('emergencyOutAlamat', e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Alamat" />
+                </div>
+              </div>
+
+              {/* Attachments */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Attachment Data Diri</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input type="file" onChange={(e) => setFormData(prev => ({ ...prev, attachmentKTP: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-4 py-2 border border-gray-200 rounded-xl" title="KTP" />
+                  <input type="file" onChange={(e) => setFormData(prev => ({ ...prev, attachmentKK: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-4 py-2 border border-gray-200 rounded-xl" title="KK" />
+                  <input type="file" onChange={(e) => setFormData(prev => ({ ...prev, attachmentNPWP: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-4 py-2 border border-gray-200 rounded-xl" title="NPWP" />
+                  <input type="file" onChange={(e) => setFormData(prev => ({ ...prev, attachmentRekening: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-4 py-2 border border-gray-200 rounded-xl" title="Rekening" />
+                  <input type="file" onChange={(e) => setFormData(prev => ({ ...prev, attachmentIjazah: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-4 py-2 border border-gray-200 rounded-xl" title="Ijazah" />
+                </div>
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Attachment Dokumen Tambahan</label>
+                  <input type="file" onChange={(e) => setFormData(prev => ({ ...prev, attachmentDokumen: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+                </div>
               </div>
             </div>
           </form>

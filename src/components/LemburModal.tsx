@@ -9,17 +9,23 @@ interface LemburModalProps {
 
 export interface LemburFormData {
   namaDriver: string;
-  jamLembur: string;
+  waktuStart: string; // HH:MM
+  waktuEnd: string;   // HH:MM
+  durasiLembur: string; // e.g. "2 Jam 30 Menit"
   tanggal: string;
   keterangan: string;
+  attachment: File | null;
 }
 
 const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState<LemburFormData>({
     namaDriver: '',
-    jamLembur: '',
+    waktuStart: '',
+    waktuEnd: '',
+    durasiLembur: '',
     tanggal: '',
-    keterangan: ''
+    keterangan: '',
+    attachment: null,
   });
 
   const [errors, setErrors] = useState<Partial<LemburFormData>>({});
@@ -62,8 +68,11 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
       newErrors.namaDriver = 'Nama Driver wajib dipilih';
     }
 
-    if (!formData.jamLembur.trim()) {
-      newErrors.jamLembur = 'Jam Lembur wajib diisi';
+    if (!formData.waktuStart) {
+      (newErrors as any).waktuStart = 'Waktu start wajib diisi';
+    }
+    if (!formData.waktuEnd) {
+      (newErrors as any).waktuEnd = 'Waktu end wajib diisi';
     }
 
     if (!formData.tanggal) {
@@ -74,8 +83,24 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof LemburFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: keyof LemburFormData, value: any) => {
+    setFormData(prev => {
+      const next = { ...prev, [field]: value } as LemburFormData;
+      // Auto-calc durasi when times change
+      if ((field === 'waktuStart' || field === 'waktuEnd') && next.waktuStart && next.waktuEnd) {
+        const [sh, sm] = next.waktuStart.split(':').map(Number);
+        const [eh, em] = next.waktuEnd.split(':').map(Number);
+        let startM = sh * 60 + sm;
+        let endM = eh * 60 + em;
+        // If end is past midnight next day, allow end < start
+        if (endM < startM) endM += 24 * 60;
+        const diff = Math.max(0, endM - startM);
+        const h = Math.floor(diff / 60);
+        const m = diff % 60;
+        next.durasiLembur = h > 0 ? `${h} Jam${m ? ` ${m} Menit` : ''}` : `${m} Menit`;
+      }
+      return next;
+    });
     
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
@@ -100,9 +125,12 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
     // Reset form
     setFormData({
       namaDriver: '',
-      jamLembur: '',
+      waktuStart: '',
+      waktuEnd: '',
+      durasiLembur: '',
       tanggal: '',
-      keterangan: ''
+      keterangan: '',
+      attachment: null,
     });
     setErrors({});
     onClose();
@@ -179,23 +207,50 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                 )}
               </div>
 
-              {/* Jam Lembur */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Jam Lembur <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.jamLembur}
-                  onChange={(e) => handleInputChange('jamLembur', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.jamLembur ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="2 Jam"
-                />
-                {errors.jamLembur && (
-                  <p className="mt-1 text-sm text-red-600">{errors.jamLembur}</p>
-                )}
+              {/* Waktu Start & End */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Waktu Start <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={formData.waktuStart}
+                    onChange={(e) => handleInputChange('waktuStart', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      (errors as any).waktuStart ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    }`}
+                  />
+                  {(errors as any).waktuStart && (
+                    <p className="mt-1 text-sm text-red-600">{(errors as any).waktuStart}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Waktu End <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={formData.waktuEnd}
+                    onChange={(e) => handleInputChange('waktuEnd', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                      (errors as any).waktuEnd ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    }`}
+                  />
+                  {(errors as any).waktuEnd && (
+                    <p className="mt-1 text-sm text-red-600">{(errors as any).waktuEnd}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Durasi Lembur</label>
+                  <input
+                    type="text"
+                    value={formData.durasiLembur}
+                    readOnly
+                    className="w-full px-4 py-3 border rounded-xl bg-gray-50 text-gray-700 border-gray-200"
+                    placeholder="-- otomatis --"
+                  />
+                </div>
               </div>
 
               {/* Tanggal */}
@@ -217,6 +272,19 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                 </div>
                 {errors.tanggal && (
                   <p className="mt-1 text-sm text-red-600">{errors.tanggal}</p>
+                )}
+              </div>
+
+              {/* Attachment */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Attachment</label>
+                <input
+                  type="file"
+                  onChange={(e) => handleInputChange('attachment', e.target.files && e.target.files[0] ? e.target.files[0] : null)}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+                {formData.attachment && (
+                  <p className="mt-1 text-xs text-gray-500">Terpilih: {formData.attachment.name}</p>
                 )}
               </div>
 

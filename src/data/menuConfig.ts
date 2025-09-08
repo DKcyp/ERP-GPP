@@ -119,10 +119,26 @@ const createGeneralMenu = (role: string): MenuSection => ({
             title: "PBG",
             icon: "Shield",
             items: [
-              { title: "Mutasi Barang", icon: "Shuffle", path: `/${role}/general/pbg/mutasi-barang` },
-              { title: "Timesheet Barang", icon: "Clock", path: `/${role}/general/pbg/timesheet-barang` },
-              { title: "Permintaan Barang Gudang", icon: "ShoppingCart", path: `/${role}/general/pbg/permintaan-barang-gudang` },
-              { title: "Approval PBG", icon: "CheckCircle", path: `/${role}/general/pbg/approval` },
+              {
+                title: "Mutasi Barang",
+                icon: "Shuffle",
+                path: `/${role}/general/pbg/mutasi-barang`,
+              },
+              {
+                title: "Timesheet Barang",
+                icon: "Clock",
+                path: `/${role}/general/pbg/timesheet-barang`,
+              },
+              {
+                title: "Permintaan Barang Gudang",
+                icon: "ShoppingCart",
+                path: `/${role}/general/pbg/permintaan-barang-gudang`,
+              },
+              {
+                title: "Approval PBG",
+                icon: "CheckCircle",
+                path: `/${role}/general/pbg/approval`,
+              },
             ],
           },
         ]
@@ -189,6 +205,12 @@ export const marketingMenu: MenuSection[] = [
     icon: "Target",
     items: [],
     directPath: "/marketing/prospect/dashboard",
+  },
+  {
+    title: "SO Turunan",
+    icon: "GitBranch",
+    items: [],
+    directPath: "/operational3/sales-order/so-turunan",
   },
   {
     title: "Penawaran",
@@ -377,9 +399,14 @@ export const operationalMenu: MenuSection[] = [
     items: [
       { title: "SO", icon: "List", path: "/operational/sales-order/so" },
       {
-        title: "SO Turunan",
+        title: "Request SO Turunan",
         icon: "GitBranch",
         path: "/operational/sales-order/so-turunan",
+      },
+      {
+        title: "SO Turunan",
+        icon: "GitBranch",
+        path: "/operational2/sales-order/so-turunan",
       },
     ],
   },
@@ -520,6 +547,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "History",
         path: "/hrd/rekrutmen/history-lamaran",
       },
+      {
+        title: "REQ Man Power",
+        icon: "Users",
+        path: "/hrd/rekrutmen/req-man-power",
+      },
     ],
   },
   {
@@ -538,7 +570,21 @@ export const hrdMenu: MenuSection[] = [
     title: "Pegawai",
     icon: "UserRound",
     items: [
-      { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
+      {
+        title: "Daftar Pegawai",
+        icon: "Users",
+        path: "/hrd/pegawai/daftar",
+      },
+      {
+        title: "Kontrak Pegawai",
+        icon: "FileSignature",
+        path: "/hrd/pegawai/kontrak-pegawai",
+      },
+      {
+        title: "Monitoring Kontrak Pegawai",
+        icon: "ClipboardCheck",
+        path: "/hrd/pegawai/monitoring-kontrak",
+      },
       {
         title: "Daftar Cuti Pegawai",
         icon: "Calendar",
@@ -1444,30 +1490,70 @@ export const proconMenu: MenuSection[] = [
     title: "Laba Rugi Project",
     icon: "TrendingUp",
     items: [
-      { title: "Dashboard", icon: "LayoutDashboard", path: "/procon/lrp/dashboard" },
-      { title: "Tunjangan / Timesheet Teknisi", icon: "UserCheck", path: "/procon/lrp/tunjangan-timesheet-teknisi" },
+      {
+        title: "Dashboard",
+        icon: "LayoutDashboard",
+        path: "/procon/lrp/dashboard",
+      },
+      {
+        title: "Tunjangan / Timesheet Teknisi",
+        icon: "UserCheck",
+        path: "/procon/lrp/tunjangan-timesheet-teknisi",
+      },
       { title: "Gaji", icon: "Wallet", path: "/procon/lrp/gaji" },
-      { title: "Timesheet Barang", icon: "Package", path: "/procon/lrp/timesheet-barang" },
+      {
+        title: "Timesheet Barang",
+        icon: "Package",
+        path: "/procon/lrp/timesheet-barang",
+      },
       { title: "Kas Keluar", icon: "Wallet", path: "/procon/lrp/kas-keluar" },
-      { title: "Bank Keluar", icon: "Banknote", path: "/procon/lrp/bank-keluar" },
+      {
+        title: "Bank Keluar",
+        icon: "Banknote",
+        path: "/procon/lrp/bank-keluar",
+      },
     ],
   },
   {
     title: "Purchase Request",
     icon: "ShoppingCart",
     items: [
-      { title: "Dashboard Purchase Request", icon: "LayoutDashboard", path: "/procon/purchase-request/dashboard" },
-      { title: "Proses Purchase Request", icon: "FilePlus", path: "/procon/purchase-request/proses" },
-      { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
+      {
+        title: "Dashboard Purchase Request",
+        icon: "LayoutDashboard",
+        path: "/procon/purchase-request/dashboard",
+      },
+      {
+        title: "Proses Purchase Request",
+        icon: "FilePlus",
+        path: "/procon/purchase-request/proses",
+      },
+      {
+        title: "Approval Purchase Request",
+        icon: "CheckCircle",
+        path: "/procon/purchase-request/approval",
+      },
     ],
   },
   {
     title: "Purchase Order",
     icon: "FileBox",
     items: [
-      { title: "Dashboard Purchase Order", icon: "LayoutDashboard", path: "/procon/purchase-order/dashboard" },
-      { title: "Proses Purchase Order", icon: "FilePlus", path: "/procon/purchase-order/proses" },
-      { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
+      {
+        title: "Dashboard Purchase Order",
+        icon: "LayoutDashboard",
+        path: "/procon/purchase-order/dashboard",
+      },
+      {
+        title: "Proses Purchase Order",
+        icon: "FilePlus",
+        path: "/procon/purchase-order/proses",
+      },
+      {
+        title: "Approval Purchase Order",
+        icon: "CheckCircle",
+        path: "/procon/purchase-order/approval",
+      },
     ],
   },
   createGeneralMenu("procon"),
