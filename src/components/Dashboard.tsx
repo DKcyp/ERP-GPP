@@ -169,6 +169,10 @@ import PPh21Dashboard from "./PPh21Dashboard";
 import ProconMainDashboard from "./ProconMainDashboard";
 import ProconInvoiceDashboard from "./ProconInvoiceDashboard";
 import ProconOverviewDashboard from "./ProconOverviewDashboard";
+import ProconKontrakExpenditureDashboard from "./ProconKontrakExpenditureDashboard";
+import ProconSalesOrderDashboard from "./ProconSalesOrderDashboard";
+import ProconPembuatanPIDashboard from "./ProconPembuatanPIDashboard";
+import ProconHPPIndukDashboard from "./ProconHPPIndukDashboard";
 import LaporanLabaRugi from "./LaporanLabaRugi";
 import LaporanPerSO from "./LaporanPerSO";
 // NEW: Procon Approval Dashboards
@@ -623,6 +627,22 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/sales-order/dashboard") {
       return <SalesOrderDashboard />;
+    }
+    // Procon Routes
+    if (currentPage === "/procon/sales-order/dashboard") {
+      return <ProconSalesOrderDashboard />;
+    }
+    if (currentPage === "/procon/kontrak-expenditure") {
+      return <ProconKontrakExpenditureDashboard />;
+    }
+    if (currentPage === "/procon/proforma-invoice/dashboard") {
+      return <ProconInvoiceDashboard />;
+    }
+    if (currentPage === "/procon/proforma-invoice/pembuatan") {
+      return <ProconPembuatanPIDashboard />;
+    }
+    if (currentPage === "/procon/hpp-induk/dashboard") {
+      return <ProconHPPIndukDashboard />;
     }
     if (currentPage === "/marketing/report-kontrak") {
       return <ReportKontrakDashboard />;
