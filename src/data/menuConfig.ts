@@ -260,13 +260,25 @@ export const marketingMenu: MenuSection[] = [
     directPath: "/marketing/hpp-induk/dashboard",
   },
   {
-    title: "Sales Order",
+    title: "SO Induk",
     icon: "ShoppingCart",
     items: [],
     directPath: "/marketing/sales-order/dashboard",
   },
   {
-    title: "Report Kontrak",
+    title: "SO Turunan",
+    icon: "GitBranch",
+    items: [],
+    directPath: "/operational3/sales-order/so-turunan",
+  },
+  {
+    title: "Insentif",
+    icon: "Gift",
+    items: [],
+    directPath: "/marketing/insentif-marketing/dashboard",
+  },
+  {
+    title: "Report",
     icon: "FileText",
     items: [],
     directPath: "/marketing/report-kontrak",
