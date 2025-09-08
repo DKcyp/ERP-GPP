@@ -1,25 +1,56 @@
 import React from 'react';
 import { X, Trash2 } from 'lucide-react';
 
+type Mode = 'create' | 'view' | 'edit';
+
+interface HeaderData {
+  noInvoice?: string;
+  noPo?: string;
+  namaSupplier?: string;
+  tanggalPenerimaan?: string; // yyyy-mm-dd
+  catatan?: string;
+}
+
+interface ItemData {
+  kode: string;
+  nama: string;
+  kategori: string;
+  satuan: string;
+  diminta: number;
+  diterima: number;
+  hargaSatuan: string;
+  hargaTotal: string;
+  kondisi: string;
+  tglExp: string; // yyyy-mm-dd
+}
+
 interface EntryPenerimaanBarangModalProps {
   isOpen: boolean;
   onClose: () => void;
+  mode?: Mode;
+  headerData?: HeaderData;
+  itemsData?: ItemData[];
 }
 
-const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({ isOpen, onClose }) => {
+const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({ isOpen, onClose, mode = 'create', headerData, itemsData }) => {
   if (!isOpen) return null;
 
-  const modalBarangItems = [
+  const isReadOnly = mode === 'view';
+
+  const modalBarangItems: ItemData[] = itemsData ?? [
     { kode: 'BRG001', nama: 'Besi Beton', kategori: 'Material Konstruksi', satuan: 'Batang', diminta: 10, diterima: 10, hargaSatuan: 'Rp 50.000', hargaTotal: 'Rp 500.000', kondisi: 'Baik', tglExp: '2026-12-31' },
     { kode: 'BRG002', nama: 'Semen Portland', kategori: 'Material Konstruksi', satuan: 'Sak', diminta: 5, diterima: 5, hargaSatuan: 'Rp 70.000', hargaTotal: 'Rp 350.000', kondisi: 'Baik', tglExp: '2025-10-15' },
     { kode: 'BRG003', nama: 'Pipa PVC', kategori: 'Material Plumbing', satuan: 'Meter', diminta: 8, diterima: 8, hargaSatuan: 'Rp 25.000', hargaTotal: 'Rp 200.000', kondisi: 'Baik', tglExp: '2027-03-20' },
   ];
 
+  const resolvedTanggal = headerData?.tanggalPenerimaan ?? new Date().toISOString().split('T')[0];
+  const title = mode === 'view' ? 'Detail Penerimaan Barang' : mode === 'edit' ? 'Edit Penerimaan Barang' : 'Entry Penerimaan Barang';
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-5 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Entry Penerimaan Barang</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <X className="h-5 w-5" />
           </button>
@@ -32,9 +63,9 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               <input
                 type="text"
                 id="noInvoice"
-                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 text-xs"
-                defaultValue="INV-60"
-                readOnly
+                className={`px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${isReadOnly ? 'bg-gray-50' : 'bg-white'}`}
+                defaultValue={headerData?.noInvoice ?? 'INV-60'}
+                readOnly={isReadOnly}
               />
             </div>
             <div>
@@ -42,11 +73,13 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               <select
                 id="noPo"
                 className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                defaultValue={headerData?.noPo ?? ''}
+                disabled={isReadOnly}
               >
-                <option>--Pilih No PO--</option>
-                <option>PO001</option>
-                <option>PO002</option>
-                <option>PO003</option>
+                <option value="">--Pilih No PO--</option>
+                <option value="PO001">PO001</option>
+                <option value="PO002">PO002</option>
+                <option value="PO003">PO003</option>
               </select>
             </div>
             <div>
@@ -54,8 +87,9 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               <input
                 type="text"
                 id="namaSupplier"
-                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 text-xs"
-                readOnly
+                className={`px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${isReadOnly ? 'bg-gray-50' : 'bg-white'}`}
+                defaultValue={headerData?.namaSupplier ?? ''}
+                readOnly={isReadOnly}
               />
             </div>
             <div className="relative">
@@ -64,7 +98,9 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                 type="date"
                 id="tanggalPenerimaan"
                 className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
-                defaultValue={new Date().toISOString().split('T')[0]}
+                defaultValue={resolvedTanggal}
+                readOnly={isReadOnly}
+                disabled={isReadOnly}
               />
             </div>
             <div className="md:col-span-2">
@@ -72,8 +108,11 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               <textarea
                 id="catatan"
                 rows={3}
-                className="px-3 py-2 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                className={`px-3 py-2 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${isReadOnly ? 'bg-gray-50' : 'bg-white'}`}
                 placeholder="Tambahkan catatan..."
+                defaultValue={headerData?.catatan ?? ''}
+                readOnly={isReadOnly}
+                disabled={isReadOnly}
               ></textarea>
             </div>
             {/* Upload Dokumen */}
@@ -84,9 +123,10 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                 id="dokumenPenerimaan"
                 multiple
                 accept=".pdf,.jpg,.jpeg,.png"
-                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white text-xs"
+                className={`px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${isReadOnly ? 'bg-gray-50' : 'bg-white'}`}
+                disabled={isReadOnly}
               />
-              <p className="mt-1 text-[11px] text-gray-500">Maks 10MB per file. Format yang didukung: PDF, JPG, PNG.</p>
+              <p className="mt-1 text:[11px] text-gray-500">Maks 10MB per file. Format yang didukung: PDF, JPG, PNG.</p>
             </div>
           </div>
 
@@ -117,23 +157,25 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.satuan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.diminta}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
-                      <input type="number" defaultValue={item.diterima} className="w-16 border border-gray-300 rounded-md px-2 py-1 text-xs" />
+                      <input type="number" defaultValue={item.diterima} className="w-16 border border-gray-300 rounded-md px-2 py-1 text-xs" readOnly={isReadOnly} disabled={isReadOnly} />
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.hargaSatuan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.hargaTotal}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
-                      <select className="border border-gray-300 rounded-md px-2 py-1 text-xs">
+                      <select className="border border-gray-300 rounded-md px-2 py-1 text-xs" defaultValue={item.kondisi} disabled={isReadOnly}>
                         <option>Baik</option>
                         <option>Rusak</option>
                       </select>
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
-                      <input type="date" defaultValue={item.tglExp} className="w-28 border border-gray-300 rounded-md px-2 py-1 text-xs" />
+                      <input type="date" defaultValue={item.tglExp} className="w-28 border border-gray-300 rounded-md px-2 py-1 text-xs" readOnly={isReadOnly} disabled={isReadOnly} />
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
-                      <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {!isReadOnly && (
+                        <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -148,11 +190,13 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
           >
             Kembali
           </button>
-          <button
-            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-xs shadow-sm"
-          >
-            Simpan
-          </button>
+          {mode !== 'view' && (
+            <button
+              className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-xs shadow-sm"
+            >
+              Simpan
+            </button>
+          )}
         </div>
       </div>
     </div>

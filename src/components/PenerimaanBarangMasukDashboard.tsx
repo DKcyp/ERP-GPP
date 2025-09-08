@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays } from 'lucide-react';
 import EntryPenerimaanBarangModal from './EntryPenerimaanBarangModal'; // Import the new modal
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+
+type Mode = 'create' | 'view' | 'edit';
+
+interface RowData {
+  no: number;
+  noInvoice: string;
+  noPo: string;
+  namaSupplier: string;
+  tanggalPenerimaan: string; // yyyy-mm-dd
+  jumlahItem: number;
+  totalHarga: string;
+}
 
 const PenerimaanBarangMasukDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const penerimaanBarangItems = [
+  const [modalMode, setModalMode] = useState<Mode>('create');
+  const [selectedHeader, setSelectedHeader] = useState<{ noInvoice?: string; noPo?: string; namaSupplier?: string; tanggalPenerimaan?: string; catatan?: string } | undefined>(undefined);
+  const [items, setItems] = useState<RowData[]>([
     { no: 1, noInvoice: 'INV-001', noPo: 'PO001', namaSupplier: 'Supplier A', tanggalPenerimaan: '2025-03-10', jumlahItem: 5, totalHarga: 'Rp 500.000' },
     { no: 2, noInvoice: 'INV-002', noPo: 'PO002', namaSupplier: 'Supplier B', tanggalPenerimaan: '2025-03-09', jumlahItem: 8, totalHarga: 'Rp 1.200.000' },
     { no: 3, noInvoice: 'INV-003', noPo: 'PO003', namaSupplier: 'Supplier C', tanggalPenerimaan: '2025-03-08', jumlahItem: 3, totalHarga: 'Rp 350.000' },
     { no: 4, noInvoice: 'INV-004', noPo: 'PO004', namaSupplier: 'Supplier D', tanggalPenerimaan: '2025-03-07', jumlahItem: 10, totalHarga: 'Rp 2.000.000' },
-  ];
+  ]);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<RowData | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -104,7 +120,11 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
           {/* Action Buttons: + Penerimaan Barang and Export */}
           <div className="flex justify-between items-center mb-4">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setModalMode('create');
+                setSelectedHeader(undefined);
+                setIsModalOpen(true);
+              }}
               className="flex items-center space-x-1.5 px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 text-xs shadow-sm"
             >
               <Plus className="h-4 w-4" />
@@ -161,7 +181,7 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {penerimaanBarangItems.map((item) => (
+                {items.map((item) => (
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.no}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.noInvoice}</td>
@@ -172,13 +192,43 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.totalHarga}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
                       <div className="flex items-center space-x-1.5">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100">
+                        <button
+                          className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100"
+                          onClick={() => {
+                            setModalMode('view');
+                            setSelectedHeader({
+                              noInvoice: item.noInvoice,
+                              noPo: item.noPo,
+                              namaSupplier: item.namaSupplier,
+                              tanggalPenerimaan: item.tanggalPenerimaan,
+                            });
+                            setIsModalOpen(true);
+                          }}
+                        >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="text-indigo-600 hover:text-indigo-900 transition-colors duration-200 p-1 rounded-full hover:bg-indigo-100">
+                        <button
+                          className="text-indigo-600 hover:text-indigo-900 transition-colors duration-200 p-1 rounded-full hover:bg-indigo-100"
+                          onClick={() => {
+                            setModalMode('edit');
+                            setSelectedHeader({
+                              noInvoice: item.noInvoice,
+                              noPo: item.noPo,
+                              namaSupplier: item.namaSupplier,
+                              tanggalPenerimaan: item.tanggalPenerimaan,
+                            });
+                            setIsModalOpen(true);
+                          }}
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
+                        <button
+                          className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
+                          onClick={() => {
+                            setItemToDelete(item);
+                            setIsDeleteOpen(true);
+                          }}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -192,7 +242,7 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-4">
             <div className="text-xs text-gray-600">
-              Showing 1 to {penerimaanBarangItems.length} of {penerimaanBarangItems.length} entries
+              Showing 1 to {items.length} of {items.length} entries
             </div>
             <div className="flex items-center space-x-1.5">
               <button className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-xs">
@@ -210,13 +260,30 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
       </div>
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500 flex justify-between items-center">
-        <span>2023 © Mazer</span>
+        <span>2023 Mazer</span>
         <span>
           Crafted with <span className="text-red-500">❤️</span> by Saugi
         </span>
       </footer>
 
-      <EntryPenerimaanBarangModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <EntryPenerimaanBarangModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        headerData={selectedHeader}
+      />
+      <ConfirmDeleteModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={() => {
+          if (itemToDelete) {
+            setItems(prev => prev.filter(r => r.no !== itemToDelete.no));
+          }
+        }}
+        title="Konfirmasi Hapus Penerimaan"
+        message="Apakah Anda yakin ingin menghapus penerimaan barang ini?"
+        itemName={itemToDelete ? `${itemToDelete.noInvoice} - ${itemToDelete.namaSupplier}` : undefined}
+      />
     </div>
   );
 };

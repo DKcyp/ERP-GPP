@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, FileDown, Clock } from 'lucide-react';
-import EntryPajakKeluaranModal from './EntryPajakKeluaranModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useState } from "react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Search,
+  Filter,
+  FileText,
+  FileSpreadsheet,
+  FileDown,
+  Clock,
+} from "lucide-react";
+import EntryPajakKeluaranModal from "./EntryPajakKeluaranModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface PajakKeluaranData {
   id: number;
@@ -13,34 +23,112 @@ interface PajakKeluaranData {
 }
 
 const initialDummyData: PajakKeluaranData[] = [
-  { id: 1, namaProject: 'Pengembangan Aplikasi Mobile', tanggal: '2024-01-20', customer: 'PT Global Solusi', ppn: '11%', nilaiProject: 30000000 },
-  { id: 2, namaProject: 'Implementasi Sistem ERP', tanggal: '2024-02-10', customer: 'CV Usaha Bersama', ppn: '11%', nilaiProject: 50000000 },
-  { id: 3, namaProject: 'Desain Ulang Website', tanggal: '2024-02-28', customer: 'UD Kreatif Digital', ppn: '11%', nilaiProject: 10000000 },
-  { id: 4, namaProject: 'Maintenance Jaringan', tanggal: '2024-03-15', customer: 'PT Infrastruktur', ppn: '11%', nilaiProject: 8000000 },
-  { id: 5, namaProject: 'Penyediaan Jasa Cloud', tanggal: '2024-03-30', customer: 'Koperasi Maju', ppn: '11%', nilaiProject: 18000000 },
-  { id: 6, namaProject: 'Pelatihan Karyawan', tanggal: '2024-04-10', customer: 'PT Sumber Daya', ppn: '11%', nilaiProject: 7000000 },
-  { id: 7, namaProject: 'Audit Keuangan Tahunan', tanggal: '2024-04-25', customer: 'Firma Akuntan', ppn: '11%', nilaiProject: 15000000 },
-  { id: 8, namaProject: 'Pengadaan Hardware Server', tanggal: '2024-05-05', customer: 'PT Data Center', ppn: '11%', nilaiProject: 40000000 },
-  { id: 9, namaProject: 'Jasa Pemasangan CCTV', tanggal: '2024-05-12', customer: 'Rumah Sakit Sehat', ppn: '11%', nilaiProject: 9000000 },
-  { id: 10, namaProject: 'Konsultasi Hukum Bisnis', tanggal: '2024-05-28', customer: 'Kantor Hukum Adil', ppn: '11%', nilaiProject: 11000000 },
+  {
+    id: 1,
+    namaProject: "Pengembangan Aplikasi Mobile",
+    tanggal: "2024-01-20",
+    customer: "PT Global Solusi",
+    ppn: "11%",
+    nilaiProject: 30000000,
+  },
+  {
+    id: 2,
+    namaProject: "Implementasi Sistem ERP",
+    tanggal: "2024-02-10",
+    customer: "CV Usaha Bersama",
+    ppn: "11%",
+    nilaiProject: 50000000,
+  },
+  {
+    id: 3,
+    namaProject: "Desain Ulang Website",
+    tanggal: "2024-02-28",
+    customer: "UD Kreatif Digital",
+    ppn: "11%",
+    nilaiProject: 10000000,
+  },
+  {
+    id: 4,
+    namaProject: "Maintenance Jaringan",
+    tanggal: "2024-03-15",
+    customer: "PT Infrastruktur",
+    ppn: "11%",
+    nilaiProject: 8000000,
+  },
+  {
+    id: 5,
+    namaProject: "Penyediaan Jasa Cloud",
+    tanggal: "2024-03-30",
+    customer: "Koperasi Maju",
+    ppn: "11%",
+    nilaiProject: 18000000,
+  },
+  {
+    id: 6,
+    namaProject: "Pelatihan Karyawan",
+    tanggal: "2024-04-10",
+    customer: "PT Sumber Daya",
+    ppn: "11%",
+    nilaiProject: 7000000,
+  },
+  {
+    id: 7,
+    namaProject: "Audit Keuangan Tahunan",
+    tanggal: "2024-04-25",
+    customer: "Firma Akuntan",
+    ppn: "11%",
+    nilaiProject: 15000000,
+  },
+  {
+    id: 8,
+    namaProject: "Pengadaan Hardware Server",
+    tanggal: "2024-05-05",
+    customer: "PT Data Center",
+    ppn: "11%",
+    nilaiProject: 40000000,
+  },
+  {
+    id: 9,
+    namaProject: "Jasa Pemasangan CCTV",
+    tanggal: "2024-05-12",
+    customer: "Rumah Sakit Sehat",
+    ppn: "11%",
+    nilaiProject: 9000000,
+  },
+  {
+    id: 10,
+    namaProject: "Konsultasi Hukum Bisnis",
+    tanggal: "2024-05-28",
+    customer: "Kantor Hukum Adil",
+    ppn: "11%",
+    nilaiProject: 11000000,
+  },
 ];
 
 const PajakKeluaranDashboard: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState<PajakKeluaranData[]>(initialDummyData);
   const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<PajakKeluaranData | null>(null);
-  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<PajakKeluaranData | null>(null);
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] =
+    useState(false);
+  const [itemToDelete, setItemToDelete] = useState<PajakKeluaranData | null>(
+    null
+  );
 
-  const filteredData = data.filter(item => {
-    const matchesSearch = item.namaProject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.customer.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredData = data.filter((item) => {
+    const matchesSearch =
+      item.namaProject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.customer.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value);
   };
 
   const handleAddClick = () => {
@@ -89,14 +177,18 @@ const PajakKeluaranDashboard: React.FC = () => {
                 Pajak Keluaran
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Tax</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Tax
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Pajak Keluaran</span>
+                <span className="text-blue-600 font-medium">
+                  Pajak Keluaran
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -146,29 +238,50 @@ const PajakKeluaranDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Nama Project
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tanggal
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Customer
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     PPN
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Nilai Project
                   </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+                  <tr
+                    key={item.id}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {item.namaProject}
                     </td>
@@ -204,7 +317,10 @@ const PajakKeluaranDashboard: React.FC = () => {
                 ))}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td
+                      colSpan={6}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
                       Tidak ada data Pajak Keluaran yang ditemukan.
                     </td>
                   </tr>
@@ -227,7 +343,7 @@ const PajakKeluaranDashboard: React.FC = () => {
         isOpen={isConfirmDeleteModalOpen}
         onClose={() => setIsConfirmDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaProject || ''}
+        itemName={itemToDelete?.namaProject || ""}
         message="Apakah Anda yakin ingin menghapus data Pajak Keluaran ini?"
       />
     </div>

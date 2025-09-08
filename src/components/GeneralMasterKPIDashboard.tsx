@@ -1,271 +1,289 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Save } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { PlusCircle, Download, Pencil, Trash2, Search, Clock } from 'lucide-react';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+import GeneralMasterKPIFormModal from './GeneralMasterKPIFormModal';
 
-interface KRAItem {
-  id: number;
-  kra: string;
-  variabelIndicator: string;
-  responsibility: string;
-  plan: string;
-  satuan: string;
-  bobot: string;
-  target: string;
+interface KPIRecord {
+  id: string;
+  jenisKPI: 'KPI Tahunan' | 'KPI Bulanan' | '';
+  totalBobot: number; // 0-100
+  jumlahKRA: number;
+  tanggal: string; // ISO date string
 }
 
 const GeneralMasterKPIDashboard: React.FC = () => {
-  const [kraItems, setKraItems] = useState<KRAItem[]>([{
-    id: 1,
-    kra: '',
-    variabelIndicator: '',
-    responsibility: '',
-    plan: '',
-    satuan: '',
-    bobot: '',
-    target: ''
-  }]);
-  const [nextId, setNextId] = useState(2);
+  // Dummy data list
+  const initialData: KPIRecord[] = [
+    { id: 'KPI001', jenisKPI: 'KPI Tahunan', totalBobot: 100, jumlahKRA: 6, tanggal: '2025-01-20' },
+    { id: 'KPI002', jenisKPI: 'KPI Bulanan', totalBobot: 90, jumlahKRA: 4, tanggal: '2025-03-02' },
+    { id: 'KPI003', jenisKPI: 'KPI Tahunan', totalBobot: 110, jumlahKRA: 7, tanggal: '2025-02-12' },
+  ];
 
-  const addKRAItem = () => {
-    setKraItems([...kraItems, {
-      id: nextId,
-      kra: '',
-      variabelIndicator: '',
-      responsibility: '',
-      plan: '',
-      satuan: '',
-      bobot: '',
-      target: ''
-    }]);
-    setNextId(nextId + 1);
+  const [data, setData] = useState<KPIRecord[]>(initialData);
+
+  // Filters
+  const [searchNama, setSearchNama] = useState(''); // repurposed to search by ID
+  const [jenisFilter, setJenisFilter] = useState('');
+  const [showEntries, setShowEntries] = useState('10');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Modal state
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<KPIRecord | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<KPIRecord | null>(null);
+
+  const filtered = useMemo(() => {
+    return data.filter((d) =>
+      (!searchNama || d.id.toLowerCase().includes(searchNama.toLowerCase())) &&
+      (!jenisFilter || d.jenisKPI === jenisFilter)
+    );
+  }, [data, searchNama, jenisFilter]);
+
+  const pageSize = parseInt(showEntries, 10);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paged = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const openAddModal = () => {
+    setEditingItem(null);
+    setShowFormModal(true);
   };
 
-  const removeKRAItem = (id: number) => {
-    setKraItems(kraItems.filter(item => item.id !== id));
+  const openEditModal = (item: KPIRecord) => {
+    setEditingItem(item);
+    setShowFormModal(true);
   };
 
-  const handleKRAItemChange = (id: number, field: keyof KRAItem, value: string) => {
-    setKraItems(kraItems.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
+  const handleSave = (payload: any) => {
+    const sumBobot = payload?.kraItems?.reduce((sum: number, row: any) => sum + (parseFloat(row?.bobot || '0') || 0), 0) || 0;
+    const kraCount = payload?.kraItems?.length || 0;
+
+    if (editingItem) {
+      setData((prev) =>
+        prev.map((it) =>
+          it.id === editingItem.id
+            ? {
+                ...it,
+                jenisKPI: payload.jenisKPI || it.jenisKPI,
+                totalBobot: sumBobot || it.totalBobot,
+                jumlahKRA: kraCount || it.jumlahKRA,
+              }
+            : it
+        )
+      );
+    } else {
+      const newId = `KPI${Math.floor(1000 + Math.random() * 9000)}`;
+      const newItem: KPIRecord = {
+        id: newId,
+        jenisKPI: payload.jenisKPI || 'KPI Tahunan',
+        totalBobot: sumBobot,
+        jumlahKRA: kraCount,
+        tanggal: new Date().toISOString().slice(0, 10),
+      };
+      setData((prev) => [newItem, ...prev]);
+    }
+    setShowFormModal(false);
+    setEditingItem(null);
+  };
+
+  const askDelete = (item: KPIRecord) => {
+    setDeleteTarget(item);
+    setShowDeleteModal(true);
+  };
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      setData((prev) => prev.filter((it) => it.id !== deleteTarget.id));
+      setDeleteTarget(null);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const handleExport = (type: string) => {
+    alert(`Exporting Master KPI as ${type}`);
+  };
+
+  const rowClass = (rec: KPIRecord) => {
+    if (rec.totalBobot > 100) return 'bg-red-50 hover:bg-red-100 transition-colors';
+    if (rec.totalBobot < 100) return 'bg-yellow-50 hover:bg-yellow-100 transition-colors';
+    return 'hover:bg-gray-50 transition-colors';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Master KPI</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">MASTER KPI - GENERAL</h1>
+              <nav className="text-sm text-gray-600">
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">General</span>
+                <span className="mx-2">›</span>
+                <span className="text-blue-600 font-medium">Master KPI</span>
+              </nav>
+            </div>
+            <div className="flex items-center space-x-3 text-sm text-gray-500">
+              <Clock className="h-4 w-4" />
+              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {/* Data Pegawai Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Data Pegawai</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Nama Pegawai */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Search and Filter */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label htmlFor="namaPegawai" className="block text-sm font-medium text-gray-700 mb-2">Nama Pegawai</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Cari ID Master</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  className="block w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  placeholder="Masukkan ID master..."
+                  value={searchNama}
+                  onChange={(e) => setSearchNama(e.target.value)}
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Jenis KPI</label>
               <select
-                id="namaPegawai"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-gray-50"
+                className="block w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
+                value={jenisFilter}
+                onChange={(e) => setJenisFilter(e.target.value)}
               >
-                <option>--Pilih Nama Pegawai--</option>
-                <option>Pegawai A</option>
-                <option>Pegawai B</option>
+                <option value="">Semua</option>
+                <option value="KPI Tahunan">KPI Tahunan</option>
+                <option value="KPI Bulanan">KPI Bulanan</option>
               </select>
-            </div>
-            {/* Nama Penilai */}
-            <div>
-              <label htmlFor="namaPenilai" className="block text-sm font-medium text-gray-700 mb-2">Nama Penilai</label>
-              <select
-                id="namaPenilai"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-gray-50"
-              >
-                <option>--Pilih Nama Penilai--</option>
-                <option>Penilai X</option>
-                <option>Penilai Y</option>
-              </select>
-            </div>
-            {/* Posisi Pegawai */}
-            <div>
-              <label htmlFor="posisiPegawai" className="block text-sm font-medium text-gray-700 mb-2">Posisi Pegawai</label>
-              <input
-                type="text"
-                id="posisiPegawai"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-gray-100 text-gray-600 cursor-not-allowed"
-                value="-"
-                readOnly
-              />
-            </div>
-            {/* Posisi Penilai */}
-            <div>
-              <label htmlFor="posisiPenilai" className="block text-sm font-medium text-gray-700 mb-2">Posisi Penilai</label>
-              <input
-                type="text"
-                id="posisiPenilai"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-gray-100 text-gray-600 cursor-not-allowed"
-                value="-"
-                readOnly
-              />
             </div>
           </div>
-          {/* Jenis KPI */}
-          <div className="mb-6">
-            <label htmlFor="jenisKPI" className="block text-sm font-medium text-gray-700 mb-2">Jenis KPI</label>
-            <select
-              id="jenisKPI"
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-gray-50"
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={openAddModal}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
             >
-              <option>--Pilih Jenis KPI--</option>
-              <option>KPI Tahunan</option>
-              <option>KPI Bulanan</option>
-            </select>
-          </div>
-          <div className="flex justify-end">
-            <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-xl shadow-md hover:bg-blue-700 transition-colors duration-300">
-              <Plus className="h-4 w-4 mr-2" /> Tambah Prespektif
+              <PlusCircle className="h-5 w-5 mr-2" /> Tambah Master KPI
             </button>
           </div>
         </div>
 
-        {/* Prespektif Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Prespektif</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Prespektif */}
-            <div>
-              <label htmlFor="prespektif" className="block text-sm font-medium text-gray-700 mb-2">Prespektif</label>
-              <select
-                id="prespektif"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-gray-50"
-              >
-                <option>--Pilih Prespektif--</option>
-                <option>Finansial</option>
-                <option>Pelanggan</option>
-              </select>
-            </div>
-            {/* Bobot Prespektif (%) */}
-            <div>
-              <label htmlFor="bobotPrespektif" className="block text-sm font-medium text-gray-700 mb-2">Bobot Prespektif (%)</label>
-              <input
-                type="number"
-                id="bobotPrespektif"
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-gray-50"
-                placeholder="Masukkan Bobot Prespektif"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={addKRAItem}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-xl shadow-md hover:bg-blue-700 transition-colors duration-300"
+        {/* Table Controls */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-700">Show</span>
+            <select
+              value={showEntries}
+              onChange={(e) => { setShowEntries(e.target.value); setCurrentPage(1); }}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-blue-500 focus:border-blue-500"
             >
-              Tambah Baris
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span className="text-sm text-gray-700">entries</span>
+          </div>
+          <div className="flex space-x-3">
+            <button onClick={() => handleExport('Excel')} className="inline-flex items-center px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700 text-sm">
+              <Download className="h-5 w-5 mr-2" /> Excel
+            </button>
+            <button onClick={() => handleExport('CSV')} className="inline-flex items-center px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700 text-sm">
+              <Download className="h-5 w-5 mr-2" /> CSV
+            </button>
+            <button onClick={() => handleExport('PDF')} className="inline-flex items-center px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700 text-sm">
+              <Download className="h-5 w-5 mr-2" /> PDF
             </button>
           </div>
+        </div>
 
-          {/* KRA Table */}
-          <div className="overflow-x-auto mb-6">
-            <table className="min-w-full bg-white rounded-xl shadow-sm border border-gray-200">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-gray-700 text-sm font-semibold uppercase tracking-wider">
-                  <th className="px-4 py-3 text-left">KRA</th>
-                  <th className="px-4 py-3 text-left">Variabel Indicator</th>
-                  <th className="px-4 py-3 text-left">Responsibility</th>
-                  <th className="px-4 py-3 text-left">Plan</th>
-                  <th className="px-4 py-3 text-left">Satuan</th>
-                  <th className="px-4 py-3 text-left">Bobot (%)</th>
-                  <th className="px-4 py-3 text-left">Target</th>
-                  <th className="px-4 py-3 text-center">Aksi</th>
+        {/* Table */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis KPI</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah KRA</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Bobot (%)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
-              <tbody>
-                {kraItems.map((item) => (
-                  <tr key={item.id} className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-4 py-3">
-                      <textarea
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 resize-y min-h-[40px]"
-                        value={item.kra}
-                        onChange={(e) => handleKRAItemChange(item.id, 'kra', e.target.value)}
-                      ></textarea>
-                    </td>
-                    <td className="px-4 py-3">
-                      <textarea
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 resize-y min-h-[40px]"
-                        value={item.variabelIndicator}
-                        onChange={(e) => handleKRAItemChange(item.id, 'variabelIndicator', e.target.value)}
-                      ></textarea>
-                    </td>
-                    <td className="px-4 py-3">
-                      <textarea
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 resize-y min-h-[40px]"
-                        value={item.responsibility}
-                        onChange={(e) => handleKRAItemChange(item.id, 'responsibility', e.target.value)}
-                      ></textarea>
-                    </td>
-                    <td className="px-4 py-3">
-                      <select
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
-                        value={item.plan}
-                        onChange={(e) => handleKRAItemChange(item.id, 'plan', e.target.value)}
-                      >
-                        <option>--Pilih Plan--</option>
-                        <option>Plan A</option>
-                        <option>Plan B</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-3">
-                      <select
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
-                        value={item.satuan}
-                        onChange={(e) => handleKRAItemChange(item.id, 'satuan', e.target.value)}
-                      >
-                        <option>--Pilih Satuan--</option>
-                        <option>Unit</option>
-                        <option>Kg</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-3">
-                      <input
-                        type="number"
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-                        value={item.bobot}
-                        onChange={(e) => handleKRAItemChange(item.id, 'bobot', e.target.value)}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
-                      <input
-                        type="text"
-                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
-                        value={item.target}
-                        onChange={(e) => handleKRAItemChange(item.id, 'target', e.target.value)}
-                      />
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => removeKRAItem(item.id)}
-                        className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors duration-200"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paged.map((rec) => (
+                  <tr key={rec.id} className={rowClass(rec)}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{rec.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{rec.jenisKPI}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{rec.jumlahKRA}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{rec.totalBobot}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(rec.tanggal).toLocaleDateString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => openEditModal(rec)} className="inline-flex items-center px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 text-xs">
+                          <Pencil className="h-4 w-4 mr-1" /> Edit
+                        </button>
+                        <button onClick={() => askDelete(rec)} className="inline-flex items-center px-3 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs">
+                          <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        </div>
 
-          <div className="flex justify-end">
-            <button className="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium rounded-xl shadow-md hover:bg-red-700 transition-colors duration-300">
-              Hapus Prespektif
+        {/* Pagination */}
+        <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
+          <span>
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} entries
+          </span>
+          <div className="inline-flex rounded-md shadow-sm" role="group">
+            <button
+              className="px-3 py-1.5 border border-gray-300 rounded-l-md bg-white hover:bg-gray-50"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            >
+              Prev
+            </button>
+            <span className="px-3 py-1.5 border-t border-b border-gray-300 bg-white">{currentPage}/{totalPages}</span>
+            <button
+              className="px-3 py-1.5 border border-gray-300 rounded-r-md bg-white hover:bg-gray-50"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next
             </button>
           </div>
         </div>
 
-        {/* Save Button */}
-        <div className="flex justify-end mt-8">
-          <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-700 transition-colors duration-300">
-            <Save className="h-5 w-5 mr-2" /> Simpan KPI
-          </button>
-        </div>
+        {/* Form Modal */}
+        {showFormModal && (
+          <GeneralMasterKPIFormModal
+            isOpen={showFormModal}
+            onClose={() => { setShowFormModal(false); setEditingItem(null); }}
+            onSave={handleSave}
+            initialData={editingItem ? {
+              jenisKPI: editingItem.jenisKPI,
+              kraItems: [],
+            } : null}
+          />
+        )}
+
+        {/* Delete Confirm Modal */}
+        <ConfirmDeleteModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDelete}
+          title="Konfirmasi Hapus Master KPI"
+          message="Apakah Anda yakin ingin menghapus Master KPI ini?"
+          itemName={deleteTarget ? `${deleteTarget.id} - ${deleteTarget.jenisKPI}` : undefined}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Clock, FileText, FileBarChart, FileSpreadsheet, Eye, CalendarDays, AlertTriangle, Plus } from 'lucide-react';
+import { Clock, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays, AlertTriangle, Plus } from 'lucide-react';
 import EntryBarangDibuangModal, { BarangDibuangItemInput } from './EntryBarangDibuangModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const BarangDibuangDashboard: React.FC = () => {
   const [barangDibuangItems, setBarangDibuangItems] = useState<Array<{
@@ -23,6 +24,10 @@ const BarangDibuangDashboard: React.FC = () => {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'view' | 'edit'>('create');
+  const [initialData, setInitialData] = useState<Partial<BarangDibuangItemInput> | undefined>(undefined);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<typeof barangDibuangItems[number] | null>(null);
 
   const formatToDDMMYYYY = (yyyyMmDd: string) => {
     const [y, m, d] = yyyyMmDd.split('-');
@@ -47,6 +52,13 @@ const BarangDibuangDashboard: React.FC = () => {
       newItem,
       ...prev.map(p => ({ ...p, no: p.no + 1 })),
     ]);
+  };
+
+  const parseToYYYYMMDD = (ddMmYy: string) => {
+    // expects dd-mm-yyyy
+    const [d, m, y] = ddMmYy.split('-');
+    if (!y || !m || !d) return ddMmYy;
+    return `${y}-${m}-${d}`;
   };
 
   const isB3Category = (kategori: string) => {
@@ -226,9 +238,58 @@ const BarangDibuangDashboard: React.FC = () => {
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.tanggalDibuang}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.catatan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
-                      <button className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-xs shadow-sm">
-                        <Eye className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-xs shadow-sm"
+                          title="Lihat"
+                          onClick={() => {
+                            setModalMode('view');
+                            setInitialData({
+                              kodeBarang: item.kodeBarang,
+                              namaBarang: item.namaBarang,
+                              kategori: item.kategori,
+                              satuan: item.satuan,
+                              jumlah: item.jumlah ?? 1,
+                              sumber: item.sumber,
+                              tanggalDibuang: parseToYYYYMMDD(item.tanggalDibuang),
+                              catatan: item.catatan,
+                            });
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 text-xs shadow-sm"
+                          title="Edit"
+                          onClick={() => {
+                            setModalMode('edit');
+                            setInitialData({
+                              kodeBarang: item.kodeBarang,
+                              namaBarang: item.namaBarang,
+                              kategori: item.kategori,
+                              satuan: item.satuan,
+                              jumlah: item.jumlah ?? 1,
+                              sumber: item.sumber,
+                              tanggalDibuang: parseToYYYYMMDD(item.tanggalDibuang),
+                              catatan: item.catatan,
+                            });
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs shadow-sm"
+                          title="Hapus"
+                          onClick={() => {
+                            setItemToDelete(item);
+                            setIsDeleteOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -260,6 +321,21 @@ const BarangDibuangDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
+        mode={modalMode}
+        initialData={initialData}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={() => {
+          if (itemToDelete) {
+            setBarangDibuangItems(prev => prev.filter(p => p.no !== itemToDelete.no).map((p, idx) => ({ ...p, no: idx + 1 })));
+          }
+        }}
+        title="Konfirmasi Hapus Barang Dibuang"
+        message="Apakah Anda yakin ingin menghapus data ini?"
+        itemName={itemToDelete ? `${itemToDelete.kodeBarang} - ${itemToDelete.namaBarang}` : undefined}
       />
 
       {/* Footer */}
