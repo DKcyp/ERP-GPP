@@ -75,22 +75,27 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
-    {
-      title: "Purchase Request",
-      icon: "ShoppingCart",
-      items: [
-        {
-          title: "Dashboard Purchasing Request",
-          icon: "LayoutDashboard",
-          path: `/${role}/general/purchase-request/dashboard`,
-        },
-        {
-          title: "Proses Purchasing Request",
-          icon: "FilePlus",
-          path: `/${role}/general/purchase-request/proses`,
-        },
-      ],
-    },
+    // Purchase Request is hidden for Procon role; shown for others
+    ...(role !== "procon"
+      ? [
+          {
+            title: "Purchase Request",
+            icon: "ShoppingCart",
+            items: [
+              {
+                title: "Dashboard Purchasing Request",
+                icon: "LayoutDashboard",
+                path: `/${role}/general/purchase-request/dashboard`,
+              },
+              {
+                title: "Proses Purchasing Request",
+                icon: "FilePlus",
+                path: `/${role}/general/purchase-request/proses`,
+              },
+            ],
+          },
+        ]
+      : []),
     {
       title: "Cuti",
       icon: "Calendar",
@@ -107,6 +112,21 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    // Procon-only: PBG submenu replaces Purchase Request
+    ...(role === "procon"
+      ? [
+          {
+            title: "PBG",
+            icon: "Shield",
+            items: [
+              { title: "Mutasi Barang", icon: "Shuffle", path: `/${role}/general/pbg/mutasi-barang` },
+              { title: "Timesheet Barang", icon: "Clock", path: `/${role}/general/pbg/timesheet-barang` },
+              { title: "Permintaan Barang Gudang", icon: "ShoppingCart", path: `/${role}/general/pbg/permintaan-barang-gudang` },
+              { title: "Approval PBG", icon: "CheckCircle", path: `/${role}/general/pbg/approval` },
+            ],
+          },
+        ]
+      : []),
     // GA-only: Internal Business Process
     ...(role === "ga"
       ? [
@@ -1421,35 +1441,34 @@ export const proconMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Laporan",
-    icon: "FileText",
+    title: "Laba Rugi Project",
+    icon: "TrendingUp",
     items: [
-      {
-        title: "Laporan Laba Rugi",
-        icon: "LineChart",
-        path: "/procon/laporan/laba-rugi",
-      },
-      {
-        title: "Laporan Per SO",
-        icon: "FileText",
-        path: "/procon/laporan/per-so",
-      },
+      { title: "Dashboard", icon: "LayoutDashboard", path: "/procon/lrp/dashboard" },
+      { title: "Tunjangan / Timesheet Teknisi", icon: "UserCheck", path: "/procon/lrp/tunjangan-timesheet-teknisi" },
+      { title: "Gaji", icon: "Wallet", path: "/procon/lrp/gaji" },
+      { title: "Timesheet Barang", icon: "Package", path: "/procon/lrp/timesheet-barang" },
+      { title: "Kas Keluar", icon: "Wallet", path: "/procon/lrp/kas-keluar" },
+      { title: "Bank Keluar", icon: "Banknote", path: "/procon/lrp/bank-keluar" },
     ],
   },
   {
-    title: "Approval",
-    icon: "CheckCircle",
+    title: "Purchase Request",
+    icon: "ShoppingCart",
     items: [
-      {
-        title: "Approval PO Jasa",
-        icon: "Wrench",
-        path: "/procon/approval/po-jasa",
-      },
-      {
-        title: "Approval Timesheet",
-        icon: "Clock",
-        path: "/procon/approval/timesheet",
-      },
+      { title: "Dashboard Purchase Request", icon: "LayoutDashboard", path: "/procon/purchase-request/dashboard" },
+      { title: "Proses Purchase Request", icon: "FilePlus", path: "/procon/purchase-request/proses" },
+      { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
     ],
   },
+  {
+    title: "Purchase Order",
+    icon: "FileBox",
+    items: [
+      { title: "Dashboard Purchase Order", icon: "LayoutDashboard", path: "/procon/purchase-order/dashboard" },
+      { title: "Proses Purchase Order", icon: "FilePlus", path: "/procon/purchase-order/proses" },
+      { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
+    ],
+  },
+  createGeneralMenu("procon"),
 ];
