@@ -11,6 +11,7 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      // Set a stable default page on first load based on role only.
       if (user.role === 'operational') {
         setCurrentPage('/operational/timesheet/dashboard');
       } else {
@@ -18,6 +19,25 @@ const AppContent: React.FC = () => {
       }
     }
   }, [user]);
+
+  // Listen to URL changes and sync to currentPage (so clicks that change URL also re-render)
+  useEffect(() => {
+    const syncFromLocation = () => {
+      const pathFromHash = window.location.hash?.slice(1) || '';
+      const pathFromPathname = window.location.pathname || '';
+      const next = pathFromHash || pathFromPathname;
+      if (next && next !== currentPage) {
+        setCurrentPage(next);
+      }
+    };
+
+    window.addEventListener('popstate', syncFromLocation);
+    window.addEventListener('hashchange', syncFromLocation);
+    return () => {
+      window.removeEventListener('popstate', syncFromLocation);
+      window.removeEventListener('hashchange', syncFromLocation);
+    };
+  }, []);
 
   if (!isAuthenticated) {
     return <Login />;
