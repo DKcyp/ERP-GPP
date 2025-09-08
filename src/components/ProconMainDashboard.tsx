@@ -20,11 +20,50 @@ const ProconOverviewDashboard: React.FC = () => {
     { month: 'Jun', value: 200 },
   ];
 
+  // Mock data adapted to requested columns for Project Performance Overview
   const projectPerformanceData = [
-    { project: 'Project A', progress: 75, hppVariance: 2.5, status: 'On Track' },
-    { project: 'Project B', progress: 90, hppVariance: -1.2, status: 'Ahead' },
-    { project: 'Project C', progress: 45, hppVariance: 4.1, status: 'At Risk' },
-    { project: 'Project D', progress: 60, hppVariance: 0.5, status: 'On Track' },
+    {
+      clientName: 'PT. ABC Sejahtera',
+      soInduk: 'SO-IND-001',
+      soTurunan: 'SO-TRN-001-A',
+      contractStart: '01/02/2025',
+      contractEnd: '31/07/2025',
+      contractValue: 125000000,
+      absorbKontrak: 65000000,
+      remainingKontrak: 60000000,
+      nextEstimasiTagihan: '15/09/2025',
+      delayPenagihan: 0,
+      paidDate: '-',
+      keterangan: 'Implementasi sistem modul A',
+    },
+    {
+      clientName: 'PT. XYZ Mandiri',
+      soInduk: 'SO-IND-002',
+      soTurunan: 'SO-TRN-002-B',
+      contractStart: '10/01/2025',
+      contractEnd: '10/10/2025',
+      contractValue: 98500000,
+      absorbKontrak: 50000000,
+      remainingKontrak: 48500000,
+      nextEstimasiTagihan: '25/09/2025',
+      delayPenagihan: 7,
+      paidDate: '05/08/2025',
+      keterangan: 'Pengembangan integrasi API',
+    },
+    {
+      clientName: 'CV. Jaya Abadi',
+      soInduk: 'SO-IND-003',
+      soTurunan: 'SO-TRN-003-C',
+      contractStart: '05/03/2025',
+      contractEnd: '05/12/2025',
+      contractValue: 75250000,
+      absorbKontrak: 30000000,
+      remainingKontrak: 45250000,
+      nextEstimasiTagihan: '10/10/2025',
+      delayPenagihan: 14,
+      paidDate: '-',
+      keterangan: 'Maintenance dan support',
+    },
   ];
 
   return (
@@ -120,7 +159,7 @@ const ProconOverviewDashboard: React.FC = () => {
             <span>Estimasi Invoice Penagihan (Bulanan)</span>
           </h3>
           <div className="h-64 flex items-end justify-center space-x-4">
-            {invoiceProjectionData.map((item, index) => (
+            {invoiceProjectionData.map((item) => (
               <div key={item.month} className="flex flex-col items-center space-y-2">
                 <div
                   className={`w-12 bg-blue-500 rounded-t-lg transition-all duration-1000 ease-out hover:opacity-80`}
@@ -142,46 +181,48 @@ const ProconOverviewDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Project
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Progress
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    HPP Variance
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Client</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SO Induk & SO Turunan</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durasi Kontrak (Tanggal awal - akhir kontrak)</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Kontrak</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Absorb Kontrak</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining Kontrak</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Estimasi Tagihan</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delay Penagihan</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Date</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan pekerjaan project</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {projectPerformanceData.map((project) => (
-                  <tr key={project.project} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {project.project}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div
-                          className={`h-2.5 rounded-full ${project.progress > 70 ? 'bg-green-500' : project.progress > 40 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                          style={{ width: `${project.progress}%` }}
-                        ></div>
+                {projectPerformanceData.map((row, idx) => (
+                  <tr key={`${row.soInduk}-${row.soTurunan}-${idx}`} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.clientName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900">{row.soInduk}</span>
+                        <span className="text-gray-500">{row.soTurunan}</span>
                       </div>
-                      <span className="text-xs text-gray-500">{project.progress}%</span>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${project.hppVariance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {project.hppVariance >= 0 ? '+' : ''}{project.hppVariance}%
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.contractStart} - {row.contractEnd}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${project.status === 'On Track' ? 'bg-green-100 text-green-800' : 
-                          project.status === 'Ahead' ? 'bg-blue-100 text-blue-800' : 
-                          'bg-yellow-100 text-yellow-800'}`}>
-                        {project.status}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{`Rp ${row.contractValue.toLocaleString('id-ID')}`}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{`Rp ${row.absorbKontrak.toLocaleString('id-ID')}`}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{`Rp ${row.remainingKontrak.toLocaleString('id-ID')}`}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.nextEstimasiTagihan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={
+                        `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          row.delayPenagihan <= 0 ? 'bg-green-100 text-green-800' :
+                          row.delayPenagihan <= 7 ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                        }`
+                      }>
+                        {row.delayPenagihan > 0 ? `${row.delayPenagihan} hari` : 'On time'}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.paidDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.keterangan}</td>
                   </tr>
                 ))}
               </tbody>

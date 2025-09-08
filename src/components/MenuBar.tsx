@@ -133,7 +133,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                   section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
                 }`}>
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-                  <div className={section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'py-1.5' : 'py-2'}>
+                  <div className={(section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR') ? 'py-1.5 max-h-96 overflow-y-auto' : 'py-2'}>
                     {section.subSections && section.subSections.length > 0 ? (
                       // New layout for General menu with sub-sections
                       <div className="space-y-1">
