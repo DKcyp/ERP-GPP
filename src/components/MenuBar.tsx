@@ -87,13 +87,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
 
   return (
     <div className="bg-surface sticky top-[4.0rem] z-40 shadow-lg border-b border-border">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         {/* Desktop Menu Bar */}
         <div className="hidden md:flex items-center justify-start px-3 py-1.5 space-x-1.5">
           {/* Main Dashboard */}
           <button
             onClick={handleMainDashboardClick}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md min-w-0 ${
               isMainDashboard
                 ? 'bg-primary text-white shadow-primary/30 ring-2 ring-blue-200/50'
                 : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border hover:border-primary/50'
@@ -102,16 +102,16 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
             <div className={`p-0.5 rounded-md ${isMainDashboard ? 'bg-white/20' : 'bg-blue-100'}`}>
               <LucideIcons.Home className="h-3 w-3" />
             </div>
-            <span>Main Dashboard</span>
+            <span className="whitespace-nowrap truncate max-w-[12rem]">Dashboard</span>
             {isMainDashboard && <Zap className="h-2 w-2 text-yellow-300" />}
           </button>
 
           {/* Menu Section Items */}
-          {menuSections.filter(section => section.title !== 'Main Dashboard').map((section: MenuSection) => (
+          {menuSections.filter(section => section.directPath !== `/${user?.role}/dashboard`).map((section: MenuSection) => (
             <div key={section.title} className="relative">
               <button
                 onClick={() => toggleDropdown(section.title)}
-                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md ${
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md min-w-0 ${
                   (activeDropdown === section.title || (section.directPath && currentPage === section.directPath) || (section.items && section.items.some(item => currentPage === item.path)) || isSectionWithSubSectionsActive(section))
                     ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-primary/30 ring-2 ring-blue-200/50'
                     : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border hover:border-primary/50'
@@ -120,7 +120,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                 <div className={`p-0.5 rounded-md ${((activeDropdown === section.title || (section.directPath && currentPage === section.directPath) || (section.items && section.items.some(item => currentPage === item.path)) || isSectionWithSubSectionsActive(section))) ? 'bg-white/20' : 'bg-blue-100/80'}`}>
                   <div className="h-3 w-3">{getIconComponent(section.icon)}</div>
                 </div>
-                <span>{section.title}</span>
+                <span className="whitespace-nowrap truncate max-w-[12rem]">{section.title}</span>
                 {!section.directPath && (
                   <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-300 ease-in-out ${
                     activeDropdown === section.title ? 'rotate-180' : ''
