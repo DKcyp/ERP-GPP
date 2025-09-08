@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import EntryPinjamanPegawaiModal, { EntryPinjamanPegawaiFormData } from './EntryPinjamanPegawaiModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import DetailCicilanModal, { Borrower as CicilanBorrower, PembayaranCicilan } from './DetailCicilanModal';
 import { 
   Search, 
   Plus,
   FileSpreadsheet, 
   FileText, 
   File,
-  Edit,
   Trash2,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   ArrowUp
 } from 'lucide-react';
 
@@ -24,6 +22,8 @@ interface PeminjamKaryawanData {
   tanggalPinjam: string;
   keterangan: string;
   status: 'Lunas' | 'Belum Lunas';
+  totalPinjaman: number;
+  pembayaran: PembayaranCicilan[];
 }
 
 const DaftarPeminjamKaryawanDashboard: React.FC = () => {
@@ -34,6 +34,8 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedBorrower, setSelectedBorrower] = useState<PeminjamKaryawanData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -51,7 +53,9 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
       jenisPegawai: 'Tetap',
       tanggalPinjam: '2024-08-15',
       keterangan: 'Keperluan Pribadi',
-      status: 'Belum Lunas'
+      status: 'Belum Lunas',
+      totalPinjaman: 5000000,
+      pembayaran: []
     },
     {
       id: '2',
@@ -61,7 +65,9 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
       jenisPegawai: 'Kontrak',
       tanggalPinjam: '2024-07-20',
       keterangan: 'Keperluan Pribadi',
-      status: 'Lunas'
+      status: 'Lunas',
+      totalPinjaman: 3000000,
+      pembayaran: [ { id: 'p-1', tanggal: '2024-08-01', jumlah: 3000000, metode: 'Transfer' } ]
     },
     {
       id: '3',
@@ -71,7 +77,9 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
       jenisPegawai: 'Magang',
       tanggalPinjam: '2024-09-01',
       keterangan: 'Keperluan Pribadi',
-      status: 'Lunas'
+      status: 'Lunas',
+      totalPinjaman: 1500000,
+      pembayaran: [ { id: 'p-2', tanggal: '2024-09-15', jumlah: 1500000, metode: 'Kas' } ]
     },
     {
       id: '4',
@@ -81,7 +89,9 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
       jenisPegawai: 'Freelance',
       tanggalPinjam: '2024-08-10',
       keterangan: 'Keperluan Pribadi',
-      status: 'Belum Lunas'
+      status: 'Belum Lunas',
+      totalPinjaman: 4000000,
+      pembayaran: []
     },
     {
       id: '5',
@@ -91,7 +101,9 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
       jenisPegawai: 'Tetap',
       tanggalPinjam: '2024-06-18',
       keterangan: 'Keperluan Pribadi',
-      status: 'Lunas'
+      status: 'Lunas',
+      totalPinjaman: 1000000,
+      pembayaran: [ { id: 'p-3', tanggal: '2024-07-01', jumlah: 1000000, metode: 'Potong Gaji' } ]
     }
   ]);
 
@@ -108,6 +120,7 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
   }, []);
 
   const handleAddPeminjamKaryawan = (formData: EntryPinjamanPegawaiFormData) => {
+    const totalPinjamanBaru = formData.peminjamanItems.reduce((sum, it) => sum + (parseFloat(it.nominal || '0') || 0), 0);
     const newPeminjamKaryawan: PeminjamKaryawanData = {
       id: (peminjamKaryawanData.length + 1).toString(),
       no: peminjamKaryawanData.length + 1,
@@ -116,10 +129,41 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
       jenisPegawai: formData.jenisPegawai,
       tanggalPinjam: new Date(formData.periode).toLocaleDateString('en-CA'),
       keterangan: 'Keperluan Pribadi',
-      status: 'Belum Lunas'
+      status: totalPinjamanBaru > 0 ? 'Belum Lunas' : 'Lunas',
+      totalPinjaman: totalPinjamanBaru,
+      pembayaran: []
     };
 
     setPeminjamKaryawanData(prev => [newPeminjamKaryawan, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
+  };
+
+  // Buka modal detail cicilan
+  const openDetail = (item: PeminjamKaryawanData) => {
+    setSelectedBorrower(item);
+    setDetailOpen(true);
+  };
+
+  // Simpan cicilan baru untuk borrower tertentu
+  const onSavePayment = (borrowerId: string, payment: Omit<PembayaranCicilan, 'id'>) => {
+    setPeminjamKaryawanData((prev) => prev.map((b) => {
+      if (b.id !== borrowerId) return b;
+      const newPayment: PembayaranCicilan = { id: `pay-${Date.now()}`, ...payment };
+      const pembayaran = [newPayment, ...b.pembayaran];
+      const dibayar = pembayaran.reduce((a, p) => a + p.jumlah, 0);
+      const status: PeminjamKaryawanData['status'] = dibayar >= b.totalPinjaman ? 'Lunas' : 'Belum Lunas';
+      return { ...b, pembayaran, status };
+    }));
+  };
+
+  // Hapus cicilan
+  const onDeletePayment = (borrowerId: string, paymentId: string) => {
+    setPeminjamKaryawanData((prev) => prev.map((b) => {
+      if (b.id !== borrowerId) return b;
+      const pembayaran = b.pembayaran.filter((p) => p.id !== paymentId);
+      const dibayar = pembayaran.reduce((a, p) => a + p.jumlah, 0);
+      const status: PeminjamKaryawanData['status'] = dibayar >= b.totalPinjaman ? 'Lunas' : 'Belum Lunas';
+      return { ...b, pembayaran, status };
+    }));
   };
 
   const handleSort = (field: keyof PeminjamKaryawanData) => {
@@ -472,11 +516,11 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         <button 
-                          onClick={() => setIsModalOpen(true)}
-                          className="p-1.5 bg-yellow-500 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-yellow-600"
-                          title="Edit"
+                          onClick={() => openDetail(item)}
+                          className="p-1.5 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
+                          title="Detail Cicilan"
                         >
-                          <Edit className="h-3.5 w-3.5" />
+                          Detail
                         </button>
                         <button
                           onClick={() => handleDeleteClick(item)}
@@ -537,6 +581,21 @@ const DaftarPeminjamKaryawanDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddPeminjamKaryawan}
+      />
+
+      {/* Detail Cicilan Modal */}
+      <DetailCicilanModal
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        borrower={selectedBorrower ? {
+          id: selectedBorrower.id,
+          nama: selectedBorrower.namaPegawai,
+          jabatan: selectedBorrower.jenisPegawai,
+          totalPinjaman: selectedBorrower.totalPinjaman,
+          pembayaran: selectedBorrower.pembayaran,
+        } : null}
+        onSavePayment={onSavePayment}
+        onDeletePayment={onDeletePayment}
       />
 
       {/* Delete Confirmation Modal */}
