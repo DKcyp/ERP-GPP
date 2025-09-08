@@ -47,6 +47,7 @@ const HPPTurunanDashboard: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [showEntryHPPIndukModal, setShowEntryHPPIndukModal] = useState(false); // State baru
   const [selectedHPPForEntry, setSelectedHPPForEntry] = useState<HPPTurunan | null>(null); // State baru
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   // Sample data
   const [hppTurunanData, setHppTurunanData] = useState<HPPTurunan[]>([
@@ -135,8 +136,19 @@ const HPPTurunanDashboard: React.FC = () => {
     }
   };
 
-  const handleOpenEntryHPPIndukModal = (hpp: HPPTurunan) => {
+  const toDateInput = (ddmmyyyy: string) => {
+    // convert DD-MM-YYYY -> YYYY-MM-DD for date input compatibility
+    const parts = ddmmyyyy.split('-');
+    if (parts.length === 3) {
+      const [dd, mm, yyyy] = parts;
+      if (dd && mm && yyyy) return `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+    }
+    return '';
+  };
+
+  const openModal = (hpp: HPPTurunan | null, mode: 'create' | 'edit' | 'view') => {
     setSelectedHPPForEntry(hpp);
+    setModalMode(mode);
     setShowEntryHPPIndukModal(true);
   };
 
@@ -440,13 +452,14 @@ const HPPTurunanDashboard: React.FC = () => {
                       <div className="flex items-center justify-center space-x-1">
                         {/* Tombol baru untuk Entry HPP Induk */}
                         <button
-                          onClick={() => handleOpenEntryHPPIndukModal(item)}
+                          onClick={() => openModal(item, 'create')}
                           className="p-1.5 text-primary hover:bg-primary/20 rounded transition-all duration-200 hover:scale-110"
                           title="Entry HPP Induk"
                         >
                           <FilePlus className="h-3.5 w-3.5" />
                         </button>
                         <button
+                          onClick={() => openModal(item, 'edit')}
                           className="p-1.5 text-secondary hover:bg-secondary/20 rounded transition-all duration-200 hover:scale-110"
                           title="Edit"
                         >
@@ -460,6 +473,7 @@ const HPPTurunanDashboard: React.FC = () => {
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                         <button
+                          onClick={() => openModal(item, 'view')}
                           className="p-1.5 text-secondary hover:bg-secondary/20 rounded transition-all duration-200 hover:scale-110"
                           title="View"
                         >
@@ -542,7 +556,19 @@ const HPPTurunanDashboard: React.FC = () => {
       <EntryHPPIndukModal
         isOpen={showEntryHPPIndukModal}
         onClose={() => setShowEntryHPPIndukModal(false)}
-        // hppData={selectedHPPForEntry} // Anda bisa meneruskan data jika diperlukan oleh modal
+        mode={modalMode}
+        readOnly={modalMode === 'view'}
+        initialData={selectedHPPForEntry ? {
+          // Mapping dari data tabel ke field modal
+          noKontrak: '',
+          durasiFrom: toDateInput(selectedHPPForEntry.mob),
+          durasiTo: toDateInput(selectedHPPForEntry.demob),
+          namaClient: '',
+          lokasiPekerjaan: '',
+          namaProject: selectedHPPForEntry.namaProyek,
+          jenisPekerjaan: '',
+          estimasiNilaiKontrak: selectedHPPForEntry.estimasiHPP,
+        } : undefined}
       />
     </div>
   );

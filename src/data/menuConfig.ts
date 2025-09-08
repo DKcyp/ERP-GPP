@@ -91,6 +91,22 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    {
+      title: "Cuti",
+      icon: "Calendar",
+      items: [
+        {
+          title: "Pengajuan Cuti",
+          icon: "FilePlus",
+          path: `/${role}/general/cuti/pengajuan`,
+        },
+        {
+          title: "Approve Cuti",
+          icon: "CheckCircle",
+          path: `/${role}/general/cuti/approve`,
+        },
+      ],
+    },
   ],
 });
 
@@ -146,6 +162,12 @@ export const marketingMenu: MenuSection[] = [
     icon: "ShoppingCart",
     items: [],
     directPath: "/marketing/sales-order/dashboard",
+  },
+  {
+    title: "Report Kontrak",
+    icon: "FileText",
+    items: [],
+    directPath: "/marketing/report-kontrak",
   },
   createGeneralMenu("marketing"),
 ];
@@ -256,6 +278,12 @@ export const operationalMenu: MenuSection[] = [
     items: [],
     directPath: "/operational/pbg/dashboard",
   },
+  {
+    title: "Nomor Report",
+    icon: "FileText",
+    items: [],
+    directPath: "/qhse/monitoring-personnel/nomor-report",
+  },
   createGeneralMenu("operational"),
 ];
 
@@ -267,22 +295,20 @@ export const hrdMenu: MenuSection[] = [
     directPath: "/hrd/dashboard",
   },
   {
-    title: "Tunjangan Unit",
-    icon: "Building",
-    items: [],
-    directPath: "/hrd/tunjangan-unit/dashboard",
-  },
-  {
     title: "Tunjangan",
     icon: "Gift",
-    items: [],
-    directPath: "/hrd/tunjangan/dashboard",
-  },
-  {
-    title: "Resign",
-    icon: "LogOut",
-    items: [],
-    directPath: "/hrd/resign/dashboard",
+    items: [
+      {
+        title: "Tunjangan",
+        icon: "Gift",
+        path: "/hrd/tunjangan/dashboard",
+      },
+      {
+        title: "Tunjangan Unit",
+        icon: "Building",
+        path: "/hrd/tunjangan-unit/dashboard",
+      },
+    ],
   },
   {
     title: "Rekrutmen",
@@ -328,15 +354,25 @@ export const hrdMenu: MenuSection[] = [
     items: [
       { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
       {
+        title: "Daftar Cuti Pegawai",
+        icon: "Calendar",
+        path: "/hrd/pegawai/list-cuti",
+      },
+      {
+        title: "Resign",
+        icon: "LogOut",
+        path: "/hrd/resign/dashboard",
+      },
+      {
         title: "Master UMR",
         icon: "Banknote",
         path: "/hrd/pegawai/master-umr",
       },
       {
-        title: "PR Training",
+        title: "Approve PR Training",
         icon: "GraduationCap",
         path: "/hrd/pegawai/pr-training",
-      }, // NEW: PR Training submenu
+      },
     ],
   },
   {
@@ -400,6 +436,17 @@ export const hrdMenu: MenuSection[] = [
     icon: "FileSignature",
     items: [
       { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+    ],
+  },
+  {
+    title: "Monitoring", // Moved SPK Section to HRD
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring",
+        icon: "Monitor",
+        path: "/qhse/monitoring/endorse-certificate",
+      },
     ],
   },
   createGeneralMenu("hrd"),
@@ -860,12 +907,12 @@ export const qhseMenu: MenuSection[] = [
     items: [],
     directPath: "/qhse/dashboard",
   },
-  {
-    title: "Perizinan Alat",
-    icon: "Tool",
-    items: [],
-    directPath: "/qhse/perizinan-alat",
-  },
+  // {
+  //   title: "Perizinan Alat",
+  //   icon: "Tool",
+  //   items: [],
+  //   directPath: "/qhse/perizinan-alat",
+  // },
   {
     title: "Legalitas Perusahaan",
     icon: "ShieldCheck",
@@ -878,18 +925,30 @@ export const qhseMenu: MenuSection[] = [
     items: [],
     directPath: "/qhse/performance",
   },
-  {
-    title: "Monitoring MCU",
-    icon: "HeartPulse",
-    items: [],
-    directPath: "/qhse/monitoring-mcu",
-  },
+  // {
+  //   title: "Monitoring MCU",
+  //   icon: "HeartPulse",
+  //   items: [],
+  //   directPath: "/qhse/monitoring-mcu",
+  // },
   {
     title: "Monitoring Daftar Alat Ukur",
     icon: "ListChecks",
     items: [],
     directPath: "/qhse/monitoring-daftar-alat-ukur",
   },
+  // {
+  //   title: "KPI",
+  //   icon: "BarChart",
+  //   items: [
+  //     {
+  //       title: "Master KPI",
+  //       icon: "Database",
+  //       path: "/qhse/general/kpi/master",
+  //     },
+  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
+  //   ],
+  // },
   {
     title: "Monitoring",
     icon: "Monitor",
@@ -899,11 +958,11 @@ export const qhseMenu: MenuSection[] = [
         icon: "ShoppingCart",
         path: "/qhse/monitoring/pr",
       },
-      {
-        title: "Cash Advance",
-        icon: "Banknote",
-        path: "/qhse/monitoring/cash-advance",
-      },
+      // {
+      //   title: "Cash Advance",
+      //   icon: "Banknote",
+      //   path: "/qhse/monitoring/cash-advance",
+      // },
       {
         title: "Voucher",
         icon: "Ticket",
@@ -950,11 +1009,6 @@ export const qhseMenu: MenuSection[] = [
         title: "Monitoring Personnel",
         icon: "Users",
         items: [
-          {
-            title: "Dashboard",
-            icon: "LayoutDashboard",
-            path: "/qhse/monitoring-personnel",
-          },
           {
             title: "Training Matrix",
             icon: "GraduationCap",
@@ -1026,6 +1080,7 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
+  createGeneralMenu("operational"),
 ];
 
 export const accountingMenu: MenuSection[] = [
@@ -1171,19 +1226,35 @@ export const proconMenu: MenuSection[] = [
     directPath: "/procon/invoice",
   },
   {
-    title: "Approval", // New section
-    icon: "CheckCircle", // Appropriate icon for Approval
+    title: "Laporan",
+    icon: "FileText",
+    items: [
+      {
+        title: "Laporan Laba Rugi",
+        icon: "LineChart",
+        path: "/procon/laporan/laba-rugi",
+      },
+      {
+        title: "Laporan Per SO",
+        icon: "FileText",
+        path: "/procon/laporan/per-so",
+      },
+    ],
+  },
+  {
+    title: "Approval",
+    icon: "CheckCircle",
     items: [
       {
         title: "Approval PO Jasa",
         icon: "Wrench",
         path: "/procon/approval/po-jasa",
-      }, // New item
+      },
       {
         title: "Approval Timesheet",
         icon: "Clock",
         path: "/procon/approval/timesheet",
-      }, // New item
+      },
     ],
   },
 ];

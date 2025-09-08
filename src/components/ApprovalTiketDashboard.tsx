@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Calendar, FileText, FileSpreadsheet, FileDown, Eye, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Search, Calendar, FileText, FileSpreadsheet, FileDown, Eye, ThumbsUp, ThumbsDown, X } from 'lucide-react';
 
 const ApprovalTiketDashboard: React.FC = () => {
   const [searchKodeBarang, setSearchKodeBarang] = useState('BRG001');
@@ -56,6 +56,31 @@ const ApprovalTiketDashboard: React.FC = () => {
       keterangan: 'Disetujui',
     },
   ];
+
+  const [rows, setRows] = useState(data);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<typeof data[number] | null>(null);
+
+  const handleView = (row: typeof data[number]) => {
+    setSelectedRow(row);
+    setIsDetailOpen(true);
+  };
+
+  const handleApprove = (no: number) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.no === no ? { ...r, status: 'Approved', keterangan: 'Disetujui' } : r
+      )
+    );
+  };
+
+  const handleReject = (no: number) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.no === no ? { ...r, status: 'Rejected', keterangan: 'Ditolak' } : r
+      )
+    );
+  };
 
   const getStatusClasses = (status: string) => {
     switch (status) {
@@ -257,7 +282,7 @@ const ApprovalTiketDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data.map((row) => (
+                {rows.map((row) => (
                   <tr key={row.no} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {row.no}
@@ -286,15 +311,27 @@ const ApprovalTiketDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <button
+                          onClick={() => handleView(row)}
+                          className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                          title="Lihat"
+                        >
                           <Eye className="h-4 w-4" />
                         </button>
                         {row.status === 'Pending' && (
                           <>
-                            <button className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors">
+                            <button
+                              onClick={() => handleApprove(row.no)}
+                              className="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+                              title="Approve"
+                            >
                               <ThumbsUp className="h-4 w-4" />
                             </button>
-                            <button className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors">
+                            <button
+                              onClick={() => handleReject(row.no)}
+                              className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                              title="Reject"
+                            >
                               <ThumbsDown className="h-4 w-4" />
                             </button>
                           </>
@@ -320,6 +357,61 @@ const ApprovalTiketDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+          {/* Detail Modal */}
+          {isDetailOpen && selectedRow && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="bg-white w-full max-w-xl rounded-xl shadow-xl border border-gray-200">
+                <div className="flex items-center justify-between px-6 py-4 border-b">
+                  <h3 className="text-lg font-semibold">Detail Tiket</h3>
+                  <button
+                    onClick={() => setIsDetailOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-md"
+                    aria-label="Close detail"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-gray-500">No</div>
+                    <div className="font-medium text-gray-900">{selectedRow.no}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">No Voucher</div>
+                    <div className="font-medium text-gray-900">{selectedRow.noVoucher}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">No SO</div>
+                    <div className="font-medium text-gray-900">{selectedRow.noSO}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Tanggal Pengajuan</div>
+                    <div className="font-medium text-gray-900">{selectedRow.tanggalPengajuan}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Jumlah Nominal</div>
+                    <div className="font-medium text-gray-900">{`Rp ${selectedRow.jumlahNominal.toLocaleString('id-ID')}`}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Status</div>
+                    <div className="font-medium text-gray-900">{selectedRow.status}</div>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <div className="text-gray-500">Keterangan</div>
+                    <div className="font-medium text-gray-900">{selectedRow.keterangan}</div>
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t flex justify-end gap-3 bg-gray-50">
+                  <button
+                    onClick={() => setIsDetailOpen(false)}
+                    className="px-4 py-2 border rounded-lg"
+                  >
+                    Tutup
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

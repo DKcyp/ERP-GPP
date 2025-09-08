@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import VendorModal, { VendorFormData } from './VendorModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { 
-  Search, 
   Plus, 
   FileSpreadsheet, 
   FileText, 
@@ -24,6 +23,7 @@ interface MasterVendorData {
   alamatVendor: string;
   picVendor: string;
   noTelp: string;
+  status: string;
 }
 
 const MasterVendorDashboard: React.FC = () => {
@@ -51,7 +51,8 @@ const MasterVendorDashboard: React.FC = () => {
       kodeVendor: 'VND001',
       alamatVendor: 'Jl. Merdeka No. 1, Jakarta',
       picVendor: 'Andi Saputra',
-      noTelp: '081234567890'
+      noTelp: '081234567890',
+      status: 'Aktif'
     },
     {
       id: '2',
@@ -61,7 +62,8 @@ const MasterVendorDashboard: React.FC = () => {
       kodeVendor: 'VND002',
       alamatVendor: 'Jl. Diponegoro No. 5, Bandung',
       picVendor: 'Budi Santoso',
-      noTelp: '081298765432'
+      noTelp: '081298765432',
+      status: 'Aktif'
     },
     {
       id: '3',
@@ -71,7 +73,8 @@ const MasterVendorDashboard: React.FC = () => {
       kodeVendor: 'VND003',
       alamatVendor: 'Jl. Gatot Subroto No. 7, Surabaya',
       picVendor: 'Cahyo Widodo',
-      noTelp: '082112345678'
+      noTelp: '082112345678',
+      status: 'Aktif'
     },
     {
       id: '4',
@@ -81,7 +84,8 @@ const MasterVendorDashboard: React.FC = () => {
       kodeVendor: 'VND004',
       alamatVendor: 'Jl. Ahmad Yani No. 10, Yogyakarta',
       picVendor: 'Dewi Lestari',
-      noTelp: '085612345678'
+      noTelp: '085612345678',
+      status: 'Aktif'
     }
   ]);
 
@@ -101,8 +105,9 @@ const MasterVendorDashboard: React.FC = () => {
       namaVendor: formData.namaVendor,
       kodeVendor: formData.kodeVendor,
       alamatVendor: formData.alamatVendor,
-      picVendor: formData.namaPIC,
-      noTelp: formData.noTelp
+      picVendor: formData.picVendor,
+      noTelp: formData.noTelp,
+      status: formData.status || 'Aktif'
     };
 
     setMasterVendorData(prev => [newVendor, ...prev.map(v => ({ ...v, no: v.no + 1 }))]);
@@ -167,7 +172,7 @@ const MasterVendorDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-xs">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
@@ -177,7 +182,7 @@ const MasterVendorDashboard: React.FC = () => {
             </h1>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs"
             >
               <Plus className="h-4 w-4" />
               <span>Vendor</span>
@@ -198,15 +203,9 @@ const MasterVendorDashboard: React.FC = () => {
                     type="text"
                     value={searchNamaVendor}
                     onChange={(e) => setSearchNamaVendor(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="PT Maju Jaya"
                   />
-                  <button 
-                    onClick={handleSearch}
-                    className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
 
@@ -220,15 +219,9 @@ const MasterVendorDashboard: React.FC = () => {
                     type="text"
                     value={searchKodeVendor}
                     onChange={(e) => setSearchKodeVendor(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="VND001"
                   />
-                  <button 
-                    onClick={handleSearch}
-                    className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
 
@@ -242,15 +235,9 @@ const MasterVendorDashboard: React.FC = () => {
                     type="text"
                     value={searchPICVendor}
                     onChange={(e) => setSearchPICVendor(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="Budi Santoso"
                   />
-                  <button 
-                    onClick={handleSearch}
-                    className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             </div>
@@ -262,12 +249,12 @@ const MasterVendorDashboard: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Periode
                 </label>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 text-xs">
                   <input
                     type="text"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="03/03/2025"
                   />
                   <span className="text-sm text-gray-500">s.d</span>
@@ -275,7 +262,7 @@ const MasterVendorDashboard: React.FC = () => {
                     type="text"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="03/03/2025"
                   />
                 </div>
@@ -288,7 +275,7 @@ const MasterVendorDashboard: React.FC = () => {
                 </label>
                 <button 
                   onClick={handleSearch}
-                  className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
+                  className="w-full px-4 py-1.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-xs flex items-center justify-center gap-2"
                 >
                   Search
                 </button>
@@ -298,15 +285,15 @@ const MasterVendorDashboard: React.FC = () => {
 
           {/* Export Buttons */}
           <div className="flex justify-end space-x-2 mb-6">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
             </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1">
               <File className="h-4 w-4" />
               <span>Export CSV</span>
             </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+            <button className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1">
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
@@ -338,7 +325,7 @@ const MasterVendorDashboard: React.FC = () => {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('no')}
                   >
                     <div className="flex items-center space-x-1">
@@ -349,7 +336,7 @@ const MasterVendorDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('tanggal')}
                   >
                     <div className="flex items-center space-x-1">
@@ -360,7 +347,7 @@ const MasterVendorDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('namaVendor')}
                   >
                     <div className="flex items-center space-x-1">
@@ -371,7 +358,7 @@ const MasterVendorDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('kodeVendor')}
                   >
                     <div className="flex items-center space-x-1">
@@ -382,7 +369,7 @@ const MasterVendorDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('alamatVendor')}
                   >
                     <div className="flex items-center space-x-1">
@@ -393,7 +380,7 @@ const MasterVendorDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('picVendor')}
                   >
                     <div className="flex items-center space-x-1">
@@ -404,7 +391,7 @@ const MasterVendorDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('noTelp')}
                   >
                     <div className="flex items-center space-x-1">
@@ -414,7 +401,18 @@ const MasterVendorDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th 
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Status</span>
+                      {sortField === 'status' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -429,27 +427,32 @@ const MasterVendorDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggal}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaVendor}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.kodeVendor}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate" title={item.alamatVendor}>
+                    <td className="px-3 py-2 text-xs text-gray-900">{item.no}</td>
+                    <td className="px-3 py-2 text-xs text-gray-600">{item.tanggal}</td>
+                    <td className="px-3 py-2 text-xs text-gray-900 font-medium">{item.namaVendor}</td>
+                    <td className="px-3 py-2 text-xs text-gray-900">{item.kodeVendor}</td>
+                    <td className="px-3 py-2 text-xs text-gray-600 max-w-xs truncate" title={item.alamatVendor}>
                       {item.alamatVendor}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.picVendor}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.noTelp}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2 text-xs text-gray-900">{item.picVendor}</td>
+                    <td className="px-3 py-2 text-xs text-gray-900">{item.noTelp}</td>
+                    <td className="px-3 py-2 text-xs">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
                       <div className="flex items-center justify-center space-x-1">
                         <button 
                           onClick={() => setIsModalOpen(true)}
-                          className="p-1.5 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
+                          className="p-1 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
                           title="Edit"
                         >
                           <Edit className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(item)}
-                          className="p-1.5 bg-red-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-red-700"
+                          className="p-1 bg-red-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-red-700"
                           title="Delete"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -463,23 +466,23 @@ const MasterVendorDashboard: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-xs">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-xs text-gray-700">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2.5 py-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 
                 <button
                   onClick={() => handlePageChange(1)}
-                  className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
+                  className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                     currentPage === 1
                       ? 'bg-blue-600 text-white'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -491,7 +494,7 @@ const MasterVendorDashboard: React.FC = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2.5 py-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>

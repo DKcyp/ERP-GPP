@@ -58,25 +58,69 @@ const NomorReportDashboard: React.FC = () => {
   // Add/Edit/Delete handlers
   const openAdd = () => {
     setEditing(null);
-    setForm({ jenis: '', nomor: '', tanggal: '', document: '' });
+    // Reset form using updateForm to ensure proper initialization
+    updateForm({ jenis: '', nomor: '', tanggal: '', document: '' });
     setShowForm(true);
   };
 
   const openEdit = (row: ReportRecord) => {
     setEditing(row);
-    setForm(row);
+    // Use updateForm to ensure the number is generated if needed
+    updateForm(row);
     setShowForm(true);
   };
 
+  // Generate report number based on type and date
+  const generateReportNumber = (jenis: string, tanggal: string): string => {
+    if (!jenis || !tanggal) return '';
+    
+    const date = new Date(tanggal);
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const prefix = jenis.split(' ').map(w => w[0]).join('').toUpperCase();
+    
+    // Count existing reports of the same type this month
+    const currentMonthReports = data.filter(r => {
+      if (r.jenis !== jenis) return false;
+      const reportDate = new Date(r.tanggal);
+      return reportDate.getMonth() + 1 === month && 
+             reportDate.getFullYear() === year;
+    });
+    
+    const sequence = currentMonthReports.length + 1;
+    return `${prefix}-${sequence.toString().padStart(3, '0')}/${month}/${year}`;
+  };
+
+  // Update form and generate number when type or date changes
+  const updateForm = (updates: Partial<ReportRecord>) => {
+    const newForm = { ...form, ...updates };
+    
+    // If both type and date are filled, generate the number
+    if (newForm.jenis && newForm.tanggal) {
+      newForm.nomor = generateReportNumber(newForm.jenis, newForm.tanggal);
+    } else {
+      newForm.nomor = '';
+    }
+    
+    setForm(newForm);
+  };
+
   const saveForm = () => {
+    // Generate fresh number in case it wasn't done yet
+    const finalForm = { ...form };
+    if (!finalForm.nomor && finalForm.jenis && finalForm.tanggal) {
+      finalForm.nomor = generateReportNumber(finalForm.jenis, finalForm.tanggal);
+    }
+    
     const payload: ReportRecord = {
-      jenis: form.jenis.trim(),
-      nomor: form.nomor.trim(),
-      tanggal: form.tanggal,
-      document: form.document?.trim() || undefined,
+      jenis: finalForm.jenis.trim(),
+      nomor: finalForm.nomor.trim(),
+      tanggal: finalForm.tanggal,
+      document: finalForm.document?.trim() || undefined,
     };
+    
     if (!payload.jenis || !payload.nomor || !payload.tanggal) {
-      alert('Jenis, Nomor, dan Tanggal wajib diisi');
+      alert('Jenis dan Tanggal wajib diisi');
       return;
     }
     if (isNaN(new Date(payload.tanggal).getTime())) {
@@ -298,8 +342,9 @@ const NomorReportDashboard: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Report</label>
                     <select
                       value={form.jenis}
-                      onChange={(e)=>setForm(prev=>({...prev, jenis: e.target.value}))}
+                      onChange={(e) => updateForm({ ...form, jenis: e.target.value })}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      required
                     >
                       <option value="">Pilih jenis...</option>
                       {JENIS_OPTIONS.map(j => (
@@ -308,12 +353,17 @@ const NomorReportDashboard: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Report</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nomor Report
+                      <span className="text-xs text-gray-500 ml-1">
+                        {!form.jenis || !form.tanggal ? '(Harap isi jenis dan tanggal)' : ''}
+                      </span>
+                    </label>
                     <input
                       value={form.nomor}
-                      onChange={(e)=>setForm(prev=>({...prev, nomor: e.target.value}))}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                      placeholder="Contoh: UT-001/IX/2025"
+                      readOnly
+                      className="w-full border border-gray-300 bg-gray-100 rounded-lg px-3 py-2 text-sm"
+                      placeholder={!form.jenis || !form.tanggal ? 'Nomor akan otomatis tergenerate' : 'Nomor akan muncul di sini'}
                     />
                   </div>
                   <div>
@@ -321,15 +371,16 @@ const NomorReportDashboard: React.FC = () => {
                     <input
                       type="date"
                       value={form.tanggal}
-                      onChange={(e)=>setForm(prev=>({...prev, tanggal: e.target.value}))}
+                      onChange={(e) => updateForm({ ...form, tanggal: e.target.value })}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      required
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Document (opsional)</label>
                     <input
                       value={form.document || ''}
-                      onChange={(e)=>setForm(prev=>({...prev, document: e.target.value }))}
+                      onChange={(e) => updateForm({ ...form, document: e.target.value })}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                       placeholder="Nama file atau URL"
                     />

@@ -235,8 +235,6 @@ const SuspectDashboard: React.FC = () => {
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
                 <span className="mx-2">›</span>
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Suspect</span>
-                <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Dashboard</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -256,7 +254,7 @@ const SuspectDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Search Nama Perusahaan */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Nama Perusahaan
               </label>
               <div className="flex space-x-2">
@@ -265,22 +263,16 @@ const SuspectDashboard: React.FC = () => {
                     type="text"
                     value={searchNama}
                     onChange={(e) => setSearchNama(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Masukkan nama perusahaan..."
                   />
                 </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
               </div>
             </div>
 
             {/* Search Bidang Usaha */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xs font-medium text-gray-700">
                 Cari Bidang Usaha
               </label>
               <div className="flex space-x-2">
@@ -289,25 +281,26 @@ const SuspectDashboard: React.FC = () => {
                     type="text"
                     value={searchBidangUsaha}
                     onChange={(e) => setSearchBidangUsaha(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Masukkan bidang usaha..."
                   />
                 </div>
-                <button 
-                  onClick={handleSearch}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end">
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={handleSearch}
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
+            >
+              <Search className="h-4 w-4" />
+              <span>Cari</span>
+            </button>
             <button 
-              onClick={handleAddClick} // Use handleAddClick
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
+              onClick={handleAddClick}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
@@ -316,19 +309,19 @@ const SuspectDashboard: React.FC = () => {
         </div>
 
         {/* Quick Export Bar */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Export Data</h3>
+            <h3 className="text-sm font-semibold text-gray-900">Export Data</h3>
             <div className="flex space-x-3">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded-lg font-medium text-xs transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-1.5">
                 <FileSpreadsheet className="h-4 w-4" />
                 <span>Excel</span>
               </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg font-medium text-xs transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-1.5">
                 <File className="h-4 w-4" />
                 <span>CSV</span>
               </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-1.5">
+              <button className="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg font-medium text-xs transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-1.5">
                 <FileText className="h-4 w-4" />
                 <span>PDF</span>
               </button>
@@ -339,17 +332,17 @@ const SuspectDashboard: React.FC = () => {
         {/* Suspect Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nama Perusahaan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">No. Telp</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Alamat Perusahaan</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Bidang Usaha</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">PIC</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Email PIC</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Aksi</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Perusahaan</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No. Telp</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Alamat Perusahaan</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Bidang Usaha</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">PIC</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Email PIC</th>
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -364,7 +357,7 @@ const SuspectDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <div className="flex items-center space-x-3">
                         <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0">
                           <Info className="h-2 w-2 text-blue-600" />
@@ -372,14 +365,14 @@ const SuspectDashboard: React.FC = () => {
                         <span className="font-medium text-gray-900">{suspect.no}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{suspect.namaPerusahaan}</td>
-                    <td className="px-6 py-4 text-gray-600">{suspect.noTelp}</td>
-                    <td className="px-6 py-4 text-gray-600 max-w-xs truncate" title={suspect.alamatPerusahaan}>
+                    <td className="px-3 py-2 font-medium text-gray-900">{suspect.namaPerusahaan}</td>
+                    <td className="px-3 py-2 text-gray-600">{suspect.noTelp}</td>
+                    <td className="px-3 py-2 text-gray-600 max-w-xs truncate" title={suspect.alamatPerusahaan}>
                       {suspect.alamatPerusahaan}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{suspect.bidangUsaha}</td>
-                    <td className="px-6 py-4 text-gray-600">{suspect.pic}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2 text-gray-600">{suspect.bidangUsaha}</td>
+                    <td className="px-3 py-2 text-gray-600">{suspect.pic}</td>
+                    <td className="px-3 py-2">
                       <a 
                         href={`mailto:${suspect.emailPIC}`}
                         className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -387,20 +380,20 @@ const SuspectDashboard: React.FC = () => {
                         {suspect.emailPIC}
                       </a>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <div className="flex items-center justify-center space-x-2">
-                        <button onClick={() => handleEditClick(suspect)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
+                        <button onClick={() => handleEditClick(suspect)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleDeleteClick(suspect)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleViewDetail(suspect)}
-                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          className="p-1.5 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -413,16 +406,16 @@ const SuspectDashboard: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 text-xs">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
+              <div className="text-xs text-gray-700">
                 Showing {startIndex + 1} to {Math.min(endIndex, filteredSuspects.length)} of {filteredSuspects.length} results
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -431,7 +424,7 @@ const SuspectDashboard: React.FC = () => {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    className={`px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
                       currentPage === page
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
                         : 'text-gray-700 hover:bg-white hover:text-blue-600'
@@ -444,7 +437,7 @@ const SuspectDashboard: React.FC = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>

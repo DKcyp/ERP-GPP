@@ -315,12 +315,20 @@ const GeneralProsesReimburseDashboard: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.keperluan}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.tanggalPembayaran}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <button className="text-blue-600 hover:text-blue-800 transition-colors">
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                      title="Lihat"
+                    >
                       <Eye className="h-5 w-5" />
                     </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-indigo-600 hover:text-indigo-900 mr-2">
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="text-indigo-600 hover:text-indigo-900 mr-2"
+                      title="Edit"
+                    >
                       <Edit className="h-5 w-5" />
                     </button>
                   </td>
