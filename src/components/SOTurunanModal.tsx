@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { X, Calendar, Save, Loader2, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, Calendar, Save, Loader2, ChevronDown } from "lucide-react";
 
 interface SOTurunanModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: SOTurunanFormData) => void;
+  readOnly?: boolean;
+  initialData?: Partial<SOTurunanFormData> | null;
 }
 
 export interface SOTurunanFormData {
@@ -21,86 +23,97 @@ export interface SOTurunanFormData {
   keterangan: string;
 }
 
-const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave }) => {
+const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  readOnly = false,
+  initialData = null,
+}) => {
   const [formData, setFormData] = useState<SOTurunanFormData>({
-    soInduk: '',
-    soTurunan: '',
-    nomorKontrak: '',
-    namaProyek: '',
-    namaClient: '',
-    tanggalDibuat: new Date().toISOString().split('T')[0],
-    jenisPekerjaan: '',
-    tanggalMOB: '',
-    tanggalDemob: '',
-    estimasiSO: '',
-    keterangan: ''
+    soInduk: "",
+    soTurunan: "",
+    nomorKontrak: "",
+    namaProyek: "",
+    namaClient: "",
+    tanggalDibuat: new Date().toISOString().split("T")[0],
+    jenisPekerjaan: "",
+    tanggalMOB: "",
+    tanggalDemob: "",
+    estimasiSO: "",
+    keterangan: "",
   });
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const soIndukOptions = [
-    'SO001',
-    'SO002', 
-    'SO003',
-    'SO004',
-    'SO005'
-  ];
+  const soIndukOptions = ["SO001", "SO002", "SO003", "SO004", "SO005"];
 
   const jenisPekerjaanOptions = [
-    'On Call',
-    'Project Based',
-    'Maintenance',
-    'Consulting'
+    "On Call",
+    "Project Based",
+    "Maintenance",
+    "Consulting",
   ];
 
   const clientOptions = [
-    'PT Adem Ayem',
-    'PT Permata Buana',
-    'CV Sejahtera',
-    'CV Makmur',
-    'PT WorkHome'
+    "PT Adem Ayem",
+    "PT Permata Buana",
+    "CV Sejahtera",
+    "CV Makmur",
+    "PT WorkHome",
   ];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
+
+  // Preload data when opening in read-only or edit mode
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialData,
+        tanggalDibuat: initialData.tanggalDibuat || prev.tanggalDibuat,
+      }));
+    }
+  }, [isOpen, initialData]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<SOTurunanFormData> = {};
 
     if (!formData.soInduk.trim()) {
-      newErrors.soInduk = 'SO Induk wajib dipilih';
+      newErrors.soInduk = "SO Induk wajib dipilih";
     }
 
     if (!formData.soTurunan.trim()) {
-      newErrors.soTurunan = 'SO Turunan wajib diisi';
+      newErrors.soTurunan = "SO Turunan wajib diisi";
     }
 
     if (!formData.nomorKontrak.trim()) {
-      newErrors.nomorKontrak = 'Nomor Kontrak wajib diisi';
+      newErrors.nomorKontrak = "Nomor Kontrak wajib diisi";
     }
 
     if (!formData.namaProyek.trim()) {
-      newErrors.namaProyek = 'Nama Proyek wajib diisi';
+      newErrors.namaProyek = "Nama Proyek wajib diisi";
     }
 
     if (!formData.namaClient.trim()) {
-      newErrors.namaClient = 'Nama Client wajib diisi';
+      newErrors.namaClient = "Nama Client wajib diisi";
     }
 
     setErrors(newErrors);
@@ -108,41 +121,41 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
   };
 
   const handleInputChange = (field: keyof SOTurunanFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     onSave(formData);
     setIsLoading(false);
-    
+
     // Reset form
     setFormData({
-      soInduk: '',
-      soTurunan: '',
-      nomorKontrak: '',
-      namaProyek: '',
-      namaClient: '',
-      tanggalDibuat: new Date().toISOString().split('T')[0],
-      jenisPekerjaan: '',
-      tanggalMOB: '',
-      tanggalDemob: '',
-      estimasiSO: '',
-      keterangan: ''
+      soInduk: "",
+      soTurunan: "",
+      nomorKontrak: "",
+      namaProyek: "",
+      namaClient: "",
+      tanggalDibuat: new Date().toISOString().split("T")[0],
+      jenisPekerjaan: "",
+      tanggalMOB: "",
+      tanggalDemob: "",
+      estimasiSO: "",
+      keterangan: "",
     });
     setErrors({});
     onClose();
@@ -157,14 +170,16 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Produksi</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {readOnly ? "Detail SO Turunan" : "Entry Produksi"}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -184,14 +199,19 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 </label>
                 <select
                   value={formData.soInduk}
-                  onChange={(e) => handleInputChange('soInduk', e.target.value)}
+                  onChange={(e) => handleInputChange("soInduk", e.target.value)}
+                  disabled={readOnly}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.soInduk ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.soInduk
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                 >
                   <option value="">Pilih SO Induk</option>
                   {soIndukOptions.map((so) => (
-                    <option key={so} value={so}>{so}</option>
+                    <option key={so} value={so}>
+                      {so}
+                    </option>
                   ))}
                 </select>
                 {errors.soInduk && (
@@ -206,12 +226,17 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 </label>
                 <select
                   value={formData.jenisPekerjaan}
-                  onChange={(e) => handleInputChange('jenisPekerjaan', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("jenisPekerjaan", e.target.value)
+                  }
+                  disabled={readOnly}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
                   <option value="">Pilih Jenis Pekerjaan</option>
                   {jenisPekerjaanOptions.map((jenis) => (
-                    <option key={jenis} value={jenis}>{jenis}</option>
+                    <option key={jenis} value={jenis}>
+                      {jenis}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -224,14 +249,21 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 <input
                   type="text"
                   value={formData.soTurunan}
-                  onChange={(e) => handleInputChange('soTurunan', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("soTurunan", e.target.value)
+                  }
+                  disabled={readOnly}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.soTurunan ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.soTurunan
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Masukkan SO Turunan"
                 />
                 {errors.soTurunan && (
-                  <p className="mt-1 text-sm text-red-600">{errors.soTurunan}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.soTurunan}
+                  </p>
                 )}
               </div>
 
@@ -244,7 +276,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                   <input
                     type="date"
                     value={formData.tanggalMOB}
-                    onChange={(e) => handleInputChange('tanggalMOB', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalMOB", e.target.value)
+                    }
+                    disabled={readOnly}
                     className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="dd/mm/yyyy"
                   />
@@ -260,14 +295,21 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 <input
                   type="text"
                   value={formData.nomorKontrak}
-                  onChange={(e) => handleInputChange('nomorKontrak', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("nomorKontrak", e.target.value)
+                  }
+                  disabled={readOnly}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.nomorKontrak ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.nomorKontrak
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Masukkan nomor kontrak"
                 />
                 {errors.nomorKontrak && (
-                  <p className="mt-1 text-sm text-red-600">{errors.nomorKontrak}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.nomorKontrak}
+                  </p>
                 )}
               </div>
 
@@ -280,7 +322,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                   <input
                     type="date"
                     value={formData.tanggalDemob}
-                    onChange={(e) => handleInputChange('tanggalDemob', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalDemob", e.target.value)
+                    }
+                    disabled={readOnly}
                     className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="dd/mm/yyyy"
                   />
@@ -296,14 +341,21 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 <input
                   type="text"
                   value={formData.namaProyek}
-                  onChange={(e) => handleInputChange('namaProyek', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namaProyek", e.target.value)
+                  }
+                  disabled={readOnly}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.namaProyek ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.namaProyek
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Masukkan nama proyek"
                 />
                 {errors.namaProyek && (
-                  <p className="mt-1 text-sm text-red-600">{errors.namaProyek}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.namaProyek}
+                  </p>
                 )}
               </div>
 
@@ -315,7 +367,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 <input
                   type="text"
                   value={formData.estimasiSO}
-                  onChange={(e) => handleInputChange('estimasiSO', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("estimasiSO", e.target.value)
+                  }
+                  disabled={readOnly}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Rp 0"
                 />
@@ -328,18 +383,27 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 </label>
                 <select
                   value={formData.namaClient}
-                  onChange={(e) => handleInputChange('namaClient', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namaClient", e.target.value)
+                  }
+                  disabled={readOnly}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.namaClient ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.namaClient
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                 >
                   <option value="">Pilih Nama Client</option>
                   {clientOptions.map((client) => (
-                    <option key={client} value={client}>{client}</option>
+                    <option key={client} value={client}>
+                      {client}
+                    </option>
                   ))}
                 </select>
                 {errors.namaClient && (
-                  <p className="mt-1 text-sm text-red-600">{errors.namaClient}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.namaClient}
+                  </p>
                 )}
               </div>
 
@@ -350,7 +414,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                 </label>
                 <textarea
                   value={formData.keterangan}
-                  onChange={(e) => handleInputChange('keterangan', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("keterangan", e.target.value)
+                  }
+                  disabled={readOnly}
                   rows={3}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Masukkan keterangan..."
@@ -366,7 +433,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
                   <input
                     type="date"
                     value={formData.tanggalDibuat}
-                    onChange={(e) => handleInputChange('tanggalDibuat', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalDibuat", e.target.value)
+                    }
+                    disabled={readOnly}
                     className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="dd/mm/yyyy"
                   />
@@ -386,24 +456,26 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({ isOpen, onClose, onSave
           >
             Close
           </button>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <Save className="h-3.5 w-3.5" />
-                <span>Save changes</span>
-              </>
-            )}
-          </button>
+          {!readOnly && (
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Save changes</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import termsPdf from '../../Folder/term&condition.pdf';
 import PenawaranTwoStepModal, { PenawaranTwoStepFormData } from './PenawaranTwoStepModal';
 import PenawaranDetailModal from './PenawaranDetailModal';
 import UpdateStatusModal from './UpdateStatusModal';
@@ -212,6 +213,16 @@ const PenawaranOnCallDashboard: React.FC = () => {
   const handleDeleteClick = (item: PenawaranOnCall) => {
     setItemToDelete(item);
     setDeleteModalOpen(true);
+  };
+
+  const handleExportPDF = () => {
+    // Use Vite asset URL to ensure it works in dev and production
+    const link = document.createElement('a');
+    link.href = termsPdf;
+    link.setAttribute('download', 'term&condition.pdf');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   const handleConfirmDelete = () => {
@@ -484,7 +495,7 @@ const PenawaranOnCallDashboard: React.FC = () => {
               <FileSpreadsheet className="h-3.5 w-3.5" />
               <span>Export Excel</span>
             </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
+            <button onClick={handleExportPDF} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-sm">
               <FileText className="h-3.5 w-3.5" />
               <span>Export PDF</span>
             </button>

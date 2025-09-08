@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import ApprovalResignModal from './ApprovalResignModal'; // Import the new modal
+import React, { useState, useEffect } from "react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ApprovalResignModal from "./ApprovalResignModal"; // Import the new modal
 import {
   Search,
   FileSpreadsheet,
@@ -13,8 +13,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  ChevronDown
-} from 'lucide-react';
+  ChevronDown,
+} from "lucide-react";
 
 interface ResignData {
   id: string;
@@ -23,14 +23,16 @@ interface ResignData {
   namaPegawai: string;
   kelurahan: string;
   tanggalResign: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: "Pending" | "Approved" | "Rejected";
+  attachmentSuratResignName?: string;
+  attachmentBAName?: string;
 }
 
 const ResignDashboard: React.FC = () => {
-  const [searchNamaPegawai, setSearchNamaPegawai] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [dateFrom, setDateFrom] = useState('03/03/2025');
-  const [dateTo, setDateTo] = useState('03/03/2025');
+  const [searchNamaPegawai, setSearchNamaPegawai] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [dateFrom, setDateFrom] = useState("03/03/2025");
+  const [dateTo, setDateTo] = useState("03/03/2025");
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,63 +40,64 @@ const ResignDashboard: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ResignData | null>(null);
   const [sortField, setSortField] = useState<keyof ResignData | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // State for Approval Resign Modal
-  const [isApprovalResignModalOpen, setIsApprovalResignModalOpen] = useState(false);
-  const [selectedResignForApproval, setSelectedResignForApproval] = useState<ResignData | null>(null);
-
+  const [isApprovalResignModalOpen, setIsApprovalResignModalOpen] =
+    useState(false);
+  const [selectedResignForApproval, setSelectedResignForApproval] =
+    useState<ResignData | null>(null);
 
   // Sample data matching the image
   const [resignData, setResignData] = useState<ResignData[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      nik: '1234567890',
-      namaPegawai: 'Ahmad Fauzi',
-      kelurahan: 'Kelurahan Sukamaju',
-      tanggalResign: '2024-08-15',
-      status: 'Pending'
+      nik: "1234567890",
+      namaPegawai: "Ahmad Fauzi",
+      kelurahan: "Kelurahan Sukamaju",
+      tanggalResign: "2024-08-15",
+      status: "Pending",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      nik: '0987654321',
-      namaPegawai: 'Siti Nurhaliza',
-      kelurahan: 'Kelurahan Cempaka',
-      tanggalResign: '2024-07-20',
-      status: 'Approved'
+      nik: "0987654321",
+      namaPegawai: "Siti Nurhaliza",
+      kelurahan: "Kelurahan Cempaka",
+      tanggalResign: "2024-07-20",
+      status: "Approved",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      nik: '1122334455',
-      namaPegawai: 'Budi Santoso',
-      kelurahan: 'Kelurahan Melati',
-      tanggalResign: '2024-09-01',
-      status: 'Rejected'
+      nik: "1122334455",
+      namaPegawai: "Budi Santoso",
+      kelurahan: "Kelurahan Melati",
+      tanggalResign: "2024-09-01",
+      status: "Rejected",
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      nik: '5566778899',
-      namaPegawai: 'Desi Ananda',
-      kelurahan: 'Kelurahan Anggrek',
-      tanggalResign: '2024-08-05',
-      status: 'Pending'
+      nik: "5566778899",
+      namaPegawai: "Desi Ananda",
+      kelurahan: "Kelurahan Anggrek",
+      tanggalResign: "2024-08-05",
+      status: "Pending",
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      nik: '6677889900',
-      namaPegawai: 'Rina Kurnia',
-      kelurahan: 'Kelurahan Mawar',
-      tanggalResign: '2024-07-30',
-      status: 'Approved'
-    }
+      nik: "6677889900",
+      namaPegawai: "Rina Kurnia",
+      kelurahan: "Kelurahan Mawar",
+      tanggalResign: "2024-07-30",
+      status: "Approved",
+    },
   ]);
 
-  const statusOptions = ['Pending', 'Approved', 'Rejected'];
+  const statusOptions = ["Pending", "Approved", "Rejected"];
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
@@ -102,10 +105,10 @@ const ResignDashboard: React.FC = () => {
 
   const handleSort = (field: keyof ResignData) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -116,7 +119,7 @@ const ResignDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setResignData(prev => prev.filter(r => r.id !== itemToDelete.id));
+      setResignData((prev) => prev.filter((r) => r.id !== itemToDelete.id));
       setItemToDelete(null);
       setDeleteModalOpen(false);
     }
@@ -124,17 +127,25 @@ const ResignDashboard: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Pending': return 'bg-yellow-500 text-white';
-      case 'Approved': return 'bg-green-600 text-white';
-      case 'Rejected': return 'bg-red-600 text-white';
-      default: return 'bg-gray-100 text-gray-800';
+      case "Pending":
+        return "bg-yellow-500 text-white";
+      case "Approved":
+        return "bg-green-600 text-white";
+      case "Rejected":
+        return "bg-red-600 text-white";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = resignData.filter(item => {
-    const matchesNamaPegawai = item.namaPegawai.toLowerCase().includes(searchNamaPegawai.toLowerCase());
-    const matchesStatus = selectedStatus ? item.status === selectedStatus : true;
+  const filteredData = resignData.filter((item) => {
+    const matchesNamaPegawai = item.namaPegawai
+      .toLowerCase()
+      .includes(searchNamaPegawai.toLowerCase());
+    const matchesStatus = selectedStatus
+      ? item.status === selectedStatus
+      : true;
 
     return matchesNamaPegawai && matchesStatus;
   });
@@ -146,7 +157,7 @@ const ResignDashboard: React.FC = () => {
     const aValue = a[sortField];
     const bValue = b[sortField];
 
-    if (sortDirection === 'asc') {
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -178,22 +189,51 @@ const ResignDashboard: React.FC = () => {
     setSelectedResignForApproval(null);
   };
 
-  const handleConfirmApproval = (id: string, approvalDetails: { alasanResign: string; lampiranSurat: File[] }) => {
-    setResignData(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, status: 'Approved' as const } : item
+  const handleConfirmApproval = (
+    id: string,
+    approvalDetails: {
+      alasanResign: string;
+      lampiranSurat: File[];
+      lampiranBA?: File[];
+    }
+  ) => {
+    setResignData((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              status: "Approved" as const,
+              attachmentSuratResignName:
+                approvalDetails.lampiranSurat &&
+                approvalDetails.lampiranSurat[0]
+                  ? approvalDetails.lampiranSurat[0].name
+                  : item.attachmentSuratResignName,
+              attachmentBAName:
+                approvalDetails.lampiranBA && approvalDetails.lampiranBA[0]
+                  ? approvalDetails.lampiranBA[0].name
+                  : item.attachmentBAName,
+            }
+          : item
       )
     );
     // Here you would typically send approvalDetails (alasanResign, lampiranSurat) to your backend
-    console.log(`Resign ID ${id} approved with reason: ${approvalDetails.alasanResign}, files: ${approvalDetails.lampiranSurat.map(f => f.name).join(', ')}`);
+    console.log(
+      `Resign ID ${id} approved with reason: ${
+        approvalDetails.alasanResign
+      }, surat: ${approvalDetails.lampiranSurat
+        .map((f) => f.name)
+        .join(", ")}, BA: ${(approvalDetails.lampiranBA || [])
+        .map((f) => f.name)
+        .join(", ")}`
+    );
     handleCloseApprovalResignModal();
   };
   // --- End Approval Resign Modal Handlers ---
 
   const handleReject = (id: string) => {
-    setResignData(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, status: 'Rejected' as const } : item
+    setResignData((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, status: "Rejected" as const } : item
       )
     );
   };
@@ -203,9 +243,7 @@ const ResignDashboard: React.FC = () => {
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            Resign
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Resign</h1>
 
           {/* Search and Filter Section */}
           <div className="space-y-4 mb-6">
@@ -243,17 +281,25 @@ const ResignDashboard: React.FC = () => {
                     onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
                   >
-                    <span className={selectedStatus ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedStatus || '--Pilih Status--'}
+                    <span
+                      className={
+                        selectedStatus ? "text-gray-900" : "text-gray-500"
+                      }
+                    >
+                      {selectedStatus || "--Pilih Status--"}
                     </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                        statusDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
 
                   {statusDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
                         onClick={() => {
-                          setSelectedStatus('');
+                          setSelectedStatus("");
                           setStatusDropdownOpen(false);
                         }}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
@@ -362,71 +408,103 @@ const ResignDashboard: React.FC = () => {
                 <tr>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('nik')}
+                    onClick={() => handleSort("nik")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>NIK</span>
-                      {sortField === 'nik' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "nik" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaPegawai')}
+                    onClick={() => handleSort("namaPegawai")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama Pegawai</span>
-                      {sortField === 'namaPegawai' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "namaPegawai" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('kelurahan')}
+                    onClick={() => handleSort("kelurahan")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Kelurahan</span>
-                      {sortField === 'kelurahan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "kelurahan" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggalResign')}
+                    onClick={() => handleSort("tanggalResign")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Tanggal Resign</span>
-                      {sortField === 'tanggalResign' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "tanggalResign" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('status')}
+                    onClick={() => handleSort("status")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Status</span>
-                      {sortField === 'status' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "status" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Surat Resign
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    BA
+                  </th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -434,22 +512,64 @@ const ResignDashboard: React.FC = () => {
                   <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
                     style={{
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nik}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaPegawai}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.kelurahan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalResign}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.nik}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.namaPegawai}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.kelurahan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggalResign}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(item.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
+                          item.status
+                        )}`}
+                      >
                         {item.status}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentSuratResignName ? (
+                        <span
+                          className="underline cursor-pointer"
+                          title={item.attachmentSuratResignName}
+                        >
+                          {item.attachmentSuratResignName}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentBAName ? (
+                        <span
+                          className="underline cursor-pointer"
+                          title={item.attachmentBAName}
+                        >
+                          {item.attachmentBAName}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-2">
@@ -457,7 +577,7 @@ const ResignDashboard: React.FC = () => {
                           onClick={() => handleOpenApprovalResignModal(item)} // Open modal on ThumbsUp click
                           className="p-2 text-cyan-500 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
                           title="Approve"
-                          disabled={item.status === 'Approved'}
+                          disabled={item.status === "Approved"}
                         >
                           <ThumbsUp className="h-4 w-4" />
                         </button>
@@ -465,7 +585,7 @@ const ResignDashboard: React.FC = () => {
                           onClick={() => handleReject(item.id)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
                           title="Reject"
-                          disabled={item.status === 'Rejected'}
+                          disabled={item.status === "Rejected"}
                         >
                           <ThumbsDown className="h-4 w-4" />
                         </button>
@@ -481,7 +601,9 @@ const ResignDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -496,8 +618,8 @@ const ResignDashboard: React.FC = () => {
                   onClick={() => handlePageChange(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                     currentPage === 1
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   1
