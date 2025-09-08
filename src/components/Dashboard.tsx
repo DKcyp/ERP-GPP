@@ -351,6 +351,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/gudang/general/voucher/proses") {
       return <GeneralProsesVoucherDashboard />;
     }
+    if (currentPage === "/gudang/general/voucher/pertanggungjawaban") {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
+    }
     if (currentPage === "/gudang/general/reimburse/dashboard") {
       return <GeneralReimburseDashboard />;
     }
@@ -437,6 +440,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/general/voucher/proses") {
       return <GeneralProsesVoucherDashboard />;
+    }
+    if (currentPage === "/pengadaan/general/voucher/pertanggungjawaban") {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
     }
     if (currentPage === "/pengadaan/general/reimburse/dashboard") {
       return <GeneralReimburseDashboard />;
@@ -563,6 +569,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/general/voucher/proses") {
       return <GeneralProsesVoucherDashboard />;
     }
+    if (currentPage === "/hrd/general/voucher/pertanggungjawaban") {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
+    }
     if (currentPage === "/hrd/general/reimburse/dashboard") {
       return <GeneralReimburseDashboard />;
     }
@@ -633,6 +642,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/general/voucher/proses") {
       return <GeneralProsesVoucherDashboard />;
+    }
+    if (currentPage === "/marketing/general/voucher/pertanggungjawaban") {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
     }
     if (currentPage === "/marketing/general/reimburse/dashboard") {
       return <GeneralReimburseDashboard />;
