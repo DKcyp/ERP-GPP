@@ -145,3 +145,36 @@ export interface EvaluasiVendorFormData {
   mutu: MutuKategori;
   k3: YaTidak;
 }
+
+// ================= App Shared Types (Auth + Menu) =================
+export interface User {
+  username: string;
+  role: string; // e.g., marketing, operational, hrd, ga, etc.
+  fullName: string;
+  profilePicture: string;
+}
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+}
+
+export interface MenuItem {
+  title: string;
+  icon: string; // lucide icon name
+  path: string;
+}
+
+export interface MenuSubSection {
+  title: string;
+  icon: string;
+  items: MenuItem[];
+}
+
+export interface MenuSection {
+  title: string;
+  icon: string;
+  items?: MenuItem[];
+  subSections?: MenuSubSection[];
+  directPath?: string; // if present, clicking section goes directly to this path
+}
