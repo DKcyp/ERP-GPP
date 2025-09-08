@@ -1413,35 +1413,34 @@ export const proconMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Laporan",
-    icon: "FileText",
+    title: "Laba Rugi Project",
+    icon: "TrendingUp",
     items: [
-      {
-        title: "Laporan Laba Rugi",
-        icon: "LineChart",
-        path: "/procon/laporan/laba-rugi",
-      },
-      {
-        title: "Laporan Per SO",
-        icon: "FileText",
-        path: "/procon/laporan/per-so",
-      },
+      { title: "Dashboard", icon: "LayoutDashboard", path: "/procon/lrp/dashboard" },
+      { title: "Tunjangan / Timesheet Teknisi", icon: "UserCheck", path: "/procon/lrp/tunjangan-timesheet-teknisi" },
+      { title: "Gaji", icon: "Wallet", path: "/procon/lrp/gaji" },
+      { title: "Timesheet Barang", icon: "Package", path: "/procon/lrp/timesheet-barang" },
+      { title: "Kas Keluar", icon: "Wallet", path: "/procon/lrp/kas-keluar" },
+      { title: "Bank Keluar", icon: "Banknote", path: "/procon/lrp/bank-keluar" },
     ],
   },
   {
-    title: "Approval",
-    icon: "CheckCircle",
+    title: "Purchase Request",
+    icon: "ShoppingCart",
     items: [
-      {
-        title: "Approval PO Jasa",
-        icon: "Wrench",
-        path: "/procon/approval/po-jasa",
-      },
-      {
-        title: "Approval Timesheet",
-        icon: "Clock",
-        path: "/procon/approval/timesheet",
-      },
+      { title: "Dashboard Purchase Request", icon: "LayoutDashboard", path: "/procon/purchase-request/dashboard" },
+      { title: "Proses Purchase Request", icon: "FilePlus", path: "/procon/purchase-request/proses" },
+      { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
     ],
   },
+  {
+    title: "Purchase Order",
+    icon: "FileBox",
+    items: [
+      { title: "Dashboard Purchase Order", icon: "LayoutDashboard", path: "/procon/purchase-order/dashboard" },
+      { title: "Proses Purchase Order", icon: "FilePlus", path: "/procon/purchase-order/proses" },
+      { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
+    ],
+  },
+  createGeneralMenu("procon"),
 ];
