@@ -75,22 +75,27 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
-    {
-      title: "Purchase Request",
-      icon: "ShoppingCart",
-      items: [
-        {
-          title: "Dashboard Purchasing Request",
-          icon: "LayoutDashboard",
-          path: `/${role}/general/purchase-request/dashboard`,
-        },
-        {
-          title: "Proses Purchasing Request",
-          icon: "FilePlus",
-          path: `/${role}/general/purchase-request/proses`,
-        },
-      ],
-    },
+    // Purchase Request is hidden for Procon role; shown for others
+    ...(role !== "procon"
+      ? [
+          {
+            title: "Purchase Request",
+            icon: "ShoppingCart",
+            items: [
+              {
+                title: "Dashboard Purchasing Request",
+                icon: "LayoutDashboard",
+                path: `/${role}/general/purchase-request/dashboard`,
+              },
+              {
+                title: "Proses Purchasing Request",
+                icon: "FilePlus",
+                path: `/${role}/general/purchase-request/proses`,
+              },
+            ],
+          },
+        ]
+      : []),
     {
       title: "Cuti",
       icon: "Calendar",
@@ -107,6 +112,21 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    // Procon-only: PBG submenu replaces Purchase Request
+    ...(role === "procon"
+      ? [
+          {
+            title: "PBG",
+            icon: "Shield",
+            items: [
+              { title: "Mutasi Barang", icon: "Shuffle", path: `/${role}/general/pbg/mutasi-barang` },
+              { title: "Timesheet Barang", icon: "Clock", path: `/${role}/general/pbg/timesheet-barang` },
+              { title: "Permintaan Barang Gudang", icon: "ShoppingCart", path: `/${role}/general/pbg/permintaan-barang-gudang` },
+              { title: "Approval PBG", icon: "CheckCircle", path: `/${role}/general/pbg/approval` },
+            ],
+          },
+        ]
+      : []),
     // GA-only: Internal Business Process
     ...(role === "ga"
       ? [
