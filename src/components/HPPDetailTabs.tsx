@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface TenagaKerjaItem {
   id: string;
@@ -57,27 +56,35 @@ interface BiayaLainLainItem {
   // removed in UI: hargaAwal, margin, hargaAkhir
 }
 
-const HPPDetailTabs: React.FC = () => {
+interface HPPDetailTabsProps {
+  onTotalChange?: (total: number) => void;
+}
+
+const HPPDetailTabs: React.FC<HPPDetailTabsProps> = ({ onTotalChange }) => {
   const [activeTab, setActiveTab] = useState('Tenaga Kerja');
 
-  // States for each tab
+  // Seed example data per tab
   const [tenagaKerja, setTenagaKerja] = useState<Array<Pick<TenagaKerjaItem, 'tenaga' | 'tunjangan' | 'hari'>>>([
-    { tenaga: '', tunjangan: '', hari: '' },
+    { tenaga: 'Teknisi', tunjangan: 'Uang Makan', hari: '10' },
+    { tenaga: 'Engineer', tunjangan: 'Transport', hari: '5' },
   ]);
   const [jasa, setJasa] = useState<Array<Pick<JasaItem, 'jasa' | 'tunjangan' | 'hari'>>>([
-    { jasa: '', tunjangan: '', hari: '' },
+    { jasa: 'Instalasi', tunjangan: 'Uang Makan', hari: '3' },
+    { jasa: 'Maintenance', tunjangan: 'Lembur', hari: '2' },
   ]);
   const [alat, setAlat] = useState<Array<Pick<AlatItem, 'alat' | 'jumlah' | 'satuan'>>>([
-    { alat: '', jumlah: '', satuan: '' },
+    { alat: 'Excavator', jumlah: '2', satuan: 'unit' },
+    { alat: 'Generator', jumlah: '1', satuan: 'unit' },
   ]);
   const [barang, setBarang] = useState<Array<Pick<BarangItem, 'namaBarang' | 'jumlah' | 'satuan'>>>([
-    { namaBarang: '', jumlah: '', satuan: '' },
+    { namaBarang: 'Cable', jumlah: '200', satuan: 'meter' },
+    { namaBarang: 'Panel', jumlah: '3', satuan: 'unit' },
   ]);
   const [mobDemob, setMobDemob] = useState<MobDemobItem[]>([
-    { namaTransportasi: '', tunjangan: '', projectRate: '', hari: '' },
+    { namaTransportasi: 'Truk', tunjangan: 'Transport', projectRate: '1500000', hari: '2' },
   ]);
   const [biayaLainLain, setBiayaLainLain] = useState<BiayaLainLainItem[]>([
-    { namaBiaya: '', tunjangan: '', projectRate: '', hari: '' },
+    { namaBiaya: 'Perizinan', tunjangan: 'Uang Makan', projectRate: '500000', hari: '1' },
   ]);
 
   const tabs = ['Tenaga Kerja', 'Jasa', 'Alat', 'Barang', 'MobDemob', 'Biaya Lain-lain', 'Sisa HPP'];
@@ -86,60 +93,71 @@ const HPPDetailTabs: React.FC = () => {
   const alatOptions = ['Excavator', 'Crane', 'Forklift', 'Generator'];
   const barangOptions = ['Cable', 'Pipe', 'Bolt', 'Panel'];
 
-  // Utility calculators
-  const calcHargaSatuan = (harga: string, jumlah: string, hari: string) => {
-    const a = Number(harga) || 0;
-    const b = Number(jumlah) || 0;
-    const c = Number(hari) || 0;
-    return (a * b * c).toString();
+  // Price maps
+
+  const tunjanganMap: Record<string, number> = {
+    'Uang Makan': 100000,
+    'Transport': 150000,
+    'Lembur': 200000,
   };
+  const jasaBase: Record<string, number> = {
+    'Instalasi': 2000000,
+    'Maintenance': 1500000,
+    'Konsultasi': 1800000,
+    'Pelatihan': 1200000,
+  };
+  const alatHarga: Record<string, number> = {
+    'Excavator': 3000000,
+    'Crane': 4000000,
+    'Forklift': 2000000,
+    'Generator': 1500000,
+  };
+  const barangHarga: Record<string, number> = {
+    'Cable': 50000,
+    'Pipe': 40000,
+    'Bolt': 5000,
+    'Panel': 500000,
+  };
+
+  // Subtotals per tab (kept for total per-tab and onTotalChange)
+  const subtotalTenaga = useMemo(() => tenagaKerja.reduce((s, r) => {
+    const hargaSatuan = (tunjanganMap[r.tunjangan] || 100000);
+    const qty = Number(r.hari) || 0;
+    return s + hargaSatuan * qty;
+  }, 0), [tenagaKerja]);
+  const subtotalJasa = useMemo(() => jasa.reduce((s, r) => {
+    const hargaSatuan = (jasaBase[r.jasa] || 1000000) + (tunjanganMap[r.tunjangan] || 0);
+    const qty = Number(r.hari) || 0;
+    return s + hargaSatuan * qty;
+  }, 0), [jasa]);
+  const subtotalAlat = useMemo(() => alat.reduce((s, r) => {
+    const hargaSatuan = (alatHarga[r.alat] || 0);
+    const qty = Number(r.jumlah) || 0;
+    return s + hargaSatuan * qty;
+  }, 0), [alat]);
+  const subtotalBarang = useMemo(() => barang.reduce((s, r) => {
+    const hargaSatuan = (barangHarga[r.namaBarang] || 0);
+    const qty = Number(r.jumlah) || 0;
+    return s + hargaSatuan * qty;
+  }, 0), [barang]);
+  const subtotalMobDemob = useMemo(() => mobDemob.reduce((s, r) => {
+    const hargaSatuan = (Number(r.projectRate) || 0) + (tunjanganMap[r.tunjangan] || 0);
+    const qty = Number(r.hari) || 0;
+    return s + hargaSatuan * qty;
+  }, 0), [mobDemob]);
+  const subtotalLain = useMemo(() => biayaLainLain.reduce((s, r) => {
+    const hargaSatuan = (Number(r.projectRate) || 0) + (tunjanganMap[r.tunjangan] || 0);
+    const qty = Number(r.hari) || 0;
+    return s + hargaSatuan * qty;
+  }, 0), [biayaLainLain]);
+  const grandTotal = subtotalTenaga + subtotalJasa + subtotalAlat + subtotalBarang + subtotalMobDemob + subtotalLain;
+
+  useEffect(() => {
+    onTotalChange?.(grandTotal);
+  }, [grandTotal, onTotalChange]);
 
   // Handlers shared across tabs
-  const addRow = () => {
-    switch (activeTab) {
-      case 'Tenaga Kerja':
-        setTenagaKerja([...tenagaKerja, { tenaga: '', tunjangan: '', hari: '' }]);
-        break;
-      case 'Jasa':
-        setJasa([...jasa, { jasa: '', tunjangan: '', hari: '' }]);
-        break;
-      case 'Alat':
-        setAlat([...alat, { alat: '', jumlah: '', satuan: '' }]);
-        break;
-      case 'Barang':
-        setBarang([...barang, { namaBarang: '', jumlah: '', satuan: '' }]);
-        break;
-      case 'MobDemob':
-        setMobDemob([...mobDemob, { namaTransportasi: '', tunjangan: '', projectRate: '', hari: '' }]);
-        break;
-      case 'Biaya Lain-lain':
-        setBiayaLainLain([...biayaLainLain, { namaBiaya: '', tunjangan: '', projectRate: '', hari: '' }]);
-        break;
-    }
-  };
-
-  const removeRow = (index: number) => {
-    switch (activeTab) {
-      case 'Tenaga Kerja':
-        if (tenagaKerja.length > 1) setTenagaKerja(tenagaKerja.filter((_, i) => i !== index));
-        break;
-      case 'Jasa':
-        if (jasa.length > 1) setJasa(jasa.filter((_, i) => i !== index));
-        break;
-      case 'Alat':
-        if (alat.length > 1) setAlat(alat.filter((_, i) => i !== index));
-        break;
-      case 'Barang':
-        if (barang.length > 1) setBarang(barang.filter((_, i) => i !== index));
-        break;
-      case 'MobDemob':
-        if (mobDemob.length > 1) setMobDemob(mobDemob.filter((_, i) => i !== index));
-        break;
-      case 'Biaya Lain-lain':
-        if (biayaLainLain.length > 1) setBiayaLainLain(biayaLainLain.filter((_, i) => i !== index));
-        break;
-    }
-  };
+  // Remove add/remove row actions per request
 
   const handleTabDataChange = (index: number, field: string, value: string) => {
     switch (activeTab) {
@@ -191,8 +209,10 @@ const HPPDetailTabs: React.FC = () => {
             <tr className="bg-surface">
               <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Tenaga</th>
               <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Tunjangan</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Hari</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Aksi</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Satuan</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Qty</th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Akhir</th>
+              
             </tr>
           </thead>
           <tbody className="bg-surface divide-y divide-border">
@@ -219,36 +239,18 @@ const HPPDetailTabs: React.FC = () => {
                     placeholder="Tunjangan"
                   />
                 </td>
+                <td className="px-4 py-2 whitespace-nowrap text-sm">Rp { (tunjanganMap[item.tunjangan] || 100000).toLocaleString('id-ID') }</td>
                 <td className="px-4 py-2 whitespace-nowrap">
-                  <input
-                    type="number"
-                    value={item.hari}
-                    onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)}
-                    className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm focus:ring-secondary focus:border-secondary"
-                    placeholder="Hari"
-                  />
+                  <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Qty" />
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap">
-                  <button
-                    onClick={() => removeRow(index)}
-                    className="p-2 text-error hover:bg-error/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Delete row"
-                    disabled={tenagaKerja.length === 1}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </td>
+                <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {(((tunjanganMap[item.tunjangan] || 100000) * (Number(item.hari)||0))||0).toLocaleString('id-ID')}</td>
+                
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <button
-        onClick={addRow}
-        className="inline-flex items-center px-4 py-2 bg-success text-white rounded-md hover:bg-success/80 transition-colors text-sm font-medium"
-      >
-        <Plus className="h-4 w-4 mr-2" /> Tambah Baris
-      </button>
+      <div className="text-right text-sm font-medium text-text">Subtotal Tenaga Kerja: Rp {subtotalTenaga.toLocaleString('id-ID')}</div>
     </div>
   );
 
@@ -266,8 +268,10 @@ const HPPDetailTabs: React.FC = () => {
                   <tr className="bg-surface">
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Jasa</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Tunjangan</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Hari</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Aksi</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Satuan</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Qty</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Akhir</th>
+                    
                   </tr>
                 </thead>
                 <tbody className="bg-surface divide-y divide-border">
@@ -288,22 +292,18 @@ const HPPDetailTabs: React.FC = () => {
                       <td className="px-4 py-2 whitespace-nowrap">
                         <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Tunjangan" />
                       </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {(((jasaBase[item.jasa]||1000000)+(tunjanganMap[item.tunjangan]||0)).toLocaleString('id-ID'))}</td>
                       <td className="px-4 py-2 whitespace-nowrap">
-                        <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Hari" />
+                        <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Qty" />
                       </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => removeRow(index)} className="p-2 text-error hover:bg-error/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Delete row" disabled={jasa.length === 1}>
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {((((jasaBase[item.jasa]||1000000)+(tunjanganMap[item.tunjangan]||0))*(Number(item.hari)||0)).toLocaleString('id-ID'))}</td>
+                      
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button onClick={addRow} className="inline-flex items-center px-4 py-2 bg-success text-white rounded-md hover:bg-success/80 transition-colors text-sm font-medium">
-              <Plus className="h-4 w-4 mr-2" /> Tambah Baris
-            </button>
+            <div className="text-right text-sm font-medium text-text">Subtotal Jasa: Rp {subtotalJasa.toLocaleString('id-ID')}</div>
           </div>
         );
       case 'Alat':
@@ -317,7 +317,10 @@ const HPPDetailTabs: React.FC = () => {
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Alat</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Jumlah</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Satuan</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Aksi</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Satuan</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Qty</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Akhir</th>
+                    
                   </tr>
                 </thead>
                 <tbody className="bg-surface divide-y divide-border">
@@ -338,22 +341,17 @@ const HPPDetailTabs: React.FC = () => {
                       <td className="px-4 py-2 whitespace-nowrap">
                         <input type="number" value={item.jumlah} onChange={(e) => handleTabDataChange(index, 'jumlah', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Jumlah" />
                       </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <input type="text" value={item.satuan} onChange={(e) => handleTabDataChange(index, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Satuan" />
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => removeRow(index)} className="p-2 text-error hover:bg-error/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Delete row" disabled={alat.length === 1}>
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap"><input type="text" value={item.satuan} onChange={(e) => handleTabDataChange(index, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Satuan" /></td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {( (alatHarga[item.alat]||0).toLocaleString('id-ID') )}</td>
+                      <td className="px-4 py-2 whitespace-nowrap"><input type="number" value={item.jumlah} onChange={(e) => handleTabDataChange(index, 'jumlah', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Qty" /></td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {(((alatHarga[item.alat]||0)*(Number(item.jumlah)||0)).toLocaleString('id-ID'))}</td>
+                      
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button onClick={addRow} className="inline-flex items-center px-4 py-2 bg-success text-white rounded-md hover:bg-success/80 transition-colors text-sm font-medium">
-              <Plus className="h-4 w-4 mr-2" /> Tambah Baris
-            </button>
+            <div className="text-right text-sm font-medium text-text">Subtotal Barang: Rp {subtotalBarang.toLocaleString('id-ID')}</div>
           </div>
         );
       case 'Barang':
@@ -367,7 +365,7 @@ const HPPDetailTabs: React.FC = () => {
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Nama Barang</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Jumlah</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Satuan</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Aksi</th>
+                    
                   </tr>
                 </thead>
                 <tbody className="bg-surface divide-y divide-border">
@@ -391,19 +389,13 @@ const HPPDetailTabs: React.FC = () => {
                       <td className="px-4 py-2 whitespace-nowrap">
                         <input type="text" value={item.satuan} onChange={(e) => handleTabDataChange(index, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Satuan" />
                       </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => removeRow(index)} className="p-2 text-error hover:bg-error/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Delete row" disabled={barang.length === 1}>
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
+                      
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button onClick={addRow} className="inline-flex items-center px-4 py-2 bg-success text-white rounded-md hover:bg-success/80 transition-colors text-sm font-medium">
-              <Plus className="h-4 w-4 mr-2" /> Tambah Baris
-            </button>
+            <div className="text-right text-sm font-medium text-text">Subtotal Barang: Rp {subtotalBarang.toLocaleString('id-ID')}</div>
           </div>
         );
       case 'MobDemob':
@@ -417,8 +409,10 @@ const HPPDetailTabs: React.FC = () => {
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Nama Transportasi</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Tunjangan</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Project Rate</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Hari</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Aksi</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Satuan</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Qty</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Harga Akhir</th>
+                    
                   </tr>
                 </thead>
                 <tbody className="bg-surface divide-y divide-border">
@@ -430,25 +424,17 @@ const HPPDetailTabs: React.FC = () => {
                       <td className="px-4 py-2 whitespace-nowrap">
                         <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Tunjangan" />
                       </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <input type="text" value={item.projectRate} onChange={(e) => handleTabDataChange(index, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Project Rate" />
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Hari" />
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => removeRow(index)} className="p-2 text-error hover:bg-error/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Delete row" disabled={mobDemob.length === 1}>
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap"><input type="text" value={item.projectRate} onChange={(e) => handleTabDataChange(index, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Project Rate" /></td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {(((Number(item.projectRate)||0) + (tunjanganMap[item.tunjangan]||0)).toLocaleString('id-ID'))}</td>
+                      <td className="px-4 py-2 whitespace-nowrap"><input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Qty" /></td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">Rp {((((Number(item.projectRate)||0) + (tunjanganMap[item.tunjangan]||0))*(Number(item.hari)||0)).toLocaleString('id-ID'))}</td>
+                      
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button onClick={addRow} className="inline-flex items-center px-4 py-2 bg-success text-white rounded-md hover:bg-success/80 transition-colors text-sm font-medium">
-              <Plus className="h-4 w-4 mr-2" /> Tambah Baris
-            </button>
+            <div className="text-right text-sm font-medium text-text">Subtotal MobDemob: Rp {subtotalMobDemob.toLocaleString('id-ID')}</div>
           </div>
         );
       case 'Biaya Lain-lain':
@@ -463,7 +449,7 @@ const HPPDetailTabs: React.FC = () => {
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Tunjangan</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Project Rate</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Hari</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-textSecondary uppercase tracking-wider">Aksi</th>
+                    
                   </tr>
                 </thead>
                 <tbody className="bg-surface divide-y divide-border">
@@ -481,19 +467,13 @@ const HPPDetailTabs: React.FC = () => {
                       <td className="px-4 py-2 whitespace-nowrap">
                         <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-border rounded-md bg-background text-text text-sm" placeholder="Hari" />
                       </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => removeRow(index)} className="p-2 text-error hover:bg-error/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Delete row" disabled={biayaLainLain.length === 1}>
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </td>
+                      
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button onClick={addRow} className="inline-flex items-center px-4 py-2 bg-success text-white rounded-md hover:bg-success/80 transition-colors text-sm font-medium">
-              <Plus className="h-4 w-4 mr-2" /> Tambah Baris
-            </button>
+            <div className="text-right text-sm font-medium text-text">Subtotal Biaya Lain-lain: Rp {subtotalLain.toLocaleString('id-ID')}</div>
           </div>
         );
       case 'Sisa HPP':

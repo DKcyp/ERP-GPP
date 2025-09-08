@@ -1,19 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Clock, Plus, Search, X, Edit, Trash2, Printer } from 'lucide-react';
+import HPPDetailTabs from './HPPDetailTabs';
 
 interface PIEntry {
   id: string;
+  // Existing fields (kept for linkage)
   clientName: string;
   soInduk: string;
   soTurunan: string;
-  contractStart: string; // dd/MM/yyyy
-  contractEnd: string;   // dd/MM/yyyy
-  nilaiKontrak: number;
-  absorbKontrak: number;
-  remainingKontrak: number;
+  // New required fields per request
+  documentDate: string;   // Tanggal dokumen (dd/MM/yyyy)
+  salesName: string;      // Nama sales
+  item: string;           // Item apa saja (ringkas)
+  taxType: 'PPN' | 'Non PPN'; // pajak
+  dueDate: string;        // Due pembayaran (dd/MM/yyyy)
+  contractOrPO: string;   // nomor kontrak / PO
+  bankCode: string;       // Kode Bank
+  // Legacy fields (optional)
+  contractStart?: string; // dd/MM/yyyy
+  contractEnd?: string;   // dd/MM/yyyy
+  nilaiKontrak?: number;
+  absorbKontrak?: number;
+  remainingKontrak?: number;
 }
 
-const formatRupiah = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
+// formatRupiah removed (no longer used)
 
 const ProconPembuatanPIDashboard: React.FC = () => {
   // Master options (Client -> SO Induk -> SO Turunan)
@@ -54,6 +65,13 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       clientName: 'PT. ABC Sejahtera',
       soInduk: 'SO-IND-001',
       soTurunan: 'SO-TRN-001-A',
+      documentDate: '01/02/2025',
+      salesName: 'Budi',
+      item: 'Implementasi modul A',
+      taxType: 'PPN',
+      dueDate: '15/03/2025',
+      contractOrPO: 'PO-001/ABC/2025',
+      bankCode: 'BCA-123',
       contractStart: '01/02/2025',
       contractEnd: '31/07/2025',
       nilaiKontrak: 125000000,
@@ -65,6 +83,13 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       clientName: 'PT. XYZ Mandiri',
       soInduk: 'SO-IND-002',
       soTurunan: 'SO-TRN-002-B',
+      documentDate: '10/01/2025',
+      salesName: 'Sari',
+      item: 'Integrasi API',
+      taxType: 'Non PPN',
+      dueDate: '25/02/2025',
+      contractOrPO: 'KTR-XYZ-2025-02',
+      bankCode: 'MANDIRI-456',
       contractStart: '10/01/2025',
       contractEnd: '10/10/2025',
       nilaiKontrak: 98500000,
@@ -78,9 +103,28 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     try {
       const raw = localStorage.getItem('procon_pi_entries');
       if (raw) {
-        const parsed: PIEntry[] = JSON.parse(raw);
+        const parsed: any[] = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          setData(parsed);
+          // Backward compatibility mapping for entries without new fields
+          const mapped: PIEntry[] = parsed.map((r, idx) => ({
+            id: r.id ?? String(Date.now()) + '-' + idx,
+            clientName: r.clientName ?? '',
+            soInduk: r.soInduk ?? '',
+            soTurunan: r.soTurunan ?? '',
+            documentDate: r.documentDate ?? (r.contractStart || ''),
+            salesName: r.salesName ?? '',
+            item: r.item ?? '',
+            taxType: (r.taxType as any) ?? 'PPN',
+            dueDate: r.dueDate ?? (r.contractEnd || ''),
+            contractOrPO: r.contractOrPO ?? '',
+            bankCode: r.bankCode ?? '',
+            contractStart: r.contractStart,
+            contractEnd: r.contractEnd,
+            nilaiKontrak: r.nilaiKontrak,
+            absorbKontrak: r.absorbKontrak,
+            remainingKontrak: r.remainingKontrak,
+          }));
+          setData(mapped);
         }
       }
     } catch (e) {
@@ -104,12 +148,22 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     clientName: '',
     soInduk: '',
     soTurunan: '',
+    documentDate: '',
+    salesName: '',
+    item: '',
+    taxType: 'PPN',
+    dueDate: '',
+    contractOrPO: '',
+    bankCode: '',
     contractStart: '',
     contractEnd: '',
     nilaiKontrak: 0,
     absorbKontrak: 0,
     remainingKontrak: 0,
   });
+
+  // New: Estimasi Nilai Kontrak field (tab content uses shared HPPDetailTabs)
+  const [estimasiNilaiKontrak, setEstimasiNilaiKontrak] = useState<number>(0);
 
   const filtered = useMemo(() => {
     return data.filter(r =>
@@ -121,8 +175,9 @@ const ProconPembuatanPIDashboard: React.FC = () => {
 
   const handleOpenAdd = () => {
     setForm({
-      clientName: '', soInduk: '', soTurunan: '', contractStart: '', contractEnd: '',
-      nilaiKontrak: 0, absorbKontrak: 0, remainingKontrak: 0,
+      clientName: '', soInduk: '', soTurunan: '',
+      documentDate: '', salesName: '', item: '', taxType: 'PPN', dueDate: '', contractOrPO: '', bankCode: '',
+      contractStart: '', contractEnd: '', nilaiKontrak: 0, absorbKontrak: 0, remainingKontrak: 0,
     });
     setEditId(null);
     setIsAddOpen(true);
@@ -146,11 +201,18 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       clientName: found.clientName,
       soInduk: found.soInduk,
       soTurunan: found.soTurunan,
-      contractStart: found.contractStart,
-      contractEnd: found.contractEnd,
-      nilaiKontrak: found.nilaiKontrak,
-      absorbKontrak: found.absorbKontrak,
-      remainingKontrak: found.remainingKontrak,
+      documentDate: found.documentDate || "",
+      salesName: found.salesName || "",
+      item: found.item || "",
+      taxType: (found.taxType as any) || 'PPN',
+      dueDate: found.dueDate || "",
+      contractOrPO: found.contractOrPO || "",
+      bankCode: found.bankCode || "",
+      contractStart: found.contractStart || "",
+      contractEnd: found.contractEnd || "",
+      nilaiKontrak: found.nilaiKontrak || 0,
+      absorbKontrak: found.absorbKontrak || 0,
+      remainingKontrak: found.remainingKontrak || 0,
     });
     setEditId(id);
     setIsAddOpen(true);
@@ -164,7 +226,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     const item = data.find(d => d.id === id);
     if (!item) return;
     // Placeholder print action. Integrate with real print template if available.
-    const details = `Client: ${item.clientName}\nSO Induk: ${item.soInduk}\nSO Turunan: ${item.soTurunan}\nDurasi: ${item.contractStart} - ${item.contractEnd}\nNilai: ${formatRupiah(item.nilaiKontrak)}\nAbsorb: ${formatRupiah(item.absorbKontrak)}\nRemaining: ${formatRupiah(item.remainingKontrak)}`;
+    const details = `Tanggal Dokumen: ${item.documentDate}\nNo SO/SO Turunan: ${item.soInduk} / ${item.soTurunan}\nNama Sales: ${item.salesName}\nPajak: ${item.taxType}\nDue Pembayaran: ${item.dueDate}\nNo Kontrak/PO: ${item.contractOrPO}\nKode Bank: ${item.bankCode}`;
     alert(`Cetak Proforma Invoice:\n\n${details}`);
   };
 
@@ -213,13 +275,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     }));
   };
 
-  const onAbsorbChange = (val: number) => {
-    setForm(prev => ({
-      ...prev,
-      absorbKontrak: val,
-      remainingKontrak: Math.max(0, (prev.nilaiKontrak || 0) - val),
-    }));
-  };
+  // onAbsorbChange removed (legacy, no longer used in modal)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -281,29 +337,28 @@ const ProconPembuatanPIDashboard: React.FC = () => {
             <table className="min-w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nama Client</th>
-                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nomor SO Induk & SO Turunan</th>
-                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Durasi Kontrak (Tanggal awal - akhir kontrak)</th>
-                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nilai Kontrak</th>
-                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Absorb Kontrak</th>
-                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Remaining Kontrak</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Tanggal Dokumen</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">No. SO / SO Turunan</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nama Sales</th>
+                  
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Pajak</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Due Pembayaran</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">No. Kontrak / PO</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Kode Bank</th>
                   <th className="px-3 py-2 text-right font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filtered.map((row) => (
                   <tr key={row.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2 text-gray-900 font-medium">{row.clientName}</td>
-                    <td className="px-3 py-2">
-                      <div className="flex flex-col">
-                        <span className="text-gray-900 font-medium">{row.soInduk}</span>
-                        <span className="text-gray-500">{row.soTurunan}</span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-gray-700">{row.contractStart} - {row.contractEnd}</td>
-                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.nilaiKontrak)}</td>
-                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.absorbKontrak)}</td>
-                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.remainingKontrak)}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{row.documentDate}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{row.soInduk} / {row.soTurunan}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{row.salesName}</td>
+                    
+                    <td className="px-3 py-2 text-gray-700">{row.taxType}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.dueDate}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.contractOrPO}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.bankCode}</td>
                     <td className="px-3 py-2 text-right">
                       <div className="flex items-center gap-2 justify-end">
                         <button className="text-blue-600 hover:text-blue-700" onClick={() => handlePrint(row.id)} title="Cetak">
@@ -333,15 +388,20 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       {/* Add Modal */}
       {isAddOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 relative">
+          <div className="w-full max-w-6xl bg-white rounded-2xl shadow-xl p-6 relative">
             <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onClick={() => setIsAddOpen(false)}>
               <X className="h-5 w-5" />
             </button>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">{editId ? 'Edit' : 'Tambah'} Proforma Invoice</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Select Client */}
+              {/* Tanggal Dokumen */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Nama Client</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Dokumen</label>
+                <input type="text" placeholder="dd/MM/yyyy" value={form.documentDate} onChange={(e) => setForm(prev => ({...prev, documentDate: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+              </div>
+              {/* Select Client (helper for SO options) */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Pilih Client (untuk SO)</label>
                 <select value={form.clientName} onChange={(e) => onClientChange(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
                   <option value="">Pilih Client</option>
                   {masterOptions.map(c => (
@@ -369,32 +429,50 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                   ))}
                 </select>
               </div>
-              {/* Durasi Kontrak (read-only) */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Awal Kontrak</label>
-                  <input type="text" placeholder="dd/MM/yyyy" value={form.contractStart} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Akhir Kontrak</label>
-                  <input type="text" placeholder="dd/MM/yyyy" value={form.contractEnd} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50" />
-                </div>
-              </div>
-              {/* Nilai Kontrak (auto, read-only) */}
+              {/* Nama Sales */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Nilai Kontrak</label>
-                <input type="text" value={formatRupiah(form.nilaiKontrak)} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Nama Sales</label>
+                <input type="text" value={form.salesName} onChange={(e) => setForm(prev => ({...prev, salesName: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
               </div>
-              {/* Absorb Kontrak (editable) */}
+              {/* Pajak */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Absorb Kontrak</label>
-                <input type="number" value={form.absorbKontrak} onChange={(e) => onAbsorbChange(Number(e.target.value || 0))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Pajak</label>
+                <select value={form.taxType} onChange={(e) => setForm(prev => ({...prev, taxType: e.target.value as 'PPN' | 'Non PPN'}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  <option value="PPN">PPN</option>
+                  <option value="Non PPN">Non PPN</option>
+                </select>
               </div>
-              {/* Remaining Kontrak (computed) */}
+              {/* Due Pembayaran */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Remaining Kontrak</label>
-                <input type="text" value={formatRupiah(form.remainingKontrak)} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Due Pembayaran</label>
+                <input type="text" placeholder="dd/MM/yyyy" value={form.dueDate} onChange={(e) => setForm(prev => ({...prev, dueDate: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
               </div>
+              {/* No. Kontrak / PO */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">No. Kontrak / PO</label>
+                <input type="text" value={form.contractOrPO} onChange={(e) => setForm(prev => ({...prev, contractOrPO: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+              </div>
+              {/* Kode Bank */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Kode Bank</label>
+                <input type="text" value={form.bankCode} onChange={(e) => setForm(prev => ({...prev, bankCode: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+              </div>
+            </div>
+
+            {/* HPP Detail Tabs (shared across modules) */}
+            <div className="mt-4">
+              <HPPDetailTabs onTotalChange={(total) => setEstimasiNilaiKontrak(total)} />
+            </div>
+            {/* Nilai HPP (moved to bottom) */}
+            <div className="mt-6">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Nilai HPP</label>
+              <input
+                type="number"
+                placeholder="Rp 0"
+                value={estimasiNilaiKontrak}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50"
+              />
             </div>
             <div className="mt-6 flex justify-end gap-2">
               <button className="px-4 py-2 rounded-lg border" onClick={() => setIsAddOpen(false)}>Batal</button>
