@@ -26,7 +26,13 @@ const defaultForm: ReqManPowerFormData = {
   approvalHead: "Pending",
 };
 
-const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, onSave, initialData, readOnly }) => {
+const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+  readOnly,
+}) => {
   const [form, setForm] = useState<ReqManPowerFormData>(defaultForm);
 
   useEffect(() => {
@@ -40,7 +46,11 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
 
   if (!isOpen) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -55,14 +65,20 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="px-6 py-4 border-b">
           <h2 className="text-lg font-semibold text-gray-900">
-            {readOnly ? "Detail REQ Man Power" : initialData ? "Edit REQ Man Power" : "Tambah REQ Man Power"}
+            {readOnly
+              ? "Detail REQ Man Power"
+              : initialData
+              ? "Edit REQ Man Power"
+              : "Tambah REQ Man Power"}
           </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Departemen</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Departemen
+              </label>
               <input
                 type="text"
                 name="departemen"
@@ -75,7 +91,9 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Posisi</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Posisi
+              </label>
               <input
                 type="text"
                 name="posisi"
@@ -88,7 +106,9 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Tanggal Req</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Tanggal Req
+              </label>
               <input
                 type="date"
                 name="tanggalReq"
@@ -100,7 +120,9 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Kualifikasi</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Kualifikasi
+              </label>
               <textarea
                 name="kualifikasi"
                 value={form.kualifikasi}
@@ -112,7 +134,9 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Approval Direksi</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Approval Direksi
+              </label>
               <select
                 name="approvalDireksi"
                 value={form.approvalDireksi}
@@ -126,7 +150,9 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Approval Head Dept</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Approval Head Dept
+              </label>
               <select
                 name="approvalHead"
                 value={form.approvalHead}
@@ -142,9 +168,20 @@ const ReqManPowerModal: React.FC<ReqManPowerModalProps> = ({ isOpen, onClose, on
           </div>
 
           <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-end gap-2">
-            <button type="button" onClick={onClose} className="px-3 py-1.5 rounded-md text-sm bg-gray-100 hover:bg-gray-200 text-gray-700">Tutup</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-1.5 rounded-md text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
+            >
+              Tutup
+            </button>
             {!readOnly && (
-              <button type="submit" className="px-3 py-1.5 rounded-md text-sm bg-cyan-600 hover:bg-cyan-700 text-white">Simpan</button>
+              <button
+                type="submit"
+                className="px-3 py-1.5 rounded-md text-sm bg-cyan-600 hover:bg-cyan-700 text-white"
+              >
+                Simpan
+              </button>
             )}
           </div>
         </form>

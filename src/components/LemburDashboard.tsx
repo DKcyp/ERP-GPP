@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import LemburModal, { LemburFormData } from './LemburModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  Plus, 
+import React, { useState, useEffect } from "react";
+import LemburModal, { LemburFormData } from "./LemburModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  Search,
+  Plus,
   Edit,
   Trash2,
   ChevronLeft,
   ChevronRight,
-  ArrowUp
-} from 'lucide-react';
+  ArrowUp,
+} from "lucide-react";
 
 interface LemburData {
   id: string;
@@ -24,7 +24,7 @@ interface LemburData {
 }
 
 const LemburDashboard: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,90 +32,90 @@ const LemburDashboard: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<LemburData | null>(null);
   const [sortField, setSortField] = useState<keyof LemburData | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Sample data matching the image
   const [lemburData, setLemburData] = useState<LemburData[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      namaDriver: 'Ahmad',
-      tanggalLembur: '01-01-2025',
-      waktuStart: '18:00',
-      waktuEnd: '20:00',
-      durasiLembur: '2 Jam',
-      keterangan: '-'
+      namaDriver: "Ahmad",
+      tanggalLembur: "01-01-2025",
+      waktuStart: "18:00",
+      waktuEnd: "20:00",
+      durasiLembur: "2 Jam",
+      keterangan: "-",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      namaDriver: 'Budi Santoso',
-      tanggalLembur: '03-01-2025',
-      waktuStart: '19:00',
-      waktuEnd: '22:00',
-      durasiLembur: '3 Jam',
-      keterangan: 'Mengantar barang ke luar kota'
+      namaDriver: "Budi Santoso",
+      tanggalLembur: "03-01-2025",
+      waktuStart: "19:00",
+      waktuEnd: "22:00",
+      durasiLembur: "3 Jam",
+      keterangan: "Mengantar barang ke luar kota",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      namaDriver: 'Slamet Riyadi',
-      tanggalLembur: '05-01-2025',
-      waktuStart: '18:30',
-      waktuEnd: '22:30',
-      durasiLembur: '4 Jam',
-      keterangan: 'Keterlambatan loading'
+      namaDriver: "Slamet Riyadi",
+      tanggalLembur: "05-01-2025",
+      waktuStart: "18:30",
+      waktuEnd: "22:30",
+      durasiLembur: "4 Jam",
+      keterangan: "Keterlambatan loading",
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      namaDriver: 'Agus Prasetyo',
-      tanggalLembur: '07-01-2025',
-      waktuStart: '20:00',
-      waktuEnd: '21:30',
-      durasiLembur: '1 Jam 30 Menit',
-      keterangan: '-'
+      namaDriver: "Agus Prasetyo",
+      tanggalLembur: "07-01-2025",
+      waktuStart: "20:00",
+      waktuEnd: "21:30",
+      durasiLembur: "1 Jam 30 Menit",
+      keterangan: "-",
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      namaDriver: 'Rudi Hartono',
-      tanggalLembur: '09-01-2025',
-      waktuStart: '18:15',
-      waktuEnd: '20:45',
-      durasiLembur: '2 Jam 30 Menit',
-      keterangan: 'Perjalanan macet'
+      namaDriver: "Rudi Hartono",
+      tanggalLembur: "09-01-2025",
+      waktuStart: "18:15",
+      waktuEnd: "20:45",
+      durasiLembur: "2 Jam 30 Menit",
+      keterangan: "Perjalanan macet",
     },
     {
-      id: '6',
+      id: "6",
       no: 6,
-      namaDriver: 'Fauzan Malik',
-      tanggalLembur: '10-01-2025',
-      waktuStart: '19:00',
-      waktuEnd: '22:00',
-      durasiLembur: '3 Jam',
-      keterangan: 'Menggantikan shift rekan'
+      namaDriver: "Fauzan Malik",
+      tanggalLembur: "10-01-2025",
+      waktuStart: "19:00",
+      waktuEnd: "22:00",
+      durasiLembur: "3 Jam",
+      keterangan: "Menggantikan shift rekan",
     },
     {
-      id: '7',
+      id: "7",
       no: 7,
-      namaDriver: 'Joko Widodo',
-      tanggalLembur: '12-01-2025',
-      waktuStart: '18:00',
-      waktuEnd: '20:00',
-      durasiLembur: '2 Jam',
-      keterangan: '-'
+      namaDriver: "Joko Widodo",
+      tanggalLembur: "12-01-2025",
+      waktuStart: "18:00",
+      waktuEnd: "20:00",
+      durasiLembur: "2 Jam",
+      keterangan: "-",
     },
     {
-      id: '8',
+      id: "8",
       no: 8,
-      namaDriver: 'Hariyanto',
-      tanggalLembur: '14-01-2025',
-      waktuStart: '17:00',
-      waktuEnd: '22:00',
-      durasiLembur: '5 Jam',
-      keterangan: 'Perjalanan dinas mendadak'
-    }
+      namaDriver: "Hariyanto",
+      tanggalLembur: "14-01-2025",
+      waktuStart: "17:00",
+      waktuEnd: "22:00",
+      durasiLembur: "5 Jam",
+      keterangan: "Perjalanan dinas mendadak",
+    },
   ]);
 
   useEffect(() => {
@@ -127,27 +127,32 @@ const LemburDashboard: React.FC = () => {
       id: (lemburData.length + 1).toString(),
       no: lemburData.length + 1,
       namaDriver: formData.namaDriver,
-      tanggalLembur: new Date(formData.tanggal).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
+      tanggalLembur: new Date(formData.tanggal).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
       }),
       waktuStart: formData.waktuStart,
       waktuEnd: formData.waktuEnd,
       durasiLembur: formData.durasiLembur,
-      keterangan: formData.keterangan || '-',
-      attachmentName: formData.attachment ? formData.attachment.name : undefined,
+      keterangan: formData.keterangan || "-",
+      attachmentName: formData.attachment
+        ? formData.attachment.name
+        : undefined,
     };
 
-    setLemburData(prev => [newLembur, ...prev.map(l => ({ ...l, no: l.no + 1 }))]);
+    setLemburData((prev) => [
+      newLembur,
+      ...prev.map((l) => ({ ...l, no: l.no + 1 })),
+    ]);
   };
 
   const handleSort = (field: keyof LemburData) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -158,13 +163,13 @@ const LemburDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setLemburData(prev => prev.filter(l => l.id !== itemToDelete.id));
+      setLemburData((prev) => prev.filter((l) => l.id !== itemToDelete.id));
       setItemToDelete(null);
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = lemburData.filter(item => {
+  const filteredData = lemburData.filter((item) => {
     const searchLower = searchQuery.toLowerCase();
     return (
       item.namaDriver.toLowerCase().includes(searchLower) ||
@@ -177,11 +182,11 @@ const LemburDashboard: React.FC = () => {
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -208,10 +213,8 @@ const LemburDashboard: React.FC = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Lembur
-            </h1>
-            <button 
+            <h1 className="text-2xl font-bold text-gray-900">Lembur</h1>
+            <button
               onClick={() => setIsModalOpen(true)}
               className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center space-x-2 text-sm"
             >
@@ -260,92 +263,147 @@ const LemburDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaDriver')}
+                    onClick={() => handleSort("namaDriver")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama Driver</span>
-                      {sortField === 'namaDriver' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "namaDriver" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggalLembur')}
+                    onClick={() => handleSort("tanggalLembur")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Tanggal Lembur</span>
-                      {sortField === 'tanggalLembur' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "tanggalLembur" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Waktu Start</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Waktu End</th>
-                  <th 
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Waktu Start
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Waktu End
+                  </th>
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('durasiLembur')}
+                    onClick={() => handleSort("durasiLembur")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Durasi Lembur</span>
-                      {sortField === 'durasiLembur' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "durasiLembur" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Attachment</th>
-                  <th 
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Attachment
+                  </th>
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('keterangan')}
+                    onClick={() => handleSort("keterangan")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Keterangan</span>
-                      {sortField === 'keterangan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "keterangan" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaDriver}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalLembur}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.waktuStart}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.waktuEnd}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.durasiLembur}</td>
-                    <td className="px-4 py-3 text-sm text-blue-600">
-                      {item.attachmentName ? <span title={item.attachmentName} className="underline cursor-pointer">{item.attachmentName}</span> : '-'}
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.keterangan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.namaDriver}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggalLembur}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.waktuStart}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.waktuEnd}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.durasiLembur}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentName ? (
+                        <span
+                          title={item.attachmentName}
+                          className="underline cursor-pointer"
+                        >
+                          {item.attachmentName}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.keterangan}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
+                        <button
                           onClick={() => setIsModalOpen(true)}
                           className="p-1.5 bg-yellow-500 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-yellow-600"
                           title="Edit"
@@ -371,7 +429,9 @@ const LemburDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -381,18 +441,18 @@ const LemburDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                     currentPage === 1
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

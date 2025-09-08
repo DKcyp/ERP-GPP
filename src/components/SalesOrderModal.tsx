@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Calendar, Save, Loader2, Plus, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, Calendar, Save, Loader2, Plus, Trash2 } from "lucide-react";
 
 interface SalesOrderModalProps {
   isOpen: boolean;
@@ -13,7 +13,7 @@ export interface SalesOrderFormData {
   namaProyek: string;
   sow: string;
   lokasi: string;
-  jenisPekerjaan: 'On Call' | 'Tender';
+  jenisPekerjaan: "On Call" | "Tender";
   tanggalMOB: string;
   tanggalDeMOB: string;
   tanggalDibuat: string;
@@ -21,63 +21,210 @@ export interface SalesOrderFormData {
   keterangan: string; // Added new field
 }
 
-const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSave }) => {
+const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
   const [formData, setFormData] = useState<SalesOrderFormData>({
-    nomorKontrak: '',
-    namaClient: '',
-    namaProyek: '',
-    sow: '',
-    lokasi: '',
-    jenisPekerjaan: 'On Call',
-    tanggalMOB: '',
-    tanggalDeMOB: '',
-    tanggalDibuat: new Date().toISOString().split('T')[0],
-    estimasiSO: '',
-    keterangan: '' // Added initial state for new field
+    nomorKontrak: "",
+    namaClient: "",
+    namaProyek: "",
+    sow: "",
+    lokasi: "",
+    jenisPekerjaan: "On Call",
+    tanggalMOB: "",
+    tanggalDeMOB: "",
+    tanggalDibuat: new Date().toISOString().split("T")[0],
+    estimasiSO: "",
+    keterangan: "", // Added initial state for new field
   });
 
   const [errors, setErrors] = useState<Partial<SalesOrderFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   // Tabs and table data (mirroring HPP Induk modal)
-  const tabs = ['Tenaga Kerja', 'Jasa', 'Alat', 'Barang', 'MobDemob', 'Biaya Lain-lain', 'Sisa HPP'];
-  type TenagaKerjaRow = { tenaga: string; tunjangan: string; projectRate: string; hari: string; hargaAwal: string; margin: string; hargaAkhir: string };
-  type JasaRow = { jasa: string; tunjangan: string; projectRate: string; hari: string; hargaAwal: string; margin: string; hargaAkhir: string };
-  type AlatRow = { alat: string; harga: string; jumlah: string; hari: string; satuan: string; hargaSatuan: string; hargaAwal: string; margin: string; hargaAkhir: string };
-  type BarangRow = { namaBarang: string; harga: string; jumlah: string; hari: string; satuan: string; hargaSatuan: string; hargaAwal: string; margin: string; hargaAkhir: string };
-  type MobDemobRow = { namaTransportasi: string; tunjangan: string; projectRate: string; hari: string; hargaAwal: string; margin: string; hargaAkhir: string };
-  type BiayaLainRow = { namaBiaya: string; tunjangan: string; projectRate: string; hari: string; hargaAwal: string; margin: string; hargaAkhir: string };
+  const tabs = [
+    "Tenaga Kerja",
+    "Jasa",
+    "Alat",
+    "Barang",
+    "MobDemob",
+    "Biaya Lain-lain",
+    "Sisa HPP",
+  ];
+  type TenagaKerjaRow = {
+    tenaga: string;
+    tunjangan: string;
+    projectRate: string;
+    hari: string;
+    hargaAwal: string;
+    margin: string;
+    hargaAkhir: string;
+  };
+  type JasaRow = {
+    jasa: string;
+    tunjangan: string;
+    projectRate: string;
+    hari: string;
+    hargaAwal: string;
+    margin: string;
+    hargaAkhir: string;
+  };
+  type AlatRow = {
+    alat: string;
+    harga: string;
+    jumlah: string;
+    hari: string;
+    satuan: string;
+    hargaSatuan: string;
+    hargaAwal: string;
+    margin: string;
+    hargaAkhir: string;
+  };
+  type BarangRow = {
+    namaBarang: string;
+    harga: string;
+    jumlah: string;
+    hari: string;
+    satuan: string;
+    hargaSatuan: string;
+    hargaAwal: string;
+    margin: string;
+    hargaAkhir: string;
+  };
+  type MobDemobRow = {
+    namaTransportasi: string;
+    tunjangan: string;
+    projectRate: string;
+    hari: string;
+    hargaAwal: string;
+    margin: string;
+    hargaAkhir: string;
+  };
+  type BiayaLainRow = {
+    namaBiaya: string;
+    tunjangan: string;
+    projectRate: string;
+    hari: string;
+    hargaAwal: string;
+    margin: string;
+    hargaAkhir: string;
+  };
 
-  const [activeTab, setActiveTab] = useState<string>('Tenaga Kerja');
-  const [tenagaKerja, setTenagaKerja] = useState<TenagaKerjaRow[]>([{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-  const [jasa, setJasa] = useState<JasaRow[]>([{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-  const [alat, setAlat] = useState<AlatRow[]>([{ alat: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-  const [barang, setBarang] = useState<BarangRow[]>([{ namaBarang: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-  const [mobDemob, setMobDemob] = useState<MobDemobRow[]>([{ namaTransportasi: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-  const [biayaLainLain, setBiayaLainLain] = useState<BiayaLainRow[]>([{ namaBiaya: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
+  const [activeTab, setActiveTab] = useState<string>("Tenaga Kerja");
+  const [tenagaKerja, setTenagaKerja] = useState<TenagaKerjaRow[]>([
+    {
+      tenaga: "",
+      tunjangan: "",
+      projectRate: "",
+      hari: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
+  ]);
+  const [jasa, setJasa] = useState<JasaRow[]>([
+    {
+      jasa: "",
+      tunjangan: "",
+      projectRate: "",
+      hari: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
+  ]);
+  const [alat, setAlat] = useState<AlatRow[]>([
+    {
+      alat: "",
+      harga: "",
+      jumlah: "",
+      hari: "",
+      satuan: "",
+      hargaSatuan: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
+  ]);
+  const [barang, setBarang] = useState<BarangRow[]>([
+    {
+      namaBarang: "",
+      harga: "",
+      jumlah: "",
+      hari: "",
+      satuan: "",
+      hargaSatuan: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
+  ]);
+  const [mobDemob, setMobDemob] = useState<MobDemobRow[]>([
+    {
+      namaTransportasi: "",
+      tunjangan: "",
+      projectRate: "",
+      hari: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
+  ]);
+  const [biayaLainLain, setBiayaLainLain] = useState<BiayaLainRow[]>([
+    {
+      namaBiaya: "",
+      tunjangan: "",
+      projectRate: "",
+      hari: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
+  ]);
 
   // Sisa HPP tab now shows no data (placeholder only)
 
   const getCurrentTabData = () => {
     switch (activeTab) {
-      case 'Tenaga Kerja': return tenagaKerja;
-      case 'Jasa': return jasa;
-      case 'Alat': return alat;
-      case 'Barang': return barang;
-      case 'MobDemob': return mobDemob;
-      case 'Biaya Lain-lain': return biayaLainLain;
-      default: return [] as any[];
+      case "Tenaga Kerja":
+        return tenagaKerja;
+      case "Jasa":
+        return jasa;
+      case "Alat":
+        return alat;
+      case "Barang":
+        return barang;
+      case "MobDemob":
+        return mobDemob;
+      case "Biaya Lain-lain":
+        return biayaLainLain;
+      default:
+        return [] as any[];
     }
   };
 
   const setCurrentTabData = (data: any[]) => {
     switch (activeTab) {
-      case 'Tenaga Kerja': setTenagaKerja(data as TenagaKerjaRow[]); break;
-      case 'Jasa': setJasa(data as JasaRow[]); break;
-      case 'Alat': setAlat(data as AlatRow[]); break;
-      case 'Barang': setBarang(data as BarangRow[]); break;
-      case 'MobDemob': setMobDemob(data as MobDemobRow[]); break;
-      case 'Biaya Lain-lain': setBiayaLainLain(data as BiayaLainRow[]); break;
+      case "Tenaga Kerja":
+        setTenagaKerja(data as TenagaKerjaRow[]);
+        break;
+      case "Jasa":
+        setJasa(data as JasaRow[]);
+        break;
+      case "Alat":
+        setAlat(data as AlatRow[]);
+        break;
+      case "Barang":
+        setBarang(data as BarangRow[]);
+        break;
+      case "MobDemob":
+        setMobDemob(data as MobDemobRow[]);
+        break;
+      case "Biaya Lain-lain":
+        setBiayaLainLain(data as BiayaLainRow[]);
+        break;
     }
   };
 
@@ -86,17 +233,25 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
     data[index] = { ...data[index], [field]: value };
 
     // Auto-calc hargaAkhir when margin or hargaAwal changes
-    if (field === 'margin' || field === 'hargaAwal') {
-      const hargaAwal = parseFloat(field === 'hargaAwal' ? value : data[index].hargaAwal) || 0;
-      const margin = parseFloat(field === 'margin' ? value : data[index].margin) || 0;
-      const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+    if (field === "margin" || field === "hargaAwal") {
+      const hargaAwal =
+        parseFloat(field === "hargaAwal" ? value : data[index].hargaAwal) || 0;
+      const margin =
+        parseFloat(field === "margin" ? value : data[index].margin) || 0;
+      const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
       (data[index] as any).hargaAkhir = hargaAkhir.toString();
     }
 
     // Auto-calc hargaSatuan for Alat/Barang when harga or jumlah changes
-    if ((activeTab === 'Alat' || activeTab === 'Barang') && (field === 'harga' || field === 'jumlah')) {
-      const harga = parseFloat(field === 'harga' ? value : (data[index] as any).harga) || 0;
-      const jumlah = parseFloat(field === 'jumlah' ? value : (data[index] as any).jumlah) || 0;
+    if (
+      (activeTab === "Alat" || activeTab === "Barang") &&
+      (field === "harga" || field === "jumlah")
+    ) {
+      const harga =
+        parseFloat(field === "harga" ? value : (data[index] as any).harga) || 0;
+      const jumlah =
+        parseFloat(field === "jumlah" ? value : (data[index] as any).jumlah) ||
+        0;
       if (jumlah > 0) {
         (data[index] as any).hargaSatuan = (harga / jumlah).toString();
       }
@@ -107,82 +262,168 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
 
   const addTabData = () => {
     switch (activeTab) {
-      case 'Tenaga Kerja': setTenagaKerja(prev => [...prev, { tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]); break;
-      case 'Jasa': setJasa(prev => [...prev, { jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]); break;
-      case 'Alat': setAlat(prev => [...prev, { alat: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }]); break;
-      case 'Barang': setBarang(prev => [...prev, { namaBarang: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }]); break;
-      case 'MobDemob': setMobDemob(prev => [...prev, { namaTransportasi: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]); break;
-      case 'Biaya Lain-lain': setBiayaLainLain(prev => [...prev, { namaBiaya: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]); break;
+      case "Tenaga Kerja":
+        setTenagaKerja((prev) => [
+          ...prev,
+          {
+            tenaga: "",
+            tunjangan: "",
+            projectRate: "",
+            hari: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
+      case "Jasa":
+        setJasa((prev) => [
+          ...prev,
+          {
+            jasa: "",
+            tunjangan: "",
+            projectRate: "",
+            hari: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
+      case "Alat":
+        setAlat((prev) => [
+          ...prev,
+          {
+            alat: "",
+            harga: "",
+            jumlah: "",
+            hari: "",
+            satuan: "",
+            hargaSatuan: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
+      case "Barang":
+        setBarang((prev) => [
+          ...prev,
+          {
+            namaBarang: "",
+            harga: "",
+            jumlah: "",
+            hari: "",
+            satuan: "",
+            hargaSatuan: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
+      case "MobDemob":
+        setMobDemob((prev) => [
+          ...prev,
+          {
+            namaTransportasi: "",
+            tunjangan: "",
+            projectRate: "",
+            hari: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
+      case "Biaya Lain-lain":
+        setBiayaLainLain((prev) => [
+          ...prev,
+          {
+            namaBiaya: "",
+            tunjangan: "",
+            projectRate: "",
+            hari: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
     }
   };
 
   const removeTabData = (index: number) => {
     switch (activeTab) {
-      case 'Tenaga Kerja': if (tenagaKerja.length > 1) setTenagaKerja(prev => prev.filter((_, i) => i !== index)); break;
-      case 'Jasa': if (jasa.length > 1) setJasa(prev => prev.filter((_, i) => i !== index)); break;
-      case 'Alat': if (alat.length > 1) setAlat(prev => prev.filter((_, i) => i !== index)); break;
-      case 'Barang': if (barang.length > 1) setBarang(prev => prev.filter((_, i) => i !== index)); break;
-      case 'MobDemob': if (mobDemob.length > 1) setMobDemob(prev => prev.filter((_, i) => i !== index)); break;
-      case 'Biaya Lain-lain': if (biayaLainLain.length > 1) setBiayaLainLain(prev => prev.filter((_, i) => i !== index)); break;
+      case "Tenaga Kerja":
+        if (tenagaKerja.length > 1)
+          setTenagaKerja((prev) => prev.filter((_, i) => i !== index));
+        break;
+      case "Jasa":
+        if (jasa.length > 1)
+          setJasa((prev) => prev.filter((_, i) => i !== index));
+        break;
+      case "Alat":
+        if (alat.length > 1)
+          setAlat((prev) => prev.filter((_, i) => i !== index));
+        break;
+      case "Barang":
+        if (barang.length > 1)
+          setBarang((prev) => prev.filter((_, i) => i !== index));
+        break;
+      case "MobDemob":
+        if (mobDemob.length > 1)
+          setMobDemob((prev) => prev.filter((_, i) => i !== index));
+        break;
+      case "Biaya Lain-lain":
+        if (biayaLainLain.length > 1)
+          setBiayaLainLain((prev) => prev.filter((_, i) => i !== index));
+        break;
     }
   };
 
   const clientOptions = [
-    'Client A',
-    'Client B', 
-    'Client C',
-    'Client D',
-    'PT Teknologi Maju',
-    'CV Digital Solutions',
-    'PT Industri Kreatif'
+    "Client A",
+    "Client B",
+    "Client C",
+    "Client D",
+    "PT Teknologi Maju",
+    "CV Digital Solutions",
+    "PT Industri Kreatif",
   ];
 
   const kontrakOptions = [
-    '001/02/P0810',
-    '001/03/P0811',
-    '001/04/P0810',
-    '002/02/P0819'
+    "001/02/P0810",
+    "001/03/P0811",
+    "001/04/P0810",
+    "002/02/P0819",
   ];
 
   // removed unused lokasiOptions
 
   // Searchable options for first column of each tab
   const tenagaOptions = [
-    'Supervisor',
-    'Engineer',
-    'Technician',
-    'Helper',
-    'Safety Officer',
+    "Supervisor",
+    "Engineer",
+    "Technician",
+    "Helper",
+    "Safety Officer",
   ];
-  const jasaOptions = [
-    'Jasa Inspeksi',
-    'Jasa Maintenance',
-    'Jasa Kalibrasi',
-  ];
-  const alatOptions = [
-    'Forklift',
-    'Crane',
-    'Truck',
-    'Compressor',
-  ];
-  const barangOptions = [
-    'Pipa 2 inch',
-    'Valve 1 inch',
-    'Kabel NYA',
-    'Baut M8',
-  ];
+  const jasaOptions = ["Jasa Inspeksi", "Jasa Maintenance", "Jasa Kalibrasi"];
+  const alatOptions = ["Forklift", "Crane", "Truck", "Compressor"];
+  const barangOptions = ["Pipa 2 inch", "Valve 1 inch", "Kabel NYA", "Baut M8"];
   const transportOptions = [
-    'Truck Wingbox',
-    'Truck Engkel',
-    'Pickup',
-    'Bus',
-    'Pesawat',
+    "Truck Wingbox",
+    "Truck Engkel",
+    "Pickup",
+    "Bus",
+    "Pesawat",
   ];
   const biayaOptions = [
-    'Biaya Perjalanan',
-    'Biaya Akomodasi',
-    'Biaya Konsumsi',
-    'Biaya Lainnya',
+    "Biaya Perjalanan",
+    "Biaya Akomodasi",
+    "Biaya Konsumsi",
+    "Biaya Lainnya",
   ];
 
   // Lightweight searchable select (combobox) component
@@ -198,19 +439,24 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
 
     useEffect(() => {
       const handler = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(e.target as Node)
+        ) {
           setOpen(false);
         }
       };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
+      document.addEventListener("mousedown", handler);
+      return () => document.removeEventListener("mousedown", handler);
     }, []);
 
     useEffect(() => {
       setQuery(value);
     }, [value]);
 
-    const filtered = options.filter(opt => opt.toLowerCase().includes((query || '').toLowerCase()));
+    const filtered = options.filter((opt) =>
+      opt.toLowerCase().includes((query || "").toLowerCase())
+    );
 
     return (
       <div className="relative" ref={containerRef}>
@@ -228,14 +474,22 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
         {open && (
           <div className="absolute z-50 mt-1 w-full max-h-44 overflow-auto bg-white border border-gray-200 rounded shadow-lg">
             {filtered.length === 0 ? (
-              <div className="px-2 py-1 text-xs text-gray-500">Tidak ada hasil</div>
+              <div className="px-2 py-1 text-xs text-gray-500">
+                Tidak ada hasil
+              </div>
             ) : (
               filtered.map((opt) => (
                 <button
                   type="button"
                   key={opt}
-                  onClick={() => { onChange(opt); setQuery(opt); setOpen(false); }}
-                  className={`w-full text-left px-2 py-1 text-xs hover:bg-blue-50 ${opt === value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                  onClick={() => {
+                    onChange(opt);
+                    setQuery(opt);
+                    setOpen(false);
+                  }}
+                  className={`w-full text-left px-2 py-1 text-xs hover:bg-blue-50 ${
+                    opt === value ? "bg-blue-50 text-blue-700" : "text-gray-700"
+                  }`}
                 >
                   {opt}
                 </button>
@@ -249,19 +503,19 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -269,83 +523,151 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
     const newErrors: Partial<SalesOrderFormData> = {};
 
     if (!formData.nomorKontrak.trim()) {
-      newErrors.nomorKontrak = 'Nomor Kontrak wajib diisi';
+      newErrors.nomorKontrak = "Nomor Kontrak wajib diisi";
     }
 
     if (!formData.namaClient.trim()) {
-      newErrors.namaClient = 'Nama Client wajib diisi';
+      newErrors.namaClient = "Nama Client wajib diisi";
     }
 
     if (!formData.namaProyek.trim()) {
-      newErrors.namaProyek = 'Nama Proyek wajib diisi';
+      newErrors.namaProyek = "Nama Proyek wajib diisi";
     }
 
     if (!formData.sow.trim()) {
-      newErrors.sow = 'SOW wajib diisi';
+      newErrors.sow = "SOW wajib diisi";
     }
 
     if (!formData.lokasi.trim()) {
-      newErrors.lokasi = 'Lokasi wajib diisi';
+      newErrors.lokasi = "Lokasi wajib diisi";
     }
 
     if (!formData.estimasiSO.trim()) {
-      newErrors.estimasiSO = 'Estimasi SO wajib diisi';
+      newErrors.estimasiSO = "Estimasi SO wajib diisi";
     }
 
-    if (!formData.keterangan.trim()) { // Added validation for keterangan
-      newErrors.keterangan = 'Keterangan wajib diisi';
+    if (!formData.keterangan.trim()) {
+      // Added validation for keterangan
+      newErrors.keterangan = "Keterangan wajib diisi";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof SalesOrderFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+  const handleInputChange = (
+    field: keyof SalesOrderFormData,
+    value: string
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     onSave(formData);
     setIsLoading(false);
-    
+
     // Reset form
     setFormData({
-      nomorKontrak: '',
-      namaClient: '',
-      namaProyek: '',
-      sow: '',
-      lokasi: '',
-      jenisPekerjaan: 'On Call',
-      tanggalMOB: '',
-      tanggalDeMOB: '',
-      tanggalDibuat: new Date().toISOString().split('T')[0],
-      estimasiSO: '',
-      keterangan: '' // Reset new field
+      nomorKontrak: "",
+      namaClient: "",
+      namaProyek: "",
+      sow: "",
+      lokasi: "",
+      jenisPekerjaan: "On Call",
+      tanggalMOB: "",
+      tanggalDeMOB: "",
+      tanggalDibuat: new Date().toISOString().split("T")[0],
+      estimasiSO: "",
+      keterangan: "", // Reset new field
     });
     setErrors({});
     // Reset tabs data
-    setActiveTab('Tenaga Kerja');
-    setTenagaKerja([{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-    setJasa([{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-    setAlat([{ alat: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-    setBarang([{ namaBarang: '', harga: '', jumlah: '', hari: '', satuan: '', hargaSatuan: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-    setMobDemob([{ namaTransportasi: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
-    setBiayaLainLain([{ namaBiaya: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }]);
+    setActiveTab("Tenaga Kerja");
+    setTenagaKerja([
+      {
+        tenaga: "",
+        tunjangan: "",
+        projectRate: "",
+        hari: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
+    setJasa([
+      {
+        jasa: "",
+        tunjangan: "",
+        projectRate: "",
+        hari: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
+    setAlat([
+      {
+        alat: "",
+        harga: "",
+        jumlah: "",
+        hari: "",
+        satuan: "",
+        hargaSatuan: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
+    setBarang([
+      {
+        namaBarang: "",
+        harga: "",
+        jumlah: "",
+        hari: "",
+        satuan: "",
+        hargaSatuan: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
+    setMobDemob([
+      {
+        namaTransportasi: "",
+        tunjangan: "",
+        projectRate: "",
+        hari: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
+    setBiayaLainLain([
+      {
+        namaBiaya: "",
+        tunjangan: "",
+        projectRate: "",
+        hari: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
     onClose();
   };
 
@@ -358,14 +680,16 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Sales Order</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Entry Sales Order
+          </h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -380,11 +704,15 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Auto-generated No SO Display */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">No SO</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  No SO
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-xl text-gray-900 font-medium text-xs">
                   SO{String(Date.now()).slice(-6)}
                 </div>
-                <p className="mt-1 text-xs text-gray-500">Nomor SO akan dibuat otomatis</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Nomor SO akan dibuat otomatis
+                </p>
               </div>
 
               {/* Jenis Pekerjaan */}
@@ -394,7 +722,12 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 </label>
                 <select
                   value={formData.jenisPekerjaan}
-                  onChange={(e) => handleInputChange('jenisPekerjaan', e.target.value as 'On Call' | 'Tender')}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "jenisPekerjaan",
+                      e.target.value as "On Call" | "Tender"
+                    )
+                  }
                   className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                 >
                   <option value="On Call">On Call</option>
@@ -409,18 +742,26 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 </label>
                 <select
                   value={formData.nomorKontrak}
-                  onChange={(e) => handleInputChange('nomorKontrak', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("nomorKontrak", e.target.value)
+                  }
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.nomorKontrak ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.nomorKontrak
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                 >
                   <option value="">Pilih Nomor Kontrak</option>
                   {kontrakOptions.map((kontrak) => (
-                    <option key={kontrak} value={kontrak}>{kontrak}</option>
+                    <option key={kontrak} value={kontrak}>
+                      {kontrak}
+                    </option>
                   ))}
                 </select>
                 {errors.nomorKontrak && (
-                  <p className="mt-1 text-xs text-red-600">{errors.nomorKontrak}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.nomorKontrak}
+                  </p>
                 )}
               </div>
 
@@ -433,7 +774,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                   <input
                     type="date"
                     value={formData.tanggalMOB}
-                    onChange={(e) => handleInputChange('tanggalMOB', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalMOB", e.target.value)
+                    }
                     className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -447,18 +790,26 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 </label>
                 <select
                   value={formData.namaClient}
-                  onChange={(e) => handleInputChange('namaClient', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namaClient", e.target.value)
+                  }
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.namaClient ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.namaClient
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                 >
                   <option value="">Pilih Nama Client</option>
                   {clientOptions.map((client) => (
-                    <option key={client} value={client}>{client}</option>
+                    <option key={client} value={client}>
+                      {client}
+                    </option>
                   ))}
                 </select>
                 {errors.namaClient && (
-                  <p className="mt-1 text-xs text-red-600">{errors.namaClient}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.namaClient}
+                  </p>
                 )}
               </div>
 
@@ -471,7 +822,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                   <input
                     type="date"
                     value={formData.tanggalDeMOB}
-                    onChange={(e) => handleInputChange('tanggalDeMOB', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalDeMOB", e.target.value)
+                    }
                     className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -486,14 +839,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 <input
                   type="text"
                   value={formData.namaProyek}
-                  onChange={(e) => handleInputChange('namaProyek', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namaProyek", e.target.value)
+                  }
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.namaProyek ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.namaProyek
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Masukkan nama proyek"
                 />
                 {errors.namaProyek && (
-                  <p className="mt-1 text-xs text-red-600">{errors.namaProyek}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.namaProyek}
+                  </p>
                 )}
               </div>
 
@@ -506,7 +865,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                   <input
                     type="date"
                     value={formData.tanggalDibuat}
-                    onChange={(e) => handleInputChange('tanggalDibuat', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalDibuat", e.target.value)
+                    }
                     className="w-full px-2 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -520,10 +881,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 </label>
                 <textarea
                   value={formData.sow}
-                  onChange={(e) => handleInputChange('sow', e.target.value)}
+                  onChange={(e) => handleInputChange("sow", e.target.value)}
                   rows={3}
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.sow ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.sow ? "border-red-300 bg-red-50" : "border-gray-200"
                   } resize-none`}
                   placeholder="Masukkan scope of work..."
                 />
@@ -540,14 +901,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 <input
                   type="text"
                   value={formData.estimasiSO}
-                  onChange={(e) => handleInputChange('estimasiSO', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("estimasiSO", e.target.value)
+                  }
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.estimasiSO ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.estimasiSO
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Estimasi SO"
                 />
                 {errors.estimasiSO && (
-                  <p className="mt-1 text-xs text-red-600">{errors.estimasiSO}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.estimasiSO}
+                  </p>
                 )}
               </div>
 
@@ -556,12 +923,14 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Lokasi <span className="text-red-500">*</span>
                 </label>
-								<input
+                <input
                   type="text"
                   value={formData.lokasi}
-                  onChange={(e) => handleInputChange('lokasi', e.target.value)} // Corrected field
+                  onChange={(e) => handleInputChange("lokasi", e.target.value)} // Corrected field
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.lokasi ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.lokasi
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Lokasi"
                 />
@@ -570,7 +939,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
               </div>
 
-							{/* Estimasi Keterangan */}
+              {/* Estimasi Keterangan */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Estimasi Keterangan <span className="text-red-500">*</span>
@@ -578,14 +947,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 <input
                   type="text"
                   value={formData.keterangan}
-                  onChange={(e) => handleInputChange('keterangan', e.target.value)} // Corrected field
+                  onChange={(e) =>
+                    handleInputChange("keterangan", e.target.value)
+                  } // Corrected field
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.keterangan ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.keterangan
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Keterangan"
                 />
                 {errors.keterangan && (
-                  <p className="mt-1 text-xs text-red-600">{errors.keterangan}</p> // Corrected error display
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.keterangan}
+                  </p> // Corrected error display
                 )}
               </div>
             </div>
@@ -600,8 +975,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                     onClick={() => setActiveTab(tab)}
                     className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ${
                       activeTab === tab
-                        ? 'bg-blue-600 text-white border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                        ? "bg-blue-600 text-white border-b-2 border-blue-600"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                     }`}
                   >
                     {tab}
@@ -613,23 +988,41 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
             {/* Tab Content - Tables */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">{activeTab}</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {activeTab}
+                </h3>
               </div>
 
               <div className="overflow-x-auto border border-gray-200 rounded-xl text-xs">
                 {/* Tenaga Kerja Table */}
-                {activeTab === 'Tenaga Kerja' && (
+                {activeTab === "Tenaga Kerja" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Tenaga</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Tunjangan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Project Rate</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Tenaga
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Tunjangan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Project Rate
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Awal
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -638,31 +1031,104 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                           <td className="px-2 py-1">
                             <SearchSelect
                               value={item.tenaga}
-                              onChange={(val) => handleTabDataChange(index, 'tenaga', val)}
+                              onChange={(val) =>
+                                handleTabDataChange(index, "tenaga", val)
+                              }
                               options={tenagaOptions}
                               placeholder="Nama Tenaga"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
+                            <input
+                              type="text"
+                              value={item.tunjangan}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Tunjangan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.projectRate} onChange={(e) => handleTabDataChange(index, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Project Rate" />
+                            <input
+                              type="text"
+                              value={item.projectRate}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Project Rate"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Hari" />
+                            <input
+                              type="number"
+                              value={item.hari}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hargaAwal} onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga Awal" />
+                            <input
+                              type="number"
+                              value={item.hargaAwal}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaAwal",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Awal"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.margin} onChange={(e) => handleTabDataChange(index, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Margin %" />
+                            <input
+                              type="number"
+                              value={item.margin}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Akhir" />
+                            <input
+                              type="text"
+                              value={item.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <button type="button" onClick={() => removeTabData(index)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={tenagaKerja.length === 1}>
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={tenagaKerja.length === 1}
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -673,18 +1139,34 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
 
                 {/* Jasa Table */}
-                {activeTab === 'Jasa' && (
+                {activeTab === "Jasa" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Jasa</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Tunjangan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Project Rate</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Jasa
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Tunjangan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Project Rate
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Awal
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -693,31 +1175,104 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                           <td className="px-2 py-1">
                             <SearchSelect
                               value={item.jasa}
-                              onChange={(val) => handleTabDataChange(index, 'jasa', val)}
+                              onChange={(val) =>
+                                handleTabDataChange(index, "jasa", val)
+                              }
                               options={jasaOptions}
                               placeholder="Jasa Tenaga"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
+                            <input
+                              type="text"
+                              value={item.tunjangan}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Tunjangan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.projectRate} onChange={(e) => handleTabDataChange(index, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Project Rate" />
+                            <input
+                              type="text"
+                              value={item.projectRate}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Project Rate"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Hari" />
+                            <input
+                              type="number"
+                              value={item.hari}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hargaAwal} onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga Awal" />
+                            <input
+                              type="number"
+                              value={item.hargaAwal}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaAwal",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Awal"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.margin} onChange={(e) => handleTabDataChange(index, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Margin %" />
+                            <input
+                              type="number"
+                              value={item.margin}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Akhir" />
+                            <input
+                              type="text"
+                              value={item.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <button type="button" onClick={() => removeTabData(index)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={jasa.length === 1}>
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={jasa.length === 1}
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -728,20 +1283,40 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
 
                 {/* Alat Table */}
-                {activeTab === 'Alat' && (
+                {activeTab === "Alat" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Alat</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Alat
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Satuan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Awal
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -750,37 +1325,128 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                           <td className="px-2 py-1">
                             <SearchSelect
                               value={item.alat}
-                              onChange={(val) => handleTabDataChange(index, 'alat', val)}
+                              onChange={(val) =>
+                                handleTabDataChange(index, "alat", val)
+                              }
                               options={alatOptions}
                               placeholder="Nama Alat"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.harga} onChange={(e) => handleTabDataChange(index, 'harga', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga" />
+                            <input
+                              type="number"
+                              value={item.harga}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "harga",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.jumlah} onChange={(e) => handleTabDataChange(index, 'jumlah', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Jumlah" />
+                            <input
+                              type="number"
+                              value={item.jumlah}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Jumlah"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Hari" />
+                            <input
+                              type="number"
+                              value={item.hari}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.satuan} onChange={(e) => handleTabDataChange(index, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Satuan" />
+                            <input
+                              type="text"
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Satuan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaSatuan} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Satuan" />
+                            <input
+                              type="text"
+                              value={item.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Satuan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hargaAwal} onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga Awal" />
+                            <input
+                              type="number"
+                              value={item.hargaAwal}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaAwal",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Awal"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.margin} onChange={(e) => handleTabDataChange(index, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Margin %" />
+                            <input
+                              type="number"
+                              value={item.margin}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Akhir" />
+                            <input
+                              type="text"
+                              value={item.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <button type="button" onClick={() => removeTabData(index)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={alat.length === 1}>
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={alat.length === 1}
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -791,20 +1457,40 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
 
                 {/* Barang Table */}
-                {activeTab === 'Barang' && (
+                {activeTab === "Barang" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Nama Barang</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Nama Barang
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Satuan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Awal
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -813,37 +1499,128 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                           <td className="px-2 py-1">
                             <SearchSelect
                               value={item.namaBarang}
-                              onChange={(val) => handleTabDataChange(index, 'namaBarang', val)}
+                              onChange={(val) =>
+                                handleTabDataChange(index, "namaBarang", val)
+                              }
                               options={barangOptions}
                               placeholder="Nama Barang"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.harga} onChange={(e) => handleTabDataChange(index, 'harga', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga" />
+                            <input
+                              type="number"
+                              value={item.harga}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "harga",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.jumlah} onChange={(e) => handleTabDataChange(index, 'jumlah', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Jumlah" />
+                            <input
+                              type="number"
+                              value={item.jumlah}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Jumlah"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Hari" />
+                            <input
+                              type="number"
+                              value={item.hari}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.satuan} onChange={(e) => handleTabDataChange(index, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Satuan" />
+                            <input
+                              type="text"
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Satuan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaSatuan} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Satuan" />
+                            <input
+                              type="text"
+                              value={item.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Satuan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hargaAwal} onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga Awal" />
+                            <input
+                              type="number"
+                              value={item.hargaAwal}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaAwal",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Awal"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.margin} onChange={(e) => handleTabDataChange(index, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Margin %" />
+                            <input
+                              type="number"
+                              value={item.margin}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Akhir" />
+                            <input
+                              type="text"
+                              value={item.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <button type="button" onClick={() => removeTabData(index)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={barang.length === 1}>
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={barang.length === 1}
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -854,18 +1631,34 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
 
                 {/* MobDemob Table */}
-                {activeTab === 'MobDemob' && (
+                {activeTab === "MobDemob" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Nama Transportasi</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Tunjangan</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Project Rate</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Harga Awal</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Nama Transportasi
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Tunjangan
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Project Rate
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Harga Awal
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -874,31 +1667,108 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                           <td className="px-2 py-1">
                             <SearchSelect
                               value={item.namaTransportasi}
-                              onChange={(val) => handleTabDataChange(index, 'namaTransportasi', val)}
+                              onChange={(val) =>
+                                handleTabDataChange(
+                                  index,
+                                  "namaTransportasi",
+                                  val
+                                )
+                              }
                               options={transportOptions}
                               placeholder="Nama Transportasi"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
+                            <input
+                              type="text"
+                              value={item.tunjangan}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Tunjangan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.projectRate} onChange={(e) => handleTabDataChange(index, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Project Rate" />
+                            <input
+                              type="text"
+                              value={item.projectRate}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Project Rate"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Hari" />
+                            <input
+                              type="number"
+                              value={item.hari}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hargaAwal} onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga Awal" />
+                            <input
+                              type="number"
+                              value={item.hargaAwal}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaAwal",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Awal"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.margin} onChange={(e) => handleTabDataChange(index, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Margin %" />
+                            <input
+                              type="number"
+                              value={item.margin}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Akhir" />
+                            <input
+                              type="text"
+                              value={item.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <button type="button" onClick={() => removeTabData(index)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={mobDemob.length === 1}>
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={mobDemob.length === 1}
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -909,18 +1779,34 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
 
                 {/* Biaya Lain-lain Table */}
-                {activeTab === 'Biaya Lain-lain' && (
+                {activeTab === "Biaya Lain-lain" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Nama Biaya</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Tunjangan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Project Rate</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Awal</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Nama Biaya
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Tunjangan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Project Rate
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Awal
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -929,31 +1815,104 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                           <td className="px-2 py-1">
                             <SearchSelect
                               value={item.namaBiaya}
-                              onChange={(val) => handleTabDataChange(index, 'namaBiaya', val)}
+                              onChange={(val) =>
+                                handleTabDataChange(index, "namaBiaya", val)
+                              }
                               options={biayaOptions}
                               placeholder="Nama Biaya"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.tunjangan} onChange={(e) => handleTabDataChange(index, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Tunjangan" />
+                            <input
+                              type="text"
+                              value={item.tunjangan}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Tunjangan"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.projectRate} onChange={(e) => handleTabDataChange(index, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Project Rate" />
+                            <input
+                              type="text"
+                              value={item.projectRate}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Project Rate"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hari} onChange={(e) => handleTabDataChange(index, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Hari" />
+                            <input
+                              type="number"
+                              value={item.hari}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.hargaAwal} onChange={(e) => handleTabDataChange(index, 'hargaAwal', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Harga Awal" />
+                            <input
+                              type="number"
+                              value={item.hargaAwal}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaAwal",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Awal"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="number" value={item.margin} onChange={(e) => handleTabDataChange(index, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded text-xs" placeholder="Margin %" />
+                            <input
+                              type="number"
+                              value={item.margin}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <input type="text" value={item.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50" placeholder="Harga Akhir" />
+                            <input
+                              type="text"
+                              value={item.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
                           </td>
                           <td className="px-2 py-1">
-                            <button type="button" onClick={() => removeTabData(index)} className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={biayaLainLain.length === 1}>
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={biayaLainLain.length === 1}
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -964,19 +1923,27 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({ isOpen, onClose, onSa
                 )}
 
                 {/* Sisa HPP - Empty placeholder (no data) */}
-                {activeTab === 'Sisa HPP' && (
+                {activeTab === "Sisa HPP" && (
                   <div className="text-center py-12">
                     <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Plus className="h-8 w-8 text-gray-400" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Sisa HPP</h3>
-                    <p className="text-gray-600">Tidak ada data ditampilkan pada tab ini.</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Sisa HPP
+                    </h3>
+                    <p className="text-gray-600">
+                      Tidak ada data ditampilkan pada tab ini.
+                    </p>
                   </div>
                 )}
               </div>
             </div>
 
-            <button type="button" onClick={addTabData} className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-1">
+            <button
+              type="button"
+              onClick={addTabData}
+              className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-1"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah Baris</span>
             </button>

@@ -146,30 +146,49 @@ const ReqrutmenDashboard: React.FC = () => {
   };
 
   // Helpers to render Hasil Interview badges
-  const getInterviewResult = (status: ReqrutmenData['status']) => {
+  const getInterviewResult = (status: ReqrutmenData["status"]) => {
     switch (status) {
-      case 'Accepted': return { label: 'Lolos', cls: 'bg-green-100 text-green-800' };
-      case 'Rejected': return { label: 'Tidak Lolos', cls: 'bg-red-100 text-red-800' };
-      case 'Interview': return { label: 'Proses Interview', cls: 'bg-blue-100 text-blue-800' };
-      case 'Hired': return { label: 'Diterima', cls: 'bg-purple-100 text-purple-800' };
-      case 'Negotiation': return { label: 'Negosiasi', cls: 'bg-orange-100 text-orange-800' };
-      case 'Move to Bank Data': return { label: 'Bank Data', cls: 'bg-gray-100 text-gray-800' };
-      case 'Pending':
-      default: return { label: 'Pending', cls: 'bg-yellow-100 text-yellow-800' };
+      case "Accepted":
+        return { label: "Lolos", cls: "bg-green-100 text-green-800" };
+      case "Rejected":
+        return { label: "Tidak Lolos", cls: "bg-red-100 text-red-800" };
+      case "Interview":
+        return { label: "Proses Interview", cls: "bg-blue-100 text-blue-800" };
+      case "Hired":
+        return { label: "Diterima", cls: "bg-purple-100 text-purple-800" };
+      case "Negotiation":
+        return { label: "Negosiasi", cls: "bg-orange-100 text-orange-800" };
+      case "Move to Bank Data":
+        return { label: "Bank Data", cls: "bg-gray-100 text-gray-800" };
+      case "Pending":
+      default:
+        return { label: "Pending", cls: "bg-yellow-100 text-yellow-800" };
     }
   };
 
   const getInterviewQualification = (keterangan: string) => {
     if (/kualifikasi/i.test(keterangan)) {
       if (/sesuai|lulus|baik/i.test(keterangan)) {
-        return { label: 'Kualifikasi: Sesuai', cls: 'bg-green-50 text-green-700 border border-green-200' };
+        return {
+          label: "Kualifikasi: Sesuai",
+          cls: "bg-green-50 text-green-700 border border-green-200",
+        };
       }
       if (/tidak|kurang/i.test(keterangan)) {
-        return { label: 'Kualifikasi: Kurang', cls: 'bg-red-50 text-red-700 border border-red-200' };
+        return {
+          label: "Kualifikasi: Kurang",
+          cls: "bg-red-50 text-red-700 border border-red-200",
+        };
       }
-      return { label: 'Kualifikasi: Ada catatan', cls: 'bg-amber-50 text-amber-700 border border-amber-200' };
+      return {
+        label: "Kualifikasi: Ada catatan",
+        cls: "bg-amber-50 text-amber-700 border border-amber-200",
+      };
     }
-    return { label: 'Kualifikasi: -', cls: 'bg-gray-50 text-gray-700 border border-gray-200' };
+    return {
+      label: "Kualifikasi: -",
+      cls: "bg-gray-50 text-gray-700 border border-gray-200",
+    };
   };
 
   const handleDeleteClick = (item: ReqrutmenData) => {
@@ -471,8 +490,12 @@ const ReqrutmenDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Interview</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Hasil Interview</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Interview
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Hasil Interview
+                  </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort("status")}
@@ -529,16 +552,28 @@ const ReqrutmenDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col gap-1">
-                        {(() => { const r = getInterviewResult(item.status); return (
-                          <span className={`inline-flex w-fit items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${r.cls}`}>
-                            Result: {r.label}
-                          </span>
-                        ); })()}
-                        {(() => { const q = getInterviewQualification(item.keterangan || ''); return (
-                          <span className={`inline-flex w-fit items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${q.cls}`}>
-                            {q.label}
-                          </span>
-                        ); })()}
+                        {(() => {
+                          const r = getInterviewResult(item.status);
+                          return (
+                            <span
+                              className={`inline-flex w-fit items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${r.cls}`}
+                            >
+                              Result: {r.label}
+                            </span>
+                          );
+                        })()}
+                        {(() => {
+                          const q = getInterviewQualification(
+                            item.keterangan || ""
+                          );
+                          return (
+                            <span
+                              className={`inline-flex w-fit items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${q.cls}`}
+                            >
+                              {q.label}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </td>
                     <td className="px-4 py-3">

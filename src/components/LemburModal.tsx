@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Calendar, Save, Loader2, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, Calendar, Save, Loader2, ChevronDown } from "lucide-react";
 
 interface LemburModalProps {
   isOpen: boolean;
@@ -10,21 +10,25 @@ interface LemburModalProps {
 export interface LemburFormData {
   namaDriver: string;
   waktuStart: string; // HH:MM
-  waktuEnd: string;   // HH:MM
+  waktuEnd: string; // HH:MM
   durasiLembur: string; // e.g. "2 Jam 30 Menit"
   tanggal: string;
   keterangan: string;
   attachment: File | null;
 }
 
-const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) => {
+const LemburModal: React.FC<LemburModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
   const [formData, setFormData] = useState<LemburFormData>({
-    namaDriver: '',
-    waktuStart: '',
-    waktuEnd: '',
-    durasiLembur: '',
-    tanggal: '',
-    keterangan: '',
+    namaDriver: "",
+    waktuStart: "",
+    waktuEnd: "",
+    durasiLembur: "",
+    tanggal: "",
+    keterangan: "",
     attachment: null,
   });
 
@@ -33,31 +37,31 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
   const [namaDriverDropdownOpen, setNamaDriverDropdownOpen] = useState(false);
 
   const namaDriverOptions = [
-    'Ahmad',
-    'Budi Santoso',
-    'Slamet Riyadi',
-    'Agus Prasetyo',
-    'Rudi Hartono',
-    'Fauzan Malik',
-    'Joko Widodo',
-    'Hariyanto'
+    "Ahmad",
+    "Budi Santoso",
+    "Slamet Riyadi",
+    "Agus Prasetyo",
+    "Rudi Hartono",
+    "Fauzan Malik",
+    "Joko Widodo",
+    "Hariyanto",
   ];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -65,18 +69,18 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
     const newErrors: Partial<LemburFormData> = {};
 
     if (!formData.namaDriver.trim()) {
-      newErrors.namaDriver = 'Nama Driver wajib dipilih';
+      newErrors.namaDriver = "Nama Driver wajib dipilih";
     }
 
     if (!formData.waktuStart) {
-      (newErrors as any).waktuStart = 'Waktu start wajib diisi';
+      (newErrors as any).waktuStart = "Waktu start wajib diisi";
     }
     if (!formData.waktuEnd) {
-      (newErrors as any).waktuEnd = 'Waktu end wajib diisi';
+      (newErrors as any).waktuEnd = "Waktu end wajib diisi";
     }
 
     if (!formData.tanggal) {
-      newErrors.tanggal = 'Tanggal wajib diisi';
+      newErrors.tanggal = "Tanggal wajib diisi";
     }
 
     setErrors(newErrors);
@@ -84,12 +88,16 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
   };
 
   const handleInputChange = (field: keyof LemburFormData, value: any) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const next = { ...prev, [field]: value } as LemburFormData;
       // Auto-calc durasi when times change
-      if ((field === 'waktuStart' || field === 'waktuEnd') && next.waktuStart && next.waktuEnd) {
-        const [sh, sm] = next.waktuStart.split(':').map(Number);
-        const [eh, em] = next.waktuEnd.split(':').map(Number);
+      if (
+        (field === "waktuStart" || field === "waktuEnd") &&
+        next.waktuStart &&
+        next.waktuEnd
+      ) {
+        const [sh, sm] = next.waktuStart.split(":").map(Number);
+        const [eh, em] = next.waktuEnd.split(":").map(Number);
         let startM = sh * 60 + sm;
         let endM = eh * 60 + em;
         // If end is past midnight next day, allow end < start
@@ -97,39 +105,40 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
         const diff = Math.max(0, endM - startM);
         const h = Math.floor(diff / 60);
         const m = diff % 60;
-        next.durasiLembur = h > 0 ? `${h} Jam${m ? ` ${m} Menit` : ''}` : `${m} Menit`;
+        next.durasiLembur =
+          h > 0 ? `${h} Jam${m ? ` ${m} Menit` : ""}` : `${m} Menit`;
       }
       return next;
     });
-    
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     onSave(formData);
     setIsLoading(false);
-    
+
     // Reset form
     setFormData({
-      namaDriver: '',
-      waktuStart: '',
-      waktuEnd: '',
-      durasiLembur: '',
-      tanggal: '',
-      keterangan: '',
+      namaDriver: "",
+      waktuStart: "",
+      waktuEnd: "",
+      durasiLembur: "",
+      tanggal: "",
+      keterangan: "",
       attachment: null,
     });
     setErrors({});
@@ -145,7 +154,7 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
@@ -173,17 +182,29 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={() => setNamaDriverDropdownOpen(!namaDriverDropdownOpen)}
+                    onClick={() =>
+                      setNamaDriverDropdownOpen(!namaDriverDropdownOpen)
+                    }
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white ${
-                      errors.namaDriver ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.namaDriver
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                   >
-                    <span className={formData.namaDriver ? 'text-gray-900' : 'text-gray-500'}>
-                      {formData.namaDriver || 'Pilih Nama Driver'}
+                    <span
+                      className={
+                        formData.namaDriver ? "text-gray-900" : "text-gray-500"
+                      }
+                    >
+                      {formData.namaDriver || "Pilih Nama Driver"}
                     </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${namaDriverDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                        namaDriverDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
-                  
+
                   {namaDriverDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden max-h-60 overflow-y-auto">
                       {namaDriverOptions.map((driver) => (
@@ -191,7 +212,7 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                           key={driver}
                           type="button"
                           onClick={() => {
-                            handleInputChange('namaDriver', driver);
+                            handleInputChange("namaDriver", driver);
                             setNamaDriverDropdownOpen(false);
                           }}
                           className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
@@ -203,7 +224,9 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                   )}
                 </div>
                 {errors.namaDriver && (
-                  <p className="mt-1 text-sm text-red-600">{errors.namaDriver}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.namaDriver}
+                  </p>
                 )}
               </div>
 
@@ -216,13 +239,19 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="time"
                     value={formData.waktuStart}
-                    onChange={(e) => handleInputChange('waktuStart', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("waktuStart", e.target.value)
+                    }
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      (errors as any).waktuStart ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      (errors as any).waktuStart
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                   />
                   {(errors as any).waktuStart && (
-                    <p className="mt-1 text-sm text-red-600">{(errors as any).waktuStart}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {(errors as any).waktuStart}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -232,17 +261,25 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="time"
                     value={formData.waktuEnd}
-                    onChange={(e) => handleInputChange('waktuEnd', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("waktuEnd", e.target.value)
+                    }
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      (errors as any).waktuEnd ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      (errors as any).waktuEnd
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                   />
                   {(errors as any).waktuEnd && (
-                    <p className="mt-1 text-sm text-red-600">{(errors as any).waktuEnd}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {(errors as any).waktuEnd}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Durasi Lembur</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Durasi Lembur
+                  </label>
                   <input
                     type="text"
                     value={formData.durasiLembur}
@@ -262,9 +299,13 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="date"
                     value={formData.tanggal}
-                    onChange={(e) => handleInputChange('tanggal', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggal", e.target.value)
+                    }
                     className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.tanggal ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.tanggal
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="dd/mm/yyyy"
                   />
@@ -277,14 +318,25 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
 
               {/* Attachment */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Attachment</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Attachment
+                </label>
                 <input
                   type="file"
-                  onChange={(e) => handleInputChange('attachment', e.target.files && e.target.files[0] ? e.target.files[0] : null)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "attachment",
+                      e.target.files && e.target.files[0]
+                        ? e.target.files[0]
+                        : null
+                    )
+                  }
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
                 {formData.attachment && (
-                  <p className="mt-1 text-xs text-gray-500">Terpilih: {formData.attachment.name}</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Terpilih: {formData.attachment.name}
+                  </p>
                 )}
               </div>
 
@@ -295,7 +347,9 @@ const LemburModal: React.FC<LemburModalProps> = ({ isOpen, onClose, onSave }) =>
                 </label>
                 <textarea
                   value={formData.keterangan}
-                  onChange={(e) => handleInputChange('keterangan', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("keterangan", e.target.value)
+                  }
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Masukkan keterangan lembur..."

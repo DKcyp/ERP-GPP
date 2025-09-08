@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import SOTurunanModal, { SOTurunanFormData } from './SOTurunanModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  Plus, 
-  FileSpreadsheet, 
-  FileText, 
+import React, { useState, useEffect } from "react";
+import SOTurunanModal, { SOTurunanFormData } from "./SOTurunanModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -17,8 +17,8 @@ import {
   ChevronRight,
   ArrowUp,
   CheckCircle,
-  XCircle
-} from 'lucide-react';
+  XCircle,
+} from "lucide-react";
 
 interface SOTurunan {
   id: string;
@@ -35,68 +35,69 @@ interface SOTurunanDashboardProps {
 }
 
 const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
-  const [searchNoSO, setSearchNoSO] = useState('');
-  const [searchNamaProject, setSearchNamaProject] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchNamaProject, setSearchNamaProject] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [readOnlyModal, setReadOnlyModal] = useState(false);
-  const [initialModalData, setInitialModalData] = useState<Partial<SOTurunanFormData> | null>(null);
+  const [initialModalData, setInitialModalData] =
+    useState<Partial<SOTurunanFormData> | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SOTurunan | null>(null);
   const [sortField, setSortField] = useState<keyof SOTurunan | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Sample data matching the image
   const [soTurunanData, setSOTurunanData] = useState<SOTurunan[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      noSO: 'SO001',
-      soTurunan: 'SO001.3',
-      namaClient: 'PT Adem Ayem',
-      tanggalDibuat: '10-02-2025',
-      total: 'Rp 90.000.000'
+      noSO: "SO001",
+      soTurunan: "SO001.3",
+      namaClient: "PT Adem Ayem",
+      tanggalDibuat: "10-02-2025",
+      total: "Rp 90.000.000",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      noSO: 'SO002',
-      soTurunan: 'SO002.1',
-      namaClient: 'PT Permata Buana',
-      tanggalDibuat: '15-02-2025',
-      total: 'Rp 150.000.000'
+      noSO: "SO002",
+      soTurunan: "SO002.1",
+      namaClient: "PT Permata Buana",
+      tanggalDibuat: "15-02-2025",
+      total: "Rp 150.000.000",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      noSO: 'SO002',
-      soTurunan: 'SO002.2',
-      namaClient: 'CV Sejahtera',
-      tanggalDibuat: '18-02-2025',
-      total: 'Rp 200.000.000'
+      noSO: "SO002",
+      soTurunan: "SO002.2",
+      namaClient: "CV Sejahtera",
+      tanggalDibuat: "18-02-2025",
+      total: "Rp 200.000.000",
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      noSO: 'SO003',
-      soTurunan: 'SO003.23',
-      namaClient: 'CV Makmur',
-      tanggalDibuat: '22-02-2025',
-      total: 'Rp 175.000.000'
+      noSO: "SO003",
+      soTurunan: "SO003.23",
+      namaClient: "CV Makmur",
+      tanggalDibuat: "22-02-2025",
+      total: "Rp 175.000.000",
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      noSO: 'SO004',
-      soTurunan: 'SO004.1',
-      namaClient: 'PT WorkHome',
-      tanggalDibuat: '25-02-2025',
-      total: 'Rp 250.000.000'
-    }
+      noSO: "SO004",
+      soTurunan: "SO004.1",
+      namaClient: "PT WorkHome",
+      tanggalDibuat: "25-02-2025",
+      total: "Rp 250.000.000",
+    },
   ]);
 
   useEffect(() => {
@@ -111,15 +112,21 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       noSO: formData.soInduk,
       soTurunan: formData.soTurunan,
       namaClient: formData.namaClient,
-      tanggalDibuat: new Date(formData.tanggalDibuat).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      total: formData.estimasiSO || 'Rp 0'
+      tanggalDibuat: new Date(formData.tanggalDibuat).toLocaleDateString(
+        "id-ID",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }
+      ),
+      total: formData.estimasiSO || "Rp 0",
     };
 
-    setSOTurunanData(prev => [newSOTurunan, ...prev.map(s => ({ ...s, no: s.no + 1 }))]);
+    setSOTurunanData((prev) => [
+      newSOTurunan,
+      ...prev.map((s) => ({ ...s, no: s.no + 1 })),
+    ]);
   };
 
   const handleDeleteClick = (soTurunan: SOTurunan) => {
@@ -129,36 +136,40 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setSOTurunanData(prev => prev.filter(s => s.id !== itemToDelete.id));
+      setSOTurunanData((prev) => prev.filter((s) => s.id !== itemToDelete.id));
       setItemToDelete(null);
     }
   };
 
   const handleSort = (field: keyof SOTurunan) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = soTurunanData.filter(item => {
-    const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
-    const matchesNamaProject = item.namaClient.toLowerCase().includes(searchNamaProject.toLowerCase());
-    
+  const filteredData = soTurunanData.filter((item) => {
+    const matchesNoSO = item.noSO
+      .toLowerCase()
+      .includes(searchNoSO.toLowerCase());
+    const matchesNamaProject = item.namaClient
+      .toLowerCase()
+      .includes(searchNamaProject.toLowerCase());
+
     return matchesNoSO && matchesNamaProject;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -187,7 +198,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
 
   const toISODate = (ddmmyyyy: string) => {
     // input expected 'DD-MM-YYYY'
-    const parts = ddmmyyyy.split('-');
+    const parts = ddmmyyyy.split("-");
     if (parts.length === 3) {
       return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
@@ -203,25 +214,25 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       tanggalDibuat: toISODate(item.tanggalDibuat),
       estimasiSO: item.total,
       // Fields not present in list remain empty
-      nomorKontrak: '',
-      namaProyek: '',
-      jenisPekerjaan: '',
-      tanggalMOB: '',
-      tanggalDemob: '',
-      keterangan: '',
+      nomorKontrak: "",
+      namaProyek: "",
+      jenisPekerjaan: "",
+      tanggalMOB: "",
+      tanggalDemob: "",
+      keterangan: "",
     });
     setIsModalOpen(true);
   };
 
-  const isReadOnly = role === 'operational2';
-  const isApprover = role === 'operational3';
+  const isReadOnly = role === "operational2";
+  const isApprover = role === "operational3";
 
   const handleApprove = (item: SOTurunan) => {
-    console.log('Approved SO Turunan:', item);
+    console.log("Approved SO Turunan:", item);
   };
 
   const handleReject = (item: SOTurunan) => {
-    console.log('Rejected SO Turunan:', item);
+    console.log("Rejected SO Turunan:", item);
   };
 
   return (
@@ -235,16 +246,20 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                 DAFTAR SO TURUNAN
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Operational</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Operational
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Sales Order</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Sales Order
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">SO Turunan</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -255,7 +270,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
-          
+
           {/* Search and Filter Section */}
           <div className="space-y-4 mb-6">
             {/* Inputs Row */}
@@ -275,7 +290,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                       placeholder="SO001"
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
                   >
@@ -299,7 +314,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                       placeholder="PHE ONWJ"
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center space-x-2"
                   >
@@ -332,22 +347,21 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             </div>
 
             {/* Search Button Row */}
-                          <div className="grid grid-cols-3 gap-3">
-                <div className="relative">
-<button 
-  onClick={handleSearch}
-  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 text-sm flex items-center justify-center gap-2"
->
-  <Search className="h-4 w-4" />
-  Cari data
-</button>
-
+            <div className="grid grid-cols-3 gap-3">
+              <div className="relative">
+                <button
+                  onClick={handleSearch}
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 text-sm flex items-center justify-center gap-2"
+                >
+                  <Search className="h-4 w-4" />
+                  Cari data
+                </button>
+              </div>
             </div>
-                          </div>
-                            
+
             <div className="flex justify-end">
               {!isReadOnly && (
-                <button 
+                <button
                   onClick={openAddModal}
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
                 >
@@ -396,8 +410,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             </select>
             <span className="text-sm text-gray-700">entries</span>
           </div>
-          <div className="flex space-x-2">
-          </div>
+          <div className="flex space-x-2"></div>
         </div>
 
         {/* Data Table */}
@@ -406,65 +419,91 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('noSO')}
+                    onClick={() => handleSort("noSO")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No SO</span>
-                      {sortField === 'noSO' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "noSO" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('soTurunan')}
+                    onClick={() => handleSort("soTurunan")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>SO Turunan</span>
-                      {sortField === 'soTurunan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "soTurunan" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaClient')}
+                    onClick={() => handleSort("namaClient")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama Client</span>
-                      {sortField === 'namaClient' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "namaClient" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Dibuat</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Tanggal Dibuat
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Total
+                  </th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
                     <td className="px-4 py-3">
@@ -472,32 +511,48 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                         <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0">
                           <Info className="h-2 w-2 text-blue-600" />
                         </div>
-                        <span className="font-medium text-gray-900">{item.no}</span>
+                        <span className="font-medium text-gray-900">
+                          {item.no}
+                        </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.soTurunan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaClient}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalDibuat}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.total}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.noSO}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.soTurunan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.namaClient}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggalDibuat}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.total}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         {!isReadOnly && !isApprover && (
                           <>
-                            <button 
-                              onClick={() => { setReadOnlyModal(false); setInitialModalData({
-                                soInduk: item.noSO,
-                                soTurunan: item.soTurunan,
-                                namaClient: item.namaClient,
-                                tanggalDibuat: toISODate(item.tanggalDibuat),
-                                estimasiSO: item.total,
-                                nomorKontrak: '',
-                                namaProyek: '',
-                                jenisPekerjaan: '',
-                                tanggalMOB: '',
-                                tanggalDemob: '',
-                                keterangan: '',
-                              }); setIsModalOpen(true); }}
+                            <button
+                              onClick={() => {
+                                setReadOnlyModal(false);
+                                setInitialModalData({
+                                  soInduk: item.noSO,
+                                  soTurunan: item.soTurunan,
+                                  namaClient: item.namaClient,
+                                  tanggalDibuat: toISODate(item.tanggalDibuat),
+                                  estimasiSO: item.total,
+                                  nomorKontrak: "",
+                                  namaProyek: "",
+                                  jenisPekerjaan: "",
+                                  tanggalMOB: "",
+                                  tanggalDemob: "",
+                                  keterangan: "",
+                                });
+                                setIsModalOpen(true);
+                              }}
                               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110"
                               title="Edit"
                             >
@@ -530,7 +585,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                             </button>
                           </>
                         )}
-                        <button 
+                        <button
                           onClick={() => openViewModal(item)}
                           className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
                           title="View"
@@ -549,7 +604,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -559,7 +616,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                 >
                   Previous
                 </button>
-                
+
                 <div className="flex items-center space-x-1">
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     let page;
@@ -572,15 +629,15 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     } else {
                       page = currentPage - 2 + i;
                     }
-                    
+
                     return (
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
                         className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                           currentPage === page
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            ? "bg-blue-600 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
                         {page}
@@ -588,7 +645,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     );
                   })}
                 </div>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

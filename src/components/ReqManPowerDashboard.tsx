@@ -29,7 +29,8 @@ const ReqManPowerDashboard: React.FC = () => {
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [readOnlyModal, setReadOnlyModal] = useState(false);
-  const [initialModalData, setInitialModalData] = useState<Partial<ReqManPowerFormData> | null>(null);
+  const [initialModalData, setInitialModalData] =
+    useState<Partial<ReqManPowerFormData> | null>(null);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ReqManPowerRow | null>(null);
@@ -65,9 +66,10 @@ const ReqManPowerDashboard: React.FC = () => {
   const handleSearch = () => setCurrentPage(1);
 
   const filtered = useMemo(() => {
-    return rows.filter((r) =>
-      r.departemen.toLowerCase().includes(searchDept.toLowerCase()) &&
-      r.posisi.toLowerCase().includes(searchPosisi.toLowerCase())
+    return rows.filter(
+      (r) =>
+        r.departemen.toLowerCase().includes(searchDept.toLowerCase()) &&
+        r.posisi.toLowerCase().includes(searchPosisi.toLowerCase())
     );
   }, [rows, searchDept, searchPosisi]);
 
@@ -88,7 +90,8 @@ const ReqManPowerDashboard: React.FC = () => {
   const currentData = sorted.slice(startIndex, endIndex);
 
   const handleSort = (field: keyof ReqManPowerRow) => {
-    if (sortField === field) setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    if (sortField === field)
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     else {
       setSortField(field);
       setSortDirection("asc");
@@ -117,7 +120,9 @@ const ReqManPowerDashboard: React.FC = () => {
     if (initialModalData && (initialModalData as any).id) {
       // edit
       setRows((prev) =>
-        prev.map((r) => (r.id === (initialModalData as any).id ? { ...r, ...data } : r))
+        prev.map((r) =>
+          r.id === (initialModalData as any).id ? { ...r, ...data } : r
+        )
       );
     } else {
       // create
@@ -141,7 +146,11 @@ const ReqManPowerDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (!itemToDelete) return;
-    setRows((prev) => prev.filter((r) => r.id !== itemToDelete.id).map((r, idx) => ({ ...r, no: idx + 1 })));
+    setRows((prev) =>
+      prev
+        .filter((r) => r.id !== itemToDelete.id)
+        .map((r, idx) => ({ ...r, no: idx + 1 }))
+    );
     setItemToDelete(null);
     setDeleteModalOpen(false);
   };
@@ -151,13 +160,17 @@ const ReqManPowerDashboard: React.FC = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">REQ MAN POWER</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">
+            REQ MAN POWER
+          </h1>
 
           {/* Search & Filters */}
           <div className="space-y-4 mb-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Departemen</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Departemen
+                </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -176,7 +189,9 @@ const ReqManPowerDashboard: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Posisi</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Posisi
+                </label>
                 <input
                   type="text"
                   value={searchPosisi}
@@ -238,55 +253,95 @@ const ReqManPowerDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100" onClick={() => handleSort("no")}>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort("no")}
+                  >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
                       {sortField === "no" && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Departemen</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Posisi (Tgl Req)</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Kualifikasi</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Approval Direksi</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Approval Head Dept</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Departemen
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Posisi (Tgl Req)
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Kualifikasi
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Approval Direksi
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Approval Head Dept
+                  </th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
                   <tr
                     key={item.id}
-                    className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-25"} ${
-                      animateRows ? "animate-in fade-in slide-in-from-bottom-2" : "opacity-0"
+                    className={`hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
                     }`}
                     style={{
                       animationDelay: animateRows ? `${index * 80}ms` : "0ms",
                       animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.departemen}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.posisi} ({new Date(item.tanggalReq).toLocaleDateString("id-ID")})</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.departemen}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.posisi} (
+                      {new Date(item.tanggalReq).toLocaleDateString("id-ID")})
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900 max-w-md">
-                      <div className="truncate" title={item.kualifikasi}>{item.kualifikasi}</div>
+                      <div className="truncate" title={item.kualifikasi}>
+                        {item.kualifikasi}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        item.approvalDireksi === "Approved" ? "bg-green-100 text-green-800" :
-                        item.approvalDireksi === "Rejected" ? "bg-red-100 text-red-800" :
-                        "bg-yellow-100 text-yellow-800"
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          item.approvalDireksi === "Approved"
+                            ? "bg-green-100 text-green-800"
+                            : item.approvalDireksi === "Rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         {item.approvalDireksi}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        item.approvalHead === "Approved" ? "bg-green-100 text-green-800" :
-                        item.approvalHead === "Rejected" ? "bg-red-100 text-red-800" :
-                        "bg-yellow-100 text-yellow-800"
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          item.approvalHead === "Approved"
+                            ? "bg-green-100 text-green-800"
+                            : item.approvalHead === "Rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         {item.approvalHead}
                       </span>
                     </td>
@@ -318,7 +373,9 @@ const ReqManPowerDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filtered.length)} of {filtered.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filtered.length)} of {filtered.length}{" "}
+                entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -332,14 +389,18 @@ const ReqManPowerDashboard: React.FC = () => {
                 <button
                   onClick={() => setCurrentPage(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-                    currentPage === 1 ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100"
+                    currentPage === 1
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   1
                 </button>
 
                 <button
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -355,7 +416,12 @@ const ReqManPowerDashboard: React.FC = () => {
       <ReqManPowerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={(data) => handleSave({ ...(initialModalData as any), ...data } as ReqManPowerFormData)}
+        onSave={(data) =>
+          handleSave({
+            ...(initialModalData as any),
+            ...data,
+          } as ReqManPowerFormData)
+        }
         initialData={initialModalData}
         readOnly={readOnlyModal}
       />

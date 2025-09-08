@@ -1,34 +1,79 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Calendar } from 'lucide-react';
-import UtilityModal, { UtilityForm } from './UtilityModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
+  Clock,
+  Edit,
+  Trash2,
+  Calendar,
+} from "lucide-react";
+import UtilityModal, { UtilityForm } from "./UtilityModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-interface UtilityItem extends UtilityForm { id: string }
+interface UtilityItem extends UtilityForm {
+  id: string;
+}
 
 const seedData = (): UtilityItem[] => [
-  { id: '1', jenis: 'Listrik', lokasi: 'Kantor Pusat', periode: '2025-08', pemakaian: '1.250 kWh', biaya: '5.250.000', status: 'Belum Bayar', jatuhTempo: '2025-09-10', keterangan: 'Tagihan PLN Agustus' },
-  { id: '2', jenis: 'Air', lokasi: 'Gudang A', periode: '2025-08', pemakaian: '30 m3', biaya: '750.000', status: 'Lunas', jatuhTempo: '2025-09-05', keterangan: 'PDAM' },
-  { id: '3', jenis: 'Internet', lokasi: 'Kantor Pusat', periode: '2025-08', pemakaian: '100 Mbps', biaya: '1.200.000', status: 'Terlambat', jatuhTempo: '2025-09-01', keterangan: 'ISP Fiber' },
+  {
+    id: "1",
+    jenis: "Listrik",
+    lokasi: "Kantor Pusat",
+    periode: "2025-08",
+    pemakaian: "1.250 kWh",
+    biaya: "5.250.000",
+    status: "Belum Bayar",
+    jatuhTempo: "2025-09-10",
+    keterangan: "Tagihan PLN Agustus",
+  },
+  {
+    id: "2",
+    jenis: "Air",
+    lokasi: "Gudang A",
+    periode: "2025-08",
+    pemakaian: "30 m3",
+    biaya: "750.000",
+    status: "Lunas",
+    jatuhTempo: "2025-09-05",
+    keterangan: "PDAM",
+  },
+  {
+    id: "3",
+    jenis: "Internet",
+    lokasi: "Kantor Pusat",
+    periode: "2025-08",
+    pemakaian: "100 Mbps",
+    biaya: "1.200.000",
+    status: "Terlambat",
+    jatuhTempo: "2025-09-01",
+    keterangan: "ISP Fiber",
+  },
 ];
 
-const statusPill = (status: UtilityItem['status']) => {
+const statusPill = (status: UtilityItem["status"]) => {
   switch (status) {
-    case 'Lunas': return 'bg-green-100 text-green-800 border-green-200';
-    case 'Proses': return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'Terlambat': return 'bg-red-100 text-red-800 border-red-200';
-    case 'Belum Bayar':
-    default: return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case "Lunas":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "Proses":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "Terlambat":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "Belum Bayar":
+    default:
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
   }
 };
 
 const GeneralUtilityDashboard: React.FC = () => {
   // Filters
-  const [searchLokasi, setSearchLokasi] = useState('');
-  const [jenisFilter, setJenisFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [periode, setPeriode] = useState('');
-  const [dueFrom, setDueFrom] = useState('');
-  const [dueTo, setDueTo] = useState('');
+  const [searchLokasi, setSearchLokasi] = useState("");
+  const [jenisFilter, setJenisFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [periode, setPeriode] = useState("");
+  const [dueFrom, setDueFrom] = useState("");
+  const [dueTo, setDueTo] = useState("");
 
   // Data
   const [data, setData] = useState<UtilityItem[]>(seedData());
@@ -43,16 +88,25 @@ const GeneralUtilityDashboard: React.FC = () => {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [goToPageInput, setGoToPageInput] = useState('');
+  const [goToPageInput, setGoToPageInput] = useState("");
 
-  useEffect(() => { const t = setTimeout(() => setAnimateRows(true), 100); return () => clearTimeout(t); }, []);
+  useEffect(() => {
+    const t = setTimeout(() => setAnimateRows(true), 100);
+    return () => clearTimeout(t);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = searchLokasi.trim().toLowerCase();
-    return data.filter(d => {
-      const matchText = q ? `${d.lokasi} ${d.keterangan ?? ''}`.toLowerCase().includes(q) : true;
-      const matchJenis = jenisFilter ? d.jenis === (jenisFilter as UtilityItem['jenis']) : true;
-      const matchStatus = statusFilter ? d.status === (statusFilter as UtilityItem['status']) : true;
+    return data.filter((d) => {
+      const matchText = q
+        ? `${d.lokasi} ${d.keterangan ?? ""}`.toLowerCase().includes(q)
+        : true;
+      const matchJenis = jenisFilter
+        ? d.jenis === (jenisFilter as UtilityItem["jenis"])
+        : true;
+      const matchStatus = statusFilter
+        ? d.status === (statusFilter as UtilityItem["status"])
+        : true;
       const matchPeriode = periode ? d.periode === periode : true;
 
       const due = new Date(d.jatuhTempo);
@@ -73,9 +127,11 @@ const GeneralUtilityDashboard: React.FC = () => {
 
   const handleSave = (form: UtilityForm) => {
     if (editingItem) {
-      setData(prev => prev.map(x => (x.id === editingItem.id ? { ...x, ...form } : x)));
+      setData((prev) =>
+        prev.map((x) => (x.id === editingItem.id ? { ...x, ...form } : x))
+      );
     } else {
-      setData(prev => [{ id: `${Date.now()}`, ...form }, ...prev]);
+      setData((prev) => [{ id: `${Date.now()}`, ...form }, ...prev]);
       setCurrentPage(1);
     }
     setIsModalOpen(false);
@@ -83,13 +139,18 @@ const GeneralUtilityDashboard: React.FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    setData(prev => prev.filter(x => x.id !== id));
+    setData((prev) => prev.filter((x) => x.id !== id));
     setIsDeleteOpen(false);
     setDeleteTarget(null);
   };
 
-  const handlePageChange = (page: number) => setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  const handleGoToPage = () => { if (!goToPageInput) return; const n = parseInt(goToPageInput, 10); if (!isNaN(n)) handlePageChange(n); };
+  const handlePageChange = (page: number) =>
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  const handleGoToPage = () => {
+    if (!goToPageInput) return;
+    const n = parseInt(goToPageInput, 10);
+    if (!isNaN(n)) handlePageChange(n);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -98,16 +159,22 @@ const GeneralUtilityDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">GENERAL UTILITY</h1>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+                GENERAL UTILITY
+              </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">GA</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  GA
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-semibold">General Utility</span>
+                <span className="text-blue-600 font-semibold">
+                  General Utility
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -121,7 +188,9 @@ const GeneralUtilityDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-6">
             {/* Cari Lokasi/Keterangan */}
             <div className="space-y-2 lg:col-span-2">
-              <label className="block text-xs font-medium text-gray-700">Cari Lokasi / Keterangan</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Cari Lokasi / Keterangan
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -136,7 +205,9 @@ const GeneralUtilityDashboard: React.FC = () => {
 
             {/* Jenis */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Jenis</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Jenis
+              </label>
               <select
                 value={jenisFilter}
                 onChange={(e) => setJenisFilter(e.target.value)}
@@ -154,7 +225,9 @@ const GeneralUtilityDashboard: React.FC = () => {
 
             {/* Status */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Status</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Status
+              </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -170,7 +243,9 @@ const GeneralUtilityDashboard: React.FC = () => {
 
             {/* Periode */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Periode</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Periode
+              </label>
               <input
                 type="month"
                 value={periode}
@@ -181,23 +256,40 @@ const GeneralUtilityDashboard: React.FC = () => {
 
             {/* Jatuh tempo range */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Jatuh Tempo Dari</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Jatuh Tempo Dari
+              </label>
               <div className="relative">
-                <input type="date" value={dueFrom} onChange={(e) => setDueFrom(e.target.value)} className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs" />
+                <input
+                  type="date"
+                  value={dueFrom}
+                  onChange={(e) => setDueFrom(e.target.value)}
+                  className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                />
                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Sampai</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Sampai
+              </label>
               <div className="relative">
-                <input type="date" value={dueTo} onChange={(e) => setDueTo(e.target.value)} className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs" />
+                <input
+                  type="date"
+                  value={dueTo}
+                  onChange={(e) => setDueTo(e.target.value)}
+                  className="w-full px-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                />
                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
             {/* Search Button */}
             <div className="lg:col-span-1 flex items-end">
-              <button onClick={handleSearch} className="w-full px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2 text-xs">
+              <button
+                onClick={handleSearch}
+                className="w-full px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2 text-xs"
+              >
                 <Search className="h-4 w-4" />
                 <span>Cari</span>
               </button>
@@ -206,7 +298,13 @@ const GeneralUtilityDashboard: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2 mt-6">
-            <button onClick={() => { setEditingItem(null); setIsModalOpen(true); }} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs">
+            <button
+              onClick={() => {
+                setEditingItem(null);
+                setIsModalOpen(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah Utility</span>
             </button>
@@ -227,34 +325,97 @@ const GeneralUtilityDashboard: React.FC = () => {
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jenis</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Lokasi</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Periode</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Pemakaian</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Biaya (Rp)</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jatuh Tempo</th>
-                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Status</th>
-                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    No
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Jenis
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Lokasi
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Periode
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Pemakaian
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Biaya (Rp)
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Jatuh Tempo
+                  </th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">
+                    Status
+                  </th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr key={item.id} className={`hover:bg-gray-50 transition-all duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'} ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`} style={{ animationDelay: animateRows ? `${index * 100}ms` : '0ms', animationFillMode: 'forwards' }}>
-                    <td className="px-2 py-1"><span className="font-medium text-gray-900">{startIndex + index + 1}</span></td>
-                    <td className="px-2 py-1 font-medium text-gray-900">{item.jenis}</td>
+                  <tr
+                    key={item.id}
+                    className={`hover:bg-gray-50 transition-all duration-200 ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
+                    }}
+                  >
+                    <td className="px-2 py-1">
+                      <span className="font-medium text-gray-900">
+                        {startIndex + index + 1}
+                      </span>
+                    </td>
+                    <td className="px-2 py-1 font-medium text-gray-900">
+                      {item.jenis}
+                    </td>
                     <td className="px-2 py-1 text-gray-700">{item.lokasi}</td>
                     <td className="px-2 py-1 text-gray-700">{item.periode}</td>
-                    <td className="px-2 py-1 text-gray-700">{item.pemakaian}</td>
+                    <td className="px-2 py-1 text-gray-700">
+                      {item.pemakaian}
+                    </td>
                     <td className="px-2 py-1 text-gray-700">{item.biaya}</td>
-                    <td className="px-2 py-1 text-gray-700">{new Date(item.jatuhTempo).toLocaleDateString('id-ID')}</td>
-                    <td className="px-2 py-1 text-center"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusPill(item.status)}`}>{item.status}</span></td>
+                    <td className="px-2 py-1 text-gray-700">
+                      {new Date(item.jatuhTempo).toLocaleDateString("id-ID")}
+                    </td>
+                    <td className="px-2 py-1 text-center">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusPill(
+                          item.status
+                        )}`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
                     <td className="px-2 py-1">
                       <div className="flex items-center justify-center space-x-1">
-                        <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110" title="Edit">
+                        <button
+                          onClick={() => {
+                            setEditingItem(item);
+                            setIsModalOpen(true);
+                          }}
+                          className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          title="Edit"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button onClick={() => { setDeleteTarget(item); setIsDeleteOpen(true); }} className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110" title="Delete">
+                        <button
+                          onClick={() => {
+                            setDeleteTarget(item);
+                            setIsDeleteOpen(true);
+                          }}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                          title="Delete"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -270,12 +431,20 @@ const GeneralUtilityDashboard: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center flex-wrap gap-2 text-xs text-gray-700">
                 <span>
-                  Showing {filtered.length === 0 ? 0 : startIndex + 1} to {endIndex} of {filtered.length} entries
+                  Showing {filtered.length === 0 ? 0 : startIndex + 1} to{" "}
+                  {endIndex} of {filtered.length} entries
                 </span>
                 <span className="hidden sm:inline text-gray-300">|</span>
                 <label className="flex items-center gap-2">
                   <span className="text-gray-600">Rows per page:</span>
-                  <select value={itemsPerPage} onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }} className="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     <option value={5}>5</option>
                     <option value={10}>10</option>
                     <option value={20}>20</option>
@@ -285,18 +454,48 @@ const GeneralUtilityDashboard: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <button key={page} onClick={() => handlePageChange(page)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 ${currentPage === page ? 'bg-blue-600 text-white shadow shadow-blue-600/20' : 'text-gray-700 hover:bg-white hover:text-blue-600'}`}>
-                    {page}
-                  </button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow shadow-blue-600/20"
+                          : "text-gray-700 hover:bg-white hover:text-blue-600"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-2 text-xs">
                 <span className="text-gray-600">Go to page:</span>
-                <input type="number" min={1} max={Math.max(1, totalPages)} value={goToPageInput} onChange={(e) => setGoToPageInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleGoToPage(); } }} className="w-16 px-2 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <button onClick={handleGoToPage} className="px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs">Go</button>
-                <span className="text-gray-500">/ {Math.max(1, totalPages)}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={Math.max(1, totalPages)}
+                  value={goToPageInput}
+                  onChange={(e) => setGoToPageInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleGoToPage();
+                    }
+                  }}
+                  className="w-16 px-2 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={handleGoToPage}
+                  className="px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs"
+                >
+                  Go
+                </button>
+                <span className="text-gray-500">
+                  / {Math.max(1, totalPages)}
+                </span>
               </div>
             </div>
           </div>
@@ -305,27 +504,39 @@ const GeneralUtilityDashboard: React.FC = () => {
 
       <UtilityModal
         isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingItem(null);
+        }}
         onSave={handleSave}
-        initialData={editingItem ? {
-          jenis: editingItem.jenis,
-          lokasi: editingItem.lokasi,
-          periode: editingItem.periode,
-          pemakaian: editingItem.pemakaian,
-          biaya: editingItem.biaya,
-          status: editingItem.status,
-          jatuhTempo: editingItem.jatuhTempo,
-          keterangan: editingItem.keterangan,
-        } : null}
-        title={editingItem ? 'Edit Utility' : 'Tambah Utility'}
-        submitLabel={editingItem ? 'Update' : 'Simpan'}
+        initialData={
+          editingItem
+            ? {
+                jenis: editingItem.jenis,
+                lokasi: editingItem.lokasi,
+                periode: editingItem.periode,
+                pemakaian: editingItem.pemakaian,
+                biaya: editingItem.biaya,
+                status: editingItem.status,
+                jatuhTempo: editingItem.jatuhTempo,
+                keterangan: editingItem.keterangan,
+              }
+            : null
+        }
+        title={editingItem ? "Edit Utility" : "Tambah Utility"}
+        submitLabel={editingItem ? "Update" : "Simpan"}
       />
 
       <ConfirmDeleteModal
         isOpen={isDeleteOpen}
-        onClose={() => { setIsDeleteOpen(false); setDeleteTarget(null); }}
+        onClose={() => {
+          setIsDeleteOpen(false);
+          setDeleteTarget(null);
+        }}
         onConfirm={() => deleteTarget && handleDelete(deleteTarget.id)}
-        itemName={`${deleteTarget?.jenis ?? ''} - ${deleteTarget?.lokasi ?? ''}`}
+        itemName={`${deleteTarget?.jenis ?? ""} - ${
+          deleteTarget?.lokasi ?? ""
+        }`}
       />
     </div>
   );
