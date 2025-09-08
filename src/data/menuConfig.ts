@@ -1387,10 +1387,30 @@ export const proconMenu: MenuSection[] = [
     directPath: "/procon/dashboard",
   },
   {
-    title: "Invoice",
-    icon: "FileInvoice",
+    title: "Kontrak Expenditure",
+    icon: "FileText",
     items: [],
-    directPath: "/procon/invoice",
+    directPath: "/procon/kontrak-expenditure",
+  },
+  {
+    title: "Sales Order",
+    icon: "ShoppingCart",
+    items: [],
+    directPath: "/procon/sales-order/dashboard",
+  },
+  {
+    title: "HPP Project",
+    icon: "Calculator",
+    items: [],
+    directPath: "/procon/hpp-induk/dashboard",
+  },
+  {
+    title: "Proforma Invoice",
+    icon: "ReceiptText",
+    items: [
+      { title: "Dashboard", icon: "LayoutDashboard", path: "/procon/proforma-invoice/dashboard" },
+      { title: "Pembuatan PI", icon: "FilePlus", path: "/procon/proforma-invoice/pembuatan" },
+    ],
   },
   {
     title: "Laporan",
