@@ -145,6 +145,7 @@ import MonitoringPBGDashboard from "./MonitoringPBGDashboard";
 import MonitoringRFIDashboard from "./MonitoringRFIDashboard";
 import QHSEMasterKPIDashboard from "./QHSEMasterKPIDashboard";
 import QHSEListKPIDashboard from "./QHSEListKPIDashboard";
+import ProconApprovalPBGDashboard from "./ProconApprovalPBGDashboard";
 
 // Accounting Dashboards
 import AccountingMainDashboard from "./AccountingMainDashboard";
@@ -175,6 +176,16 @@ import ProconPembuatanPIDashboard from "./ProconPembuatanPIDashboard";
 import ProconHPPIndukDashboard from "./ProconHPPIndukDashboard";
 import LaporanLabaRugi from "./LaporanLabaRugi";
 import LaporanPerSO from "./LaporanPerSO";
+import ProconLRPDashboard from "./ProconLRPDashboard";
+import ProconLRPTunjanganTimesheetTeknisi from "./ProconLRPTunjanganTimesheetTeknisi";
+import ProconLRPGaji from "./ProconLRPGaji";
+import ProconLRPTimesheetBarang from "./ProconLRPTimesheetBarang";
+import ProconLRPKasKeluar from "./ProconLRPKasKeluar";
+import ProconLRPBankKeluar from "./ProconLRPBankKeluar";
+import ProconApprovalPurchaseRequest from "./ProconApprovalPurchaseRequest";
+import ProconPODashboard from "./ProconPODashboard";
+import ProconPOProses from "./ProconPOProses";
+import ProconPOApproval from "./ProconPOApproval";
 // NEW: Procon Approval Dashboards
 import ApprovalPoJasa from "../pages/procon/approval/ApprovalPoJasa";
 import ApprovalTimesheet from "../pages/procon/approval/ApprovalTimesheet";
@@ -643,6 +654,101 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/procon/hpp-induk/dashboard") {
       return <ProconHPPIndukDashboard />;
+    }
+    // Procon Laba Rugi Project (LRP)
+    if (currentPage === "/procon/lrp/dashboard") {
+      return <ProconLRPDashboard />;
+    }
+    if (currentPage === "/procon/lrp/tunjangan-timesheet-teknisi") {
+      return <ProconLRPTunjanganTimesheetTeknisi />;
+    }
+    if (currentPage === "/procon/lrp/gaji") {
+      return <ProconLRPGaji />;
+    }
+    if (currentPage === "/procon/lrp/timesheet-barang") {
+      return <ProconLRPTimesheetBarang />;
+    }
+    if (currentPage === "/procon/lrp/kas-keluar") {
+      return <ProconLRPKasKeluar />;
+    }
+    if (currentPage === "/procon/lrp/bank-keluar") {
+      return <ProconLRPBankKeluar />;
+    }
+    // Procon Purchase Request
+    if (currentPage === "/procon/purchase-request/dashboard") {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === "/procon/purchase-request/proses") {
+      return <GeneralProsesPurchasingRequest />;
+    }
+    if (currentPage === "/procon/purchase-request/approval") {
+      return <ProconApprovalPurchaseRequest />;
+    }
+    // Procon Purchase Order
+    if (currentPage === "/procon/purchase-order/dashboard") {
+      return <ProconPODashboard />;
+    }
+    if (currentPage === "/procon/purchase-order/proses") {
+      return <ProconPOProses />;
+    }
+    if (currentPage === "/procon/purchase-order/approval") {
+      return <ProconPOApproval />;
+    }
+    // Procon General Routes (mirror General components)
+    if (currentPage === "/procon/general/kpi/dashboard") {
+      return <DashboardKPIDashboard />;
+    }
+    if (currentPage === "/procon/general/kpi/master") {
+      return <GeneralMasterKPIDashboard />;
+    }
+    if (currentPage === "/procon/general/kpi/list") {
+      return <GeneralListKPIDashboard />;
+    }
+    if (currentPage === "/procon/general/voucher/dashboard") {
+      return <GeneralVoucherDashboard />;
+    }
+    if (currentPage === "/procon/general/voucher/proses") {
+      return <GeneralProsesVoucherDashboard />;
+    }
+    if (currentPage === "/procon/general/voucher/pertanggungjawaban") {
+      return <GeneralPertanggungJawabanVoucherDashboard />;
+    }
+    if (currentPage === "/procon/general/reimburse/dashboard") {
+      return <GeneralReimburseDashboard />;
+    }
+    if (currentPage === "/procon/general/reimburse/proses") {
+      return <GeneralProsesReimburseDashboard />;
+    }
+    if (currentPage === "/procon/general/cash-advance/dashboard") {
+      return <GeneralCashAdvanceDashboard />;
+    }
+    if (currentPage === "/procon/general/cash-advance/proses") {
+      return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/procon/general/purchase-request/dashboard") {
+      return <GeneralPurchasingRequestDashboard />;
+    }
+    if (currentPage === "/procon/general/purchase-request/proses") {
+      return <GeneralProsesPurchasingRequest />;
+    }
+    if (currentPage === "/procon/general/cuti/pengajuan") {
+      return <GeneralPengajuanCutiDashboard />;
+    }
+    if (currentPage === "/procon/general/cuti/approve") {
+      return <GeneralApproveCutiDashboard />;
+    }
+    // Procon General > PBG
+    if (currentPage === "/procon/general/pbg/mutasi-barang") {
+      return <MutasiBarangDashboard />;
+    }
+    if (currentPage === "/procon/general/pbg/timesheet-barang") {
+      return <TimesheetBarangGudangDashboard />;
+    }
+    if (currentPage === "/procon/general/pbg/permintaan-barang-gudang") {
+      return <PermintaanBarangGudangDashboard />;
+    }
+    if (currentPage === "/procon/general/pbg/approval") {
+      return <ProconApprovalPBGDashboard />;
     }
     if (currentPage === "/marketing/report-kontrak") {
       return <ReportKontrakDashboard />;
