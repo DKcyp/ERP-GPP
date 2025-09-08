@@ -47,14 +47,7 @@ const Navbar: React.FC = () => {
               onClick={() => setProfileDropdown(!profileDropdown)}
               className="flex items-center space-x-3 p-3 rounded-xl hover:bg-white/70 hover:shadow-md transition-all duration-300 border border-transparent hover:border-blue-100 backdrop-blur-sm"
             >
-              <div className="relative">
-                <img
-                  src={user?.profilePicture}
-                  alt={user?.fullName}
-                  className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-200 hover:ring-blue-300 transition-all duration-300"
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
-              </div>
+              {/* Removed profile photo as requested */}
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-semibold text-gray-900">{user?.fullName}</p>
                 <p className="text-xs text-blue-600 capitalize font-medium">{user?.role}</p>
