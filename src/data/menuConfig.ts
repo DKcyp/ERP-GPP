@@ -75,7 +75,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
-    // Purchase Request is hidden for Procon role; shown for others
+    // Purchase Request for non-procon roles
     ...(role !== "procon"
       ? [
           {
@@ -92,6 +92,25 @@ const createGeneralMenu = (role: string): MenuSection => ({
                 icon: "FilePlus",
                 path: `/${role}/general/purchase-request/proses`,
               },
+            ],
+          },
+        ]
+      : []),
+    // For procon, include Purchase Request and Purchase Order inside General
+    ...(role === "procon"
+      ? [
+          {
+            title: "Purchase Request",
+            icon: "ShoppingCart",
+            items: [
+              { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
+            ],
+          },
+          {
+            title: "Purchase Order",
+            icon: "FileBox",
+            items: [
+              { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
             ],
           },
         ]
@@ -189,7 +208,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
 
 export const marketingMenu: MenuSection[] = [
   {
-    title: "Main Dashboard", // NEW: Main Dashboard for Marketing
+    title: "Dashboard", // NEW: Main Dashboard for Marketing
     icon: "Home",
     items: [],
     directPath: "/marketing/dashboard",
@@ -258,7 +277,7 @@ export const marketingMenu: MenuSection[] = [
 // GA Menu
 export const gaMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/ga/dashboard",
@@ -382,7 +401,7 @@ export const gaMenu: MenuSection[] = [
 
 export const operationalMenu: MenuSection[] = [
   {
-    title: "Main Dashboard", // NEW: Main Dashboard for Operational
+    title: "Dashboard", // NEW: Main Dashboard for Operational
     icon: "Home",
     items: [],
     directPath: "/operational/dashboard",
@@ -502,7 +521,7 @@ export const operationalMenu: MenuSection[] = [
 
 export const hrdMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/hrd/dashboard",
@@ -686,7 +705,7 @@ export const hrdMenu: MenuSection[] = [
 
 export const pengadaanMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/pengadaan/dashboard",
@@ -780,7 +799,7 @@ export const pengadaanMenu: MenuSection[] = [
 
 export const financeMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/finance/dashboard",
@@ -901,7 +920,7 @@ export const financeMenu: MenuSection[] = [
 
 export const gudangMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/gudang/dashboard",
@@ -1447,16 +1466,10 @@ export const taxMenu: MenuSection[] = [
 // Procon Menu
 export const proconMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/procon/dashboard",
-  },
-  {
-    title: "Kontrak Expenditure",
-    icon: "FileText",
-    items: [],
-    directPath: "/procon/kontrak-expenditure",
   },
   {
     title: "Sales Order",
@@ -1464,12 +1477,7 @@ export const proconMenu: MenuSection[] = [
     items: [],
     directPath: "/procon/sales-order/dashboard",
   },
-  {
-    title: "HPP Project",
-    icon: "Calculator",
-    items: [],
-    directPath: "/procon/hpp-induk/dashboard",
-  },
+  
   {
     title: "Proforma Invoice",
     icon: "ReceiptText",
@@ -1514,8 +1522,30 @@ export const proconMenu: MenuSection[] = [
       },
     ],
   },
+  // New sections requested for Procon: Marketing, Operasional, Procurement, Finance
   {
-    title: "Purchase Request",
+    title: "Marketing",
+    icon: "Megaphone",
+    items: [
+      { title: "Kontrak Deal", icon: "FileCheck", path: "/marketing/kontrak-deal/dashboard" },
+      { title: "HPP Induk", icon: "Calculator", path: "/marketing/hpp-induk/dashboard" },
+      { title: "Sales Order", icon: "ShoppingCart", path: "/marketing/sales-order/dashboard" },
+      { title: "Kick Off Meeting", icon: "Users", path: "/marketing/kick-off-meeting" },
+      { title: "Insentif Marketing", icon: "Award", path: "/marketing/insentif" },
+    ],
+  },
+  {
+    title: "Operasional",
+    icon: "Settings",
+    items: [
+      { title: "HPP Turunan", icon: "Calculator", path: "/operational/hpp-turunan/dashboard" },
+      { title: "Proses Produksi", icon: "Cog", path: "/operational/produksi/proses" },
+      { title: "Timesheet", icon: "Clock", path: "/operational/timesheet/dashboard" },
+      { title: "Report", icon: "FileText", path: "/operational/produksi/dashboard" },
+    ],
+  },
+  {
+    title: "Procurement",
     icon: "ShoppingCart",
     items: [
       {
@@ -1536,8 +1566,8 @@ export const proconMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Purchase Order",
-    icon: "FileBox",
+    title: "Finance",
+    icon: "DollarSign",
     items: [
       {
         title: "Dashboard Purchase Order",

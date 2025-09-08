@@ -65,6 +65,8 @@ const ProconOverviewDashboard: React.FC = () => {
     },
   ];
 
+  const formatRupiah = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
@@ -197,6 +199,57 @@ const ProconOverviewDashboard: React.FC = () => {
                     </tr>
                   );
                 })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Kontrak Expenditure (moved table) */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-2">
+            <BarChart2 className="h-6 w-6 text-blue-600" />
+            <span>Kontrak Expenditure</span>
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-xs">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nama Client</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nomor SO Induk & SO Turunan</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Durasi Kontrak (Tanggal awal - akhir kontrak)</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Nilai Kontrak</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Absorb Kontrak</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Remaining Kontrak</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Next Estimasi Tagihan</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Delay Penagihan</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Paid Date</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Keterangan pekerjaan project</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {projectPerformanceData.map((row, idx) => (
+                  <tr key={`${row.soInduk}-${row.soTurunan}-${idx}`} className="hover:bg-gray-50">
+                    <td className="px-3 py-2 text-gray-900 font-medium">{row.clientName}</td>
+                    <td className="px-3 py-2">
+                      <div className="flex flex-col">
+                        <span className="text-gray-900 font-medium">{row.soInduk}</span>
+                        <span className="text-gray-500">{row.soTurunan}</span>
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 text-gray-700">{row.contractStart} - {row.contractEnd}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.contractValue)}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.absorbKontrak)}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.remainingKontrak)}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.nextEstimasiTagihan}</td>
+                    <td className="px-3 py-2">
+                      <span className={`px-2 py-0.5 inline-flex text-[10px] leading-5 font-semibold rounded-full ${row.delayPenagihan <= 0 ? 'bg-green-100 text-green-800' : row.delayPenagihan <= 7 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                        {row.delayPenagihan > 0 ? `${row.delayPenagihan} hari` : 'On time'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-gray-700">{row.paidDate}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.keterangan}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
