@@ -77,6 +77,8 @@ import FinancePembayaranGajiPage from "./FinancePembayaranGajiPage";
 import ReportKontrakDashboard from "./ReportKontrakDashboard";
 import InsentifMarketingDashboard from "./InsentifMarketingDashboard";
 import FinanceBuktiKasMasukDashboard from "./FinanceBuktiKasMasukDashboard";
+import FinanceBuktiKasKeluarDashboard from "./FinanceBuktiKasKeluarDashboard";
+import FinanceLaporanKasKecilDashboard from "./FinanceLaporanKasKecilDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1138,6 +1140,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/kas/bukti-kas-masuk") {
       return <FinanceBuktiKasMasukDashboard />;
+    }
+    if (currentPage === "/finance/kas/bukti-kas-keluar") {
+      return <FinanceBuktiKasKeluarDashboard />;
+    }
+    if (currentPage === "/finance/kas/laporan-kas-kecil") {
+      return <FinanceLaporanKasKecilDashboard />;
     }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
