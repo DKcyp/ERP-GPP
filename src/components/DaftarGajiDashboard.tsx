@@ -20,7 +20,7 @@ const DaftarGajiDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<GajiData | null>(null);
-  const [sortField, setSortField] = useState<keyof GajiData | null>(null);
+  const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Sample data matching the image
@@ -76,7 +76,7 @@ const DaftarGajiDashboard: React.FC = () => {
     setGajiData(prev => [newGaji, ...prev.map(g => ({ ...g, no: g.no + 1 }))]);
   };
 
-  const handleSort = (field: keyof GajiData) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -108,17 +108,34 @@ const DaftarGajiDashboard: React.FC = () => {
     );
   });
 
+  // Helpers for currency parsing and totals
+  const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
+  const totalIncome = (g: GajiData) => toNumber(g.gajiPokok) + toNumber(g.tunjangan);
+  const totalDeduct = (g: GajiData) => toNumber(g.pph21) + toNumber(g.potonganMess);
+
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
-      return aValue > bValue ? 1 : -1;
+    let av: number | string = '';
+    let bv: number | string = '';
+    if (sortField === 'no') {
+      av = a.no; bv = b.no;
+    } else if (sortField === 'namaPegawai') {
+      av = a.namaPegawai.toLowerCase(); bv = b.namaPegawai.toLowerCase();
+    } else if (sortField === 'totalIncome') {
+      av = totalIncome(a); bv = totalIncome(b);
+    } else if (sortField === 'totalDeduct') {
+      av = totalDeduct(a); bv = totalDeduct(b);
+    } else if (sortField === 'gajiBersih') {
+      av = toNumber(a.gajiBersih); bv = toNumber(b.gajiBersih);
+    }
+
+    if (typeof av === 'string' && typeof bv === 'string') {
+      const res = av.localeCompare(bv);
+      return sortDirection === 'asc' ? res : -res;
     } else {
-      return aValue < bValue ? 1 : -1;
+      const res = (av as number) - (bv as number);
+      return sortDirection === 'asc' ? res : -res;
     }
   });
 
@@ -218,44 +235,22 @@ const DaftarGajiDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('gajiPokok')}
+                    onClick={() => handleSort('totalIncome')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Gaji Pokok</span>
-                      {sortField === 'gajiPokok' && (
+                      <span>Total Income</span>
+                      {sortField === 'totalIncome' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tunjangan')}
+                    onClick={() => handleSort('totalDeduct')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Tunjangan</span>
-                      {sortField === 'tunjangan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('pph21')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>PPH 21</span>
-                      {sortField === 'pph21' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('potonganMess')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Potongan Mess</span>
-                      {sortField === 'potonganMess' && (
+                      <span>Total Deduct</span>
+                      {sortField === 'totalDeduct' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
@@ -288,10 +283,8 @@ const DaftarGajiDashboard: React.FC = () => {
                   >
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaPegawai}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.gajiPokok}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.tunjangan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.pph21}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.potonganMess}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{`Rp ${totalIncome(item).toLocaleString('id-ID')}`}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{`Rp ${totalDeduct(item).toLocaleString('id-ID')}`}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.gajiBersih}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">

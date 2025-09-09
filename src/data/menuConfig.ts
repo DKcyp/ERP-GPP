@@ -639,11 +639,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Banknote",
         path: "/hrd/pegawai/master-umr",
       },
-      {
-        title: "Approve PR Training",
-        icon: "GraduationCap",
-        path: "/hrd/pegawai/pr-training",
-      },
+      // {
+      //   title: "Approve PR Training",
+      //   icon: "GraduationCap",
+      //   path: "/hrd/pegawai/pr-training",
+      // },
     ],
   },
   {
@@ -663,12 +663,12 @@ export const hrdMenu: MenuSection[] = [
       {
         title: "Matrix Training",
         icon: "Grid",
-        path: "/hrd/training/matrix",
+        path: "/qhse/monitoring-personnel/training-matrix",
       },
       {
         title: "PR Training",
         icon: "ShoppingCart",
-        path: "/hrd/training/pr",
+        path: "/hrd/pegawai/pr-training",
       },
     ],
   },
@@ -677,8 +677,16 @@ export const hrdMenu: MenuSection[] = [
     icon: "Wallet",
     items: [
       { title: "Daftar Gaji", icon: "FileText", path: "/hrd/gaji/daftar" },
-      { title: "Pengajian", icon: "Calculator", path: "/hrd/gaji/pengajian" },
-      { title: "Potongan Gaji", icon: "Scissors", path: "/hrd/gaji/potongan" },
+      {
+        title: "Earning/Income",
+        icon: "Calculator",
+        path: "/hrd/gaji/pengajian",
+      },
+      {
+        title: "Deduct/Pengurangan",
+        icon: "Scissors",
+        path: "/hrd/gaji/potongan",
+      },
       {
         title: "History Peminjaman",
         icon: "History",

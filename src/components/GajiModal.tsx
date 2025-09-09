@@ -18,17 +18,13 @@ export interface GajiFormData {
 }
 
 const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
-  const [formData, setFormData] = useState<GajiFormData>({
-    namaPegawai: '',
-    gajiPokok: '',
-    tunjangan: '',
-    pph21: '',
-    potonganMess: '',
-    bpjs: '',
-    gajiBersih: ''
-  });
+  // Local form aligned with table columns
+  const [namaPegawai, setNamaPegawai] = useState<string>('');
+  const [totalIncome, setTotalIncome] = useState<string>('');
+  const [totalDeduct, setTotalDeduct] = useState<string>('');
+  const [gajiBersih, setGajiBersih] = useState<string>('');
 
-  const [errors, setErrors] = useState<Partial<GajiFormData>>({});
+  const [errors, setErrors] = useState<Partial<Record<'namaPegawai' | 'totalIncome' | 'totalDeduct', string>>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const pegawaiOptions = [
@@ -60,50 +56,32 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
     };
   }, [isOpen, onClose]);
 
-  // Auto calculate Gaji Bersih when other fields change
-  useEffect(() => {
-    const gajiPokok = parseFloat(formData.gajiPokok.replace(/[^\d]/g, '')) || 0;
-    const tunjangan = parseFloat(formData.tunjangan.replace(/[^\d]/g, '')) || 0;
-    const pph21 = parseFloat(formData.pph21.replace(/[^\d]/g, '')) || 0;
-    const potonganMess = parseFloat(formData.potonganMess.replace(/[^\d]/g, '')) || 0;
-    const bpjs = parseFloat(formData.bpjs.replace(/[^\d]/g, '')) || 0;
+  // Helpers: format Rupiah and parsing
+  const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
+  const formatRp = (n: number) => (n ? `Rp ${n.toLocaleString('id-ID')}` : '');
 
-    const gajiBersih = gajiPokok + tunjangan - pph21 - potonganMess - bpjs;
-    
-    setFormData(prev => ({
-      ...prev,
-      gajiBersih: gajiBersih > 0 ? `Rp ${gajiBersih.toLocaleString('id-ID')}` : ''
-    }));
-  }, [formData.gajiPokok, formData.tunjangan, formData.pph21, formData.potonganMess, formData.bpjs]);
+  // Auto calculate Gaji Bersih from totals
+  useEffect(() => {
+    const income = toNumber(totalIncome);
+    const deduct = toNumber(totalDeduct);
+    const bersih = Math.max(income - deduct, 0);
+    setGajiBersih(formatRp(bersih));
+  }, [totalIncome, totalDeduct]);
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<GajiFormData> = {};
-
-    if (!formData.namaPegawai.trim()) {
-      newErrors.namaPegawai = 'Nama Pegawai wajib dipilih';
-    }
-
-    if (!formData.gajiPokok.trim()) {
-      newErrors.gajiPokok = 'Gaji Pokok wajib diisi';
-    }
-
+    const newErrors: Partial<Record<'namaPegawai' | 'totalIncome' | 'totalDeduct', string>> = {};
+    if (!namaPegawai.trim()) newErrors.namaPegawai = 'Nama Pegawai wajib dipilih';
+    if (!totalIncome.trim()) newErrors.totalIncome = 'Total Income wajib diisi';
+    if (!totalDeduct.trim()) newErrors.totalDeduct = 'Total Deduct wajib diisi';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof GajiFormData, value: string) => {
-    // Format currency for numeric fields
-    if (['gajiPokok', 'tunjangan', 'pph21', 'potonganMess', 'bpjs'].includes(field)) {
-      const numericValue = value.replace(/[^\d]/g, '');
-      const formattedValue = numericValue ? `Rp ${parseInt(numericValue).toLocaleString('id-ID')}` : '';
-      setFormData(prev => ({ ...prev, [field]: formattedValue }));
-    } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    }
-    
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
+  const handleCurrencyChange = (setter: (v: string) => void, key: 'totalIncome' | 'totalDeduct') => (value: string) => {
+    const numericValue = value.replace(/[^\d]/g, '');
+    const formattedValue = numericValue ? `Rp ${parseInt(numericValue).toLocaleString('id-ID')}` : '';
+    setter(formattedValue);
+    setErrors(prev => ({ ...prev, [key]: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,20 +95,24 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    onSave(formData);
+    // Map totals to underlying fields so it aligns with table columns
+    const mapped: GajiFormData = {
+      namaPegawai,
+      gajiPokok: totalIncome, // map total income to gaji pokok
+      tunjangan: 'Rp 0',
+      pph21: totalDeduct, // map total deduct to pph21
+      potonganMess: 'Rp 0',
+      bpjs: 'Rp 0',
+      gajiBersih,
+    };
+    onSave(mapped);
     setIsLoading(false);
     
     // Reset form
-    setFormData({
-      namaPegawai: '',
-      gajiPokok: '',
-      tunjangan: '',
-      pph21: '',
-      potonganMess: '',
-      bpjs: '',
-      gajiBersih: ''
-    });
+    setNamaPegawai('');
+    setTotalIncome('');
+    setTotalDeduct('');
+    setGajiBersih('');
     setErrors({});
     onClose();
   };
@@ -164,14 +146,14 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
         <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
-              {/* Nama Pegawai */}
+              {/* Nama */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Pegawai <span className="text-red-500">*</span>
+                  Nama <span className="text-red-500">*</span>
                 </label>
                 <select
-                  value={formData.namaPegawai}
-                  onChange={(e) => handleInputChange('namaPegawai', e.target.value)}
+                  value={namaPegawai}
+                  onChange={(e) => { setNamaPegawai(e.target.value); setErrors(prev => ({ ...prev, namaPegawai: undefined })); }}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaPegawai ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
@@ -186,79 +168,42 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
                 )}
               </div>
 
-              {/* Gaji Pokok */}
+              {/* Total Income */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gaji Pokok <span className="text-red-500">*</span>
+                  Total Income <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  value={formData.gajiPokok}
-                  onChange={(e) => handleInputChange('gajiPokok', e.target.value)}
+                  value={totalIncome}
+                  onChange={(e) => handleCurrencyChange(setTotalIncome, 'totalIncome')(e.target.value)}
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.gajiPokok ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.totalIncome ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                  placeholder="Rp 5.000.000"
+                  placeholder="Rp 6.000.000"
                 />
-                {errors.gajiPokok && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gajiPokok}</p>
+                {errors.totalIncome && (
+                  <p className="mt-1 text-sm text-red-600">{errors.totalIncome}</p>
                 )}
               </div>
 
-              {/* Tunjangan */}
+              {/* Total Deduct */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tunjangan
+                  Total Deduct <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  value={formData.tunjangan}
-                  onChange={(e) => handleInputChange('tunjangan', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Rp 1.000.000"
+                  value={totalDeduct}
+                  onChange={(e) => handleCurrencyChange(setTotalDeduct, 'totalDeduct')(e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    errors.totalDeduct ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                  }`}
+                  placeholder="Rp 500.000"
                 />
-              </div>
-
-              {/* PPH 21 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  PPH 21
-                </label>
-                <input
-                  type="text"
-                  value={formData.pph21}
-                  onChange={(e) => handleInputChange('pph21', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Rp 250.000"
-                />
-              </div>
-
-              {/* Potongan Mess */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Potongan Mess
-                </label>
-                <input
-                  type="text"
-                  value={formData.potonganMess}
-                  onChange={(e) => handleInputChange('potonganMess', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Rp 100.000"
-                />
-              </div>
-
-              {/* BPJS */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  BPJS
-                </label>
-                <input
-                  type="text"
-                  value={formData.bpjs}
-                  onChange={(e) => handleInputChange('bpjs', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Rp 200.000"
-                />
+                {errors.totalDeduct && (
+                  <p className="mt-1 text-sm text-red-600">{errors.totalDeduct}</p>
+                )}
               </div>
 
               {/* Gaji Bersih (Read-only) */}
@@ -268,13 +213,13 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
                 </label>
                 <input
                   type="text"
-                  value={formData.gajiBersih}
+                  value={gajiBersih}
                   readOnly
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-700 font-medium"
                   placeholder="Rp 0"
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  Otomatis dihitung: Gaji Pokok + Tunjangan - PPH 21 - Potongan Mess - BPJS
+                  Otomatis dihitung: Total Income - Total Deduct
                 </p>
               </div>
             </div>

@@ -113,6 +113,8 @@ import GeneralPertanggungJawabanVoucherDashboard from "./GeneralPertanggungJawab
 import GeneralPengajuanCutiDashboard from "./GeneralPengajuanCutiDashboard"; // NEW: Pengajuan Cuti
 import GeneralApproveCutiDashboard from "./GeneralApproveCutiDashboard"; // NEW: Approve Cuti
 import PegawaiListCutiDashboard from "./PegawaiListCutiDashboard"; // NEW: HRD Pegawai List Cuti
+import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD List Training
+import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -616,6 +618,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/pegawai/list-cuti") {
       return <PegawaiListCutiDashboard />;
     }
+    if (currentPage === "/hrd/training/list") {
+      return <HRDTrainingListDashboard />;
+    }
+    if (currentPage === "/hrd/training/tna") {
+      return <HRDTNADashboard />;
+    }
+
     if (currentPage === "/hrd/gaji/daftar") {
       return <DaftarGajiDashboard />;
     }
