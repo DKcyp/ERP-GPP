@@ -1173,6 +1173,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/ap/laporan") {
       return <LaporanAPDashboard />;
     }
+    if (currentPage === "/finance/ap/laporan-outstanding-hutang") {
+      return <LaporanAPDashboard />;
+    }
     if (currentPage === "/finance/reimburse-voucher") {
       return <ReimburseVoucherDashboard />;
     }

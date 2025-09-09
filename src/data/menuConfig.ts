@@ -882,24 +882,24 @@ export const financeMenu: MenuSection[] = [
             path: "/finance/ap/dashboard",
           },
           {
-            title: "Laporan AP",
+            title: "Laporan Outstanding Hutang",
             icon: "FileText",
-            path: "/finance/ap/laporan",
+            path: "/finance/ap/laporan-outstanding-hutang",
           },
           {
-            title: "Pembayaran Gaji",
-            icon: "Banknote",
-            path: "/finance/ap/pembayaran-gaji",
-          }, // NEW: Pembayaran Gaji submenu
+            title: "Laporan Pembayaran Hutang",
+            icon: "FileText",
+            path: "/finance/ap/laporan-pembayaran-hutang",
+          },
         ],
       },
     ],
   },
   {
-    title: "Reimburse / Voucher",
-    icon: "Wallet", // Icon for Reimburse / Voucher
+    title: "Permintaan Pencairan Dana",
+    icon: "Wallet",
     items: [],
-    directPath: "/finance/reimburse-voucher",
+    directPath: "/finance/permintaan-pencairan-dana",
   },
   {
     title: "AR",
@@ -915,6 +915,11 @@ export const financeMenu: MenuSection[] = [
             path: "/finance/ar/dashboard",
           },
           {
+            title: "Invoice",
+            icon: "FileInvoice",
+            path: "/finance/ar/invoice",
+          },
+          {
             title: "Proses Pembayaran AR",
             icon: "Handshake",
             path: "/finance/ar/proses-pembayaran",
@@ -925,6 +930,42 @@ export const financeMenu: MenuSection[] = [
             path: "/finance/ar/laporan",
           },
         ],
+      },
+    ],
+  },
+  {
+    title: "Collection",
+    icon: "Wallet",
+    items: [
+      {
+        title: "DashBoard SO",
+        icon: "LayoutDashboard",
+        path: "/finance/collection/dashboard-so",
+      },
+      {
+        title: "DashBoard Proforma Invoice",
+        icon: "FileSignature",
+        path: "/finance/collection/dashboard-proforma-invoice",
+      },
+      {
+        title: "DashBoard Invoice",
+        icon: "FileText",
+        path: "/finance/collection/dashboard-invoice",
+      },
+      {
+        title: "DashBoard Invoice Outstanding",
+        icon: "FileBarChart",
+        path: "/finance/collection/dashboard-invoice-outstanding",
+      },
+      {
+        title: "DashBoard Cash in",
+        icon: "Banknote",
+        path: "/finance/collection/dashboard-cash-in",
+      },
+      {
+        title: "Database Customer",
+        icon: "Database",
+        path: "/finance/collection/database-customer",
       },
     ],
   },
@@ -979,6 +1020,18 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/voucher/laporan-hutang-usaha",
       },
     ],
+  },
+  {
+    title: "Reimburse / Voucher",
+    icon: "Wallet", // Icon for Reimburse / Voucher
+    items: [],
+    directPath: "/finance/reimburse-voucher",
+  },
+  {
+    title: "Tanda Terima Dokumeni",
+    icon: "FileText",
+    items: [],
+    directPath: "/finance/tanda-terima-dokumeni",
   },
 ];
 
