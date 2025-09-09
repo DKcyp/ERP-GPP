@@ -76,6 +76,14 @@ import LaporanARDashboard from "./LaporanARDashboard";
 import FinancePembayaranGajiPage from "./FinancePembayaranGajiPage";
 import ReportKontrakDashboard from "./ReportKontrakDashboard";
 import InsentifMarketingDashboard from "./InsentifMarketingDashboard";
+import FinanceBuktiKasMasukDashboard from "./FinanceBuktiKasMasukDashboard";
+import FinanceBuktiKasKeluarDashboard from "./FinanceBuktiKasKeluarDashboard";
+import FinanceLaporanKasKecilDashboard from "./FinanceLaporanKasKecilDashboard";
+import FinanceLaporanOutstandingCADashboard from "./FinanceLaporanOutstandingCADashboard";
+import FinanceBuktiBankMasukDashboard from "./FinanceBuktiBankMasukDashboard";
+import FinanceBuktiBankKeluarDashboard from "./FinanceBuktiBankKeluarDashboard";
+import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboard";
+import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1135,10 +1143,37 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/dashboard") {
       return <FinanceMainDashboard />;
     }
+    if (currentPage === "/finance/kas/bukti-kas-masuk") {
+      return <FinanceBuktiKasMasukDashboard />;
+    }
+    if (currentPage === "/finance/kas/bukti-kas-keluar") {
+      return <FinanceBuktiKasKeluarDashboard />;
+    }
+    if (currentPage === "/finance/kas/laporan-kas-kecil") {
+      return <FinanceLaporanKasKecilDashboard />;
+    }
+    if (currentPage === "/finance/kas/laporan-outstanding-cash-advance") {
+      return <FinanceLaporanOutstandingCADashboard />;
+    }
+    if (currentPage === "/finance/bank/bukti-bank-masuk") {
+      return <FinanceBuktiBankMasukDashboard />;
+    }
+    if (currentPage === "/finance/bank/bukti-bank-keluar") {
+      return <FinanceBuktiBankKeluarDashboard />;
+    }
+    if (currentPage === "/finance/bank/laporan-bank-harian") {
+      return <FinanceLaporanBankHarianDashboard />;
+    }
+    if (currentPage === "/finance/bank/laporan-bank-harian-khusus") {
+      return <FinanceLaporanBankHarianKhususDashboard />;
+    }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
     }
     if (currentPage === "/finance/ap/laporan") {
+      return <LaporanAPDashboard />;
+    }
+    if (currentPage === "/finance/ap/laporan-outstanding-hutang") {
       return <LaporanAPDashboard />;
     }
     if (currentPage === "/finance/reimburse-voucher") {
