@@ -82,6 +82,8 @@ import FinanceLaporanKasKecilDashboard from "./FinanceLaporanKasKecilDashboard";
 import FinanceLaporanOutstandingCADashboard from "./FinanceLaporanOutstandingCADashboard";
 import FinanceBuktiBankMasukDashboard from "./FinanceBuktiBankMasukDashboard";
 import FinanceBuktiBankKeluarDashboard from "./FinanceBuktiBankKeluarDashboard";
+import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboard";
+import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1158,6 +1160,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/bank/bukti-bank-keluar") {
       return <FinanceBuktiBankKeluarDashboard />;
+    }
+    if (currentPage === "/finance/bank/laporan-bank-harian") {
+      return <FinanceLaporanBankHarianDashboard />;
+    }
+    if (currentPage === "/finance/bank/laporan-bank-harian-khusus") {
+      return <FinanceLaporanBankHarianKhususDashboard />;
     }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
