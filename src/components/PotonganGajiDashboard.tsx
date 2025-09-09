@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import PotonganGajiModal, { PotonganGajiFormData } from './PotonganGajiModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  Plus, 
+import React, { useState, useEffect } from "react";
+import PotonganGajiModal, { PotonganGajiFormData } from "./PotonganGajiModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  Search,
+  Plus,
   Edit,
   Trash2,
   FileSpreadsheet,
@@ -12,8 +12,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  Calendar
-} from 'lucide-react';
+  Calendar,
+} from "lucide-react";
 
 interface PotonganGajiData {
   id: string;
@@ -22,97 +22,113 @@ interface PotonganGajiData {
   namaPegawai: string;
   jenisPegawai: string;
   tanggal: string;
-  potongan: string;
+  bpjsTk: string;
+  bpjsKes: string;
+  pph21: string;
+  ca: string;
+  potonganMess: string;
   keterangan: string;
 }
 
 const PotonganGajiDashboard: React.FC = () => {
-  const [tanggalAwal, setTanggalAwal] = useState('');
-  const [tanggalAkhir, setTanggalAkhir] = useState('');
-  const [kodePegawai, setKodePegawai] = useState('');
-  const [namaPegawai, setNamaPegawai] = useState(''); // Changed from 'Mr. White' to ''
-  const [searchQuery, setSearchQuery] = useState('');
+  const [tanggalAwal, setTanggalAwal] = useState("");
+  const [tanggalAkhir, setTanggalAkhir] = useState("");
+  const [kodePegawai, setKodePegawai] = useState("");
+  const [namaPegawai, setNamaPegawai] = useState(""); // Changed from 'Mr. White' to ''
+  const [searchQuery, setSearchQuery] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<PotonganGajiData | null>(null);
-  const [sortField, setSortField] = useState<keyof PotonganGajiData | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [itemToDelete, setItemToDelete] = useState<PotonganGajiData | null>(
+    null
+  );
+  const [sortField, setSortField] = useState<keyof PotonganGajiData | null>(
+    null
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Sample data matching the image
   const [potonganGajiData, setPotonganGajiData] = useState<PotonganGajiData[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      kodePegawai: 'EMP001',
-      namaPegawai: 'Ahmad Fauzi',
-      jenisPegawai: 'Tetap',
-      tanggal: '2024-09-05',
-      potongan: 'PPH21, BPJS, Mess',
-      keterangan: '-'
+      kodePegawai: "EMP001",
+      namaPegawai: "Ahmad Fauzi",
+      jenisPegawai: "Tetap",
+      tanggal: "2024-09-05",
+      bpjsTk: "Rp 150.000",
+      bpjsKes: "Rp 120.000",
+      pph21: "Rp 300.000",
+      ca: "Rp 0",
+      potonganMess: "Rp 100.000",
+      keterangan: "-",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      kodePegawai: 'EMP002',
-      namaPegawai: 'Siti Nurhaliza',
-      jenisPegawai: 'Kontrak',
-      tanggal: '2024-09-04',
-      potongan: 'BPJS, Mess',
-      keterangan: '-'
+      kodePegawai: "EMP002",
+      namaPegawai: "Siti Nurhaliza",
+      jenisPegawai: "Kontrak",
+      tanggal: "2024-09-04",
+      bpjsTk: "Rp 140.000",
+      bpjsKes: "Rp 110.000",
+      pph21: "Rp 250.000",
+      ca: "Rp 50.000",
+      potonganMess: "Rp 90.000",
+      keterangan: "-",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      kodePegawai: 'EMP003',
-      namaPegawai: 'Budi Santoso',
-      jenisPegawai: 'Magang',
-      tanggal: '2024-09-03',
-      potongan: 'PPH21',
-      keterangan: '-'
-    }
+      kodePegawai: "EMP003",
+      namaPegawai: "Budi Santoso",
+      jenisPegawai: "Magang",
+      tanggal: "2024-09-03",
+      bpjsTk: "Rp 0",
+      bpjsKes: "Rp 0",
+      pph21: "Rp 0",
+      ca: "Rp 0",
+      potonganMess: "Rp 0",
+      keterangan: "-",
+    },
   ]);
 
-  const kodePegawaiOptions = [
-    'EMP001',
-    'EMP002',
-    'EMP003',
-    'EMP004',
-    'EMP005'
-  ];
+  const kodePegawaiOptions = ["EMP001", "EMP002", "EMP003", "EMP004", "EMP005"];
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
   const handleAddPotonganGaji = (formData: PotonganGajiFormData) => {
-    const potonganList = formData.potonganItems
-      .filter(item => item.namaPotongan && item.nominal)
-      .map(item => item.namaPotongan)
-      .join(', ');
-
     const newPotonganGaji: PotonganGajiData = {
       id: (potonganGajiData.length + 1).toString(),
       no: potonganGajiData.length + 1,
       kodePegawai: formData.kodePegawai,
       namaPegawai: formData.namaPegawai,
       jenisPegawai: formData.jenisPegawai,
-      tanggal: new Date(formData.periode).toLocaleDateString('en-CA'),
-      potongan: potonganList,
-      keterangan: formData.keterangan || '-'
+      tanggal: new Date(formData.periode).toLocaleDateString("en-CA"),
+      bpjsTk: formData.bpjsTk || "Rp 0",
+      bpjsKes: formData.bpjsKes || "Rp 0",
+      pph21: formData.pph21 || "Rp 0",
+      ca: formData.ca || "Rp 0",
+      potonganMess: formData.potonganMess || "Rp 0",
+      keterangan: formData.keterangan || "-",
     };
 
-    setPotonganGajiData(prev => [newPotonganGaji, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
+    setPotonganGajiData((prev) => [
+      newPotonganGaji,
+      ...prev.map((p) => ({ ...p, no: p.no + 1 })),
+    ]);
   };
 
   const handleSort = (field: keyof PotonganGajiData) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -123,41 +139,57 @@ const PotonganGajiDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setPotonganGajiData(prev => prev.filter(p => p.id !== itemToDelete.id));
+      setPotonganGajiData((prev) =>
+        prev.filter((p) => p.id !== itemToDelete.id)
+      );
       setItemToDelete(null);
     }
   };
 
   const getJenisPegawaiColor = (jenis: string) => {
     switch (jenis) {
-      case 'Tetap': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Kontrak': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Magang': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case "Tetap":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "Kontrak":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Magang":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = potonganGajiData.filter(item => {
-    const matchesKodePegawai = kodePegawai ? item.kodePegawai === kodePegawai : true;
+  const filteredData = potonganGajiData.filter((item) => {
+    const matchesKodePegawai = kodePegawai
+      ? item.kodePegawai === kodePegawai
+      : true;
     // Filter by namaPegawai only if it's not empty
-    const matchesNamaPegawai = namaPegawai === '' || item.namaPegawai.toLowerCase().includes(namaPegawai.toLowerCase());
-    const matchesSearch = searchQuery === '' || 
-      item.kodePegawai.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.namaPegawai.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.potongan.toLowerCase().includes(searchQuery.toLowerCase());
-    
+    const matchesNamaPegawai =
+      namaPegawai === "" ||
+      item.namaPegawai.toLowerCase().includes(namaPegawai.toLowerCase());
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      q === "" ||
+      item.kodePegawai.toLowerCase().includes(q) ||
+      item.namaPegawai.toLowerCase().includes(q) ||
+      item.bpjsTk.toLowerCase().includes(q) ||
+      item.bpjsKes.toLowerCase().includes(q) ||
+      item.pph21.toLowerCase().includes(q) ||
+      item.ca.toLowerCase().includes(q) ||
+      item.potonganMess.toLowerCase().includes(q);
+
     return matchesKodePegawai && matchesNamaPegawai && matchesSearch;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -184,14 +216,16 @@ const PotonganGajiDashboard: React.FC = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <h1 className="text-2xl font-bold text-blue-600 mb-8">
-            Potongan Gaji
+            Deduct/Pengurangan
           </h1>
 
           {/* Filter Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {/* Periode Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Periode</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Periode
+              </h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -228,7 +262,9 @@ const PotonganGajiDashboard: React.FC = () => {
 
             {/* Filter Pegawai Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter Pegawai</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Filter Pegawai
+              </h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -241,7 +277,9 @@ const PotonganGajiDashboard: React.FC = () => {
                   >
                     <option value="">Pilih Kode Pegawai</option>
                     {kodePegawaiOptions.map((kode) => (
-                      <option key={kode} value={kode}>{kode}</option>
+                      <option key={kode} value={kode}>
+                        {kode}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -258,7 +296,7 @@ const PotonganGajiDashboard: React.FC = () => {
                   />
                 </div>
                 <div className="flex justify-end">
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center space-x-2"
                   >
@@ -291,8 +329,10 @@ const PotonganGajiDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
         {/* Table Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">Daftar Potongan Gaji</h2>
-          <button 
+          <h2 className="text-xl font-bold text-gray-900">
+            Daftar Potongan Gaji
+          </h2>
+          <button
             onClick={() => setIsModalOpen(true)}
             className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center space-x-2 text-sm"
           >
@@ -338,100 +378,136 @@ const PotonganGajiDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('kodePegawai')}
+                    onClick={() => handleSort("kodePegawai")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Kode Pegawai</span>
-                      {sortField === 'kodePegawai' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "kodePegawai" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaPegawai')}
+                    onClick={() => handleSort("namaPegawai")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama Pegawai</span>
-                      {sortField === 'namaPegawai' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "namaPegawai" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('jenisPegawai')}
+                    onClick={() => handleSort("jenisPegawai")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Jenis Pegawai</span>
-                      {sortField === 'jenisPegawai' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "jenisPegawai" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggal')}
+                    onClick={() => handleSort("tanggal")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Tanggal</span>
-                      {sortField === 'tanggal' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "tanggal" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('potongan')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Potongan</span>
-                      {sortField === 'potongan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">BPJS TK</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">BPJS KES</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">PPH21</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">CA</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Potongan Mess</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.kodePegawai}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaPegawai}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.kodePegawai}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.namaPegawai}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getJenisPegawaiColor(item.jenisPegawai)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getJenisPegawaiColor(
+                          item.jenisPegawai
+                        )}`}
+                      >
                         {item.jenisPegawai}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggal}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.potongan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggal}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.bpjsTk}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.bpjsKes}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.pph21}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.ca}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.potonganMess}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
+                        <button
                           onClick={() => setIsModalOpen(true)}
                           className="p-1.5 bg-yellow-500 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-yellow-600"
                           title="Edit"
@@ -457,7 +533,9 @@ const PotonganGajiDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -467,18 +545,18 @@ const PotonganGajiDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                     currentPage === 1
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

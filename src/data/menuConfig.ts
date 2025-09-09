@@ -688,10 +688,20 @@ export const hrdMenu: MenuSection[] = [
         path: "/hrd/gaji/potongan",
       },
       {
-        title: "History Peminjaman",
-        icon: "History",
-        path: "/hrd/gaji/history-peminjaman",
+        title: "Pendebetan",
+        icon: "MinusCircle",
+        path: "/hrd/gaji/pendebetan",
       },
+      {
+        title: "Payslip",
+        icon: "FileSignature",
+        path: "/hrd/gaji/payslip",
+      },
+      // {
+      //   title: "History Peminjaman",
+      //   icon: "History",
+      //   path: "/hrd/gaji/history-peminjaman",
+      // },
       {
         title: "Daftar Peminjam Karyawan",
         icon: "UsersRound",
@@ -712,6 +722,11 @@ export const hrdMenu: MenuSection[] = [
         title: "Approval Timesheet",
         icon: "CheckCircle",
         path: "/hrd/absensi/approval-timesheet",
+      },
+      {
+        title: "Kalender",
+        icon: "Calendar",
+        path: "/hrd/absensi/kalender",
       },
     ],
   },
