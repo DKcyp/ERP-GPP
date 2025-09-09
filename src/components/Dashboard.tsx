@@ -69,6 +69,7 @@ import MonitoringEndorseCertificateHRD from "./MonitoringEndorseCertificateHRD";
 import FinanceMainDashboard from "./FinanceDashboard";
 import APDashboard from "./APDashboard";
 import LaporanAPDashboard from "./LaporanAPDashboard";
+import FinanceLaporanPembayaranHutangDashboard from "./FinanceLaporanPembayaranHutangDashboard";
 import ReimburseVoucherDashboard from "./ReimburseVoucherDashboard";
 import ARDashboard from "./ARDashboard";
 import ProsesPembayaranARDashboard from "./ProsesPembayaranARDashboard";
@@ -84,6 +85,14 @@ import FinanceBuktiBankMasukDashboard from "./FinanceBuktiBankMasukDashboard";
 import FinanceBuktiBankKeluarDashboard from "./FinanceBuktiBankKeluarDashboard";
 import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboard";
 import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
+import FinancePermintaanPencairanDanaDashboard from "./FinancePermintaanPencairanDanaDashboard";
+import CollectionDashboardSO from "./CollectionDashboardSO";
+import CollectionDashboardProformaInvoice from "./CollectionDashboardProformaInvoice";
+import CollectionDashboardInvoice from "./CollectionDashboardInvoice";
+import CollectionDashboardInvoiceOutstanding from "./CollectionDashboardInvoiceOutstanding";
+import CollectionDatabaseCustomer from "./CollectionDatabaseCustomer";
+import CollectionDashboardCashIn from "./CollectionDashboardCashIn";
+import FinanceTandaTerimaDokumeniDashboard from "./FinanceTandaTerimaDokumeniDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1188,6 +1197,30 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/bank/laporan-bank-harian-khusus") {
       return <FinanceLaporanBankHarianKhususDashboard />;
     }
+    if (currentPage === "/finance/permintaan-pencairan-dana") {
+      return <FinancePermintaanPencairanDanaDashboard />;
+    }
+    if (currentPage === "/finance/collection/dashboard-so") {
+      return <CollectionDashboardSO />;
+    }
+    if (currentPage === "/finance/collection/dashboard-proforma-invoice") {
+      return <CollectionDashboardProformaInvoice />;
+    }
+    if (currentPage === "/finance/collection/dashboard-invoice") {
+      return <CollectionDashboardInvoice />;
+    }
+    if (currentPage === "/finance/collection/dashboard-invoice-outstanding") {
+      return <CollectionDashboardInvoiceOutstanding />;
+    }
+    if (currentPage === "/finance/collection/dashboard-cash-in") {
+      return <CollectionDashboardCashIn />;
+    }
+    if (currentPage === "/finance/collection/database-customer") {
+      return <CollectionDatabaseCustomer />;
+    }
+    if (currentPage === "/finance/tanda-terima-dokumeni") {
+      return <FinanceTandaTerimaDokumeniDashboard />;
+    }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
     }
@@ -1196,6 +1229,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/ap/laporan-outstanding-hutang") {
       return <LaporanAPDashboard />;
+    }
+    if (currentPage === "/finance/ap/laporan-pembayaran-hutang") {
+      return <FinanceLaporanPembayaranHutangDashboard />;
     }
     if (currentPage === "/finance/reimburse-voucher") {
       return <ReimburseVoucherDashboard />;
