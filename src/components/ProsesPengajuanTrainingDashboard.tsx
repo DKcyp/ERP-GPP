@@ -6,39 +6,17 @@ import {
   ProsesPengajuanTrainingFormData,
   RealisasiDocumentUploadFormData,
 } from "../types"; // Import the new FormData type
-import {
-  Search,
-  Plus,
-  FileSpreadsheet,
-  FileText,
-  File,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp,
-  ChevronDown,
-  CheckCircle, // Import CheckCircle icon
-  FileUp, // Import FileUp icon for Realisasi
-} from "lucide-react";
+import { Search, Plus, FileSpreadsheet, FileText, File, Edit, Trash2, ArrowUp, CheckCircle, FileUp } from "lucide-react";
 
 // Updated interface for the dashboard's training data
 interface ProsesPengajuanTraining {
   id: string;
   no: number;
-  noTraining: string;
-  noSO: string;
-  soTurunan: string;
-  karyawan: string; // From new modal
-  jenisTraining: "New Training" | "Re-Training";
-  tanggalPelatihan: string; // Combined start - end
-  budget: string; // From new modal
-  keterangan: string; // From new modal
-  // Removed: namaProyek, tanggalExpired, statusDokumen, statusPembayaran, statusApproval
+  namaPersonil: string;
+  jenisPelatihan: string;
+  lokasiPelatihan: string;
+  tanggalPelaksanaan: string; // ISO date
+  pid: 'PID' | 'TIDAK';
 }
 
 interface ProsesPengajuanTrainingDashboardProps {
@@ -48,15 +26,12 @@ interface ProsesPengajuanTrainingDashboardProps {
 const ProsesPengajuanTrainingDashboard: React.FC<
   ProsesPengajuanTrainingDashboardProps
 > = ({ role }) => {
-  const [searchNoTraining, setSearchNoTraining] = useState("");
-  const [searchSO, setSearchSO] = useState("");
-  const [searchSOTurunan, setSearchSOTurunan] = useState("");
-  const [searchKaryawan, setSearchKaryawan] = useState(""); // New search field
-  const [selectedJenisTraining, setSelectedJenisTraining] = useState("");
+  const [searchNama, setSearchNama] = useState("");
+  const [searchJenis, setSearchJenis] = useState("");
+  const [searchLokasi, setSearchLokasi] = useState("");
+  const [pidFilter, setPidFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [jenisTrainingDropdownOpen, setJenisTrainingDropdownOpen] =
-    useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRealisasiModalOpen, setIsRealisasiModalOpen] = useState(false); // New state for Realisasi modal
@@ -75,56 +50,26 @@ const ProsesPengajuanTrainingDashboard: React.FC<
   // Sample data matching the new structure
   const [trainingData, setTrainingData] = useState<ProsesPengajuanTraining[]>([
     {
-      id: "1",
+      id: '1',
       no: 1,
-      noTraining: "TRNG001",
-      noSO: "SO001",
-      soTurunan: "SO001.12",
-      karyawan: "Budi Santoso",
-      jenisTraining: "New Training",
-      tanggalPelatihan: "12-01-2025 - 16-01-2025",
-      budget: "Rp 10.000.000",
-      keterangan: "Pelatihan dasar untuk karyawan baru di Project A.",
+      namaPersonil: 'Budi Santoso',
+      jenisPelatihan: 'K3 Dasar',
+      lokasiPelatihan: 'Jakarta',
+      tanggalPelaksanaan: '2025-01-12',
+      pid: 'PID',
     },
     {
-      id: "2",
+      id: '2',
       no: 2,
-      noTraining: "TRNG002",
-      noSO: "SO002",
-      soTurunan: "SO002.2",
-      karyawan: "Ani Wijaya",
-      jenisTraining: "Re-Training",
-      tanggalPelatihan: "15-03-2025 - 19-03-2025",
-      budget: "Rp 7.500.000",
-      keterangan: "Re-training keselamatan kerja untuk Project B.",
-    },
-    {
-      id: "3",
-      no: 3,
-      noTraining: "TRNG003",
-      noSO: "SO003",
-      soTurunan: "SO003.34",
-      karyawan: "Citra Dewi",
-      jenisTraining: "New Training",
-      tanggalPelatihan: "10-05-2025 - 14-05-2025",
-      budget: "Rp 12.000.000",
-      keterangan: "Pelatihan manajemen proyek untuk Project C.",
-    },
-    {
-      id: "4",
-      no: 4,
-      noTraining: "TRNG004",
-      noSO: "SO004",
-      soTurunan: "SO004.25",
-      karyawan: "Dedi Kurniawan",
-      jenisTraining: "Re-Training",
-      tanggalPelatihan: "20-06-2025 - 24-06-2025",
-      budget: "Rp 8.000.000",
-      keterangan: "Re-training teknis untuk Project D.",
+      namaPersonil: 'Ani Wijaya',
+      jenisPelatihan: 'Leadership',
+      lokasiPelatihan: 'Bandung',
+      tanggalPelaksanaan: '2025-03-15',
+      pid: 'TIDAK',
     },
   ]);
 
-  const jenisTrainingOptions = ["New Training", "Re-Training"];
+  // removed: jenisTrainingOptions (legacy)
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
@@ -135,24 +80,17 @@ const ProsesPengajuanTrainingDashboard: React.FC<
     console.log("Current role in ProsesPengajuanTrainingDashboard:", role);
   }, [role]); // Re-run when role changes
 
-  const handleAddTraining = (formData: ProsesPengajuanTrainingFormData) => {
+  const handleAddTraining = (data: ProsesPengajuanTrainingFormData) => {
     const newTraining: ProsesPengajuanTraining = {
       id: (trainingData.length + 1).toString(),
       no: trainingData.length + 1,
-      noTraining: formData.noTraining,
-      noSO: formData.noSO,
-      soTurunan: formData.soTurunan,
-      karyawan: formData.karyawan,
-      jenisTraining: formData.jenisTraining,
-      tanggalPelatihan: `${formData.tanggalPelatihanStart} - ${formData.tanggalPelatihanEnd}`,
-      budget: formData.budget,
-      keterangan: formData.keterangan,
+      namaPersonil: data.namaPersonil,
+      jenisPelatihan: data.jenisPelatihan,
+      lokasiPelatihan: data.lokasiPelatihan,
+      tanggalPelaksanaan: data.tanggalPelaksanaan,
+      pid: data.pid,
     };
-
-    setTrainingData((prev) => [
-      newTraining,
-      ...prev.map((t) => ({ ...t, no: t.no + 1 })),
-    ]);
+    setTrainingData((prev) => [newTraining, ...prev.map((t) => ({ ...t, no: t.no + 1 }))]);
   };
 
   const handleDeleteClick = (training: ProsesPengajuanTraining) => {
@@ -196,35 +134,12 @@ const ProsesPengajuanTrainingDashboard: React.FC<
 
   // Filter data based on search criteria
   const filteredData = trainingData.filter((item) => {
-    const matchesNoTraining = item.noTraining
-      .toLowerCase()
-      .includes(searchNoTraining.toLowerCase());
-    const matchesSO = item.noSO.toLowerCase().includes(searchSO.toLowerCase());
-    const matchesSOTurunan = item.soTurunan
-      .toLowerCase()
-      .includes(searchSOTurunan.toLowerCase());
-    const matchesKaryawan = item.karyawan
-      .toLowerCase()
-      .includes(searchKaryawan.toLowerCase());
-    const matchesJenisTraining = selectedJenisTraining
-      ? item.jenisTraining === selectedJenisTraining
-      : true;
-
-    // Date range filtering (simplified for example, actual implementation might need date parsing)
-    const itemStartDate = item.tanggalPelatihan.split(" - ")[0];
-    const itemEndDate = item.tanggalPelatihan.split(" - ")[1];
-    const matchesDateRange =
-      (!dateFrom || itemStartDate >= dateFrom) &&
-      (!dateTo || itemEndDate <= dateTo);
-
-    return (
-      matchesNoTraining &&
-      matchesSO &&
-      matchesSOTurunan &&
-      matchesKaryawan &&
-      matchesJenisTraining &&
-      matchesDateRange
-    );
+    const matchNama = searchNama ? item.namaPersonil.toLowerCase().includes(searchNama.toLowerCase()) : true;
+    const matchJenis = searchJenis ? item.jenisPelatihan.toLowerCase().includes(searchJenis.toLowerCase()) : true;
+    const matchLokasi = searchLokasi ? item.lokasiPelatihan.toLowerCase().includes(searchLokasi.toLowerCase()) : true;
+    const matchPid = pidFilter ? item.pid === (pidFilter as 'PID' | 'TIDAK') : true;
+    const matchesDateRange = (!dateFrom || item.tanggalPelaksanaan >= dateFrom) && (!dateTo || item.tanggalPelaksanaan <= dateTo);
+    return matchNama && matchJenis && matchLokasi && matchPid && matchesDateRange;
   });
 
   // Sort data
@@ -263,9 +178,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<
       <div className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-text">
-              Approval Pengajuan Training
-            </h1>
+            <h1 className="text-2xl font-bold text-text">PR Training</h1>
             {/* Conditional rendering for "Tambah" button: hidden for management and HRD roles */}
             {role !== "management" && role !== "hrd" && (
               <button
@@ -282,153 +195,57 @@ const ProsesPengajuanTrainingDashboard: React.FC<
           <div className="space-y-4 mb-6">
             {/* First Row - Search Inputs */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              {/* Search No Training */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">
-                  Cari No Training
-                </label>
+                <label className="block text-sm font-medium text-textSecondary">Cari Nama Personil</label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={searchNoTraining}
-                    onChange={(e) => setSearchNoTraining(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
-                    placeholder="TRNG001"
-                  />
-                  <button
-                    onClick={handleSearch}
-                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Search SO */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">
-                  Cari SO
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={searchSO}
-                    onChange={(e) => setSearchSO(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
-                    placeholder="SO001"
-                  />
-                  <button
-                    onClick={handleSearch}
-                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Search SO Turunan */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">
-                  Cari SO Turunan
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={searchSOTurunan}
-                    onChange={(e) => setSearchSOTurunan(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
-                    placeholder="SO001.12"
-                  />
-                  <button
-                    onClick={handleSearch}
-                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Search Karyawan */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">
-                  Cari Karyawan
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={searchKaryawan}
-                    onChange={(e) => setSearchKaryawan(e.target.value)}
+                    value={searchNama}
+                    onChange={(e) => setSearchNama(e.target.value)}
                     className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="Budi Santoso"
                   />
-                  <button
-                    onClick={handleSearch}
-                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
-                  >
+                  <button onClick={handleSearch} className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1">
                     <Search className="h-4 w-4" />
                   </button>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-textSecondary">Jenis Pelatihan</label>
+                <input
+                  type="text"
+                  value={searchJenis}
+                  onChange={(e) => setSearchJenis(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
+                  placeholder="K3, Leadership"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-textSecondary">Lokasi</label>
+                <input
+                  type="text"
+                  value={searchLokasi}
+                  onChange={(e) => setSearchLokasi(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
+                  placeholder="Jakarta"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-textSecondary">PID</label>
+                <select
+                  value={pidFilter}
+                  onChange={(e) => setPidFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
+                >
+                  <option value="">Semua</option>
+                  <option value="PID">PID</option>
+                  <option value="TIDAK">TIDAK</option>
+                </select>
               </div>
             </div>
 
             {/* Second Row - Dropdowns */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              {/* Jenis Training Dropdown */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">
-                  Pilih Jenis Training
-                </label>
-                <div className="relative">
-                  <button
-                    onClick={() =>
-                      setJenisTrainingDropdownOpen(!jenisTrainingDropdownOpen)
-                    }
-                    className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 flex items-center justify-between bg-surface text-sm"
-                  >
-                    <span
-                      className={
-                        selectedJenisTraining
-                          ? "text-text"
-                          : "text-textSecondary"
-                      }
-                    >
-                      {selectedJenisTraining || "--Pilih Jenis Training--"}
-                    </span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-textSecondary transition-transform duration-200 ${
-                        jenisTrainingDropdownOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  {jenisTrainingDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-md shadow-lg z-50 overflow-hidden">
-                      <button
-                        onClick={() => {
-                          setSelectedJenisTraining("");
-                          setJenisTrainingDropdownOpen(false);
-                        }}
-                        className="w-full px-3 py-2 text-left hover:bg-border transition-colors text-textSecondary text-sm"
-                      >
-                        --Pilih Jenis Training--
-                      </button>
-                      {jenisTrainingOptions.map((jenis) => (
-                        <button
-                          key={jenis}
-                          onClick={() => {
-                            setSelectedJenisTraining(jenis);
-                            setJenisTrainingDropdownOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-border transition-colors text-sm text-text"
-                        >
-                          {jenis}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* Periode */}
               <div className="space-y-2 lg:col-span-2">
                 <label className="block text-sm font-medium text-textSecondary">
@@ -525,114 +342,25 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                       )}
                     </div>
                   </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("noTraining")}
-                  >
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors" onClick={() => handleSort('namaPersonil')}>
                     <div className="flex items-center space-x-1">
-                      <span>No Training</span>
-                      {sortField === "noTraining" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
+                      <span>Nama Personil</span>
+                      {sortField === 'namaPersonil' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("noSO")}
-                  >
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">Jenis Pelatihan</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">Lokasi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors" onClick={() => handleSort('tanggalPelaksanaan')}>
                     <div className="flex items-center space-x-1">
-                      <span>No SO</span>
-                      {sortField === "noSO" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
+                      <span>Tanggal Pelaksanaan</span>
+                      {sortField === 'tanggalPelaksanaan' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("soTurunan")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>SO Turunan</span>
-                      {sortField === "soTurunan" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("karyawan")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Karyawan</span>
-                      {sortField === "karyawan" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("jenisTraining")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Jenis Training</span>
-                      {sortField === "jenisTraining" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("tanggalPelatihan")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Tanggal Pelatihan</span>
-                      {sortField === "tanggalPelatihan" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
-                    onClick={() => handleSort("budget")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Budget</span>
-                      {sortField === "budget" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">
-                    Keterangan
-                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">PID</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-textSecondary">
                     Aksi
                   </th>
@@ -655,28 +383,11 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                     }}
                   >
                     <td className="px-4 py-3 text-sm text-text">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-text font-medium">
-                      {item.noTraining}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-text">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-text">
-                      {item.soTurunan}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-text">
-                      {item.karyawan}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-textSecondary">
-                      {item.jenisTraining}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-textSecondary">
-                      {item.tanggalPelatihan}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-text">
-                      {item.budget}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-textSecondary truncate max-w-xs">
-                      {item.keterangan}
-                    </td>
+                    <td className="px-4 py-3 text-sm text-text font-medium">{item.namaPersonil}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.jenisPelatihan}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.lokasiPelatihan}</td>
+                    <td className="px-4 py-3 text-sm text-textSecondary">{item.tanggalPelaksanaan}</td>
+                    <td className="px-4 py-3 text-sm text-text">{item.pid}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         {/* Conditional rendering for action buttons based on role */}
@@ -786,7 +497,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.noTraining}
+        itemName={itemToDelete ? `${itemToDelete.namaPersonil} - ${itemToDelete.jenisPelatihan}` : undefined}
       />
 
       {/* Realisasi Document Upload Modal */}
@@ -795,7 +506,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<
           isOpen={isRealisasiModalOpen}
           onClose={() => setIsRealisasiModalOpen(false)}
           onUpload={handleRealisasiUpload}
-          noTraining={selectedTrainingForRealisasi.noTraining}
+          noTraining={`${selectedTrainingForRealisasi.namaPersonil} - ${selectedTrainingForRealisasi.jenisPelatihan}`}
         />
       )}
     </div>

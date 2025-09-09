@@ -121,6 +121,11 @@ import GeneralPertanggungJawabanVoucherDashboard from "./GeneralPertanggungJawab
 import GeneralPengajuanCutiDashboard from "./GeneralPengajuanCutiDashboard"; // NEW: Pengajuan Cuti
 import GeneralApproveCutiDashboard from "./GeneralApproveCutiDashboard"; // NEW: Approve Cuti
 import PegawaiListCutiDashboard from "./PegawaiListCutiDashboard"; // NEW: HRD Pegawai List Cuti
+import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD List Training
+import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
+import PendebetanDashboard from "./PendebetanDashboard";
+import PayslipDashboard from "./PayslipDashboard";
+import CalendarAbsensiDashboard from "./CalendarAbsensiDashboard";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -624,6 +629,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/pegawai/list-cuti") {
       return <PegawaiListCutiDashboard />;
     }
+    if (currentPage === "/hrd/training/list") {
+      return <HRDTrainingListDashboard />;
+    }
+    if (currentPage === "/hrd/training/tna") {
+      return <HRDTNADashboard />;
+    }
+
     if (currentPage === "/hrd/gaji/daftar") {
       return <DaftarGajiDashboard />;
     }
@@ -632,6 +644,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/gaji/potongan") {
       return <PotonganGajiDashboard />;
+    }
+    if (currentPage === "/hrd/gaji/pendebetan") {
+      return <PendebetanDashboard />;
+    }
+    if (currentPage === "/hrd/gaji/payslip") {
+      return <PayslipDashboard />;
     }
     if (currentPage === "/hrd/gaji/history-peminjaman") {
       return <HistoryPeminjamanDashboard />;
@@ -644,6 +662,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/absensi/approval-timesheet") {
       return <ApprovalTimesheetDashboard />;
+    }
+    if (currentPage === "/hrd/absensi/kalender") {
+      return <CalendarAbsensiDashboard />;
     }
     if (currentPage === "/hrd/penilaian/daftar") {
       return <DaftarPenilaianDashboard />;

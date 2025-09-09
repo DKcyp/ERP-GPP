@@ -68,15 +68,11 @@ export interface PerpanjangIzinFormData {
 
 // New type for Proses Pengajuan Training form data
 export interface ProsesPengajuanTrainingFormData {
-  noTraining: string;
-  noSO: string;
-  soTurunan: string;
-  karyawan: string;
-  jenisTraining: 'New Training' | 'Re-Training';
-  tanggalPelatihanStart: string;
-  tanggalPelatihanEnd: string;
-  budget: string;
-  keterangan: string;
+  namaPersonil: string;
+  jenisPelatihan: string;
+  lokasiPelatihan: string;
+  tanggalPelaksanaan: string; // ISO date
+  pid: 'PID' | 'TIDAK';
 }
 
 // New type for Realisasi Document Upload form data

@@ -1,14 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  X,
-  Calendar,
-  Save,
-  Loader2,
-  Plus,
-  Trash2,
-  UploadCloud,
-} from "lucide-react";
-import { EmployeeData, ProsesPengajuanTrainingFormData } from "../types"; // Import from types
+import React, { useState, useEffect } from "react";
+import { X, Calendar, Save, Loader2 } from "lucide-react";
+import { ProsesPengajuanTrainingFormData } from "../types";
 
 interface ProsesPengajuanTrainingModalProps {
   isOpen: boolean;
@@ -20,55 +12,15 @@ const ProsesPengajuanTrainingModal: React.FC<
   ProsesPengajuanTrainingModalProps
 > = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState<ProsesPengajuanTrainingFormData>({
-    noSO: "",
-    soTurunan: "",
-    noTraining:
-      "TRNG" +
-      Math.floor(Math.random() * 1000)
-        .toString()
-        .padStart(3, "0"), // Default random for example
-    karyawan: "",
-    dataPegawai: [],
-    tanggalPelatihanStart: "",
-    tanggalPelatihanEnd: "",
-    jenisTraining: "New Training",
-    budget: "",
-    keterangan: "",
-    lampiran: [],
+    namaPersonil: "",
+    jenisPelatihan: "",
+    lokasiPelatihan: "",
+    tanggalPelaksanaan: "",
+    pid: "TIDAK",
   });
 
-  const [newEmployeeRow, setNewEmployeeRow] = useState<
-    Omit<EmployeeData, "id">
-  >({
-    kodePegawai: "",
-    namaPegawai: "",
-    departemen: "",
-    nip: "",
-    tanggalLahir: "",
-    kualifikasi: "",
-  });
-
-  const [errors, setErrors] = useState<
-    Partial<ProsesPengajuanTrainingFormData>
-  >({});
+  const [errors, setErrors] = useState<Partial<ProsesPengajuanTrainingFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const soOptions = ["SO001", "SO002", "SO003", "SO004", "SO005"];
-  const soTurunanOptions = [
-    "SO001.12",
-    "SO002.2",
-    "SO003.34",
-    "SO004.25",
-    "SO005.12",
-  ];
-  const karyawanOptions = [
-    "Budi Santoso",
-    "Ani Wijaya",
-    "Citra Dewi",
-    "Dedi Kurniawan",
-  ];
-  const jenisTrainingOptions = ["New Training", "Re-Training"];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -90,105 +42,21 @@ const ProsesPengajuanTrainingModal: React.FC<
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ProsesPengajuanTrainingFormData> = {};
-
-    if (!formData.noSO.trim()) newErrors.noSO = "No SO wajib diisi";
-    if (!formData.soTurunan.trim())
-      newErrors.soTurunan = "SO Turunan wajib diisi";
-    if (!formData.noTraining.trim())
-      newErrors.noTraining = "No Training wajib diisi";
-    if (!formData.karyawan.trim())
-      newErrors.karyawan = "Karyawan wajib dipilih";
-    if (formData.dataPegawai.length === 0)
-      newErrors.dataPegawai = "Minimal satu Data Pegawai harus ditambahkan";
-    if (!formData.tanggalPelatihanStart)
-      newErrors.tanggalPelatihanStart = "Tanggal Pelatihan Start wajib diisi";
-    if (!formData.tanggalPelatihanEnd)
-      newErrors.tanggalPelatihanEnd = "Tanggal Pelatihan End wajib diisi";
-    if (!formData.budget.trim()) newErrors.budget = "Budget wajib diisi";
-    if (!formData.keterangan.trim())
-      newErrors.keterangan = "Keterangan wajib diisi";
-
+    if (!formData.namaPersonil.trim()) newErrors.namaPersonil = "Nama Personil wajib diisi";
+    if (!formData.jenisPelatihan.trim()) newErrors.jenisPelatihan = "Jenis pelatihan wajib diisi";
+    if (!formData.lokasiPelatihan.trim()) newErrors.lokasiPelatihan = "Lokasi pelatihan wajib diisi";
+    if (!formData.tanggalPelaksanaan) newErrors.tanggalPelaksanaan = "Tanggal pelaksanaan wajib diisi";
+    if (!formData.pid) newErrors.pid = "Pilih PID/TIDAK";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (
-    field: keyof ProsesPengajuanTrainingFormData,
-    value: any
-  ) => {
+  const handleInputChange = (field: keyof ProsesPengajuanTrainingFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const handleNewEmployeeRowChange = (
-    field: keyof Omit<EmployeeData, "id">,
-    value: string
-  ) => {
-    setNewEmployeeRow((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleAddEmployee = () => {
-    if (
-      newEmployeeRow.kodePegawai.trim() &&
-      newEmployeeRow.namaPegawai.trim() &&
-      newEmployeeRow.departemen.trim() &&
-      newEmployeeRow.nip.trim() &&
-      newEmployeeRow.tanggalLahir.trim() &&
-      newEmployeeRow.kualifikasi.trim()
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        dataPegawai: [
-          ...prev.dataPegawai,
-          { ...newEmployeeRow, id: Date.now().toString() },
-        ],
-      }));
-      setNewEmployeeRow({
-        kodePegawai: "",
-        namaPegawai: "",
-        departemen: "",
-        nip: "",
-        tanggalLahir: "",
-        kualifikasi: "",
-      });
-      setErrors((prev) => ({ ...prev, dataPegawai: undefined })); // Clear error if any
-    } else {
-      alert("Harap lengkapi semua kolom Data Pegawai sebelum menambahkan.");
-    }
-  };
-
-  const handleRemoveEmployee = (id: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      dataPegawai: prev.dataPegawai.filter((emp) => emp.id !== id),
-    }));
-  };
-
-  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-    setFormData((prev) => ({
-      ...prev,
-      lampiran: [...prev.lampiran, ...files],
-    }));
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setFormData((prev) => ({
-      ...prev,
-      lampiran: [...prev.lampiran, ...files],
-    }));
-  };
-
-  const handleRemoveFile = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      lampiran: prev.lampiran.filter((_, i) => i !== index),
-    }));
-  };
+  // Removed legacy handlers for employee rows and file uploads
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,29 +71,11 @@ const ProsesPengajuanTrainingModal: React.FC<
 
     // Reset form
     setFormData({
-      noSO: "",
-      soTurunan: "",
-      noTraining:
-        "TRNG" +
-        Math.floor(Math.random() * 1000)
-          .toString()
-          .padStart(3, "0"),
-      karyawan: "",
-      dataPegawai: [],
-      tanggalPelatihanStart: "",
-      tanggalPelatihanEnd: "",
-      jenisTraining: "New Training",
-      budget: "",
-      keterangan: "",
-      lampiran: [],
-    });
-    setNewEmployeeRow({
-      kodePegawai: "",
-      namaPegawai: "",
-      departemen: "",
-      nip: "",
-      tanggalLahir: "",
-      kualifikasi: "",
+      namaPersonil: "",
+      jenisPelatihan: "",
+      lokasiPelatihan: "",
+      tanggalPelaksanaan: "",
+      pid: "TIDAK",
     });
     setErrors({});
     onClose();
@@ -244,10 +94,10 @@ const ProsesPengajuanTrainingModal: React.FC<
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Approve Training</h2>
+          <h2 className="text-2xl font-bold text-gray-900">PR Training</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
