@@ -79,6 +79,7 @@ import InsentifMarketingDashboard from "./InsentifMarketingDashboard";
 import FinanceBuktiKasMasukDashboard from "./FinanceBuktiKasMasukDashboard";
 import FinanceBuktiKasKeluarDashboard from "./FinanceBuktiKasKeluarDashboard";
 import FinanceLaporanKasKecilDashboard from "./FinanceLaporanKasKecilDashboard";
+import FinanceLaporanOutstandingCADashboard from "./FinanceLaporanOutstandingCADashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1146,6 +1147,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/kas/laporan-kas-kecil") {
       return <FinanceLaporanKasKecilDashboard />;
+    }
+    if (currentPage === "/finance/kas/laporan-outstanding-cash-advance") {
+      return <FinanceLaporanOutstandingCADashboard />;
     }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
