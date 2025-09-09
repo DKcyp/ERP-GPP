@@ -817,6 +817,32 @@ export const financeMenu: MenuSection[] = [
     directPath: "/finance/dashboard",
   },
   {
+    title: "Kas",
+    icon: "Banknote",
+    items: [
+      {
+        title: "Bukti Kas Masuk",
+        icon: "Download",
+        path: "/finance/kas/bukti-kas-masuk",
+      },
+      {
+        title: "Bukti Kas Keluar",
+        icon: "Upload",
+        path: "/finance/kas/bukti-kas-keluar",
+      },
+      {
+        title: "Laporan Kas Kecil",
+        icon: "FileText",
+        path: "/finance/kas/laporan-kas-kecil",
+      },
+      {
+        title: "Laporan Outstanding Cash Advance",
+        icon: "FileText",
+        path: "/finance/kas/laporan-outstanding-cash-advance",
+      },
+    ],
+  },
+  {
     title: "AP",
     icon: "CreditCard", // Icon for Accounts Payable
     subSections: [
