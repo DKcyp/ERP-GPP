@@ -843,6 +843,32 @@ export const financeMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Bank",
+    icon: "Banknote",
+    items: [
+      {
+        title: "Bukti Bank Masuk",
+        icon: "Download",
+        path: "/finance/bank/bukti-bank-masuk",
+      },
+      {
+        title: "Bukti Bank Keluar",
+        icon: "Upload",
+        path: "/finance/bank/bukti-bank-keluar",
+      },
+      {
+        title: "Laporan Bank Harian",
+        icon: "FileText",
+        path: "/finance/bank/laporan-bank-harian",
+      },
+      {
+        title: "Laporan Bank Harian Khusus",
+        icon: "FileText",
+        path: "/finance/bank/laporan-bank-harian-khusus",
+      },
+    ],
+  },
+  {
     title: "AP",
     icon: "CreditCard", // Icon for Accounts Payable
     subSections: [

@@ -80,6 +80,7 @@ import FinanceBuktiKasMasukDashboard from "./FinanceBuktiKasMasukDashboard";
 import FinanceBuktiKasKeluarDashboard from "./FinanceBuktiKasKeluarDashboard";
 import FinanceLaporanKasKecilDashboard from "./FinanceLaporanKasKecilDashboard";
 import FinanceLaporanOutstandingCADashboard from "./FinanceLaporanOutstandingCADashboard";
+import FinanceBuktiBankMasukDashboard from "./FinanceBuktiBankMasukDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1150,6 +1151,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/kas/laporan-outstanding-cash-advance") {
       return <FinanceLaporanOutstandingCADashboard />;
+    }
+    if (currentPage === "/finance/bank/bukti-bank-masuk") {
+      return <FinanceBuktiBankMasukDashboard />;
     }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
