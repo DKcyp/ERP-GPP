@@ -103,14 +103,22 @@ const createGeneralMenu = (role: string): MenuSection => ({
             title: "Purchase Request",
             icon: "ShoppingCart",
             items: [
-              { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
+              {
+                title: "Approval Purchase Request",
+                icon: "CheckCircle",
+                path: "/procon/purchase-request/approval",
+              },
             ],
           },
           {
             title: "Purchase Order",
             icon: "FileBox",
             items: [
-              { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
+              {
+                title: "Approval Purchase Order",
+                icon: "CheckCircle",
+                path: "/procon/purchase-order/approval",
+              },
             ],
           },
         ]
@@ -635,6 +643,32 @@ export const hrdMenu: MenuSection[] = [
         title: "Approve PR Training",
         icon: "GraduationCap",
         path: "/hrd/pegawai/pr-training",
+      },
+    ],
+  },
+  {
+    title: "Training",
+    icon: "GraduationCap",
+    items: [
+      {
+        title: "List Training",
+        icon: "List",
+        path: "/hrd/training/list",
+      },
+      {
+        title: "Training Need Analysis (TNA)",
+        icon: "ClipboardList",
+        path: "/hrd/training/tna",
+      },
+      {
+        title: "Matrix Training",
+        icon: "Grid",
+        path: "/hrd/training/matrix",
+      },
+      {
+        title: "PR Training",
+        icon: "ShoppingCart",
+        path: "/hrd/training/pr",
       },
     ],
   },
@@ -1489,7 +1523,7 @@ export const proconMenu: MenuSection[] = [
     items: [],
     directPath: "/procon/sales-order/dashboard",
   },
-  
+
   {
     title: "Proforma Invoice",
     icon: "ReceiptText",
@@ -1539,21 +1573,57 @@ export const proconMenu: MenuSection[] = [
     title: "Marketing",
     icon: "Megaphone",
     items: [
-      { title: "Kontrak Deal", icon: "FileCheck", path: "/marketing/kontrak-deal/dashboard" },
-      { title: "HPP Induk", icon: "Calculator", path: "/marketing/hpp-induk/dashboard" },
-      { title: "Sales Order", icon: "ShoppingCart", path: "/marketing/sales-order/dashboard" },
-      { title: "Kick Off Meeting", icon: "Users", path: "/marketing/kick-off-meeting" },
-      { title: "Insentif Marketing", icon: "Award", path: "/marketing/insentif" },
+      {
+        title: "Kontrak Deal",
+        icon: "FileCheck",
+        path: "/marketing/kontrak-deal/dashboard",
+      },
+      {
+        title: "HPP Induk",
+        icon: "Calculator",
+        path: "/marketing/hpp-induk/dashboard",
+      },
+      {
+        title: "Sales Order",
+        icon: "ShoppingCart",
+        path: "/marketing/sales-order/dashboard",
+      },
+      {
+        title: "Kick Off Meeting",
+        icon: "Users",
+        path: "/marketing/kick-off-meeting",
+      },
+      {
+        title: "Insentif Marketing",
+        icon: "Award",
+        path: "/marketing/insentif",
+      },
     ],
   },
   {
     title: "Operasional",
     icon: "Settings",
     items: [
-      { title: "HPP Turunan", icon: "Calculator", path: "/operational/hpp-turunan/dashboard" },
-      { title: "Proses Produksi", icon: "Cog", path: "/operational/produksi/proses" },
-      { title: "Timesheet", icon: "Clock", path: "/operational/timesheet/dashboard" },
-      { title: "Report", icon: "FileText", path: "/operational/produksi/dashboard" },
+      {
+        title: "HPP Turunan",
+        icon: "Calculator",
+        path: "/operational/hpp-turunan/dashboard",
+      },
+      {
+        title: "Proses Produksi",
+        icon: "Cog",
+        path: "/operational/produksi/proses",
+      },
+      {
+        title: "Timesheet",
+        icon: "Clock",
+        path: "/operational/timesheet/dashboard",
+      },
+      {
+        title: "Report",
+        icon: "FileText",
+        path: "/operational/produksi/dashboard",
+      },
     ],
   },
   {
