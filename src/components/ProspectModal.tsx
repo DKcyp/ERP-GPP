@@ -13,6 +13,7 @@ export interface ProspectFormData {
   catatan: string;
   keterangan: string;
   tanggalUpdate: string;
+  status: "Cold" | "Warm" | "Hot";
 }
 
 interface ProspectModalProps {
@@ -35,7 +36,8 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
     hasil: '',
     catatan: '',
     keterangan: '',
-    tanggalUpdate: new Date().toISOString().split('T')[0]
+    tanggalUpdate: new Date().toISOString().split('T')[0],
+    status: 'Warm'
   });
 
   const [errors, setErrors] = useState<Partial<ProspectFormData>>({});
@@ -66,7 +68,8 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
           hasil: '',
           catatan: '',
           keterangan: '',
-          tanggalUpdate: new Date().toISOString().split('T')[0]
+          tanggalUpdate: new Date().toISOString().split('T')[0],
+          status: 'Warm'
         });
       }
     } else {
@@ -82,7 +85,8 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
         hasil: '',
         catatan: '',
         keterangan: '',
-        tanggalUpdate: new Date().toISOString().split('T')[0]
+        tanggalUpdate: new Date().toISOString().split('T')[0],
+        status: 'Warm'
       });
       setErrors({});
     }
@@ -276,6 +280,22 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Masukkan hasil"
                 />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Status
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => handleInputChange('status', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                >
+                  <option value="Cold">Cold</option>
+                  <option value="Warm">Warm</option>
+                  <option value="Hot">Hot</option>
+                </select>
               </div>
 
               {/* No. Telp */}

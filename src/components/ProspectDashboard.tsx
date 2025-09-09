@@ -133,7 +133,8 @@ const ProspectDashboard: React.FC = () => {
                 keterangan:
                   formData.keterangan || formData.catatan || "Data diupdate",
                 tanggalUpdate: formattedTanggalUpdate,
-                // Assuming other fields like jabatan, alamat, status might not be directly editable via this modal
+                status: formData.status,
+                // Assuming other fields like jabatan, alamat might not be directly editable via this modal
               }
             : p
         )
@@ -153,7 +154,7 @@ const ProspectDashboard: React.FC = () => {
         keterangan:
           formData.keterangan || formData.catatan || "Data baru ditambahkan",
         tanggalUpdate: formattedTanggalUpdate,
-        status: "Warm", // Default status for new prospects
+        status: formData.status,
       };
       setProspects((prev) => [
         newProspect,
@@ -292,6 +293,7 @@ const ProspectDashboard: React.FC = () => {
         catatan: editingProspect!.keterangan,
         keterangan: editingProspect!.keterangan,
         tanggalUpdate: editingProspect!.tanggalUpdate,
+        status: editingProspect!.status,
       }
     : null;
 

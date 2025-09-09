@@ -1,6 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Calendar, Save, Loader2, UploadCloud } from 'lucide-react';
-import { ApprovalResignFormData } from '../types';
+import React, { useState, useEffect, useRef } from "react";
+import { X, Calendar, Save, Loader2, UploadCloud } from "lucide-react";
+
+// Local type definition for approval form data
+export interface ApprovalResignFormData {
+  nama: string;
+  jabatan: string;
+  tanggalResign: string;
+  alasanResign: string;
+  lampiranSurat: File[];
+  jangkaWaktuApproval: string;
+}
 
 interface ResignDataForModal {
   id: string;
@@ -11,80 +20,121 @@ interface ResignDataForModal {
 interface ApprovalResignModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApprove: (id: string, approvalDetails: { alasanResign: string; lampiranSurat: File[] }) => void;
+  onApprove: (
+    id: string,
+    approvalDetails: { alasanResign: string; lampiranSurat: File[] }
+  ) => void;
   initialData: ResignDataForModal | null;
 }
 
-const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({ isOpen, onClose, onApprove, initialData }) => {
+const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
+  isOpen,
+  onClose,
+  onApprove,
+  initialData,
+}) => {
   const [formData, setFormData] = useState<ApprovalResignFormData>({
-    nama: '',
-    jabatan: 'Pegawai', // Default value as per image
-    tanggalResign: '',
-    alasanResign: '-', // Default value as per image
+    nama: "",
+    jabatan: "Pegawai", // Default value as per image
+    tanggalResign: "",
+    alasanResign: "-", // Default value as per image
     lampiranSurat: [],
-    jangkaWaktuApproval: '1 Minggu', // Default value as per image
+    jangkaWaktuApproval: "1 Minggu", // Default value as per image
   });
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileBAInputRef = useRef<HTMLInputElement>(null);
+  const [lampiranBA, setLampiranBA] = useState<File[]>([]);
 
   useEffect(() => {
     if (isOpen && initialData) {
       setFormData({
         nama: initialData.namaPegawai,
-        jabatan: 'Pegawai', // Default or fetch from user data
+        jabatan: "Pegawai", // Default or fetch from user data
         tanggalResign: initialData.tanggalResign,
-        alasanResign: '-',
+        alasanResign: "-",
         lampiranSurat: [],
-        jangkaWaktuApproval: '1 Minggu',
+        jangkaWaktuApproval: "1 Minggu",
       });
     } else if (!isOpen) {
       // Reset form when modal closes
       setFormData({
-        nama: '',
-        jabatan: 'Pegawai',
-        tanggalResign: '',
-        alasanResign: '-',
+        nama: "",
+        jabatan: "Pegawai",
+        tanggalResign: "",
+        alasanResign: "-",
         lampiranSurat: [],
-        jangkaWaktuApproval: '1 Minggu',
+        jangkaWaktuApproval: "1 Minggu",
       });
+      setLampiranBA([]);
     }
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose, initialData]);
 
-  const handleInputChange = (field: keyof ApprovalResignFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof ApprovalResignFormData,
+    value: any
+  ) => {
+    setFormData((prev: ApprovalResignFormData) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
-    setFormData(prev => ({ ...prev, lampiranSurat: [...prev.lampiranSurat, ...files] }));
+    setFormData((prev: ApprovalResignFormData) => ({
+      ...prev,
+      lampiranSurat: [...prev.lampiranSurat, ...files],
+    }));
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setFormData(prev => ({ ...prev, lampiranSurat: [...prev.lampiranSurat, ...files] }));
+    setFormData((prev: ApprovalResignFormData) => ({
+      ...prev,
+      lampiranSurat: [...prev.lampiranSurat, ...files],
+    }));
+  };
+
+  // BA handlers
+  const handleBAFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    setLampiranBA((prev) => [...prev, ...files]);
+  };
+
+  const handleBAFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setLampiranBA((prev) => [...prev, ...files]);
+  };
+
+  const handleRemoveBAFile = (index: number) => {
+    setLampiranBA((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleRemoveFile = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev: ApprovalResignFormData) => ({
       ...prev,
-      lampiranSurat: prev.lampiranSurat.filter((_, i) => i !== index)
+      lampiranSurat: prev.lampiranSurat.filter(
+        (_: File, i: number) => i !== index
+      ),
     }));
   };
 
@@ -93,11 +143,12 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({ isOpen, onClo
     if (!initialData) return;
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
 
     onApprove(initialData.id, {
       alasanResign: formData.alasanResign,
       lampiranSurat: formData.lampiranSurat,
+      lampiranBA,
     });
 
     setIsLoading(false);
@@ -181,7 +232,9 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({ isOpen, onClo
               </label>
               <textarea
                 value={formData.alasanResign}
-                onChange={(e) => handleInputChange('alasanResign', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("alasanResign", e.target.value)
+                }
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 placeholder="Tambahkan alasan..."
@@ -195,7 +248,9 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({ isOpen, onClo
               </label>
               <div
                 className={`flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-xl transition-all duration-200 ${
-                  formData.lampiranSurat.length > 0 ? 'border-blue-400 bg-blue-50' : 'border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50'
+                  formData.lampiranSurat.length > 0
+                    ? "border-blue-400 bg-blue-50"
+                    : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"
                 }`}
                 onDrop={handleFileDrop}
                 onDragOver={(e) => e.preventDefault()}
@@ -203,7 +258,10 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({ isOpen, onClo
               >
                 <UploadCloud className="h-8 w-8 text-gray-400 mb-2" />
                 <p className="text-gray-600 text-sm">
-                  Drag & Drop your files or <span className="text-blue-600 font-medium cursor-pointer">Browse</span>
+                  Drag & Drop your files or{" "}
+                  <span className="text-blue-600 font-medium cursor-pointer">
+                    Browse
+                  </span>
                 </p>
                 <input
                   type="file"
@@ -218,11 +276,74 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({ isOpen, onClo
                   <p className="text-xs font-medium text-gray-700">Files:</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     {formData.lampiranSurat.map((file, index) => (
-                      <li key={index} className="flex items-center justify-between text-xs text-gray-800 bg-gray-100 p-1.5 rounded-md">
+                      <li
+                        key={index}
+                        className="flex items-center justify-between text-xs text-gray-800 bg-gray-100 p-1.5 rounded-md"
+                      >
                         <span>{file.name}</span>
                         <button
                           type="button"
-                          onClick={(e) => { e.stopPropagation(); handleRemoveFile(index); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveFile(index);
+                          }}
+                          className="text-red-500 hover:text-red-700 ml-2"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Lampiran BA */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Lampiran BA
+              </label>
+              <div
+                className={`flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-xl transition-all duration-200 ${
+                  lampiranBA.length > 0
+                    ? "border-blue-400 bg-blue-50"
+                    : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"
+                }`}
+                onDrop={handleBAFileDrop}
+                onDragOver={(e) => e.preventDefault()}
+                onClick={() => fileBAInputRef.current?.click()}
+              >
+                <UploadCloud className="h-8 w-8 text-gray-400 mb-2" />
+                <p className="text-gray-600 text-sm">
+                  Drag & Drop your files or{" "}
+                  <span className="text-blue-600 font-medium cursor-pointer">
+                    Browse
+                  </span>
+                </p>
+                <input
+                  type="file"
+                  ref={fileBAInputRef}
+                  multiple
+                  onChange={handleBAFileSelect}
+                  className="hidden"
+                />
+              </div>
+              {lampiranBA.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-700">Files:</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {lampiranBA.map((file: File, index: number) => (
+                      <li
+                        key={index}
+                        className="flex items-center justify-between text-xs text-gray-800 bg-gray-100 p-1.5 rounded-md"
+                      >
+                        <span>{file.name}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveBAFile(index);
+                          }}
                           className="text-red-500 hover:text-red-700 ml-2"
                         >
                           <X className="h-3 w-3" />

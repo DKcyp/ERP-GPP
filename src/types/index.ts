@@ -43,8 +43,16 @@ export interface EntryPurchasingRequestFormData {
   noSO: string;
   departemen: string;
   keterangan: string;
-  statusPR: 'Approve' | 'Rejected' | 'Pending' | '';
-  statusPO: 'PO' | '-' | '';
+  kategori: 'Barang' | 'Jasa';
+  detailItems: PRDetailItem[];
+}
+
+export interface PRDetailItem {
+  id: string; // unique key
+  namaItem: string;
+  qty: number;
+  satuan: string;
+  keterangan?: string;
 }
 
 export interface PayVoucherFormData {

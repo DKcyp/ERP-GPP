@@ -37,8 +37,9 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
       noSO: newData.noSO,
       departemen: newData.departemen,
       keterangan: newData.keterangan,
-      statusPR: newData.statusPR as 'Approve' | 'Rejected' | 'Pending', // Cast to valid type
-      statusPO: newData.statusPO as 'PO' | '-', // Cast to valid type
+      // Default statuses for new PR since inputs removed from modal
+      statusPR: 'Pending',
+      statusPO: '-',
     };
     setPurchasingRequests((prev) => [...prev, newRequest]);
     console.log('New Purchasing Request Added:', newRequest);

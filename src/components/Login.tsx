@@ -98,6 +98,12 @@ const Login: React.FC = () => {
           </div>
           <div 
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            onClick={() => handleCredentialClick('ga', '12345')}
+          >
+            <p><span className="font-medium">GA:</span> ga / 12345</p>
+          </div>
+          <div 
+            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
             onClick={() => handleCredentialClick('procon', '12345')}
           >
             <p><span className="font-medium">Procon:</span> procon / 12345</p>

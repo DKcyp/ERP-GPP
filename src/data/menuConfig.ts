@@ -75,22 +75,46 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
-    {
-      title: "Purchase Request",
-      icon: "ShoppingCart",
-      items: [
-        {
-          title: "Dashboard Purchasing Request",
-          icon: "LayoutDashboard",
-          path: `/${role}/general/purchase-request/dashboard`,
-        },
-        {
-          title: "Proses Purchasing Request",
-          icon: "FilePlus",
-          path: `/${role}/general/purchase-request/proses`,
-        },
-      ],
-    },
+    // Purchase Request for non-procon roles
+    ...(role !== "procon"
+      ? [
+          {
+            title: "Purchase Request",
+            icon: "ShoppingCart",
+            items: [
+              {
+                title: "Dashboard Purchasing Request",
+                icon: "LayoutDashboard",
+                path: `/${role}/general/purchase-request/dashboard`,
+              },
+              {
+                title: "Proses Purchasing Request",
+                icon: "FilePlus",
+                path: `/${role}/general/purchase-request/proses`,
+              },
+            ],
+          },
+        ]
+      : []),
+    // For procon, include Purchase Request and Purchase Order inside General
+    ...(role === "procon"
+      ? [
+          {
+            title: "Purchase Request",
+            icon: "ShoppingCart",
+            items: [
+              { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
+            ],
+          },
+          {
+            title: "Purchase Order",
+            icon: "FileBox",
+            items: [
+              { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
+            ],
+          },
+        ]
+      : []),
     {
       title: "Cuti",
       icon: "Calendar",
@@ -107,12 +131,84 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    // Procon-only: PBG submenu replaces Purchase Request
+    ...(role === "procon"
+      ? [
+          {
+            title: "PBG",
+            icon: "Shield",
+            items: [
+              {
+                title: "Mutasi Barang",
+                icon: "Shuffle",
+                path: `/${role}/general/pbg/mutasi-barang`,
+              },
+              {
+                title: "Timesheet Barang",
+                icon: "Clock",
+                path: `/${role}/general/pbg/timesheet-barang`,
+              },
+              {
+                title: "Permintaan Barang Gudang",
+                icon: "ShoppingCart",
+                path: `/${role}/general/pbg/permintaan-barang-gudang`,
+              },
+              {
+                title: "Approval PBG",
+                icon: "CheckCircle",
+                path: `/${role}/general/pbg/approval`,
+              },
+            ],
+          },
+        ]
+      : []),
+    // GA-only: Internal Business Process
+    ...(role === "ga"
+      ? [
+          {
+            title: "Internal Business Process",
+            icon: "Workflow",
+            items: [
+              {
+                title: "Suport Operasional",
+                icon: "LifeBuoy",
+                path: `/${role}/ibp/suport-operasional`,
+              },
+              {
+                title: "Maintenance Sarana & Prasarana",
+                icon: "Wrench",
+                path: `/${role}/ibp/maintenance-sapras`,
+              },
+              {
+                title: "Penangan Troubleshoot Sistem Sarana Kerja",
+                icon: "Bug",
+                path: `/${role}/ibp/troubleshoot-sarana-kerja`,
+              },
+              {
+                title: "Persediaan ATK",
+                icon: "Package",
+                path: `/${role}/ibp/persediaan-atk`,
+              },
+              {
+                title: "Kebersihan Lingkungan Kerja",
+                icon: "Leaf",
+                path: `/${role}/ibp/kebersihan-lingkungan`,
+              },
+              {
+                title: "Utility",
+                icon: "Plug",
+                path: `/${role}/general/utility/dashboard`,
+              },
+            ],
+          },
+        ]
+      : []),
   ],
 });
 
 export const marketingMenu: MenuSection[] = [
   {
-    title: "Main Dashboard", // NEW: Main Dashboard for Marketing
+    title: "Dashboard", // NEW: Main Dashboard for Marketing
     icon: "Home",
     items: [],
     directPath: "/marketing/dashboard",
@@ -128,6 +224,12 @@ export const marketingMenu: MenuSection[] = [
     icon: "Target",
     items: [],
     directPath: "/marketing/prospect/dashboard",
+  },
+  {
+    title: "SO Turunan",
+    icon: "GitBranch",
+    items: [],
+    directPath: "/operational3/sales-order/so-turunan",
   },
   {
     title: "Penawaran",
@@ -146,7 +248,7 @@ export const marketingMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Kontrak Deal",
+    title: "Kontrak/SPK/PO",
     icon: "FileCheck",
     items: [],
     directPath: "/marketing/kontrak-deal/dashboard",
@@ -158,13 +260,25 @@ export const marketingMenu: MenuSection[] = [
     directPath: "/marketing/hpp-induk/dashboard",
   },
   {
-    title: "Sales Order",
+    title: "SO Induk",
     icon: "ShoppingCart",
     items: [],
     directPath: "/marketing/sales-order/dashboard",
   },
   {
-    title: "Report Kontrak",
+    title: "SO Turunan",
+    icon: "GitBranch",
+    items: [],
+    directPath: "/operational3/sales-order/so-turunan",
+  },
+  {
+    title: "Insentif",
+    icon: "Gift",
+    items: [],
+    directPath: "/marketing/insentif-marketing/dashboard",
+  },
+  {
+    title: "Report",
     icon: "FileText",
     items: [],
     directPath: "/marketing/report-kontrak",
@@ -172,9 +286,134 @@ export const marketingMenu: MenuSection[] = [
   createGeneralMenu("marketing"),
 ];
 
+// GA Menu
+export const gaMenu: MenuSection[] = [
+  {
+    title: "Dashboard",
+    icon: "Home",
+    items: [],
+    directPath: "/ga/dashboard",
+  },
+  {
+    title: "Monitoring Pajak Kendaraan",
+    icon: "Car",
+    subSections: [
+      {
+        title: "Pajak Kendaraan",
+        icon: "Receipt",
+        items: [
+          {
+            title: "Master Kendaraan",
+            icon: "Car",
+            path: "/ga/pajak-kendaraan/master-kendaraan",
+          },
+          {
+            title: "Pajak Kendaraan",
+            icon: "Receipt",
+            path: "/ga/pajak-kendaraan/pajak-kendaraan",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Legalitas Perusahaan",
+    icon: "ShieldCheck",
+    items: [],
+    directPath: "/ga/legalitas/monitoring",
+  },
+  {
+    title: "GA Performance",
+    icon: "Gauge",
+    items: [],
+    directPath: "/ga/performance",
+  },
+  {
+    title: "Monitoring Sarana dan Prasarana",
+    icon: "Building2",
+    items: [],
+    directPath: "/ga/monitoring/sapras",
+  },
+  {
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Purchase Request (PR)",
+        icon: "ShoppingCart",
+        path: "/qhse/monitoring/pr",
+      },
+      {
+        title: "Monitoring Cash Advance (CA)",
+        icon: "Banknote",
+        path: "/hrd/general/cash-advance/dashboard",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "Ticket",
+        path: "/qhse/monitoring/voucher",
+      },
+      {
+        title: "Monitoring Service Kendaraan",
+        icon: "Wrench",
+        path: "/ga/monitoring/service-kendaraan",
+      },
+      {
+        title: "Monitoring Maintenance Sarana & Prasarana",
+        icon: "Wrench",
+        path: "/ga/monitoring/maintenance-sapras",
+      },
+      {
+        title: "Monitoring Utility",
+        icon: "Plug",
+        path: "/ga/monitoring/utility",
+      },
+    ],
+  },
+  {
+    title: "Monitoring ATK",
+    icon: "Package",
+    items: [
+      {
+        title: "Monitoring Stok ATK",
+        icon: "Package",
+        path: "/ga/atk/monitoring-stok",
+      },
+      {
+        title: "Pengajuan ATK dari User",
+        icon: "FilePlus",
+        path: "/ga/atk/pengajuan",
+      },
+    ],
+  },
+  {
+    title: "Monitoring IT",
+    icon: "Server",
+    items: [
+      {
+        title: "Backup Data Setiap User",
+        icon: "DatabaseBackup",
+        path: "/ga/it/backup",
+      },
+      { title: "Trouble Shoot", icon: "Bug", path: "/ga/it/troubleshoot" },
+      {
+        title: "Maintenance Perangkat Device",
+        icon: "Cpu",
+        path: "/ga/it/maintenance-device",
+      },
+      {
+        title: "Monitoring Server",
+        icon: "Server",
+        path: "/ga/it/monitoring-server",
+      },
+    ],
+  },
+  createGeneralMenu("ga"),
+];
+
 export const operationalMenu: MenuSection[] = [
   {
-    title: "Main Dashboard", // NEW: Main Dashboard for Operational
+    title: "Dashboard", // NEW: Main Dashboard for Operational
     icon: "Home",
     items: [],
     directPath: "/operational/dashboard",
@@ -191,9 +430,14 @@ export const operationalMenu: MenuSection[] = [
     items: [
       { title: "SO", icon: "List", path: "/operational/sales-order/so" },
       {
-        title: "SO Turunan",
+        title: "Request SO Turunan",
         icon: "GitBranch",
         path: "/operational/sales-order/so-turunan",
+      },
+      {
+        title: "SO Turunan",
+        icon: "GitBranch",
+        path: "/operational2/sales-order/so-turunan",
       },
     ],
   },
@@ -289,7 +533,7 @@ export const operationalMenu: MenuSection[] = [
 
 export const hrdMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/hrd/dashboard",
@@ -334,6 +578,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "History",
         path: "/hrd/rekrutmen/history-lamaran",
       },
+      {
+        title: "REQ Man Power",
+        icon: "Users",
+        path: "/hrd/rekrutmen/req-man-power",
+      },
     ],
   },
   {
@@ -352,7 +601,21 @@ export const hrdMenu: MenuSection[] = [
     title: "Pegawai",
     icon: "UserRound",
     items: [
-      { title: "Daftar Pegawai", icon: "Users", path: "/hrd/pegawai/daftar" },
+      {
+        title: "Daftar Pegawai",
+        icon: "Users",
+        path: "/hrd/pegawai/daftar",
+      },
+      {
+        title: "Kontrak Pegawai",
+        icon: "FileSignature",
+        path: "/hrd/pegawai/kontrak-pegawai",
+      },
+      {
+        title: "Monitoring Kontrak Pegawai",
+        icon: "ClipboardCheck",
+        path: "/hrd/pegawai/monitoring-kontrak",
+      },
       {
         title: "Daftar Cuti Pegawai",
         icon: "Calendar",
@@ -431,13 +694,13 @@ export const hrdMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "SPK", // Moved SPK Section to HRD
-    icon: "FileSignature",
-    items: [
-      { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
-    ],
-  },
+  // {
+  //   title: "SPK", // Moved SPK Section to HRD
+  //   icon: "FileSignature",
+  //   items: [
+  //     { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+  //   ],
+  // },
   {
     title: "Monitoring", // Moved SPK Section to HRD
     icon: "Monitor",
@@ -454,7 +717,7 @@ export const hrdMenu: MenuSection[] = [
 
 export const pengadaanMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/pengadaan/dashboard",
@@ -548,7 +811,7 @@ export const pengadaanMenu: MenuSection[] = [
 
 export const financeMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/finance/dashboard",
@@ -669,7 +932,7 @@ export const financeMenu: MenuSection[] = [
 
 export const gudangMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/gudang/dashboard",
@@ -925,114 +1188,6 @@ export const qhseMenu: MenuSection[] = [
     items: [],
     directPath: "/qhse/performance",
   },
-  // {
-  //   title: "Monitoring MCU",
-  //   icon: "HeartPulse",
-  //   items: [],
-  //   directPath: "/qhse/monitoring-mcu",
-  // },
-  {
-    title: "Monitoring Daftar Alat Ukur",
-    icon: "ListChecks",
-    items: [],
-    directPath: "/qhse/monitoring-daftar-alat-ukur",
-  },
-  // {
-  //   title: "KPI",
-  //   icon: "BarChart",
-  //   items: [
-  //     {
-  //       title: "Master KPI",
-  //       icon: "Database",
-  //       path: "/qhse/general/kpi/master",
-  //     },
-  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
-  //   ],
-  // },
-  {
-    title: "Monitoring",
-    icon: "Monitor",
-    items: [
-      {
-        title: "Purchase Request",
-        icon: "ShoppingCart",
-        path: "/qhse/monitoring/pr",
-      },
-      // {
-      //   title: "Cash Advance",
-      //   icon: "Banknote",
-      //   path: "/qhse/monitoring/cash-advance",
-      // },
-      {
-        title: "Voucher",
-        icon: "Ticket",
-        path: "/qhse/monitoring/voucher",
-      },
-      {
-        title: "Endorse Certificate",
-        icon: "FileCheck",
-        path: "/qhse/monitoring/endorse-certificate",
-      },
-      {
-        title: "Reimburse",
-        icon: "Wallet",
-        path: "/qhse/monitoring/reimburse",
-      },
-    ],
-  },
-  {
-    title: "Monitoring Gudang",
-    icon: "Boxes",
-    items: [
-      {
-        title: "Monitoring Manifest Barang",
-        icon: "Package",
-        path: "/qhse/monitoring-gudang/manifest-barang",
-      },
-      {
-        title: "Monitoring PBG",
-        icon: "ClipboardList",
-        path: "/qhse/monitoring-gudang/pbg",
-      },
-      {
-        title: "Monitoring RFI",
-        icon: "FileSearch",
-        path: "/qhse/monitoring-gudang/rfi",
-      },
-    ],
-  },
-  {
-    title: "Monitoring Personnel",
-    icon: "Users",
-    subSections: [
-      {
-        title: "Monitoring Personnel",
-        icon: "Users",
-        items: [
-          {
-            title: "Training Matrix",
-            icon: "GraduationCap",
-            path: "/qhse/monitoring-personnel/training-matrix",
-          },
-          {
-            title: "Medical Check Up",
-            icon: "HeartPulse",
-            path: "/qhse/monitoring-personnel/mcu",
-          },
-          {
-            title: "APD",
-            icon: "Shield",
-            path: "/qhse/monitoring-personnel/apd",
-          },
-          {
-            title: "Nomor Report",
-            icon: "FileText",
-            path: "/qhse/monitoring-personnel/nomor-report",
-          },
-        ],
-      },
-    ],
-  },
   {
     title: "RADIOGRAPHY",
     icon: "Camera",
@@ -1080,6 +1235,115 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
+  // {
+  //   title: "Monitoring MCU",
+  //   icon: "HeartPulse",
+  //   items: [],
+  //   directPath: "/qhse/monitoring-mcu",
+  // },
+  {
+    title: "Monitoring Daftar Alat Ukur",
+    icon: "ListChecks",
+    items: [],
+    directPath: "/qhse/monitoring-daftar-alat-ukur",
+  },
+  // {
+  //   title: "KPI",
+  //   icon: "BarChart",
+  //   items: [
+  //     {
+  //       title: "Master KPI",
+  //       icon: "Database",
+  //       path: "/qhse/general/kpi/master",
+  //     },
+  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
+  //   ],
+  // },
+  {
+    title: "Monitoring Personnel",
+    icon: "Users",
+    subSections: [
+      {
+        title: "Monitoring Personnel",
+        icon: "Users",
+        items: [
+          {
+            title: "Training Matrix (Technical and QHSE)",
+            icon: "GraduationCap",
+            path: "/qhse/monitoring-personnel/training-matrix",
+          },
+          {
+            title: "Medical Check Up (MCU)",
+            icon: "HeartPulse",
+            path: "/qhse/monitoring-personnel/mcu",
+          },
+          {
+            title: "Alat Pelindung Diri (APD)",
+            icon: "Shield",
+            path: "/qhse/monitoring-personnel/apd",
+          },
+          {
+            title: "Nomor Report",
+            icon: "FileText",
+            path: "/qhse/monitoring-personnel/nomor-report",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Purchase Request (PR)",
+        icon: "ShoppingCart",
+        path: "/qhse/monitoring/pr",
+      },
+      {
+        title: "Monitoring Cash Advance (CA)",
+        icon: "Banknote",
+        path: "/qhse/monitoring/cash-advance",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "Ticket",
+        path: "/qhse/monitoring/voucher",
+      },
+      {
+        title: "Monitoring Endorse Certificate",
+        icon: "FileCheck",
+        path: "/qhse/monitoring/endorse-certificate",
+      },
+      {
+        title: "Monitoring Reimburse",
+        icon: "Wallet",
+        path: "/qhse/monitoring/reimburse",
+      },
+    ],
+  },
+  {
+    title: "Monitoring Gudang",
+    icon: "Boxes",
+    items: [
+      {
+        title: "Monitoring Manifest Barang",
+        icon: "Package",
+        path: "/qhse/monitoring-gudang/manifest-barang",
+      },
+      {
+        title: "Monitoring Permintaan Barang Gudang (PBG)",
+        icon: "ClipboardList",
+        path: "/qhse/monitoring-gudang/pbg",
+      },
+      {
+        title: "Monitoring Request for Inspection (RFI)",
+        icon: "FileSearch",
+        path: "/qhse/monitoring-gudang/rfi",
+      },
+    ],
+  },
+
   createGeneralMenu("operational"),
 ];
 
@@ -1214,47 +1478,125 @@ export const taxMenu: MenuSection[] = [
 // Procon Menu
 export const proconMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/procon/dashboard",
   },
   {
-    title: "Invoice",
-    icon: "FileInvoice",
+    title: "Sales Order",
+    icon: "ShoppingCart",
     items: [],
-    directPath: "/procon/invoice",
+    directPath: "/procon/sales-order/dashboard",
   },
+  
   {
-    title: "Laporan",
-    icon: "FileText",
+    title: "Proforma Invoice",
+    icon: "ReceiptText",
     items: [
       {
-        title: "Laporan Laba Rugi",
-        icon: "LineChart",
-        path: "/procon/laporan/laba-rugi",
+        title: "Dashboard",
+        icon: "LayoutDashboard",
+        path: "/procon/proforma-invoice/dashboard",
       },
       {
-        title: "Laporan Per SO",
-        icon: "FileText",
-        path: "/procon/laporan/per-so",
+        title: "Pembuatan PI",
+        icon: "FilePlus",
+        path: "/procon/proforma-invoice/pembuatan",
       },
     ],
   },
   {
-    title: "Approval",
-    icon: "CheckCircle",
+    title: "Laba Rugi Project",
+    icon: "TrendingUp",
     items: [
       {
-        title: "Approval PO Jasa",
-        icon: "Wrench",
-        path: "/procon/approval/po-jasa",
+        title: "Dashboard",
+        icon: "LayoutDashboard",
+        path: "/procon/lrp/dashboard",
       },
       {
-        title: "Approval Timesheet",
-        icon: "Clock",
-        path: "/procon/approval/timesheet",
+        title: "Tunjangan / Timesheet Teknisi",
+        icon: "UserCheck",
+        path: "/procon/lrp/tunjangan-timesheet-teknisi",
+      },
+      { title: "Gaji", icon: "Wallet", path: "/procon/lrp/gaji" },
+      {
+        title: "Timesheet Barang",
+        icon: "Package",
+        path: "/procon/lrp/timesheet-barang",
+      },
+      { title: "Kas Keluar", icon: "Wallet", path: "/procon/lrp/kas-keluar" },
+      {
+        title: "Bank Keluar",
+        icon: "Banknote",
+        path: "/procon/lrp/bank-keluar",
       },
     ],
   },
+  // New sections requested for Procon: Marketing, Operasional, Procurement, Finance
+  {
+    title: "Marketing",
+    icon: "Megaphone",
+    items: [
+      { title: "Kontrak Deal", icon: "FileCheck", path: "/marketing/kontrak-deal/dashboard" },
+      { title: "HPP Induk", icon: "Calculator", path: "/marketing/hpp-induk/dashboard" },
+      { title: "Sales Order", icon: "ShoppingCart", path: "/marketing/sales-order/dashboard" },
+      { title: "Kick Off Meeting", icon: "Users", path: "/marketing/kick-off-meeting" },
+      { title: "Insentif Marketing", icon: "Award", path: "/marketing/insentif" },
+    ],
+  },
+  {
+    title: "Operasional",
+    icon: "Settings",
+    items: [
+      { title: "HPP Turunan", icon: "Calculator", path: "/operational/hpp-turunan/dashboard" },
+      { title: "Proses Produksi", icon: "Cog", path: "/operational/produksi/proses" },
+      { title: "Timesheet", icon: "Clock", path: "/operational/timesheet/dashboard" },
+      { title: "Report", icon: "FileText", path: "/operational/produksi/dashboard" },
+    ],
+  },
+  {
+    title: "Procurement",
+    icon: "ShoppingCart",
+    items: [
+      {
+        title: "Dashboard Purchase Request",
+        icon: "LayoutDashboard",
+        path: "/procon/purchase-request/dashboard",
+      },
+      {
+        title: "Proses Purchase Request",
+        icon: "FilePlus",
+        path: "/procon/purchase-request/proses",
+      },
+      {
+        title: "Approval Purchase Request",
+        icon: "CheckCircle",
+        path: "/procon/purchase-request/approval",
+      },
+    ],
+  },
+  {
+    title: "Finance",
+    icon: "DollarSign",
+    items: [
+      {
+        title: "Dashboard Purchase Order",
+        icon: "LayoutDashboard",
+        path: "/procon/purchase-order/dashboard",
+      },
+      {
+        title: "Proses Purchase Order",
+        icon: "FilePlus",
+        path: "/procon/purchase-order/proses",
+      },
+      {
+        title: "Approval Purchase Order",
+        icon: "CheckCircle",
+        path: "/procon/purchase-order/approval",
+      },
+    ],
+  },
+  createGeneralMenu("procon"),
 ];

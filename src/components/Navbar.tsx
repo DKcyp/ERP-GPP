@@ -20,44 +20,37 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm" ref={dropdownRef}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 flex-nowrap">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 min-w-0">
             <div className="relative">
               <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-300">
                 <span className="text-white font-bold text-sm">ERP</span>
               </div>
               <div className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
             </div>
-            <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent whitespace-nowrap truncate max-w-[16rem]">
                 Enterprise System
               </span>
               <div className="flex items-center space-x-1 mt-0.5">
                 <Sparkles className="h-3 w-3 text-blue-500" />
-                <span className="text-xs text-blue-600 font-medium">Professional</span>
+                <span className="text-xs text-blue-600 font-medium whitespace-nowrap truncate max-w-[10rem]">Professional</span>
               </div>
             </div>
           </div>
 
           {/* Profile Section */}
-          <div className="relative">
+          <div className="relative min-w-0">
             <button
               onClick={() => setProfileDropdown(!profileDropdown)}
               className="flex items-center space-x-3 p-3 rounded-xl hover:bg-white/70 hover:shadow-md transition-all duration-300 border border-transparent hover:border-blue-100 backdrop-blur-sm"
             >
-              <div className="relative">
-                <img
-                  src={user?.profilePicture}
-                  alt={user?.fullName}
-                  className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-200 hover:ring-blue-300 transition-all duration-300"
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
-              </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-sm font-semibold text-gray-900">{user?.fullName}</p>
-                <p className="text-xs text-blue-600 capitalize font-medium">{user?.role}</p>
+              {/* Removed profile photo as requested */}
+              <div className="hidden sm:block text-left min-w-0">
+                <p className="text-sm font-semibold text-gray-900 whitespace-nowrap truncate max-w-[12rem]">{user?.fullName}</p>
+                <p className="text-xs text-blue-600 capitalize font-medium whitespace-nowrap truncate max-w-[12rem]">{user?.role}</p>
               </div>
               <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${
                 profileDropdown ? 'rotate-180' : ''

@@ -316,33 +316,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   </select>
                 </div>
 
-                {/* No. Ref Req */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    No. Ref Req
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.noRefReq}
-                    onChange={(e) => handleInputChange('noRefReq', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    placeholder="Masukkan no ref req"
-                  />
-                </div>
-
-                {/* Kode Customer */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Kode Customer
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.kodeCustomer}
-                    onChange={(e) => handleInputChange('kodeCustomer', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    placeholder="Masukkan kode customer"
-                  />
-                </div>
+                {/* No. Ref Req - removed per request */}
+              
+                {/* Kode Customer - removed per request */}
 
                 {/* Nama Customer */}
                 <div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import termsPdf from '../../Folder/term&condition.pdf';
 import PenawaranTwoStepModal, { PenawaranTwoStepFormData } from './PenawaranTwoStepModal';
 import PenawaranDetailModal from './PenawaranDetailModal';
 import UpdateStatusModal, { UpdateStatusFormData } from './UpdateStatusModal';
@@ -252,6 +253,15 @@ const PenawaranTenderDashboard: React.FC = () => {
       setPenawaranTender(prev => prev.filter(p => p.id !== itemToDelete.id));
       setItemToDelete(null);
     }
+  };
+
+  const handleExportPDF = () => {
+    const link = document.createElement('a');
+    link.href = termsPdf;
+    link.setAttribute('download', 'term&condition.pdf');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   const getStatusPenawaranColor = (status: string) => {
@@ -570,7 +580,7 @@ const PenawaranTenderDashboard: React.FC = () => {
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-xs whitespace-nowrap">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
@@ -618,39 +628,18 @@ const PenawaranTenderDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-2 py-1">
-                      <div className="flex items-center justify-center space-x-1">
-                        <button 
-                          onClick={() => handleViewDetail(item)}
-                          className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => setIsModalOpen(true)}
-                          className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 hover:scale-110">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleUpdateStatus(item)}
-                          className="p-1 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200 hover:scale-110"
-                        >
-                          <Settings className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteClick(item)}
-                          className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <button className="p-1 text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200 hover:scale-110">
-                          <Printer className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => setIsHistoryModalOpen(true)}
-                          className="p-1 text-teal-600 hover:bg-teal-50 rounded-lg transition-all duration-200 hover:scale-110"
-                        >
-                          <Clock className="h-4 w-4" />
-                        </button>
+                      <div className="flex items-center justify-center gap-3 text-xs">
+                        <button onClick={() => handleViewDetail(item)} className="text-yellow-700 hover:underline">View</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={handleExportPDF} className="text-purple-700 hover:underline">Print</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => handleUpdateStatus(item)} className="text-gray-700 hover:underline">Update Status</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => setIsHistoryModalOpen(true)} className="text-teal-700 hover:underline">History</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => setIsModalOpen(true)} className="text-blue-700 hover:underline">Edit</button>
+                        <span className="text-gray-300">|</span>
+                        <button onClick={() => handleDeleteClick(item)} className="text-red-700 hover:underline">Delete</button>
                       </div>
                     </td>
                   </tr>

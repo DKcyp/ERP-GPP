@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SalesOrderModal, { SalesOrderFormData } from './SalesOrderModal';
+import SalesOrderDetailModal, { SalesOrderDetailData } from './SalesOrderDetailModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import {
   Search,
@@ -9,6 +10,7 @@ import {
   Edit,
   Trash2,
   Truck,
+  Eye,
   ChevronDown,
   Calendar,
   Clock,
@@ -32,6 +34,13 @@ interface SalesOrder {
   tanggalDeMOB: string;
   tanggalDibuat: string;
   estimasiSO: string;
+  // Optional tab data captured at create/edit time
+  tenagaKerja?: Array<Record<string, string>>;
+  jasa?: Array<Record<string, string>>;
+  alat?: Array<Record<string, string>>;
+  barang?: Array<Record<string, string>>;
+  mobDemob?: Array<Record<string, string>>;
+  biayaLainLain?: Array<Record<string, string>>;
 }
 
 const SalesOrderDashboard: React.FC = () => {
@@ -46,6 +55,8 @@ const SalesOrderDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedDetail, setSelectedDetail] = useState<SalesOrderDetailData | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SalesOrder | null>(null);
   const [goToPageInput, setGoToPageInput] = useState<string>('');
@@ -65,7 +76,19 @@ const SalesOrderDashboard: React.FC = () => {
       tanggalMOB: '01-01-2025',
       tanggalDeMOB: '31-01-2025',
       tanggalDibuat: '01-01-2025',
-      estimasiSO: 'Rp 20.000.000'
+      estimasiSO: 'Rp 20.000.000',
+      tenagaKerja: [
+        { tenaga: 'Teknisi', tunjangan: 'Uang Makan', projectRate: '250000', hari: '5', margin: '10', hargaAkhir: '1375000' },
+      ],
+      jasa: [
+        { jasa: 'Maintenance', tunjangan: 'Transport', projectRate: '500000', hari: '2', margin: '15', hargaAkhir: '1150000' },
+      ],
+      alat: [
+        { alat: 'Forklift', jumlah: '1', hari: '2', satuan: 'unit', hargaSatuan: '1500000', margin: '5', hargaAkhir: '1575000' },
+      ],
+      barang: [
+        { namaBarang: 'Kabel NYA', jumlah: '100', hari: '1', satuan: 'meter', hargaSatuan: '5000', margin: '10', hargaAkhir: '550000' },
+      ],
     },
     {
       id: '2',
@@ -80,7 +103,10 @@ const SalesOrderDashboard: React.FC = () => {
       tanggalMOB: '03-01-2025',
       tanggalDeMOB: '28-02-2025',
       tanggalDibuat: '03-01-2025',
-      estimasiSO: 'Rp 15.500.000'
+      estimasiSO: 'Rp 15.500.000',
+      jasa: [
+        { jasa: 'Instalasi', tunjangan: 'Uang Makan', projectRate: '750000', hari: '3', margin: '12', hargaAkhir: '2520000' },
+      ],
     },
     {
       id: '3',
@@ -95,7 +121,10 @@ const SalesOrderDashboard: React.FC = () => {
       tanggalMOB: '05-01-2025',
       tanggalDeMOB: '30-03-2025',
       tanggalDibuat: '05-01-2025',
-      estimasiSO: 'Rp 30.000.000'
+      estimasiSO: 'Rp 30.000.000',
+      alat: [
+        { alat: 'Crane', jumlah: '1', hari: '1', satuan: 'unit', hargaSatuan: '4000000', margin: '8', hargaAkhir: '4320000' },
+      ],
     },
     {
       id: '4',
@@ -110,7 +139,10 @@ const SalesOrderDashboard: React.FC = () => {
       tanggalMOB: '07-01-2025',
       tanggalDeMOB: '30-04-2025',
       tanggalDibuat: '07-01-2025',
-      estimasiSO: 'Rp 22.800.000'
+      estimasiSO: 'Rp 22.800.000',
+      barang: [
+        { namaBarang: 'Panel', jumlah: '3', hari: '1', satuan: 'unit', hargaSatuan: '500000', margin: '5', hargaAkhir: '1575000' },
+      ],
     }
   ]);
 
@@ -137,10 +169,39 @@ const SalesOrderDashboard: React.FC = () => {
         month: '2-digit',
         year: 'numeric'
       }),
-      estimasiSO: formData.estimasiSO
+      estimasiSO: formData.estimasiSO,
+      tenagaKerja: formData.tenagaKerja,
+      jasa: formData.jasa,
+      alat: formData.alat,
+      barang: formData.barang,
+      mobDemob: formData.mobDemob,
+      biayaLainLain: formData.biayaLainLain,
     };
-
     setSalesOrders(prev => [newSalesOrder, ...prev.map(s => ({ ...s, no: s.no + 1 }))]);
+  };
+
+  const handleViewDetail = (item: SalesOrder) => {
+    const detail: SalesOrderDetailData = {
+      noSO: item.noSO,
+      nomorKontrak: item.nomorKontrak,
+      namaClient: item.namaClient,
+      namaProyek: item.namaProyek,
+      sow: item.sow,
+      lokasi: item.lokasi,
+      jenisPekerjaan: item.jenisPekerjaan,
+      tanggalMOB: item.tanggalMOB,
+      tanggalDeMOB: item.tanggalDeMOB,
+      tanggalDibuat: item.tanggalDibuat,
+      estimasiSO: item.estimasiSO,
+      tenagaKerja: item.tenagaKerja,
+      jasa: item.jasa,
+      alat: item.alat,
+      barang: item.barang,
+      mobDemob: item.mobDemob,
+      biayaLainLain: item.biayaLainLain,
+    };
+    setSelectedDetail(detail);
+    setIsDetailOpen(true);
   };
 
   const handleDeleteClick = (salesOrder: SalesOrder) => {
@@ -421,8 +482,7 @@ const SalesOrderDashboard: React.FC = () => {
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">SOW</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Lokasi</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jenis Pekerjaan</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal MOB</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal DeMOB</th>
+                  
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal Dibuat</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Estimasi SO</th>
                   <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
@@ -454,8 +514,7 @@ const SalesOrderDashboard: React.FC = () => {
                         {item.jenisPekerjaan}
                       </span>
                     </td>
-                    <td className="px-2 py-1 text-gray-600">{item.tanggalMOB}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.tanggalDeMOB}</td>
+                    
                     <td className="px-2 py-1 text-gray-600">{item.tanggalDibuat}</td>
                     <td className="px-2 py-1 text-gray-600 font-medium">{item.estimasiSO}</td>
                     <td className="px-2 py-1">
@@ -475,10 +534,11 @@ const SalesOrderDashboard: React.FC = () => {
                           <Trash2 className="h-4 w-4" />
                         </button>
                         <button 
+                          onClick={() => handleViewDetail(item)}
                           className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 hover:scale-110"
                           title="View Details"
                         >
-                          <Truck className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -594,6 +654,13 @@ const SalesOrderDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddSalesOrder}
+      />
+
+      {/* Detail Modal */}
+      <SalesOrderDetailModal
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        data={selectedDetail}
       />
 
       {/* Delete Confirmation Modal */}
