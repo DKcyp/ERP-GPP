@@ -94,6 +94,9 @@ import CollectionDashboardInvoiceOutstanding from "./CollectionDashboardInvoiceO
 import CollectionDatabaseCustomer from "./CollectionDatabaseCustomer";
 import CollectionDashboardCashIn from "./CollectionDashboardCashIn";
 import FinanceTandaTerimaDokumeniDashboard from "./FinanceTandaTerimaDokumeniDashboard";
+import JurnalManualDashboard from "./JurnalManualDashboard";
+import AssetDashboard from "./AssetDashboard";
+import TrialBalanceDashboard from "./TrialBalanceDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -1447,8 +1450,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/accounting/bank-keluar") {
       return <BankKeluarDashboard />;
     }
+    if (currentPage === "/accounting/asset") {
+      return <AssetDashboard />;
+    }
+    if (currentPage === "/accounting/trial-balance") {
+      return <TrialBalanceDashboard />;
+    }
     if (currentPage === "/accounting/posting-jurnal") {
       return <PostingJurnalDashboard />;
+    }
+    if (currentPage === "/accounting/jurnal-manual") {
+      return <JurnalManualDashboard />;
     }
     if (currentPage === "/accounting/laporan-jurnal") {
       return <LaporanJurnalDashboard />;

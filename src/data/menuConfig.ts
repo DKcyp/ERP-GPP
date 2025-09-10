@@ -1582,6 +1582,63 @@ export const accountingMenu: MenuSection[] = [
     directPath: "/accounting/master-coa",
   },
   {
+    title: "Jurnal",
+    icon: "ClipboardList",
+    subSections: [
+      {
+        title: "Jurnal",
+        icon: "ClipboardList",
+        items: [
+          {
+            title: "Posting Jurnal",
+            icon: "ClipboardList",
+            path: "/accounting/posting-jurnal",
+          },
+          {
+            title: "Jurnal Manual",
+            icon: "ClipboardList",
+            path: "/accounting/jurnal-manual",
+          },
+          {
+            title: "Laporan Jurnal",
+            icon: "FileText",
+            path: "/accounting/laporan-jurnal",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Asset",
+    icon: "Boxes",
+    items: [],
+    directPath: "/accounting/asset",
+  },
+  {
+    title: "Trial Balance",
+    icon: "ClipboardList",
+    items: [],
+    directPath: "/accounting/trial-balance",
+  },
+  {
+    title: "Tutup Buku",
+    icon: "BookX", // Icon for closing books
+    items: [],
+    directPath: "/accounting/tutup-buku",
+  },
+  {
+    title: "Laba Rugi",
+    icon: "TrendingUp", // Icon for profit/loss
+    items: [],
+    directPath: "/accounting/laba-rugi",
+  },
+  {
+    title: "Neraca",
+    icon: "Scale", // Icon for balance sheet
+    items: [],
+    directPath: "/accounting/neraca",
+  },
+  {
     title: "Kas",
     icon: "Wallet",
     subSections: [
@@ -1620,40 +1677,6 @@ export const accountingMenu: MenuSection[] = [
         ],
       },
     ],
-  },
-  {
-    title: "Jurnal",
-    icon: "ClipboardList",
-    subSections: [
-      {
-        title: "Jurnal",
-        icon: "ClipboardList",
-        items: [
-          {
-            title: "Posting Jurnal",
-            icon: "ClipboardList",
-            path: "/accounting/posting-jurnal",
-          },
-          {
-            title: "Laporan Jurnal",
-            icon: "FileText",
-            path: "/accounting/laporan-jurnal",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Tutup Buku",
-    icon: "BookX", // Icon for closing books
-    items: [],
-    directPath: "/accounting/tutup-buku",
-  },
-  {
-    title: "Laba Rugi",
-    icon: "TrendingUp", // Icon for profit/loss
-    items: [],
-    directPath: "/accounting/laba-rugi",
   },
   {
     title: "Neraca",
