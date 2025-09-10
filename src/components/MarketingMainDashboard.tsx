@@ -162,6 +162,7 @@ const MarketingMainDashboard: React.FC = () => {
             <div>
               <p className="text-sm font-medium">Total Suspect</p>
               <p className="text-2xl font-bold">1,000</p>
+              <p className="text-xs font-bold">Actual : 500 / Target : 500</p>
             </div>
           </div>
           {/* Total Prospect */}
@@ -276,38 +277,6 @@ const MarketingMainDashboard: React.FC = () => {
             </div>
           </div>
           {/* Monitoring Actual VS Target */}
-          <div
-            className="flex items-center space-x-4 p-5 rounded-xl bg-indigo-500 text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              const path = "/marketing/monitoring/actual-vs-target";
-              try {
-                window.location.hash = path;
-                window.history.pushState({}, "", path);
-                window.dispatchEvent(new Event("popstate"));
-                window.dispatchEvent(new Event("hashchange"));
-              } catch (e) {}
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                const path = "/marketing/monitoring/actual-vs-target";
-                window.location.hash = path;
-                window.history.pushState({}, "", path);
-                window.dispatchEvent(new Event("popstate"));
-                window.dispatchEvent(new Event("hashchange"));
-              }
-            }}
-          >
-            <div className="p-3 bg-indigo-600 rounded-xl">
-              <Target className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Monitoring Actual VS Target</p>
-              <p className="text-2xl font-bold">2,000</p>
-            </div>
-          </div>
         </div>
 
         {/* Monitoring Kontrak - same style as Kontrol Kontrak */}
