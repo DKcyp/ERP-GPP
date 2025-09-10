@@ -234,12 +234,6 @@ export const marketingMenu: MenuSection[] = [
     directPath: "/marketing/prospect/dashboard",
   },
   {
-    title: "SO Turunan",
-    icon: "GitBranch",
-    items: [],
-    directPath: "/operational3/sales-order/so-turunan",
-  },
-  {
     title: "Penawaran",
     icon: "DollarSign",
     items: [

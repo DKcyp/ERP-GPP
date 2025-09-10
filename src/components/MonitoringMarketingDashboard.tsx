@@ -7,10 +7,17 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  Info,
   ChevronDown,
   Calendar,
   X,
+  User,
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Tag,
+  Layers,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 interface Row {
@@ -120,6 +127,7 @@ const MonitoringMarketingDashboard: React.FC = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selected, setSelected] = useState<Row | null>(null);
+  const [detailTab, setDetailTab] = useState<'overview' | 'dokumen' | 'catatan'>('overview');
 
   useEffect(() => {
     const t = setTimeout(() => setAnimateRows(true), 100);
@@ -488,63 +496,136 @@ const MonitoringMarketingDashboard: React.FC = () => {
             if (e.currentTarget === e.target) setDetailOpen(false);
           }}
         >
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-              <h3 className="text-lg font-semibold text-gray-900">Detail Kontrak</h3>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Detail Kontrak</h3>
+                <p className="text-xs text-gray-500">{selected.noKontrak} • {selected.namaKontrak}</p>
+              </div>
               <button
                 onClick={() => setDetailOpen(false)}
                 className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
+                aria-label="Tutup"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="overflow-y-auto max-h-[calc(85vh-120px)] p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-gray-500 text-xs">No Kontrak</p>
-                  <p className="font-medium text-gray-900">{selected.noKontrak}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">Nama Client</p>
-                  <p className="font-medium text-gray-900">{selected.namaClient}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">PIC</p>
-                  <p className="font-medium text-gray-900">{selected.pic}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">Jenis Kontrak</p>
-                  <p className="font-medium text-gray-900">{selected.jenisKontrak}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">Tanggal Kontrak</p>
-                  <p className="font-medium text-gray-900">{selected.tanggalKontrak}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">Durasi Kontrak</p>
-                  <p className="font-medium text-gray-900">{selected.durasiKontrak}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">Nilai Kontrak</p>
-                  <p className="font-medium text-gray-900">{selected.nilaiKontrak}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">Lokasi Pekerjaan</p>
-                  <p className="font-medium text-gray-900">{selected.lokasiPekerjaan}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-gray-500 text-xs">Status Penawaran</p>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusBadge(selected.statusPenawaran)}`}>
-                    {selected.statusPenawaran}
-                  </span>
-                </div>
+            <div className="px-4 pt-3">
+              <div className="flex gap-2 text-xs">
+                <button onClick={() => setDetailTab('overview')} className={`px-3 py-1.5 rounded-md border ${detailTab==='overview' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}>Overview</button>
+                <button onClick={() => setDetailTab('dokumen')} className={`px-3 py-1.5 rounded-md border ${detailTab==='dokumen' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}>Dokumen</button>
+                <button onClick={() => setDetailTab('catatan')} className={`px-3 py-1.5 rounded-md border ${detailTab==='catatan' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}>Catatan</button>
               </div>
-              <div className="mt-4">
-                <p className="text-xs text-gray-500 mb-2">Ringkasan</p>
-                <div className="rounded-lg border border-gray-200 p-3 text-sm text-gray-700 bg-gray-50">
-                  Proyek {selected.namaKontrak} untuk {selected.namaClient} dengan PIC {selected.pic}. Nilai kontrak {selected.nilaiKontrak}, lokasi {selected.lokasiPekerjaan}.
+            </div>
+            <div className="overflow-y-auto max-h-[calc(85vh-140px)] p-4">
+              {detailTab === 'overview' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 text-sm">
+                  <div className="lg:col-span-2 space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-gray-200">
+                        <Tag className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-gray-500">No Kontrak</p>
+                          <p className="font-medium text-gray-900">{selected.noKontrak}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-gray-200">
+                        <Briefcase className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-gray-500">Jenis Kontrak</p>
+                          <p className="font-medium text-gray-900">{selected.jenisKontrak}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-gray-200">
+                        <User className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-gray-500">Client / PIC</p>
+                          <p className="font-medium text-gray-900">{selected.namaClient} • {selected.pic}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-gray-200">
+                        <Calendar className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-gray-500">Tanggal / Durasi</p>
+                          <p className="font-medium text-gray-900">{selected.tanggalKontrak} • {selected.durasiKontrak}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-gray-200">
+                        <DollarSign className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-gray-500">Nilai Kontrak</p>
+                          <p className="font-medium text-gray-900">{selected.nilaiKontrak}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-gray-200">
+                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-xs text-gray-500">Lokasi Pekerjaan</p>
+                          <p className="font-medium text-gray-900">{selected.lokasiPekerjaan}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-gray-200 p-3 bg-gray-50">
+                      <p className="text-xs text-gray-500 mb-1">Ringkasan</p>
+                      <p className="text-gray-700">Proyek {selected.namaKontrak} untuk {selected.namaClient} dengan PIC {selected.pic}. Nilai kontrak {selected.nilaiKontrak}, berlokasi di {selected.lokasiPekerjaan}. Status saat ini: <span className="font-medium">{selected.statusPenawaran}</span>.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-lg border border-gray-200">
+                      <p className="text-xs text-gray-500 mb-1">Status Penawaran</p>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusBadge(selected.statusPenawaran)}`}>
+                        {selected.statusPenawaran}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded-lg border border-gray-200">
+                      <p className="text-xs text-gray-500 mb-2">Tahapan Singkat</p>
+                      <ul className="space-y-2 text-sm text-gray-700">
+                        <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Suspect</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Register</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Pra-kualifikasi</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Evaluasi</li>
+                        <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-500" /> Tender</li>
+                        <li className="flex items-center gap-2">{selected.statusPenawaran === 'Deal' ? (<><CheckCircle2 className="h-4 w-4 text-green-500" /> Kontrak Deal</>) : selected.statusPenawaran === 'Cancel' ? (<><XCircle className="h-4 w-4 text-red-500" /> Cancel</>) : (<><Clock className="h-4 w-4 text-yellow-500" /> Pending</>)}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+              {detailTab === 'dokumen' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-900">Dokumen Terkait</p>
+                    <button onClick={handleExportPDF} className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700"><FileText className="h-3.5 w-3.5" /> Unduh Contoh PDF</button>
+                  </div>
+                  <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 overflow-hidden">
+                    {[{name:'Surat Penawaran', date:'10-12-2024'},{name:'BA Negoisasi', date:'20-12-2024'},{name:'Draft Kontrak', date:selected.tanggalKontrak}].map((d, i) => (
+                      <li key={i} className="p-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Layers className="h-4 w-4 text-gray-400" />
+                          <div>
+                            <p className="text-sm text-gray-900">{d.name}</p>
+                            <p className="text-xs text-gray-500">Tanggal: {d.date}</p>
+                          </div>
+                        </div>
+                        <button className="text-xs text-blue-600 hover:underline">Lihat</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {detailTab === 'catatan' && (
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-gray-900">Catatan Internal</p>
+                  <div className="rounded-lg border border-gray-200 p-3 bg-gray-50 text-sm text-gray-700">
+                    Peluang {selected.noKontrak} atas nama {selected.namaClient}. Pastikan legal dokumen lengkap sebelum Go-Live.
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Tambah catatan (demo)" />
+                    <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs">Simpan</button>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-200 bg-gray-50">
               <button onClick={() => setDetailOpen(false)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Tutup</button>
@@ -567,27 +648,37 @@ const MonitoringMarketingDashboard: React.FC = () => {
               <button
                 onClick={() => setHistoryOpen(false)}
                 className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
+                aria-label="Tutup"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="overflow-y-auto max-h-[calc(85vh-120px)] p-4">
-              <ol className="relative border-s-2 border-gray-100 ps-4 space-y-4">
+            <div className="overflow-y-auto max-h-[calc(85vh-130px)] p-4">
+              <ol className="relative ps-4 space-y-4">
                 {[
-                  { step: "Suspect", date: "01-12-2024", note: `Lead masuk atas nama ${selected.namaClient}` },
-                  { step: "Register", date: "05-12-2024", note: "Registrasi peluang dan penunjukan PIC" },
-                  { step: "Pra-kualifikasi", date: "10-12-2024", note: "Pengumpulan dokumen prasyarat" },
-                  { step: "Evaluasi", date: "18-12-2024", note: "Evaluasi teknis & komersial" },
-                  { step: "Tender", date: "28-12-2024", note: "Pengajuan penawaran & negosiasi" },
-                  { step: selected.statusPenawaran === "Deal" ? "Kontrak Deal" : "Cancel", date: selected.tanggalKontrak, note: selected.statusPenawaran === "Deal" ? "Kontrak ditandatangani" : "Peluang dibatalkan" },
+                  { step: "Suspect", date: "01-12-2024", note: `Lead masuk atas nama ${selected.namaClient}`, color: 'text-blue-600', bg: 'bg-blue-100' },
+                  { step: "Register", date: "05-12-2024", note: "Registrasi peluang dan penunjukan PIC", color: 'text-blue-600', bg: 'bg-blue-100' },
+                  { step: "Pra-kualifikasi", date: "10-12-2024", note: "Pengumpulan dokumen prasyarat", color: 'text-blue-600', bg: 'bg-blue-100' },
+                  { step: "Evaluasi", date: "18-12-2024", note: "Evaluasi teknis & komersial", color: 'text-blue-600', bg: 'bg-blue-100' },
+                  { step: "Tender", date: "28-12-2024", note: "Pengajuan penawaran & negosiasi", color: 'text-blue-600', bg: 'bg-blue-100' },
+                  selected.statusPenawaran === 'Deal'
+                    ? { step: 'Kontrak Deal', date: selected.tanggalKontrak, note: 'Kontrak ditandatangani', color: 'text-green-600', bg: 'bg-green-100', success: true }
+                    : selected.statusPenawaran === 'Cancel'
+                    ? { step: 'Cancel', date: selected.tanggalKontrak, note: 'Peluang dibatalkan', color: 'text-red-600', bg: 'bg-red-100', cancel: true }
+                    : { step: 'Pending', date: selected.tanggalKontrak, note: 'Menunggu keputusan', color: 'text-yellow-600', bg: 'bg-yellow-100', pending: true }
                 ].map((h, idx) => (
                   <li key={idx} className="ms-0">
-                    <div className="absolute -start-2.5 mt-1 h-2.5 w-2.5 rounded-full bg-blue-500" />
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium text-gray-900">{h.step}</p>
-                      <span className="text-xs text-gray-500">{h.date}</span>
+                    <div className="absolute left-2 top-0 bottom-0 w-px bg-gray-200" aria-hidden />
+                    <div className={`relative z-10 inline-flex items-center justify-center h-5 w-5 rounded-full ${h.bg} ring-2 ring-white shadow`}></div>
+                    <div className="ml-6">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-gray-900 flex items-center gap-2">
+                          {h.success ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : h.cancel ? <XCircle className="h-4 w-4 text-red-600" /> : <Clock className={`h-4 w-4 ${h.color}`} />} {h.step}
+                        </p>
+                        <span className="text-xs text-gray-500">{h.date}</span>
+                      </div>
+                      <p className="text-sm text-gray-700 mt-1">{h.note}</p>
                     </div>
-                    <p className="text-sm text-gray-700 mt-1">{h.note}</p>
                   </li>
                 ))}
               </ol>
