@@ -30,14 +30,21 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
   // Ringkasan pekerjaan (jenis pekerjaan vs jumlah)
-  const [pekerjaanRingkas, setPekerjaanRingkas] = useState<Array<{ jenisPekerjaan: string; jumlah: string }>>([
-    { jenisPekerjaan: "", jumlah: "" },
-  ]);
+  const [pekerjaanRingkas, setPekerjaanRingkas] = useState<
+    Array<{ jenisPekerjaan: string; jumlah: string }>
+  >([{ jenisPekerjaan: "", jumlah: "" }]);
 
   const addPekerjaanRow = () => {
-    setPekerjaanRingkas((prev) => [...prev, { jenisPekerjaan: "", jumlah: "" }]);
+    setPekerjaanRingkas((prev) => [
+      ...prev,
+      { jenisPekerjaan: "", jumlah: "" },
+    ]);
   };
-  const updatePekerjaanRow = (idx: number, field: "jenisPekerjaan" | "jumlah", value: string) => {
+  const updatePekerjaanRow = (
+    idx: number,
+    field: "jenisPekerjaan" | "jumlah",
+    value: string
+  ) => {
     setPekerjaanRingkas((prev) => {
       const next = [...prev];
       next[idx] = { ...next[idx], [field]: value } as any;
@@ -45,7 +52,9 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
     });
   };
   const removePekerjaanRow = (idx: number) => {
-    setPekerjaanRingkas((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx)));
+    setPekerjaanRingkas((prev) =>
+      prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx)
+    );
   };
 
   useEffect(() => {
@@ -172,27 +181,6 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
               </select>
             </div>
 
-            {/* SO Turunan */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2">
-                SO Turunan <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.soTurunan}
-                onChange={(e) => setField("soTurunan", e.target.value)}
-                placeholder="Masukkan SO Turunan"
-                className={`w-full px-2 py-2 text-xs border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.soTurunan
-                    ? "border-red-300 bg-red-50"
-                    : "border-gray-200"
-                }`}
-              />
-              {errors.soTurunan && (
-                <p className="mt-1 text-sm text-red-600">{errors.soTurunan}</p>
-              )}
-            </div>
-
             {/* Tanggal MOB */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-2">
@@ -282,7 +270,9 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
             {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                <h4 className="text-xs font-semibold text-gray-900">
+                  Ringkasan Pekerjaan
+                </h4>
                 <button
                   type="button"
                   onClick={addPekerjaanRow}
@@ -295,9 +285,15 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jenis Pekerjaan</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                        Jenis Pekerjaan
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                        Jumlah
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                        Aksi
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -307,7 +303,13 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                           <input
                             type="text"
                             value={row.jenisPekerjaan}
-                            onChange={(e) => updatePekerjaanRow(idx, "jenisPekerjaan", e.target.value)}
+                            onChange={(e) =>
+                              updatePekerjaanRow(
+                                idx,
+                                "jenisPekerjaan",
+                                e.target.value
+                              )
+                            }
                             className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                             placeholder="On Call / Project Based / Maintenance"
                           />
@@ -317,7 +319,9 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                             type="number"
                             min={0}
                             value={row.jumlah}
-                            onChange={(e) => updatePekerjaanRow(idx, "jumlah", e.target.value)}
+                            onChange={(e) =>
+                              updatePekerjaanRow(idx, "jumlah", e.target.value)
+                            }
                             className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                             placeholder="0"
                           />
