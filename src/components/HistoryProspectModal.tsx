@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface HistoryProspectModalProps {
   isOpen: boolean;
@@ -9,7 +9,7 @@ interface HistoryProspectModalProps {
 interface HistoryProspectData {
   no: number;
   namaProspek: string;
-  status: 'Warm' | 'Cold' | 'Hot';
+  status: "Warm" | "Cold" | "Hot";
   tanggalKontak: string;
   metodeKontak: string;
   topikPembicaraan: string;
@@ -18,48 +18,71 @@ interface HistoryProspectData {
   catatan: string;
 }
 
-const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({ isOpen, onClose }) => {
+const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
+  const parseDDMMYYYY = (s: string): Date => {
+    const [dd, mm, yyyy] = s.split("/");
+    const d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const diffDays = (a: Date, b: Date): number => {
+    const ms = a.getTime() - b.getTime();
+    return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
+  };
+
   // Sample data matching the image
   const historyData: HistoryProspectData[] = [
     {
       no: 1,
-      namaProspek: 'PT Maju Jaya',
-      status: 'Warm',
-      tanggalKontak: '17/01/2024',
-      metodeKontak: 'Telepon',
-      topikPembicaraan: 'Presentasi produk baru',
-      hasil: 'Tertarik dengan produk',
-      tindakLanjut: 'Follow up minggu depan',
-      catatan: 'Perlu proposal detail'
+      namaProspek: "PT Maju Jaya",
+      status: "Warm",
+      tanggalKontak: "17/01/2024",
+      metodeKontak: "Telepon",
+      topikPembicaraan: "Presentasi produk baru",
+      hasil: "Tertarik dengan produk",
+      tindakLanjut: "Follow up minggu depan",
+      catatan: "Perlu proposal detail",
     },
     {
       no: 2,
-      namaProspek: 'PT Maju Jaya',
-      status: 'Cold',
-      tanggalKontak: '15/01/2024',
-      metodeKontak: 'Pertemuan',
-      topikPembicaraan: 'Diskusi harga dan syarat pembayaran',
-      hasil: 'Masih pertimbangan',
-      tindakLanjut: 'Tunggu keputusan',
-      catatan: 'Budget terbatas'
-    }
+      namaProspek: "PT Maju Jaya",
+      status: "Cold",
+      tanggalKontak: "15/01/2024",
+      metodeKontak: "Pertemuan",
+      topikPembicaraan: "Diskusi harga dan syarat pembayaran",
+      hasil: "Masih pertimbangan",
+      tindakLanjut: "Tunggu keputusan",
+      catatan: "Budget terbatas",
+    },
   ];
+
+  // Precompute dates for duration calculations
+  const mapped = historyData.map((h) => ({
+    ...h,
+    _date: parseDDMMYYYY(h.tanggalKontak),
+  }));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -71,17 +94,21 @@ const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({ isOpen, onC
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Hot': return 'bg-red-500 text-white';
-      case 'Warm': return 'bg-yellow-500 text-white';
-      case 'Cold': return 'bg-blue-500 text-white';
-      default: return 'bg-gray-100 text-gray-800';
+      case "Hot":
+        return "bg-red-500 text-white";
+      case "Warm":
+        return "bg-yellow-500 text-white";
+      case "Cold":
+        return "bg-blue-500 text-white";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
@@ -131,13 +158,18 @@ const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({ isOpen, onC
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border border-gray-200">
                       Catatan
                     </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border border-gray-200">
+                      Update Duration
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {historyData.map((item, index) => (
-                    <tr 
+                  {mapped.map((item, index) => (
+                    <tr
                       key={item.no}
-                      className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'} hover:bg-blue-50 transition-colors duration-200`}
+                      className={`${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                      } hover:bg-blue-50 transition-colors duration-200`}
                     >
                       <td className="px-4 py-3 text-sm text-gray-900 border border-gray-200">
                         {item.no}
@@ -146,7 +178,11 @@ const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({ isOpen, onC
                         {item.namaProspek}
                       </td>
                       <td className="px-4 py-3 text-sm border border-gray-200">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                            item.status
+                          )}`}
+                        >
                           {item.status}
                         </span>
                       </td>
@@ -167,6 +203,29 @@ const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({ isOpen, onC
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-900 border border-gray-200">
                         {item.catatan}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-700 border border-gray-200">
+                        {(() => {
+                          const prev = mapped[index + 1]?._date;
+                          const sincePrev = prev
+                            ? diffDays(item._date, prev)
+                            : null;
+                          const sinceNow = diffDays(today, item._date);
+                          return (
+                            <div className="space-y-1">
+                              <div>
+                                <span className="text-gray-500">
+                                  Durasi update sebelumnya:
+                                </span>{" "}
+                                <span className="font-medium text-gray-900">
+                                  {sincePrev !== null
+                                    ? `${sincePrev} hari`
+                                    : "-"}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </td>
                     </tr>
                   ))}
