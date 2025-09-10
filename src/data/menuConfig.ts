@@ -1705,13 +1705,6 @@ export const proconMenu: MenuSection[] = [
     directPath: "/procon/dashboard",
   },
   {
-    title: "Sales Order",
-    icon: "ShoppingCart",
-    items: [],
-    directPath: "/procon/sales-order/dashboard",
-  },
-
-  {
     title: "Proforma Invoice",
     icon: "ReceiptText",
     items: [
@@ -1728,6 +1721,12 @@ export const proconMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Sales Order",
+    icon: "ShoppingCart",
+    items: [],
+    directPath: "/procon/sales-order/dashboard",
+  },
+  {
     title: "Laba Rugi Project",
     icon: "TrendingUp",
     items: [
@@ -1741,17 +1740,17 @@ export const proconMenu: MenuSection[] = [
         icon: "UserCheck",
         path: "/procon/lrp/tunjangan-timesheet-teknisi",
       },
-      { title: "Gaji", icon: "Wallet", path: "/procon/lrp/gaji" },
+      { title: "Gaji", icon: "Wallet", path: "/hrd/gaji/pengajian" },
       {
         title: "Timesheet Barang",
         icon: "Package",
-        path: "/procon/lrp/timesheet-barang",
+        path: "/operational/timesheet/barang",
       },
-      { title: "Kas Keluar", icon: "Wallet", path: "/procon/lrp/kas-keluar" },
+      { title: "Kas Keluar", icon: "Wallet", path: "/accounting/kas-keluar" },
       {
         title: "Bank Keluar",
         icon: "Banknote",
-        path: "/procon/lrp/bank-keluar",
+        path: "/accounting/bank-keluar",
       },
     ],
   },
@@ -1778,12 +1777,12 @@ export const proconMenu: MenuSection[] = [
       {
         title: "Kick Off Meeting",
         icon: "Users",
-        path: "/marketing/kick-off-meeting",
+        path: "/marketing/kontrak-deal/dashboard",
       },
       {
         title: "Insentif Marketing",
         icon: "Award",
-        path: "/marketing/insentif",
+        path: "/marketing/insentif-marketing/dashboard",
       },
     ],
   },
@@ -1839,19 +1838,19 @@ export const proconMenu: MenuSection[] = [
     icon: "DollarSign",
     items: [
       {
-        title: "Dashboard Purchase Order",
+        title: "Dashboard AR",
         icon: "LayoutDashboard",
-        path: "/procon/purchase-order/dashboard",
+        path: "/finance/ar/dashboard",
       },
       {
-        title: "Proses Purchase Order",
+        title: "Bukti Kas Keluar",
         icon: "FilePlus",
-        path: "/procon/purchase-order/proses",
+        path: "/finance/kas/bukti-kas-keluar",
       },
       {
-        title: "Approval Purchase Order",
+        title: "Bukti Bank Keluar",
         icon: "CheckCircle",
-        path: "/procon/purchase-order/approval",
+        path: "/finance/bank/bukti-bank-keluar",
       },
     ],
   },
