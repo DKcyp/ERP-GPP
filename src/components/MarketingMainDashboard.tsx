@@ -161,8 +161,17 @@ const MarketingMainDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium">Total Suspect</p>
-              <p className="text-2xl font-bold">1,000</p>
-              <p className="text-xs font-bold">Actual : 500 / Target : 500</p>
+              {(() => {
+                const suspectActual = 90; // actual count
+                const suspectTarget = 100; // target count
+                const suspectPct = suspectTarget > 0 ? Math.round((suspectActual / suspectTarget) * 100) : 0;
+                return (
+                  <>
+                    <p className="text-2xl font-bold">{suspectPct}%</p>
+                    <p className="text-xs font-bold">{suspectActual} / {suspectTarget}</p>
+                  </>
+                );
+              })()}
             </div>
           </div>
           {/* Total Prospect */}
