@@ -75,6 +75,27 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    {
+      title: "Man Power",
+      icon: "Users",
+      items: [
+        {
+          title: "Man Power",
+          icon: "User",
+          path: "/operational/man-power/man-power",
+        },
+        {
+          title: "Man Power Plan",
+          icon: "Calendar",
+          path: "/operational/man-power/plan",
+        },
+        {
+          title: "Pengajuan Pegawai Baru",
+          icon: "UserPlus",
+          path: "/operational/man-power/pengajuan-pegawai-baru",
+        },
+      ],
+    },
     // Purchase Request for non-procon roles
     ...(role !== "procon"
       ? [
@@ -465,24 +486,24 @@ export const operationalMenu: MenuSection[] = [
       },
     ],
   },
+  // {
+  //   title: "Man Power",
+  //   icon: "Users",
+  //   items: [
+  //     {
+  //       title: "Man Power",
+  //       icon: "User",
+  //       path: "/operational/man-power/man-power",
+  //     },
+  //     {
+  //       title: "Man Power Plan",
+  //       icon: "Calendar",
+  //       path: "/operational/man-power/plan",
+  //     },
+  //   ],
+  // },
   {
-    title: "Man Power",
-    icon: "Users",
-    items: [
-      {
-        title: "Man Power",
-        icon: "User",
-        path: "/operational/man-power/man-power",
-      },
-      {
-        title: "Man Power Plan",
-        icon: "Calendar",
-        path: "/operational/man-power/plan",
-      },
-    ],
-  },
-  {
-    title: "HPP Turunan",
+    title: "HPP",
     icon: "Calculator",
     items: [],
     directPath: "/operational/hpp-turunan/dashboard",

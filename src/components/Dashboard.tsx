@@ -135,6 +135,7 @@ import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
 import PendebetanDashboard from "./PendebetanDashboard";
 import PayslipDashboard from "./PayslipDashboard";
 import CalendarAbsensiDashboard from "./CalendarAbsensiDashboard";
+import PengajuanPegawaiBaruDashboard from "./PengajuanPegawaiBaruDashboard";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -546,6 +547,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/penerimaan/gudang") {
       return <GudangDashboard />;
+    }
+    // Operational Man Power - Pengajuan Pegawai Baru
+    if (currentPage === "/operational/man-power/pengajuan-pegawai-baru") {
+      return <PengajuanPegawaiBaruDashboard />;
     }
     // Pengadaan General Routes
     if (currentPage === "/pengadaan/general/kpi/dashboard") {
