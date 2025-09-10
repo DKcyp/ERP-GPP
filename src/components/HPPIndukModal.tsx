@@ -17,7 +17,9 @@ export interface HPPIndukFormData {
   estimasiNilaiKontrak: string;
   pekerjaanRingkas: Array<{
     jenisPekerjaan: string;
+    hargaSatuan: string;
     jumlah: string;
+    total: string;
   }>;
   activeTab: string;
   tenagaKerja: Array<{
@@ -89,7 +91,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
     namaProject: '',
     jenisPekerjaan: 'On Call',
     estimasiNilaiKontrak: '',
-    pekerjaanRingkas: [{ jenisPekerjaan: '', jumlah: '' }],
+    pekerjaanRingkas: [{ jenisPekerjaan: '', hargaSatuan: '', jumlah: '', total: '' }],
     activeTab: 'Tenaga Kerja',
     tenagaKerja: [{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
     jasa: [{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
@@ -112,6 +114,12 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
   ];
 
   const jenisPekerjaanOptions = ['On Call', 'Project Based', 'Maintenance', 'Consulting'];
+  const jenisPekerjaanUnitPrice: Record<string, number> = {
+    'On Call': 1500000,
+    'Project Based': 2500000,
+    'Maintenance': 1000000,
+    'Consulting': 2000000,
+  };
   const tenagaOptions = ['Teknisi', 'Supervisor', 'Engineer', 'Admin'];
   const tunjanganOptions = ['Uang Makan', 'Transport', 'Lembur'];
   const jasaOptions = ['Instalasi', 'Maintenance', 'Konsultasi', 'Pelatihan'];
@@ -142,14 +150,115 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
   const addPekerjaanRow = () => {
     setFormData(prev => ({
       ...prev,
-      pekerjaanRingkas: [...prev.pekerjaanRingkas, { jenisPekerjaan: '', jumlah: '' }],
+      pekerjaanRingkas: [...prev.pekerjaanRingkas, { jenisPekerjaan: '', hargaSatuan: '', jumlah: '', total: '' }],
     }));
   };
 
   const updatePekerjaanRow = (index: number, field: 'jenisPekerjaan' | 'jumlah', value: string) => {
     setFormData(prev => {
       const next = [...prev.pekerjaanRingkas];
-      next[index] = { ...next[index], [field]: value };
+      let row = { ...next[index], [field]: value } as typeof next[number];
+
+      // When jenis pekerjaan changes, set hargaSatuan automatically
+      if (field === 'jenisPekerjaan') {
+        const unit = jenisPekerjaanUnitPrice[value] || 0;
+        row.hargaSatuan = unit ? String(unit) : '';
+      }
+
+      // Recalculate total whenever jumlah or hargaSatuan is available
+      const jumlahNum = parseFloat(field === 'jumlah' ? value : row.jumlah || '0') || 0;
+      const hargaNum = parseFloat(row.hargaSatuan || '0') || 0;
+      if (jumlahNum > 0 && hargaNum > 0) {
+        row.total = String(jumlahNum * hargaNum);
+      } else {
+        row.total = row.total || '';
+      }
+
+      next[index] = row;
+
+      // When selecting jenis pekerjaan in Ringkasan, auto-fill ALL rows in Tenaga Kerja & Barang tabs
+      if (field === 'jenisPekerjaan') {
+        const unit = jenisPekerjaanUnitPrice[value] || 0;
+        if (unit > 0) {
+          const filledTenagaKerja = prev.tenagaKerja.map((rowTK, idx) => {
+            const projectRate = unit;
+            const hari = 1;
+            const hargaAwal = projectRate * hari;
+            const margin = 10; // default margin 10%
+            const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+            return {
+              tenaga: tenagaOptions[idx % tenagaOptions.length] || rowTK.tenaga || '',
+              tunjangan: tunjanganOptions[idx % tunjanganOptions.length] || rowTK.tunjangan || '',
+              projectRate: String(projectRate),
+              hari: String(hari),
+              hargaAwal: String(hargaAwal),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir)
+            };
+          });
+          // Also fill Barang tab rows
+          const filledBarang = prev.barang.map((rowBRG, idx) => {
+            const jumlah = 1;
+            const hari = '';
+            const harga = unit;
+            const hargaSatuan = jumlah > 0 ? harga / jumlah : 0;
+            const margin = 10;
+            const hargaAwal = String(harga); // treat harga as hargaAwal basis
+            const hargaAkhir = harga + (harga * margin / 100);
+            return {
+              namaBarang: barangOptions[idx % barangOptions.length] || rowBRG.namaBarang || '',
+              harga: String(harga),
+              jumlah: String(jumlah),
+              hari: String(hari),
+              satuan: rowBRG.satuan || 'Unit',
+              hargaSatuan: String(hargaSatuan),
+              hargaAwal: String(harga),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir)
+            };
+          });
+          // Also append 2 new prefilled rows
+          const mkRow = (seedIdx: number) => {
+            const projectRate = unit;
+            const hari = 1;
+            const hargaAwal = projectRate * hari;
+            const margin = 10;
+            const hargaAkhir = hargaAwal + (hargaAwal * margin / 100);
+            return {
+              tenaga: tenagaOptions[seedIdx % tenagaOptions.length] || '',
+              tunjangan: tunjanganOptions[seedIdx % tunjanganOptions.length] || '',
+              projectRate: String(projectRate),
+              hari: String(hari),
+              hargaAwal: String(hargaAwal),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir)
+            };
+          };
+          const appendedTK = [...filledTenagaKerja, mkRow(filledTenagaKerja.length), mkRow(filledTenagaKerja.length + 1)];
+
+          const mkBarangRow = (seedIdx: number) => {
+            const jumlah = 1;
+            const harga = unit;
+            const hargaSatuan = jumlah > 0 ? harga / jumlah : 0;
+            const margin = 10;
+            const hargaAkhir = harga + (harga * margin / 100);
+            return {
+              namaBarang: barangOptions[seedIdx % barangOptions.length] || '',
+              harga: String(harga),
+              jumlah: String(jumlah),
+              hari: '',
+              satuan: 'Unit',
+              hargaSatuan: String(hargaSatuan),
+              hargaAwal: String(harga),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir)
+            };
+          };
+          const appendedBRG = [...filledBarang, mkBarangRow(filledBarang.length), mkBarangRow(filledBarang.length + 1)];
+
+          return { ...prev, pekerjaanRingkas: next, tenagaKerja: appendedTK, barang: appendedBRG };
+        }
+      }
       return { ...prev, pekerjaanRingkas: next };
     });
   };
@@ -385,7 +494,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
       namaProject: '',
       jenisPekerjaan: 'On Call',
       estimasiNilaiKontrak: '',
-      pekerjaanRingkas: [{ jenisPekerjaan: '', jumlah: '' }],
+      pekerjaanRingkas: [{ jenisPekerjaan: '', hargaSatuan: '', jumlah: '', total: '' }],
       activeTab: 'Tenaga Kerja',
       tenagaKerja: [{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
       jasa: [{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
@@ -585,7 +694,9 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jenis Pekerjaan</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Total</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
                       </tr>
                     </thead>
@@ -593,12 +704,24 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                       {formData.pekerjaanRingkas.map((row, idx) => (
                         <tr key={idx}>
                           <td className="px-3 py-2">
-                            <input
-                              type="text"
+                            <select
                               value={row.jenisPekerjaan}
                               onChange={(e) => updatePekerjaanRow(idx, 'jenisPekerjaan', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="On Call / Project Based / Maintenance"
+                            >
+                              <option value="">Pilih Jenis Pekerjaan</option>
+                              {jenisPekerjaanOptions.map((opt) => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={row.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Satuan"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -609,6 +732,15 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                               onChange={(e) => updatePekerjaanRow(idx, 'jumlah', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="0"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={row.total}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Total"
                             />
                           </td>
                           <td className="px-3 py-2">
