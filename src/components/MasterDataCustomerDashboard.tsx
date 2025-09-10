@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import termsPdf from "../../Folder/term&condition.pdf";
-import { FileSpreadsheet, FileText, Plus, Search, ChevronLeft, ChevronRight, Clock, Info } from "lucide-react";
+import { FileSpreadsheet, FileText, Plus, Search, ChevronLeft, ChevronRight, Clock, Info, X } from "lucide-react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface Customer {
   id: string;
@@ -34,6 +35,9 @@ const mockData: Customer[] = [
 ];
 
 const MasterDataCustomerDashboard: React.FC = () => {
+  // Data state
+  const [data, setData] = useState<Customer[]>(mockData);
+
   // Filters & UI state (match Penawaran On Call structure)
   const [searchNama, setSearchNama] = useState("");
   const [searchPIC, setSearchPIC] = useState("");
@@ -41,6 +45,23 @@ const MasterDataCustomerDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [animateRows, setAnimateRows] = useState(false);
+
+  // Add/Edit modal state
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editing, setEditing] = useState<Customer | null>(null);
+  const [form, setForm] = useState<Omit<Customer, "id">>({
+    namaPerusahaan: "",
+    alamat: "",
+    pic: "",
+    email: "",
+    noTelp: "",
+    keterangan: "",
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof Omit<Customer, "id">, string>>>({});
+
+  // Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setAnimateRows(true), 100);
@@ -51,13 +72,13 @@ const MasterDataCustomerDashboard: React.FC = () => {
     const termNama = searchNama.toLowerCase();
     const termPIC = searchPIC.toLowerCase();
     const termAlamat = searchAlamat.toLowerCase();
-    return mockData.filter(
+    return data.filter(
       (c) =>
         c.namaPerusahaan.toLowerCase().includes(termNama) &&
         c.pic.toLowerCase().includes(termPIC) &&
         c.alamat.toLowerCase().includes(termAlamat)
     );
-  }, [searchNama, searchPIC, searchAlamat]);
+  }, [searchNama, searchPIC, searchAlamat, data]);
 
   // derive pagination later to avoid duplicate declarations
 
@@ -85,6 +106,67 @@ const MasterDataCustomerDashboard: React.FC = () => {
 
   const handleSearch = () => {
     setPage(1);
+  };
+
+  // Add/Edit/Delete Handlers
+  const openAddModal = () => {
+    setEditing(null);
+    setForm({ namaPerusahaan: "", alamat: "", pic: "", email: "", noTelp: "", keterangan: "" });
+    setErrors({});
+    setShowFormModal(true);
+  };
+
+  const openEditModal = (c: Customer) => {
+    setEditing(c);
+    setForm({
+      namaPerusahaan: c.namaPerusahaan,
+      alamat: c.alamat,
+      pic: c.pic,
+      email: c.email,
+      noTelp: c.noTelp,
+      keterangan: c.keterangan || "",
+    });
+    setErrors({});
+    setShowFormModal(true);
+  };
+
+  const validate = (): boolean => {
+    const e: Partial<Record<keyof Omit<Customer, "id">, string>> = {};
+    if (!form.namaPerusahaan.trim()) e.namaPerusahaan = "Nama perusahaan wajib diisi";
+    if (!form.alamat.trim()) e.alamat = "Alamat wajib diisi";
+    if (!form.pic.trim()) e.pic = "PIC wajib diisi";
+    if (!form.email.trim()) e.email = "Email wajib diisi";
+    if (!form.noTelp.trim()) e.noTelp = "No. Telp wajib diisi";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSave = () => {
+    if (!validate()) return;
+    if (editing) {
+      // update
+      setData((prev) => prev.map((c) => (c.id === editing.id ? { ...editing, ...form } : c)));
+    } else {
+      // add
+      const newId = String(Math.floor(100000 + Math.random() * 900000));
+      const newItem: Customer = { id: newId, ...form } as Customer;
+      setData((prev) => [newItem, ...prev]);
+    }
+    setShowFormModal(false);
+    setEditing(null);
+  };
+
+  const askDelete = (c: Customer) => {
+    setDeleteTarget(c);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      setData((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    }
+    setShowDeleteModal(false);
   };
 
   // Derived for pagination bar (match layout from Penawaran On Call)
@@ -184,6 +266,7 @@ const MasterDataCustomerDashboard: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2 mt-4">
             <button 
+              onClick={openAddModal}
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -242,11 +325,11 @@ const MasterDataCustomerDashboard: React.FC = () => {
                     <td className="px-3 py-2 text-gray-600">{c.noTelp}</td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-3 text-xs">
-                        <button className="text-yellow-700 hover:underline">View</button>
+                        <button className="text-yellow-700 hover:underline" onClick={() => openEditModal(c)}>View</button>
                         <span className="text-gray-300">|</span>
-                        <button className="text-blue-700 hover:underline">Edit</button>
+                        <button className="text-blue-700 hover:underline" onClick={() => openEditModal(c)}>Edit</button>
                         <span className="text-gray-300">|</span>
-                        <button className="text-red-700 hover:underline">Delete</button>
+                        <button className="text-red-700 hover:underline" onClick={() => askDelete(c)}>Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -296,6 +379,72 @@ const MasterDataCustomerDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit Modal */}
+      {showFormModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.currentTarget === e.target) setShowFormModal(false);
+          }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h3 className="text-lg font-semibold text-gray-900">{editing ? 'Edit Customer' : 'Tambah Customer'}</h3>
+              <button onClick={() => setShowFormModal(false)} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="p-4 space-y-3 max-h-[70vh] overflow-y-auto text-sm">
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Nama Perusahaan <span className="text-red-500">*</span></label>
+                <input value={form.namaPerusahaan} onChange={(e)=>{ setForm(f=>({...f,namaPerusahaan:e.target.value})); if(errors.namaPerusahaan) setErrors(prev=>({...prev,namaPerusahaan:undefined})); }} className={`w-full px-3 py-2 border rounded-lg ${errors.namaPerusahaan ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Masukkan nama perusahaan" />
+                {errors.namaPerusahaan && <p className="text-xs text-red-600 mt-1">{errors.namaPerusahaan}</p>}
+              </div>
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Alamat <span className="text-red-500">*</span></label>
+                <textarea value={form.alamat} onChange={(e)=>{ setForm(f=>({...f,alamat:e.target.value})); if(errors.alamat) setErrors(prev=>({...prev,alamat:undefined})); }} rows={3} className={`w-full px-3 py-2 border rounded-lg ${errors.alamat ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Masukkan alamat" />
+                {errors.alamat && <p className="text-xs text-red-600 mt-1">{errors.alamat}</p>}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">PIC <span className="text-red-500">*</span></label>
+                  <input value={form.pic} onChange={(e)=>{ setForm(f=>({...f,pic:e.target.value})); if(errors.pic) setErrors(prev=>({...prev,pic:undefined})); }} className={`w-full px-3 py-2 border rounded-lg ${errors.pic ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Masukkan PIC" />
+                  {errors.pic && <p className="text-xs text-red-600 mt-1">{errors.pic}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+                  <input type="email" value={form.email} onChange={(e)=>{ setForm(f=>({...f,email:e.target.value})); if(errors.email) setErrors(prev=>({...prev,email:undefined})); }} className={`w-full px-3 py-2 border rounded-lg ${errors.email ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="nama@perusahaan.com" />
+                  {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">No. Telp <span className="text-red-500">*</span></label>
+                  <input value={form.noTelp} onChange={(e)=>{ setForm(f=>({...f,noTelp:e.target.value})); if(errors.noTelp) setErrors(prev=>({...prev,noTelp:undefined})); }} className={`w-full px-3 py-2 border rounded-lg ${errors.noTelp ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="08xx / 021xxxx" />
+                  {errors.noTelp && <p className="text-xs text-red-600 mt-1">{errors.noTelp}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                  <input value={form.keterangan || ""} onChange={(e)=> setForm(f=>({...f,keterangan:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Opsional" />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-200 bg-gray-50">
+              <button onClick={()=>{ setShowFormModal(false); setEditing(null); }} className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Batal</button>
+              <button onClick={handleSave} className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">Simpan</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Konfirmasi Hapus Customer"
+        message="Apakah Anda yakin ingin menghapus data customer ini?"
+        itemName={deleteTarget ? `${deleteTarget.namaPerusahaan} (${deleteTarget.pic})` : undefined}
+      />
     </div>
   );
 };
