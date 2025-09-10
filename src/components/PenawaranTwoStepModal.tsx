@@ -616,26 +616,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                   <div className="border border-gray-200 rounded-xl p-3 bg-gray-50 min-h-[200px]">
                     <Editor
                       apiKey="oevuvo9pv4lces7pexy2lbdy5khujbg9jz6i278knnmj5f5i"
-                      init={{
-                        plugins: [
-                          "autolink",
-                          "lists",
-                          "link",
-                          "table",
-                          "charmap",
-                          "searchreplace",
-                          "visualblocks",
-                          "wordcount",
-                        ],
-                        toolbar:
-                          "undo redo | bold italic underline | numlist bullist outdent indent | link table | removeformat",
-                        menubar: false,
-                        statusbar: false,
-                        branding: false,
-                        content_style:
-                          "body{font-size:12px; line-height:1.4; margin:0;} ol,ul{margin:0 0 0.5rem 1.25rem; padding:0;} li{margin:0.15rem 0;}",
-                      }}
-                      initialValue="
+                      value={formData.termCondition || `
 <ol>
   <li>Price above excluded VAT 11%.</li>
   <li>Term of payment must be pay DP Rp. 35.000.000,- (for 250 Sheet) before the work is carried out.</li>
@@ -656,8 +637,27 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
   <li>Work instruction or client specification, scaffolding, electrical and lighting, safety tools for high risk work, dark room facility, bunker/boom feet facility supplied by client.</li>
   <li>Starting timesheet counted when our equipment and technician go from and return to PT. Gamma Buana Persada.</li>
   <li>This quotation is valid for one (1) week from the date of quotation.</li>
-</ol>
-      "
+</ol>`}
+                      onEditorChange={(content) => handleInputChange("termCondition", content)}
+                      init={{
+                        plugins: [
+                          "autolink",
+                          "lists",
+                          "link",
+                          "table",
+                          "charmap",
+                          "searchreplace",
+                          "visualblocks",
+                          "wordcount",
+                        ],
+                        toolbar:
+                          "undo redo | bold italic underline | numlist bullist outdent indent | link table | removeformat",
+                        menubar: false,
+                        statusbar: false,
+                        branding: false,
+                        content_style:
+                          "body{font-size:12px; line-height:1.4; margin:0;} ol,ul{margin:0 0 0.5rem 1.25rem; padding:0;} li{margin:0.15rem 0;}",
+                      }}
                     />
                   </div>
                 </div>
