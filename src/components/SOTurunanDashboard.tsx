@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SOTurunanModal, { SOTurunanFormData } from "./SOTurunanModal";
+import RequestSOTurunanModal from "./RequestSOTurunanModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import {
   Search,
@@ -504,13 +505,21 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             </div>
           </div>
         </div>
-        <SOTurunanModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleAddSOTurunan}
-          readOnly={readOnlyModal}
-          initialData={initialModalData}
-        />
+        {role === "operational" ? (
+          <RequestSOTurunanModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleAddSOTurunan}
+          />
+        ) : (
+          <SOTurunanModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleAddSOTurunan}
+            readOnly={readOnlyModal}
+            initialData={initialModalData}
+          />
+        )}
 
         {/* Delete Confirmation Modal */}
         <ConfirmDeleteModal

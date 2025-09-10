@@ -21,6 +21,7 @@ export interface SOTurunanFormData {
   tanggalDemob: string;
   estimasiSO: string;
   keterangan: string;
+  jumlahQty?: string;
 }
 
 const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
@@ -42,6 +43,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
     tanggalDemob: "",
     estimasiSO: "",
     keterangan: "",
+    jumlahQty: "",
   });
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
