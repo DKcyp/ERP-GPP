@@ -252,6 +252,7 @@ import GAIBPKebersihanLingkunganDashboard from "./GAIBPKebersihanLingkunganDashb
 import GeneralUtilityDashboard from "./GeneralUtilityDashboard";
 import MasterDataCustomerDashboard from "./MasterDataCustomerDashboard";
 import MonitoringMarketingDashboard from "./MonitoringMarketingDashboard";
+import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarketingDashboard";
 
 import {
   BarChart3,
@@ -329,6 +330,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
   // Route to specific pages based on currentPage
   const renderPageContent = () => {
     console.log("Dashboard: Current page received:", currentPage);
+    // Management Routes
+    if (currentPage === "/management/monitoring/marketing") {
+      return <ManagementMonitoringMarketingDashboard />;
+    }
     // Gudang Routes
     if (currentPage === "/gudang/dashboard") {
       return <GudangMainDashboard />;

@@ -1304,6 +1304,12 @@ export const managementMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Management Monitoring Marketing",
+    icon: "Monitor",
+    items: [],
+    directPath: "/management/monitoring/marketing",
+  },
+  {
     title: "Approve Kontrak",
     icon: "FileSignature", // Using FileSignature for contract approval
     items: [],
