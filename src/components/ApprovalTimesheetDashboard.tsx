@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import ApproveTimesheetModal, { ApproveTimesheetFormData } from './ApproveTimesheetModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import ApproveTimesheetDetailModal from './ApproveTimesheetDetailModal'; // New import
-import { ApprovalTimesheetPegawaiData } from '../types';
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  ThumbsUp, // Added ThumbsUp icon
-  ThumbsDown,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp
-} from 'lucide-react';
+import ApproveTimesheetDetailModal from './ApproveTimesheetDetailModal';
+import { Plus, ArrowUp } from 'lucide-react';
+
+// Local interface for timesheet data used in this component
+interface ApprovalTimesheetPegawaiData {
+  id: string;
+  no: number;
+  nama: string;
+  kualifikasi: string[];
+  mob: string;
+  demob: string;
+  durasi: string;
+  noSO: string;
+  noHPP: string;
+  lokasi: string;
+  jenisPekerjaan: string;
+  status: 'Menunggu Review' | 'Release' | 'Approve' | 'Rejected';
+  namaProject: string;
+  namaClient: string;
+  jamAwalKerja: string;
+  jamSelesaiKerja: string;
+  overtime: string;
+  tunjangan: { namaTunjangan: string; rateTunjangan: string; overtime: string }[];
+}
 
 const ApprovalTimesheetDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,8 +33,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const [selectedTimesheetForDetail, setSelectedTimesheetForDetail] = useState<ApprovalTimesheetPegawaiData | null>(null); // New state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<ApprovalTimesheetPegawaiData | null>(null);
+  // Removed delete modal logic
   const [sortField, setSortField] = useState<keyof ApprovalTimesheetPegawaiData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -43,7 +51,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-001.1',
       lokasi: 'Bali',
       jenisPekerjaan: 'On Call',
-      status: 'Approved',
+      status: 'Approve',
       namaProject: 'Proyek Jembatan A',
       namaClient: 'PT Konstruksi Sejahtera',
       jamAwalKerja: '08:00',
@@ -66,7 +74,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-002.1',
       lokasi: 'Jakarta',
       jenisPekerjaan: 'Tender',
-      status: 'Pending',
+      status: 'Menunggu Review',
       namaProject: 'Pembangunan Gedung B',
       namaClient: 'PT Pembangunan Nasional',
       jamAwalKerja: '09:00',
@@ -111,7 +119,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: 'SO-004.1',
       lokasi: 'Medan',
       jenisPekerjaan: 'Tender',
-      status: 'Approved',
+      status: 'Approve',
       namaProject: 'Renovasi Kantor D',
       namaClient: 'PT Teknologi Maju',
       jamAwalKerja: '08:30',
@@ -140,7 +148,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       noHPP: formData.noHPP,
       lokasi: formData.lokasi,
       jenisPekerjaan: formData.jenisPekerjaan,
-      status: 'Pending',
+      status: 'Menunggu Review',
       namaProject: formData.namaProject,
       namaClient: formData.namaClient,
       jamAwalKerja: '08:00', // Default or derive from form
@@ -161,25 +169,19 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = (item: ApprovalTimesheetPegawaiData) => {
-    setItemToDelete(item);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      setApprovalTimesheetData(prev => prev.filter(a => a.id !== itemToDelete.id));
-      setItemToDelete(null);
-    }
-  };
-
   const handleApprove = (id: string) => {
     setApprovalTimesheetData(prev =>
       prev.map(item =>
-        item.id === id ? { ...item, status: 'Approved' as const } : item
+        item.id === id ? { ...item, status: 'Approve' as const } : item
       )
     );
     setIsDetailModalOpen(false); // Close modal after action
+    setSelectedTimesheetForDetail(null);
+  };
+
+  const handleRelease = (id: string) => {
+    setApprovalTimesheetData(prev => prev.map(item => (item.id === id ? { ...item, status: 'Release' as const } : item)));
+    setIsDetailModalOpen(false);
     setSelectedTimesheetForDetail(null);
   };
 
@@ -193,15 +195,17 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     setSelectedTimesheetForDetail(null);
   };
 
-  const handleViewOrApproveClick = (item: ApprovalTimesheetPegawaiData) => {
+  // Open detail modal (if needed in the future)
+  const openDetailModal = (item: ApprovalTimesheetPegawaiData) => {
     setSelectedTimesheetForDetail(item);
     setIsDetailModalOpen(true);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Approved': return 'bg-green-600 text-white';
-      case 'Pending': return 'bg-yellow-500 text-white';
+      case 'Approve': return 'bg-green-600 text-white';
+      case 'Menunggu Review': return 'bg-yellow-500 text-white';
+      case 'Release': return 'bg-blue-600 text-white';
       case 'Rejected': return 'bg-red-600 text-white';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -479,28 +483,46 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center space-x-1">
-                        <button
-                          onClick={() => handleViewOrApproveClick(item)}
-                          className="p-1.5 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
-                          title="View Details"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleViewOrApproveClick(item)} // This button now also opens the detail modal
-                          className="p-1.5 text-cyan-500 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Approve"
-                        >
-                          <ThumbsUp className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item)}
-                          className="p-1.5 bg-red-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-red-700"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                      <div className="flex items-center justify-center gap-2">
+                        {item.status === 'Menunggu Review' && (
+                          <>
+                            <button
+                              onClick={() => handleRelease(item.id)}
+                              className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
+                              title="Release"
+                            >
+                              Release
+                            </button>
+                            <button
+                              onClick={() => handleReject(item.id)}
+                              className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700"
+                              title="Reject"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                        {item.status === 'Release' && (
+                          <>
+                            <button
+                              onClick={() => handleApprove(item.id)}
+                              className="px-2 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700"
+                              title="Approve"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleReject(item.id)}
+                              className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700"
+                              title="Reject"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                        {item.status === 'Approve' && (
+                          <span className="text-xs text-gray-500">No action</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -557,14 +579,6 @@ const ApprovalTimesheetDashboard: React.FC = () => {
         onSave={handleAddApprovalTimesheet}
       />
 
-      {/* Delete Confirmation Modal (existing) */}
-      <ConfirmDeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.nama}
-      />
-
       {/* New Approve Timesheet Detail Modal */}
       <ApproveTimesheetDetailModal
         isOpen={isDetailModalOpen}
@@ -572,6 +586,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
         timesheetData={selectedTimesheetForDetail}
         onApprove={handleApprove}
         onReject={handleReject}
+        onRelease={handleRelease}
       />
     </div>
   );

@@ -1,6 +1,26 @@
 import React, { useEffect } from 'react';
 import { X, Calendar, Upload, ThumbsUp, ThumbsDown } from 'lucide-react';
-import { ApprovalTimesheetPegawaiData } from '../types';
+
+// Local mirror of data shape used in parent (kept minimal for modal needs)
+interface ApprovalTimesheetPegawaiData {
+  id: string;
+  nama: string;
+  mob: string;
+  demob: string;
+  durasi: string;
+  noSO: string;
+  noHPP: string;
+  namaProject: string;
+  namaClient: string;
+  kualifikasi: string[];
+  lokasi: string;
+  jenisPekerjaan: string;
+  jamAwalKerja: string;
+  jamSelesaiKerja: string;
+  overtime: string;
+  tunjangan: { namaTunjangan: string; rateTunjangan: string; overtime: string }[];
+  status: 'Menunggu Review' | 'Release' | 'Approve' | 'Rejected';
+}
 
 interface ApproveTimesheetDetailModalProps {
   isOpen: boolean;
@@ -8,6 +28,7 @@ interface ApproveTimesheetDetailModalProps {
   timesheetData: ApprovalTimesheetPegawaiData | null;
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
+  onRelease: (id: string) => void;
 }
 
 const ApproveTimesheetDetailModal: React.FC<ApproveTimesheetDetailModalProps> = ({
@@ -16,6 +37,7 @@ const ApproveTimesheetDetailModal: React.FC<ApproveTimesheetDetailModalProps> = 
   timesheetData,
   onApprove,
   onReject,
+  onRelease,
 }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -43,8 +65,10 @@ const ApproveTimesheetDetailModal: React.FC<ApproveTimesheetDetailModalProps> = 
 
   if (!isOpen || !timesheetData) return null;
 
-  const isApproved = timesheetData.status === 'Approved';
+  const isApprove = timesheetData.status === 'Approve';
   const isRejected = timesheetData.status === 'Rejected';
+  const isRelease = timesheetData.status === 'Release';
+  const isMenungguReview = timesheetData.status === 'Menunggu Review';
 
   return (
     <div
@@ -239,24 +263,52 @@ const ApproveTimesheetDetailModal: React.FC<ApproveTimesheetDetailModalProps> = 
           >
             Close
           </button>
-          <button
-            type="button"
-            onClick={() => onApprove(timesheetData.id)}
-            disabled={isApproved}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            <ThumbsUp className="h-3.5 w-3.5" />
-            <span>{isApproved ? 'Approved' : 'Approve'}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onReject(timesheetData.id)}
-            disabled={isRejected}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            <ThumbsDown className="h-3.5 w-3.5" />
-            <span>{isRejected ? 'Rejected' : 'Reject'}</span>
-          </button>
+
+          {isMenungguReview && (
+            <>
+              <button
+                type="button"
+                onClick={() => onRelease(timesheetData.id)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 text-sm"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span>Release</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onReject(timesheetData.id)}
+                disabled={isRejected}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                <ThumbsDown className="h-3.5 w-3.5" />
+                <span>{isRejected ? 'Rejected' : 'Reject'}</span>
+              </button>
+            </>
+          )}
+
+          {isRelease && (
+            <>
+              <button
+                type="button"
+                onClick={() => onApprove(timesheetData.id)}
+                disabled={isApprove}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                <ThumbsUp className="h-3.5 w-3.5" />
+                <span>{isApprove ? 'Approved' : 'Approve'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onReject(timesheetData.id)}
+                disabled={isRejected}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                <ThumbsDown className="h-3.5 w-3.5" />
+                <span>{isRejected ? 'Rejected' : 'Reject'}</span>
+              </button>
+            </>
+          )}
+          {/* When status is Approve -> no action buttons shown */}
         </div>
       </div>
     </div>

@@ -776,6 +776,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Calendar",
         path: "/hrd/absensi/kalender",
       },
+      {
+        title: "Pengajuan Izin",
+        icon: "FilePlus",
+        path: "/hrd/absensi/pengajuan-izin",
+      },
     ],
   },
   {
@@ -796,6 +801,22 @@ export const hrdMenu: MenuSection[] = [
         title: "Master Indikator HRD",
         icon: "Target",
         path: "/hrd/penilaian/master-indikator-hrd",
+      },
+    ],
+  },
+  {
+    title: "Perjanjian Kerjasama",
+    icon: "Handshake",
+    items: [
+      {
+        title: "Perjanjian Ikatan Dinas",
+        icon: "FileSignature",
+        path: "/hrd/perjanjian/perjanjian-ikatan-dinas",
+      },
+      {
+        title: "Surat Izin Bekerja",
+        icon: "FileText",
+        path: "/hrd/perjanjian/surat-izin-bekerja",
       },
     ],
   },
