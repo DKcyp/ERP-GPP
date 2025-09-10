@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import ApproveTimesheetDetailModal from './ApproveTimesheetDetailModal'; // New import
-import { ApprovalTimesheetPegawaiData } from '../types'; // New import for modal data structure
+import React, { useState, useEffect } from "react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ApproveTimesheetDetailModal from "./ApproveTimesheetDetailModal"; // New import
+import { ApprovalTimesheetPegawaiData } from "../types"; // New import for modal data structure
 import {
   Search,
   FileSpreadsheet,
@@ -10,184 +10,279 @@ import {
   Edit,
   Trash2,
   Eye,
-  ThumbsUp,
   Calendar,
   Clock,
   Info,
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  ChevronDown
-} from 'lucide-react';
+  ChevronDown,
+} from "lucide-react";
 
 // Define an extended interface for the dashboard table to include all displayed fields
 interface DashboardTimesheetItem extends ApprovalTimesheetPegawaiData {
+  id: string;
+  no: number;
+  nama: string;
+  kualifikasi: string[];
   tanggalTimesheet: string;
+  mob: string;
+  demob: string;
+  durasi: string;
+  overtime: string;
+  noSO: string;
+  noHPP: string;
+  lokasi: string;
   zona: string;
+  jenisPekerjaan: string;
   rate: string;
-  pegawai: 'Freelance' | 'Pegawai Tetap';
+  pegawai: "Freelance" | "Pegawai Tetap";
+  status: "Approved" | "Pending" | "Rejected";
+  namaProject: string;
+  namaClient: string;
+  jamAwalKerja: string;
+  jamSelesaiKerja: string;
+  tunjangan: Array<{
+    namaTunjangan: string;
+    rateTunjangan: string;
+    overtime: string;
+  }>;
 }
 
 const TimesheetPegawaiDashboard: React.FC = () => {
-  const [searchNoSO, setSearchNoSO] = useState('');
-  const [searchKualifikasi, setSearchKualifikasi] = useState('');
-  const [searchSOTurunan, setSearchSOTurunan] = useState('');
-  const [searchNamaProject, setSearchNamaProject] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchKualifikasi, setSearchKualifikasi] = useState("");
+  const [searchSOTurunan, setSearchSOTurunan] = useState("");
+  const [searchNamaProject, setSearchNamaProject] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<DashboardTimesheetItem | null>(null); // Changed type
-  const [sortField, setSortField] = useState<keyof DashboardTimesheetItem | null>(null); // Changed type
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [itemToDelete, setItemToDelete] =
+    useState<DashboardTimesheetItem | null>(null); // Changed type
+  const [sortField, setSortField] = useState<
+    keyof DashboardTimesheetItem | null
+  >(null); // Changed type
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // New states for the approval modal
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-  const [selectedTimesheetForApproval, setSelectedTimesheetForApproval] = useState<ApprovalTimesheetPegawaiData | null>(null);
+  const [selectedTimesheetForApproval, setSelectedTimesheetForApproval] =
+    useState<ApprovalTimesheetPegawaiData | null>(null);
+
+  // Add Timesheet modal state and form
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [addForm, setAddForm] = useState({
+    nama: "",
+    kualifikasi: "",
+    tanggalTimesheet: "",
+    mob: "",
+    demob: "",
+    durasi: "",
+    overtime: "",
+    noSO: "",
+    noHPP: "",
+    lokasi: "",
+    zona: "",
+    jenisPekerjaan: "On Call",
+    rate: "",
+    pegawai: "Freelance" as "Freelance" | "Pegawai Tetap",
+    status: "Pending" as "Approved" | "Pending" | "Rejected",
+    namaProject: "",
+    namaClient: "",
+    jamAwalKerja: "08:00",
+    jamSelesaiKerja: "17:00",
+  });
+  const handleOpenAddModal = () => setIsAddModalOpen(true);
+  const handleCloseAddModal = () => setIsAddModalOpen(false);
+  const handleAddSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addForm.nama || !addForm.noSO) {
+      alert("Nama dan No SO wajib diisi");
+      return;
+    }
+    const nextNo =
+      timesheetPegawaiData.reduce((acc, cur) => Math.max(acc, cur.no), 0) + 1;
+    const newItem: DashboardTimesheetItem = {
+      id: `${Date.now()}`,
+      no: nextNo,
+      nama: addForm.nama,
+      kualifikasi: addForm.kualifikasi
+        ? addForm.kualifikasi
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      tanggalTimesheet:
+        addForm.tanggalTimesheet || new Date().toISOString().slice(0, 10),
+      mob: addForm.mob,
+      demob: addForm.demob,
+      durasi: addForm.durasi || "0 Hari",
+      overtime: addForm.overtime || "0 Jam",
+      noSO: addForm.noSO,
+      noHPP: addForm.noHPP,
+      lokasi: addForm.lokasi,
+      zona: addForm.zona,
+      jenisPekerjaan: addForm.jenisPekerjaan,
+      rate: addForm.rate,
+      pegawai: addForm.pegawai,
+      status: addForm.status,
+      namaProject: addForm.namaProject,
+      namaClient: addForm.namaClient,
+      jamAwalKerja: addForm.jamAwalKerja,
+      jamSelesaiKerja: addForm.jamSelesaiKerja,
+      tunjangan: [],
+    };
+    setTimesheetPegawaiData((prev) => [newItem, ...prev]);
+    setIsAddModalOpen(false);
+  };
 
   // Sample data matching the image, now using DashboardTimesheetItem
-  const [timesheetPegawaiData, setTimesheetPegawaiData] = useState<DashboardTimesheetItem[]>([
+  const [timesheetPegawaiData, setTimesheetPegawaiData] = useState<
+    DashboardTimesheetItem[]
+  >([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      nama: 'Budi Santoso', // New field for modal
-      kualifikasi: ['Welder', 'Rope Access'],
-      tanggalTimesheet: '2024-11-09',
-      mob: '2024-11-10',
-      demob: '2024-11-15',
-      durasi: '5 Hari', // Changed from durasiHari: 5
-      overtime: '10 Jam', // Changed from overtimeJam: 10
-      noSO: 'SO-001',
-      noHPP: 'SO-001.1', // Changed from noSOTurunan
-      lokasi: 'Bali',
-      zona: 'Zona A',
-      jenisPekerjaan: 'On Call',
-      rate: '500,000',
-      pegawai: 'Freelance',
-      status: 'Approved',
-      namaProject: 'Proyek Medco Bali', // New field for modal
-      namaClient: 'Medco Energi', // New field for modal
-      jamAwalKerja: '08:00', // New field for modal
-      jamSelesaiKerja: '17:00', // New field for modal
-      tunjangan: [ // New field for modal
-        { namaTunjangan: 'Makan', rateTunjangan: '50,000', overtime: '' },
-        { namaTunjangan: 'Transport', rateTunjangan: '75,000', overtime: '' },
+      nama: "Budi Santoso", // New field for modal
+      kualifikasi: ["Welder", "Rope Access"],
+      tanggalTimesheet: "2024-11-09",
+      mob: "2024-11-10",
+      demob: "2024-11-15",
+      durasi: "5 Hari", // Changed from durasiHari: 5
+      overtime: "10 Jam", // Changed from overtimeJam: 10
+      noSO: "SO-001",
+      noHPP: "SO-001.1", // Changed from noSOTurunan
+      lokasi: "Bali",
+      zona: "Zona A",
+      jenisPekerjaan: "On Call",
+      rate: "500,000",
+      pegawai: "Freelance",
+      status: "Approved",
+      namaProject: "Proyek Medco Bali", // New field for modal
+      namaClient: "Medco Energi", // New field for modal
+      jamAwalKerja: "08:00", // New field for modal
+      jamSelesaiKerja: "17:00", // New field for modal
+      tunjangan: [
+        // New field for modal
+        { namaTunjangan: "Makan", rateTunjangan: "50,000", overtime: "" },
+        { namaTunjangan: "Transport", rateTunjangan: "75,000", overtime: "" },
       ],
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      nama: 'Siti Aminah',
-      kualifikasi: ['Engineer', 'Project Manager'],
-      tanggalTimesheet: '2024-11-11',
-      mob: '2024-11-12',
-      demob: '2024-11-18',
-      durasi: '6 Hari',
-      overtime: '8 Jam',
-      noSO: 'SO-002',
-      noHPP: 'SO-001.2',
-      lokasi: 'Jakarta',
-      zona: 'Zona B',
-      jenisPekerjaan: 'Tender',
-      rate: '750,000',
-      pegawai: 'Pegawai Tetap',
-      status: 'Pending',
-      namaProject: 'Proyek Pertamina Jakarta',
-      namaClient: 'Pertamina Hulu Energi',
-      jamAwalKerja: '09:00',
-      jamSelesaiKerja: '18:00',
+      nama: "Siti Aminah",
+      kualifikasi: ["Engineer", "Project Manager"],
+      tanggalTimesheet: "2024-11-11",
+      mob: "2024-11-12",
+      demob: "2024-11-18",
+      durasi: "6 Hari",
+      overtime: "8 Jam",
+      noSO: "SO-002",
+      noHPP: "SO-001.2",
+      lokasi: "Jakarta",
+      zona: "Zona B",
+      jenisPekerjaan: "Tender",
+      rate: "750,000",
+      pegawai: "Pegawai Tetap",
+      status: "Pending",
+      namaProject: "Proyek Pertamina Jakarta",
+      namaClient: "Pertamina Hulu Energi",
+      jamAwalKerja: "09:00",
+      jamSelesaiKerja: "18:00",
       tunjangan: [
-        { namaTunjangan: 'Makan', rateTunjangan: '60,000', overtime: '' },
-        { namaTunjangan: 'Akomodasi', rateTunjangan: '100,000', overtime: '' },
+        { namaTunjangan: "Makan", rateTunjangan: "60,000", overtime: "" },
+        { namaTunjangan: "Akomodasi", rateTunjangan: "100,000", overtime: "" },
       ],
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      nama: 'Joko Susilo',
-      kualifikasi: ['Safety Officer'],
-      tanggalTimesheet: '2024-11-14',
-      mob: '2024-11-15',
-      demob: '2024-11-20',
-      durasi: '5 Hari',
-      overtime: '12 Jam',
-      noSO: 'SO-003',
-      noHPP: 'SO-001.1',
-      lokasi: 'Surabaya',
-      zona: 'Zona C',
-      jenisPekerjaan: 'On Call',
-      rate: '600,000',
-      pegawai: 'Freelance',
-      status: 'Rejected',
-      namaProject: 'Proyek PLN Surabaya',
-      namaClient: 'PLN (Persero)',
-      jamAwalKerja: '07:00',
-      jamSelesaiKerja: '16:00',
+      nama: "Joko Susilo",
+      kualifikasi: ["Safety Officer"],
+      tanggalTimesheet: "2024-11-14",
+      mob: "2024-11-15",
+      demob: "2024-11-20",
+      durasi: "5 Hari",
+      overtime: "12 Jam",
+      noSO: "SO-003",
+      noHPP: "SO-001.1",
+      lokasi: "Surabaya",
+      zona: "Zona C",
+      jenisPekerjaan: "On Call",
+      rate: "600,000",
+      pegawai: "Freelance",
+      status: "Rejected",
+      namaProject: "Proyek PLN Surabaya",
+      namaClient: "PLN (Persero)",
+      jamAwalKerja: "07:00",
+      jamSelesaiKerja: "16:00",
       tunjangan: [
-        { namaTunjangan: 'Makan', rateTunjangan: '55,000', overtime: '' },
+        { namaTunjangan: "Makan", rateTunjangan: "55,000", overtime: "" },
       ],
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      nama: 'Dewi Lestari',
-      kualifikasi: ['Electrical Technician'],
-      tanggalTimesheet: '2024-11-17',
-      mob: '2024-11-18',
-      demob: '2024-11-23',
-      durasi: '5 Hari',
-      overtime: '9 Jam',
-      noSO: 'SO-004',
-      noHPP: 'SO-001.2',
-      lokasi: 'Bandung',
-      zona: 'Zona A',
-      jenisPekerjaan: 'Tender',
-      rate: '550,000',
-      pegawai: 'Pegawai Tetap',
-      status: 'Approved',
-      namaProject: 'Proyek Telkom Bandung',
-      namaClient: 'Telkom Indonesia',
-      jamAwalKerja: '08:30',
-      jamSelesaiKerja: '17:30',
+      nama: "Dewi Lestari",
+      kualifikasi: ["Electrical Technician"],
+      tanggalTimesheet: "2024-11-17",
+      mob: "2024-11-18",
+      demob: "2024-11-23",
+      durasi: "5 Hari",
+      overtime: "9 Jam",
+      noSO: "SO-004",
+      noHPP: "SO-001.2",
+      lokasi: "Bandung",
+      zona: "Zona A",
+      jenisPekerjaan: "Tender",
+      rate: "550,000",
+      pegawai: "Pegawai Tetap",
+      status: "Approved",
+      namaProject: "Proyek Telkom Bandung",
+      namaClient: "Telkom Indonesia",
+      jamAwalKerja: "08:30",
+      jamSelesaiKerja: "17:30",
       tunjangan: [
-        { namaTunjangan: 'Makan', rateTunjangan: '50,000', overtime: '' },
-        { namaTunjangan: 'Transport', rateTunjangan: '60,000', overtime: '' },
+        { namaTunjangan: "Makan", rateTunjangan: "50,000", overtime: "" },
+        { namaTunjangan: "Transport", rateTunjangan: "60,000", overtime: "" },
       ],
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      nama: 'Agus Salim',
-      kualifikasi: ['Mechanical Engineer'],
-      tanggalTimesheet: '2024-11-19',
-      mob: '2024-11-20',
-      demob: '2024-11-25',
-      durasi: '5 Hari',
-      overtime: '11 Jam',
-      noSO: 'SO-005',
-      noHPP: 'SO-001.1',
-      lokasi: 'Yogyakarta',
-      zona: 'Zona B',
-      jenisPekerjaan: 'On Call',
-      rate: '650,000',
-      pegawai: 'Freelance',
-      status: 'Pending',
-      namaProject: 'Proyek Waskita Karya',
-      namaClient: 'Waskita Karya',
-      jamAwalKerja: '09:00',
-      jamSelesaiKerja: '18:00',
+      nama: "Agus Salim",
+      kualifikasi: ["Mechanical Engineer"],
+      tanggalTimesheet: "2024-11-19",
+      mob: "2024-11-20",
+      demob: "2024-11-25",
+      durasi: "5 Hari",
+      overtime: "11 Jam",
+      noSO: "SO-005",
+      noHPP: "SO-001.1",
+      lokasi: "Yogyakarta",
+      zona: "Zona B",
+      jenisPekerjaan: "On Call",
+      rate: "650,000",
+      pegawai: "Freelance",
+      status: "Pending",
+      namaProject: "Proyek Waskita Karya",
+      namaClient: "Waskita Karya",
+      jamAwalKerja: "09:00",
+      jamSelesaiKerja: "18:00",
       tunjangan: [
-        { namaTunjangan: 'Makan', rateTunjangan: '65,000', overtime: '' },
-        { namaTunjangan: 'Akomodasi', rateTunjangan: '90,000', overtime: '' },
+        { namaTunjangan: "Makan", rateTunjangan: "65,000", overtime: "" },
+        { namaTunjangan: "Akomodasi", rateTunjangan: "90,000", overtime: "" },
       ],
-    }
+    },
   ]);
 
-  const statusOptions = ['Approved', 'Pending', 'Rejected'];
+  const statusOptions = ["Approved", "Pending", "Rejected"];
 
   useEffect(() => {
     // Trigger animation on component mount
@@ -201,42 +296,54 @@ const TimesheetPegawaiDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setTimesheetPegawaiData(prev => prev.filter(t => t.id !== itemToDelete.id));
+      setTimesheetPegawaiData((prev) =>
+        prev.filter((t) => t.id !== itemToDelete.id)
+      );
       setItemToDelete(null);
     }
   };
 
   const handleSort = (field: keyof DashboardTimesheetItem) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Approved': return 'bg-green-600 text-white';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Rejected': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case "Approved":
+        return "bg-green-600 text-white";
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "Rejected":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getJenisPekerjaanColor = (jenis: string) => {
     switch (jenis) {
-      case 'On Call': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
-      case 'Tender': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case "On Call":
+        return "bg-cyan-100 text-cyan-800 border-cyan-200";
+      case "Tender":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getPegawaiColor = (pegawai: string) => {
     switch (pegawai) {
-      case 'Freelance': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Pegawai Tetap': return 'bg-purple-100 text-purple-800 border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case "Freelance":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Pegawai Tetap":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -253,31 +360,41 @@ const TimesheetPegawaiDashboard: React.FC = () => {
   };
 
   const handleApproveTimesheet = (id: string) => {
-    setTimesheetPegawaiData(prevData =>
-      prevData.map(item =>
-        item.id === id ? { ...item, status: 'Approved' } : item
+    setTimesheetPegawaiData((prevData) =>
+      prevData.map((item) =>
+        item.id === id ? { ...item, status: "Approved" } : item
       )
     );
     handleCloseApproveModal();
   };
 
   const handleRejectTimesheet = (id: string) => {
-    setTimesheetPegawaiData(prevData =>
-      prevData.map(item =>
-        item.id === id ? { ...item, status: 'Rejected' } : item
+    setTimesheetPegawaiData((prevData) =>
+      prevData.map((item) =>
+        item.id === id ? { ...item, status: "Rejected" } : item
       )
     );
     handleCloseApproveModal();
   };
 
   // Filter data based on search criteria
-  const filteredData = timesheetPegawaiData.filter(item => {
-    const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
-    const matchesKualifikasi = item.kualifikasi.some(k => k.toLowerCase().includes(searchKualifikasi.toLowerCase()));
-    const matchesSOTurunan = item.noHPP.toLowerCase().includes(searchSOTurunan.toLowerCase()); // Changed to noHPP
-    const matchesStatus = selectedStatus ? item.status === selectedStatus : true;
+  const filteredData = timesheetPegawaiData.filter((item) => {
+    const matchesNoSO = item.noSO
+      .toLowerCase()
+      .includes(searchNoSO.toLowerCase());
+    const matchesKualifikasi = item.kualifikasi.some((k) =>
+      k.toLowerCase().includes(searchKualifikasi.toLowerCase())
+    );
+    const matchesSOTurunan = item.noHPP
+      .toLowerCase()
+      .includes(searchSOTurunan.toLowerCase()); // Changed to noHPP
+    const matchesStatus = selectedStatus
+      ? item.status === selectedStatus
+      : true;
 
-    return matchesNoSO && matchesKualifikasi && matchesSOTurunan && matchesStatus;
+    return (
+      matchesNoSO && matchesKualifikasi && matchesSOTurunan && matchesStatus
+    );
   });
 
   // Sort data
@@ -288,11 +405,13 @@ const TimesheetPegawaiDashboard: React.FC = () => {
     const bValue = b[sortField];
 
     // Handle string comparison for all fields, including numbers as strings
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortDirection === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
     }
     // Fallback for other types (though most are strings now)
-    if (sortDirection === 'asc') {
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -427,17 +546,25 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
                   >
-                    <span className={selectedStatus ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedStatus || '--Pilih Status--'}
+                    <span
+                      className={
+                        selectedStatus ? "text-gray-900" : "text-gray-500"
+                      }
+                    >
+                      {selectedStatus || "--Pilih Status--"}
                     </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                        statusDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
 
                   {statusDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
                         onClick={() => {
-                          setSelectedStatus('');
+                          setSelectedStatus("");
                           setStatusDropdownOpen(false);
                         }}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
@@ -497,28 +624,90 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                   Search
                 </button>
               </div>
+
+              {/* Periode */}
+              <div className="space-y-2 lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Periode
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    placeholder="03/03/2025"
+                  />
+                  <span className="text-sm text-gray-500">s.d</span>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                    placeholder="03/03/2025"
+                  />
+                </div>
+              </div>
+
+              {/* Search Button */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 opacity-0">
+                  Search
+                </label>
+                <button
+                  onClick={handleSearch}
+                  className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
+                >
+                  Search
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Export Buttons */}
-          <div className="flex justify-end space-x-2 mb-6">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export Excel</span>
-            </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <File className="h-4 w-4" />
-              <span>Export CSV</span>
-            </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <FileText className="h-4 w-4" />
-              <span>Export PDF</span>
-            </button>
+          {/* Tambah + Export Buttons */}
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <button
+                onClick={handleOpenAddModal}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+              >
+                Tambah
+              </button>
+            </div>
+            <div className="flex space-x-2">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Export Excel</span>
+              </button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <File className="h-4 w-4" />
+                <span>Export CSV</span>
+              </button>
+              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <FileText className="h-4 w-4" />
+                <span>Export PDF</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        {/* Show entries control */}
+        <div className="flex items-center space-x-4">
+          <span className="text-sm text-gray-700">Show</span>
+          <select
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="text-sm text-gray-700">entries</span>
+        </div>
         {/* Show entries control */}
         <div className="flex items-center space-x-4">
           <span className="text-sm text-gray-700">Show</span>
@@ -541,6 +730,9 @@ const TimesheetPegawaiDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nama Pegawai
+                  </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Kualifikasi
                   </th>
@@ -584,7 +776,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                     Status
                   </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
-                    Action
+                    Aksi
                   </th>
                 </tr>
               </thead>
@@ -593,56 +785,103 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                   <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
                     style={{
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.nama}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="space-y-1">
                         {item.kualifikasi.map((kual, idx) => (
-                          <div key={idx} className="flex items-center space-x-1">
+                          <div
+                            key={idx}
+                            className="flex items-center space-x-1"
+                          >
                             <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                             <span>{kual}</span>
                           </div>
                         ))}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalTimesheet}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.mob}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.durasi.split(' ')[0]}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.overtime.split(' ')[0]}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.noHPP}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.lokasi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.zona}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggalTimesheet}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.mob}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.demob}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-center">
+                      {item.durasi.split(" ")[0]}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-center">
+                      {item.overtime.split(" ")[0]}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.noSO}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.noHPP}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.lokasi}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.zona}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getJenisPekerjaanColor(item.jenisPekerjaan)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getJenisPekerjaanColor(
+                          item.jenisPekerjaan
+                        )}`}
+                      >
                         {item.jenisPekerjaan}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.rate}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.rate}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getPegawaiColor(item.pegawai)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getPegawaiColor(
+                          item.pegawai
+                        )}`}
+                      >
                         {item.pegawai}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(item.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
+                          item.status
+                        )}`}
+                      >
                         {item.status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => handleOpenApproveModal(item)} // OnClick to open modal
-                          className="p-2 text-cyan-500 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Approve"
+                          onClick={() => handleOpenApproveModal(item)}
+                          className="px-2.5 py-1 text-sm text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                         >
-                          <ThumbsUp className="h-4 w-4" />
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRejectTimesheet(item.id)}
+                          className="px-2.5 py-1 text-sm text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
+                        >
+                          Reject
                         </button>
                       </div>
                     </td>
@@ -656,7 +895,9 @@ const TimesheetPegawaiDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -669,19 +910,21 @@ const TimesheetPegawaiDashboard: React.FC = () => {
 
                 <div className="flex items-center space-x-1">
                   {/* Render page numbers dynamically */}
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-                        currentPage === page
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
                 </div>
 
                 <button
@@ -697,6 +940,313 @@ const TimesheetPegawaiDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Add Timesheet Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h2 className="text-xl font-bold text-gray-900">
+                Tambah Timesheet
+              </h2>
+              <button
+                onClick={handleCloseAddModal}
+                className="px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 text-sm"
+              >
+                Tutup
+              </button>
+            </div>
+            <form
+              onSubmit={handleAddSubmit}
+              className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama
+                </label>
+                <input
+                  type="text"
+                  value={addForm.nama}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, nama: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kualifikasi (pisahkan dengan koma)
+                </label>
+                <input
+                  type="text"
+                  value={addForm.kualifikasi}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, kualifikasi: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Timesheet
+                </label>
+                <input
+                  type="date"
+                  value={addForm.tanggalTimesheet}
+                  onChange={(e) =>
+                    setAddForm((f) => ({
+                      ...f,
+                      tanggalTimesheet: e.target.value,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No SO
+                </label>
+                <input
+                  type="text"
+                  value={addForm.noSO}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, noSO: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No SO Turunan
+                </label>
+                <input
+                  type="text"
+                  value={addForm.noHPP}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, noHPP: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Lokasi
+                </label>
+                <input
+                  type="text"
+                  value={addForm.lokasi}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, lokasi: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Zona
+                </label>
+                <input
+                  type="text"
+                  value={addForm.zona}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, zona: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jenis Pekerjaan
+                </label>
+                <select
+                  value={addForm.jenisPekerjaan}
+                  onChange={(e) =>
+                    setAddForm((f) => ({
+                      ...f,
+                      jenisPekerjaan: e.target.value,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                >
+                  <option>On Call</option>
+                  <option>Tender</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pegawai
+                </label>
+                <select
+                  value={addForm.pegawai}
+                  onChange={(e) =>
+                    setAddForm((f) => ({
+                      ...f,
+                      pegawai: e.target.value as any,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                >
+                  <option value="Freelance">Freelance</option>
+                  <option value="Pegawai Tetap">Pegawai Tetap</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Rate
+                </label>
+                <input
+                  type="text"
+                  value={addForm.rate}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, rate: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={addForm.status}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, status: e.target.value as any }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  MOB
+                </label>
+                <input
+                  type="date"
+                  value={addForm.mob}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, mob: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  DEMOB
+                </label>
+                <input
+                  type="date"
+                  value={addForm.demob}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, demob: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Durasi
+                </label>
+                <input
+                  type="text"
+                  placeholder="5 Hari"
+                  value={addForm.durasi}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, durasi: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Overtime
+                </label>
+                <input
+                  type="text"
+                  placeholder="2 Jam"
+                  value={addForm.overtime}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, overtime: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Project
+                </label>
+                <input
+                  type="text"
+                  value={addForm.namaProject}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, namaProject: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Client
+                </label>
+                <input
+                  type="text"
+                  value={addForm.namaClient}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, namaClient: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jam Awal Kerja
+                </label>
+                <input
+                  type="time"
+                  value={addForm.jamAwalKerja}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, jamAwalKerja: e.target.value }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jam Selesai Kerja
+                </label>
+                <input
+                  type="time"
+                  value={addForm.jamSelesaiKerja}
+                  onChange={(e) =>
+                    setAddForm((f) => ({
+                      ...f,
+                      jamSelesaiKerja: e.target.value,
+                    }))
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div className="md:col-span-2 flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCloseAddModal}
+                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                >
+                  Simpan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Approve Timesheet Detail Modal */}
       <ApproveTimesheetDetailModal
         isOpen={isApproveModalOpen}
@@ -711,7 +1261,7 @@ const TimesheetPegawaiDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.kualifikasi.join(', ')}
+        itemName={itemToDelete?.kualifikasi.join(", ")}
       />
     </div>
   );

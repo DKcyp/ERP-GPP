@@ -57,6 +57,64 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
     );
   };
 
+  // Dummy pegawai options and table rows
+  const pegawaiOptions: Array<{ nama: string; kualifikasi: string; gaji: string }> = [
+    { nama: 'Pegawai A', kualifikasi: 'Senior', gaji: 'Rp 10.000.000' },
+    { nama: 'Pegawai B', kualifikasi: 'Middle', gaji: 'Rp 7.500.000' },
+    { nama: 'Pegawai C', kualifikasi: 'Junior', gaji: 'Rp 5.000.000' },
+  ];
+  const [pegawaiRows, setPegawaiRows] = useState<Array<{ namaPegawai: string; kualifikasi: string; gaji: string }>>([
+    { namaPegawai: pegawaiOptions[0]?.nama ?? '', kualifikasi: pegawaiOptions[0]?.kualifikasi ?? '', gaji: pegawaiOptions[0]?.gaji ?? '' },
+    { namaPegawai: pegawaiOptions[1]?.nama ?? '', kualifikasi: pegawaiOptions[1]?.kualifikasi ?? '', gaji: pegawaiOptions[1]?.gaji ?? '' },
+    { namaPegawai: pegawaiOptions[2]?.nama ?? '', kualifikasi: pegawaiOptions[2]?.kualifikasi ?? '', gaji: pegawaiOptions[2]?.gaji ?? '' },
+  ]);
+  const handlePegawaiChange = (idx: number, namaPegawai: string) => {
+    const found = pegawaiOptions.find(p => p.nama === namaPegawai);
+    setPegawaiRows(prev => {
+      const next = [...prev];
+      next[idx] = {
+        namaPegawai,
+        kualifikasi: found?.kualifikasi ?? '',
+        gaji: found?.gaji ?? '',
+      };
+      return next;
+    });
+  };
+
+  const handleAddPegawaiRow = () => {
+    setPegawaiRows(prev => {
+      const nextIdx = prev.length;
+      const opt = pegawaiOptions[nextIdx % pegawaiOptions.length];
+      const preselected = opt
+        ? { namaPegawai: opt.nama, kualifikasi: opt.kualifikasi, gaji: opt.gaji }
+        : { namaPegawai: '', kualifikasi: '', gaji: '' };
+    return [...prev, preselected];
+    });
+  };
+
+  // Adjust pegawai rows count: 3 rows per selected jenis pekerjaan, minimum 3 rows
+  useEffect(() => {
+    const selectedCount = pekerjaanRingkas.filter(r => r.jenisPekerjaan.trim() !== '').length;
+    const target = Math.max(3, selectedCount * 3);
+    setPegawaiRows(prev => {
+      let next = [...prev];
+      if (next.length < target) {
+        const toAdd = target - next.length;
+        const startIdx = next.length;
+        const added = Array.from({ length: toAdd }, (_, i) => {
+          const opt = pegawaiOptions[(startIdx + i) % pegawaiOptions.length];
+          return opt
+            ? { namaPegawai: opt.nama, kualifikasi: opt.kualifikasi, gaji: opt.gaji }
+            : { namaPegawai: '', kualifikasi: '', gaji: '' };
+        });
+        next = next.concat(added);
+      } else if (next.length > target) {
+        next = next.slice(0, target);
+      }
+      return next;
+    });
+  }, [pekerjaanRingkas]);
+
   useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) onClose();
@@ -92,6 +150,8 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
+
+  const showPegawaiTable = pekerjaanRingkas.some(r => r.jenisPekerjaan.trim() !== '');
 
   const validate = () => {
     const e: Partial<SOTurunanFormData> = {};
@@ -297,19 +357,18 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                     {pekerjaanRingkas.map((row, idx) => (
                       <tr key={idx}>
                         <td className="px-3 py-2">
-                          <input
-                            type="text"
+                          <select
                             value={row.jenisPekerjaan}
                             onChange={(e) =>
-                              updatePekerjaanRow(
-                                idx,
-                                "jenisPekerjaan",
-                                e.target.value
-                              )
+                              updatePekerjaanRow(idx, 'jenisPekerjaan', e.target.value)
                             }
                             className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                            placeholder="On Call / Project Based / Maintenance"
-                          />
+                          >
+                            <option value="">Pilih jenis pekerjaan</option>
+                            <option value="jenispekerjaan1">jenispekerjaan1</option>
+                            <option value="jenispekerjaan2">jenispekerjaan2</option>
+                            <option value="jenispekerjaan3">jenispekerjaan3</option>
+                          </select>
                         </td>
                         <td className="px-3 py-2">
                           <button
@@ -327,6 +386,60 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                 </table>
               </div>
             </div>
+
+            {/* Tabel Pegawai (conditional) */}
+            {showPegawaiTable && (
+              <div className="lg:col-span-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-semibold text-gray-900">Pegawai</h4>
+                </div>
+                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Nama Pegawai</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Kualifikasi</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Gaji</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {pegawaiRows.map((row, idx) => (
+                        <tr key={idx}>
+                          <td className="px-3 py-2">
+                            <select
+                              value={row.namaPegawai}
+                              onChange={(e) => handlePegawaiChange(idx, e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              <option value="">Pilih pegawai</option>
+                              {pegawaiOptions.map(p => (
+                                <option key={p.nama} value={p.nama}>{p.nama}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={row.kualifikasi}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={row.gaji}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             <div className="lg:col-span-2 flex justify-end gap-2 mt-2">
               <button

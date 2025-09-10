@@ -639,6 +639,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Users",
         path: "/hrd/rekrutmen/req-man-power",
       },
+      {
+        title: "Master Kualifikasi",
+        icon: "Database",
+        path: "/hrd/rekrutmen/master-kualifikasi",
+      },
     ],
   },
   {
@@ -1598,6 +1603,63 @@ export const accountingMenu: MenuSection[] = [
     directPath: "/accounting/master-coa",
   },
   {
+    title: "Jurnal",
+    icon: "ClipboardList",
+    subSections: [
+      {
+        title: "Jurnal",
+        icon: "ClipboardList",
+        items: [
+          {
+            title: "Posting Jurnal",
+            icon: "ClipboardList",
+            path: "/accounting/posting-jurnal",
+          },
+          {
+            title: "Jurnal Manual",
+            icon: "ClipboardList",
+            path: "/accounting/jurnal-manual",
+          },
+          {
+            title: "Laporan Jurnal",
+            icon: "FileText",
+            path: "/accounting/laporan-jurnal",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Asset",
+    icon: "Boxes",
+    items: [],
+    directPath: "/accounting/asset",
+  },
+  {
+    title: "Trial Balance",
+    icon: "ClipboardList",
+    items: [],
+    directPath: "/accounting/trial-balance",
+  },
+  {
+    title: "Tutup Buku",
+    icon: "BookX", // Icon for closing books
+    items: [],
+    directPath: "/accounting/tutup-buku",
+  },
+  {
+    title: "Laba Rugi",
+    icon: "TrendingUp", // Icon for profit/loss
+    items: [],
+    directPath: "/accounting/laba-rugi",
+  },
+  {
+    title: "Neraca",
+    icon: "Scale", // Icon for balance sheet
+    items: [],
+    directPath: "/accounting/neraca",
+  },
+  {
     title: "Kas",
     icon: "Wallet",
     subSections: [
@@ -1636,40 +1698,6 @@ export const accountingMenu: MenuSection[] = [
         ],
       },
     ],
-  },
-  {
-    title: "Jurnal",
-    icon: "ClipboardList",
-    subSections: [
-      {
-        title: "Jurnal",
-        icon: "ClipboardList",
-        items: [
-          {
-            title: "Posting Jurnal",
-            icon: "ClipboardList",
-            path: "/accounting/posting-jurnal",
-          },
-          {
-            title: "Laporan Jurnal",
-            icon: "FileText",
-            path: "/accounting/laporan-jurnal",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Tutup Buku",
-    icon: "BookX", // Icon for closing books
-    items: [],
-    directPath: "/accounting/tutup-buku",
-  },
-  {
-    title: "Laba Rugi",
-    icon: "TrendingUp", // Icon for profit/loss
-    items: [],
-    directPath: "/accounting/laba-rugi",
   },
   {
     title: "Neraca",
@@ -1721,13 +1749,6 @@ export const proconMenu: MenuSection[] = [
     directPath: "/procon/dashboard",
   },
   {
-    title: "Sales Order",
-    icon: "ShoppingCart",
-    items: [],
-    directPath: "/procon/sales-order/dashboard",
-  },
-
-  {
     title: "Proforma Invoice",
     icon: "ReceiptText",
     items: [
@@ -1744,6 +1765,12 @@ export const proconMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Sales Order",
+    icon: "ShoppingCart",
+    items: [],
+    directPath: "/procon/sales-order/dashboard",
+  },
+  {
     title: "Laba Rugi Project",
     icon: "TrendingUp",
     items: [
@@ -1757,17 +1784,17 @@ export const proconMenu: MenuSection[] = [
         icon: "UserCheck",
         path: "/procon/lrp/tunjangan-timesheet-teknisi",
       },
-      { title: "Gaji", icon: "Wallet", path: "/procon/lrp/gaji" },
+      { title: "Gaji", icon: "Wallet", path: "/hrd/gaji/pengajian" },
       {
         title: "Timesheet Barang",
         icon: "Package",
-        path: "/procon/lrp/timesheet-barang",
+        path: "/operational/timesheet/barang",
       },
-      { title: "Kas Keluar", icon: "Wallet", path: "/procon/lrp/kas-keluar" },
+      { title: "Kas Keluar", icon: "Wallet", path: "/accounting/kas-keluar" },
       {
         title: "Bank Keluar",
         icon: "Banknote",
-        path: "/procon/lrp/bank-keluar",
+        path: "/accounting/bank-keluar",
       },
     ],
   },
@@ -1794,12 +1821,12 @@ export const proconMenu: MenuSection[] = [
       {
         title: "Kick Off Meeting",
         icon: "Users",
-        path: "/marketing/kick-off-meeting",
+        path: "/marketing/kontrak-deal/dashboard",
       },
       {
         title: "Insentif Marketing",
         icon: "Award",
-        path: "/marketing/insentif",
+        path: "/marketing/insentif-marketing/dashboard",
       },
     ],
   },
@@ -1855,19 +1882,19 @@ export const proconMenu: MenuSection[] = [
     icon: "DollarSign",
     items: [
       {
-        title: "Dashboard Purchase Order",
+        title: "Dashboard AR",
         icon: "LayoutDashboard",
-        path: "/procon/purchase-order/dashboard",
+        path: "/finance/ar/dashboard",
       },
       {
-        title: "Proses Purchase Order",
+        title: "Bukti Kas Keluar",
         icon: "FilePlus",
-        path: "/procon/purchase-order/proses",
+        path: "/finance/kas/bukti-kas-keluar",
       },
       {
-        title: "Approval Purchase Order",
+        title: "Bukti Bank Keluar",
         icon: "CheckCircle",
-        path: "/procon/purchase-order/approval",
+        path: "/finance/bank/bukti-bank-keluar",
       },
     ],
   },

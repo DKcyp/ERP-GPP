@@ -36,6 +36,7 @@ import DaftarPegawaiDashboard from "./DaftarPegawaiDashboard";
 import KontrakPegawaiDashboard from "./KontrakPegawaiDashboard";
 import MonitoringKontrakPegawaiDashboard from "./MonitoringKontrakPegawaiDashboard";
 import MasterUMRDashboard from "./MasterUMRDashboard";
+import MasterKualifikasiDashboard from "./MasterKualifikasiDashboard";
 import DaftarGajiDashboard from "./DaftarGajiDashboard";
 import PotonganGajiDashboard from "./PotonganGajiDashboard";
 import HistoryPeminjamanDashboard from "./HistoryPeminjamanDashboard";
@@ -93,6 +94,9 @@ import CollectionDashboardInvoiceOutstanding from "./CollectionDashboardInvoiceO
 import CollectionDatabaseCustomer from "./CollectionDatabaseCustomer";
 import CollectionDashboardCashIn from "./CollectionDashboardCashIn";
 import FinanceTandaTerimaDokumeniDashboard from "./FinanceTandaTerimaDokumeniDashboard";
+import JurnalManualDashboard from "./JurnalManualDashboard";
+import AssetDashboard from "./AssetDashboard";
+import TrialBalanceDashboard from "./TrialBalanceDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -637,6 +641,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/rekrutmen/req-man-power") {
       return <ReqManPowerDashboard />;
+    }
+    if (currentPage === "/hrd/rekrutmen/master-kualifikasi") {
+      return <MasterKualifikasiDashboard />;
     }
     if (currentPage === "/hrd/marketing/dashboard") {
       return <HRDMarketingDashboard />;
@@ -1455,8 +1462,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/accounting/bank-keluar") {
       return <BankKeluarDashboard />;
     }
+    if (currentPage === "/accounting/asset") {
+      return <AssetDashboard />;
+    }
+    if (currentPage === "/accounting/trial-balance") {
+      return <TrialBalanceDashboard />;
+    }
     if (currentPage === "/accounting/posting-jurnal") {
       return <PostingJurnalDashboard />;
+    }
+    if (currentPage === "/accounting/jurnal-manual") {
+      return <JurnalManualDashboard />;
     }
     if (currentPage === "/accounting/laporan-jurnal") {
       return <LaporanJurnalDashboard />;
