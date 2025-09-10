@@ -730,7 +730,7 @@ export const hrdMenu: MenuSection[] = [
     icon: "CalendarCheck",
     items: [
       {
-        title: "Absensi Teknisi",
+        title: "Absensi",
         icon: "CalendarDays",
         path: "/hrd/absensi/teknisi",
       },

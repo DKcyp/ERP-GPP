@@ -283,7 +283,7 @@ const LemburDashboard: React.FC = () => {
                     onClick={() => handleSort("namaDriver")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Nama Driver</span>
+                      <span>Nama Pegawai</span>
                       {sortField === "namaDriver" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
