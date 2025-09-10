@@ -36,6 +36,7 @@ import DaftarPegawaiDashboard from "./DaftarPegawaiDashboard";
 import KontrakPegawaiDashboard from "./KontrakPegawaiDashboard";
 import MonitoringKontrakPegawaiDashboard from "./MonitoringKontrakPegawaiDashboard";
 import MasterUMRDashboard from "./MasterUMRDashboard";
+import MasterKualifikasiDashboard from "./MasterKualifikasiDashboard";
 import DaftarGajiDashboard from "./DaftarGajiDashboard";
 import PotonganGajiDashboard from "./PotonganGajiDashboard";
 import HistoryPeminjamanDashboard from "./HistoryPeminjamanDashboard";
@@ -634,6 +635,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/rekrutmen/req-man-power") {
       return <ReqManPowerDashboard />;
+    }
+    if (currentPage === "/hrd/rekrutmen/master-kualifikasi") {
+      return <MasterKualifikasiDashboard />;
     }
     if (currentPage === "/hrd/marketing/dashboard") {
       return <HRDMarketingDashboard />;

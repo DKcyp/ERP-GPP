@@ -26,6 +26,7 @@ interface DashboardTimesheetItem extends ApprovalTimesheetPegawaiData {
   zona: string;
   rate: string;
   pegawai: 'Freelance' | 'Pegawai Tetap';
+  nama: string;
 }
 
 const TimesheetPegawaiDashboard: React.FC = () => {
@@ -542,6 +543,9 @@ const TimesheetPegawaiDashboard: React.FC = () => {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nama Pegawai
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Kualifikasi
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
@@ -600,6 +604,9 @@ const TimesheetPegawaiDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.nama}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="space-y-1">
                         {item.kualifikasi.map((kual, idx) => (

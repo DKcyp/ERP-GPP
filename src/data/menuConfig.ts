@@ -639,6 +639,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Users",
         path: "/hrd/rekrutmen/req-man-power",
       },
+      {
+        title: "Master Kualifikasi",
+        icon: "Database",
+        path: "/hrd/rekrutmen/master-kualifikasi",
+      },
     ],
   },
   {
@@ -799,13 +804,13 @@ export const hrdMenu: MenuSection[] = [
       },
     ],
   },
-  // {
-  //   title: "SPK", // Moved SPK Section to HRD
-  //   icon: "FileSignature",
-  //   items: [
-  //     { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
-  //   ],
-  // },
+  {
+    title: "SPK", // Moved SPK Section to HRD
+    icon: "FileSignature",
+    items: [
+      { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+    ],
+  },
   {
     title: "Monitoring", // Moved SPK Section to HRD
     icon: "Monitor",
