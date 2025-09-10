@@ -254,6 +254,8 @@ import GeneralUtilityDashboard from "./GeneralUtilityDashboard";
 import MasterDataCustomerDashboard from "./MasterDataCustomerDashboard";
 import MonitoringMarketingDashboard from "./MonitoringMarketingDashboard";
 import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarketingDashboard";
+import CSIMasterDashboard from "./CSIMasterDashboard";
+import CSIPenilaianFormDashboard from "./CSIPenilaianFormDashboard";
 
 import {
   BarChart3,
@@ -335,6 +337,14 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/management/monitoring/marketing") {
       return <ManagementMonitoringMarketingDashboard />;
     }
+    // Marketing CSI
+    if (currentPage === "/marketing/csi/master") {
+      return <CSIMasterDashboard />;
+    }
+    if (currentPage === "/marketing/csi/form") {
+      return <CSIPenilaianFormDashboard />;
+    }
+
     // Gudang Routes
     if (currentPage === "/gudang/dashboard") {
       return <GudangMainDashboard />;

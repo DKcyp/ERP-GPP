@@ -328,6 +328,17 @@ export const marketingMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "CSI",
+    icon: "Smile",
+    items: [
+      {
+        title: "Master CSI",
+        icon: "Database",
+        path: "/marketing/csi/master",
+      },
+    ],
+  },
   createGeneralMenu("marketing"),
 ];
 
