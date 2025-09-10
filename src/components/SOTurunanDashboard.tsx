@@ -1,33 +1,22 @@
 import React, { useState, useEffect } from "react";
 import SOTurunanModal, { SOTurunanFormData } from "./SOTurunanModal";
+import RequestSOTurunanModal from "./RequestSOTurunanModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import {
-  Search,
-  Plus,
-  FileSpreadsheet,
-  FileText,
-  File,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
+import { Plus, FileSpreadsheet, FileText, File, Clock } from "lucide-react";
 
 interface SOTurunan {
   id: string;
   no: number;
   noSO: string;
   soTurunan: string;
-  namaClient: string;
-  tanggalDibuat: string;
-  total: string;
+  namaProyek: string; // renamed from namaClient
+  mob: string; // tanggal MOB (DD-MM-YYYY)
+  demob: string; // tanggal DEMOB (DD-MM-YYYY)
+  nilaiKontrak: string;
+  hpp: string;
+  nilaiProduksi: string;
+  actualPenagihan: string;
+  delayPenagihan: string; // e.g., "229 Hari"
   status: 'Menunggu Review' | 'Approve' | 'Reject';
 }
 
@@ -52,57 +41,71 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
   const [sortField, setSortField] = useState<keyof SOTurunan | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Sample data matching the image
+  // Debug: log current role for this page
+  useEffect(() => {
+    console.log("[SOTurunanDashboard] role:", role);
+  }, [role]);
+  // Sample data matching the provided image
   const [soTurunanData, setSOTurunanData] = useState<SOTurunan[]>([
     {
       id: "1",
       no: 1,
       noSO: "SO001",
-      soTurunan: "SO001.3",
-      namaClient: "PT Adem Ayem",
-      tanggalDibuat: "10-02-2025",
-      total: "Rp 90.000.000",
+      soTurunan: "SO001.12",
+      namaProyek: "Proyek PHE ONWJ",
+      mob: "24-12-2024",
+      demob: "24-01-2025",
+      nilaiKontrak: "Rp 100.000.000",
+      hpp: "Rp 50.000.000",
+      nilaiProduksi: "Rp 75.000.000",
+      actualPenagihan: "Rp 68.000.000",
+      delayPenagihan: "229 Hari",
       status: 'Menunggu Review',
     },
     {
       id: "2",
       no: 2,
       noSO: "SO002",
-      soTurunan: "SO002.1",
-      namaClient: "PT Permata Buana",
-      tanggalDibuat: "15-02-2025",
-      total: "Rp 150.000.000",
+      soTurunan: "SO002.22",
+      namaProyek: "Proyek OSES",
+      mob: "24-12-2024",
+      demob: "24-01-2025",
+      nilaiKontrak: "Rp 90.000.000",
+      hpp: "Rp 45.000.000",
+      nilaiProduksi: "Rp 60.000.000",
+      actualPenagihan: "Rp 50.000.000",
+      delayPenagihan: "229 Hari",
       status: 'Approve',
     },
     {
       id: "3",
       no: 3,
-      noSO: "SO002",
-      soTurunan: "SO002.2",
-      namaClient: "CV Sejahtera",
-      tanggalDibuat: "18-02-2025",
-      total: "Rp 200.000.000",
+      noSO: "SO003",
+      soTurunan: "SO003.124",
+      namaProyek: "Proyek MEDCO",
+      mob: "01-01-2025",
+      demob: "20-01-2025",
+      nilaiKontrak: "Rp 150.000.000",
+      hpp: "Rp 80.000.000",
+      nilaiProduksi: "Rp 130.000.000",
+      actualPenagihan: "Rp 115.000.000",
+      delayPenagihan: "233 Hari",
       status: 'Reject',
     },
     {
       id: "4",
       no: 4,
-      noSO: "SO003",
-      soTurunan: "SO003.23",
-      namaClient: "CV Makmur",
-      tanggalDibuat: "22-02-2025",
-      total: "Rp 175.000.000",
-      status: 'Menunggu Review',
-    },
-    {
-      id: "5",
-      no: 5,
       noSO: "SO004",
-      soTurunan: "SO004.1",
-      namaClient: "PT WorkHome",
-      tanggalDibuat: "25-02-2025",
-      total: "Rp 250.000.000",
-      status: 'Approve',
+      soTurunan: "SO004.21",
+      namaProyek: "Proyek A",
+      mob: "01-01-2025",
+      demob: "01-02-2025",
+      nilaiKontrak: "Rp 120.000.000",
+      hpp: "Rp 60.000.000",
+      nilaiProduksi: "Rp 100.000.000",
+      actualPenagihan: "Rp 85.000.000",
+      delayPenagihan: "252 Hari",
+      status: 'Menunggu Review',
     },
   ]);
 
@@ -117,16 +120,14 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       no: soTurunanData.length + 1,
       noSO: formData.soInduk,
       soTurunan: formData.soTurunan,
-      namaClient: formData.namaClient,
-      tanggalDibuat: new Date(formData.tanggalDibuat).toLocaleDateString(
-        "id-ID",
-        {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }
-      ),
-      total: formData.estimasiSO || "Rp 0",
+      namaProyek: formData.namaProyek || formData.namaClient || "",
+      mob: formData.tanggalMOB ? new Date(formData.tanggalMOB).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "",
+      demob: formData.tanggalDemob ? new Date(formData.tanggalDemob).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "",
+      nilaiKontrak: formData.estimasiSO || "Rp 0",
+      hpp: "Rp 0",
+      nilaiProduksi: "Rp 0",
+      actualPenagihan: "Rp 0",
+      delayPenagihan: "0 Hari",
       status: 'Menunggu Review',
     };
     setSOTurunanData((prev) => [
@@ -141,14 +142,12 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
     setInitialModalData({
       soInduk: item.noSO,
       soTurunan: item.soTurunan,
-      namaClient: item.namaClient,
-      tanggalDibuat: toISODate(item.tanggalDibuat),
-      estimasiSO: item.total,
+      namaProyek: item.namaProyek,
+      tanggalMOB: toISODate(item.mob),
+      tanggalDemob: toISODate(item.demob),
+      estimasiSO: item.nilaiKontrak,
       nomorKontrak: "",
-      namaProyek: "",
       jenisPekerjaan: "",
-      tanggalMOB: "",
-      tanggalDemob: "",
       keterangan: "",
     });
     setIsModalOpen(true);
@@ -193,7 +192,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
     const matchesNoSO = item.noSO
       .toLowerCase()
       .includes(searchNoSO.toLowerCase());
-    const matchesNamaProject = item.namaClient
+    const matchesNamaProject = item.namaProyek
       .toLowerCase()
       .includes(searchNamaProject.toLowerCase());
 
@@ -248,15 +247,13 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
     setInitialModalData({
       soInduk: item.noSO,
       soTurunan: item.soTurunan,
-      namaClient: item.namaClient,
-      tanggalDibuat: toISODate(item.tanggalDibuat),
-      estimasiSO: item.total,
+      namaProyek: item.namaProyek,
+      tanggalMOB: toISODate(item.mob),
+      tanggalDemob: toISODate(item.demob),
+      estimasiSO: item.nilaiKontrak,
       // Fields not present in list remain empty
       nomorKontrak: "",
-      namaProyek: "",
       jenisPekerjaan: "",
-      tanggalMOB: "",
-      tanggalDemob: "",
       keterangan: "",
     });
     setIsModalOpen(true);
@@ -369,8 +366,18 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             </div>
             {/* Removed explicit search and tambah buttons; filtering triggers on change */}
           </div>
+          {role === "operational" && (
+            <div className="flex justify-end">
+              <button
+                onClick={openAddModal}
+                className="inline-flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            </div>
+          )}
         </div>
-
         {/* Quick Export Bar */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
           <div className="flex items-center justify-between">
@@ -398,12 +405,16 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 text-xs">
                 <tr>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">No</th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">No SO</th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">SO Turunan</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nama Client</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Tanggal Dibuat</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Total</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nama Proyek</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">MOB</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">DEMOB</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nilai Kontrak</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">HPP</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nilai Produksi</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">Actual Penagihan</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">Delay Penagihan</th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">Status</th>
                   <th className="px-2 py-2 text-center font-medium text-gray-700">Aksi</th>
                 </tr>
@@ -411,15 +422,45 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
                   <tr key={item.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
-                    <td className="px-2 py-2">{item.no}</td>
                     <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.noSO}</td>
                     <td className="px-2 py-2 text-xs text-gray-900">{item.soTurunan}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.namaClient}</td>
-                    <td className="px-2 py-2 text-xs text-gray-600">{item.tanggalDibuat}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.total}</td>
+                    <td className="px-2 py-2 text-xs text-gray-900">{item.namaProyek}</td>
+                    <td className="px-2 py-2 text-xs text-gray-600">{item.mob}</td>
+                    <td className="px-2 py-2 text-xs text-gray-600">{item.demob}</td>
+                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.nilaiKontrak}</td>
+                    <td className="px-2 py-2 text-xs text-gray-900">{item.hpp}</td>
+                    <td className="px-2 py-2 text-xs text-gray-900">{item.nilaiProduksi}</td>
+                    <td className="px-2 py-2 text-xs text-gray-900">{item.actualPenagihan}</td>
+                    <td className="px-2 py-2 text-xs text-gray-900">{item.delayPenagihan}</td>
                     <td className="px-2 py-2 text-xs"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(item.status)}`}>{item.status}</span></td>
                     <td className="px-2 py-2 text-center">
-                      <button onClick={() => openProcess(item)} className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors">Proses</button>
+                      {role === "operational" && (
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => openProcess(item)}
+                            className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item)}
+                            className="px-2 py-1 bg-rose-600 text-white rounded-lg text-xs hover:bg-rose-700 transition-colors"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      )}
+                      {role === "operational2" && (
+                        <button
+                          onClick={() => openViewModal(item)}
+                          className="px-2 py-1 bg-gray-600 text-white rounded-lg text-xs hover:bg-gray-700 transition-colors"
+                        >
+                          Detail
+                        </button>
+                      )}
+                      {role !== "operational" && role !== "operational2" && (
+                        <button onClick={() => openProcess(item)} className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors">Proses</button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -464,20 +505,28 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             </div>
           </div>
         </div>
-        <SOTurunanModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleAddSOTurunan}
-          readOnly={readOnlyModal}
-          initialData={initialModalData}
-        />
+        {role === "operational" ? (
+          <RequestSOTurunanModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleAddSOTurunan}
+          />
+        ) : (
+          <SOTurunanModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleAddSOTurunan}
+            readOnly={readOnlyModal}
+            initialData={initialModalData}
+          />
+        )}
 
         {/* Delete Confirmation Modal */}
         <ConfirmDeleteModal
           isOpen={deleteModalOpen}
           onClose={() => setDeleteModalOpen(false)}
           onConfirm={handleConfirmDelete}
-          itemName={itemToDelete?.namaClient}
+          itemName={itemToDelete?.namaProyek}
         />
       </div>
     </div>

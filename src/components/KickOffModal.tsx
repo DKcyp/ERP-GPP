@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Calendar, Save, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, Plus, Trash2, Calendar, Loader2 } from 'lucide-react';
 
 interface KickOffModalProps {
   isOpen: boolean;
@@ -14,6 +14,8 @@ export interface KickOffFormData {
   caraPenagihan: string;
   sow: string;
   keterangan: string;
+  transportasi: string;
+  akomodasi: string;
   syaratPenerimaanInvoice: string;
   syaratPenagihanDokumen: string;
   pics: Array<{
@@ -32,12 +34,28 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
     caraPenagihan: '',
     sow: '',
     keterangan: '',
+    transportasi: '',
+    akomodasi: '',
     syaratPenerimaanInvoice: '',
     syaratPenagihanDokumen: '',
     pics: [{ namaPIC: '', divisiPIC: '', noHPPIC: '', emailPIC: '' }]
   });
 
-  const [errors, setErrors] = useState<Partial<KickOffFormData>>({});
+  type PicErrors = { namaPIC?: string; divisiPIC?: string; noHPPIC?: string; emailPIC?: string };
+  type FormErrors = {
+    dokumenKickOff?: string;
+    tanggalMobilisasi?: string;
+    tanggalPenagihan?: string;
+    caraPenagihan?: string;
+    sow?: string;
+    keterangan?: string;
+    transportasi?: string;
+    akomodasi?: string;
+    syaratPenerimaanInvoice?: string;
+    syaratPenagihanDokumen?: string;
+    pics?: PicErrors[];
+  };
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -61,15 +79,22 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
   const handleInputChange = (field: keyof KickOffFormData, value: string | File | null) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    if (errors[field]) {
+    if (field !== 'pics' && errors[field as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
-  const handlePICChange = (index: number, field: string, value: string) => {
+  const handlePICChange = (index: number, field: keyof PicErrors, value: string) => {
     const newPICs = [...formData.pics];
     newPICs[index] = { ...newPICs[index], [field]: value };
     setFormData(prev => ({ ...prev, pics: newPICs }));
+
+    // Clear specific PIC field error when user types
+    if (errors.pics && errors.pics[index] && errors.pics[index][field]) {
+      const newPicErrors = [...errors.pics];
+      newPicErrors[index] = { ...newPicErrors[index], [field]: undefined };
+      setErrors(prev => ({ ...prev, pics: newPicErrors }));
+    }
   };
 
   const addPIC = () => {
@@ -93,9 +118,50 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
     handleInputChange('dokumenKickOff', file);
   };
 
+  const validateAll = (data: KickOffFormData): FormErrors => {
+    const newErrors: FormErrors = {};
+    // Basic email regex
+    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!data.dokumenKickOff) newErrors.dokumenKickOff = 'Dokumen Kick Off wajib diunggah';
+    if (!data.tanggalMobilisasi.trim()) newErrors.tanggalMobilisasi = 'Tanggal mobilisasi wajib diisi';
+    if (!data.tanggalPenagihan.trim()) newErrors.tanggalPenagihan = 'Tanggal penagihan wajib diisi';
+    if (!data.caraPenagihan.trim()) newErrors.caraPenagihan = 'Cara penagihan wajib diisi';
+    if (!data.sow.trim()) newErrors.sow = 'SOW wajib diisi';
+    if (!data.keterangan.trim()) newErrors.keterangan = 'Keterangan wajib diisi';
+    if (!data.transportasi.trim()) newErrors.transportasi = 'Transportasi wajib diisi';
+    if (!data.akomodasi.trim()) newErrors.akomodasi = 'Akomodasi wajib diisi';
+    if (!data.syaratPenerimaanInvoice.trim()) newErrors.syaratPenerimaanInvoice = 'Syarat penerimaan invoice wajib diisi';
+    if (!data.syaratPenagihanDokumen.trim()) newErrors.syaratPenagihanDokumen = 'Syarat penagihan dokumen wajib diisi';
+
+    // PICs validation
+    const picErrs: PicErrors[] = data.pics.map((p) => {
+      const pe: PicErrors = {};
+      if (!p.namaPIC.trim()) pe.namaPIC = 'Nama PIC wajib diisi';
+      if (!p.divisiPIC.trim()) pe.divisiPIC = 'Divisi PIC wajib diisi';
+      if (!p.noHPPIC.trim()) pe.noHPPIC = 'No HP PIC wajib diisi';
+      if (!p.emailPIC.trim()) pe.emailPIC = 'Email PIC wajib diisi';
+      else if (!emailRx.test(p.emailPIC)) pe.emailPIC = 'Format email tidak valid';
+      return pe;
+    });
+    if (picErrs.some(pe => Object.keys(pe).length > 0)) newErrors.pics = picErrs;
+
+    return newErrors;
+  };
+
+  const isFormComplete = useMemo(() => {
+    const errs = validateAll(formData);
+    return Object.keys(errs).length === 0;
+  }, [formData]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    const newErrors = validateAll(formData);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setIsLoading(true);
     
     // Simulate API call
@@ -112,6 +178,8 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
       caraPenagihan: '',
       sow: '',
       keterangan: '',
+      transportasi: '',
+      akomodasi: '',
       syaratPenerimaanInvoice: '',
       syaratPenagihanDokumen: '',
       pics: [{ namaPIC: '', divisiPIC: '', noHPPIC: '', emailPIC: '' }]
@@ -147,12 +215,12 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
 
         {/* Form Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
-          <form onSubmit={handleSubmit} className="p-6">
+          <form id="kickoff-form" onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
               {/* Dokumen Kick Off */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Dokumen Kick Off
+                  Dokumen Kick Off <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center space-x-3">
                   <input
@@ -166,6 +234,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                   <p className="mt-2 text-sm text-green-600">
                     File selected: {formData.dokumenKickOff.name}
                   </p>
+                )}
+                {!formData.dokumenKickOff && errors.dokumenKickOff && (
+                  <p className="mt-1 text-sm text-red-600">{errors.dokumenKickOff}</p>
                 )}
               </div>
 
@@ -189,10 +260,10 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama PIC</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Divisi PIC</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No HP PIC</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Email PIC</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama PIC <span className="text-red-500">*</span></th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Divisi PIC <span className="text-red-500">*</span></th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No HP PIC <span className="text-red-500">*</span></th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Email PIC <span className="text-red-500">*</span></th>
                         <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
                       </tr>
                     </thead>
@@ -207,6 +278,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Nama PIC"
                             />
+                            {errors.pics && errors.pics[index]?.namaPIC && (
+                              <p className="mt-1 text-xs text-red-600">{errors.pics[index]?.namaPIC}</p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             <input
@@ -216,6 +290,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Divisi PIC"
                             />
+                            {errors.pics && errors.pics[index]?.divisiPIC && (
+                              <p className="mt-1 text-xs text-red-600">{errors.pics[index]?.divisiPIC}</p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             <input
@@ -225,6 +302,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="No HP PIC"
                             />
+                            {errors.pics && errors.pics[index]?.noHPPIC && (
+                              <p className="mt-1 text-xs text-red-600">{errors.pics[index]?.noHPPIC}</p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             <input
@@ -234,6 +314,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                               className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Email PIC"
                             />
+                            {errors.pics && errors.pics[index]?.emailPIC && (
+                              <p className="mt-1 text-xs text-red-600">{errors.pics[index]?.emailPIC}</p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             <button
@@ -257,7 +340,7 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                 {/* Tanggal Mobilisasi */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Mobilisasi
+                    Tanggal Mobilisasi <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -268,12 +351,15 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                     />
                     <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   </div>
+                  {errors.tanggalMobilisasi && (
+                    <p className="mt-1 text-sm text-red-600">{errors.tanggalMobilisasi}</p>
+                  )}
                 </div>
 
                 {/* Tanggal Penagihan */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tanggal Penagihan
+                    Tanggal Penagihan <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -284,6 +370,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                     />
                     <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   </div>
+                  {errors.tanggalPenagihan && (
+                    <p className="mt-1 text-sm text-red-600">{errors.tanggalPenagihan}</p>
+                  )}
                 </div>
               </div>
 
@@ -292,7 +381,7 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                 {/* Cara Penagihan */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cara Penagihan
+                    Cara Penagihan <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={formData.caraPenagihan}
@@ -306,7 +395,7 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                 {/* SOW */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    SOW
+                    SOW <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={formData.sow}
@@ -315,6 +404,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                     placeholder="Masukkan SOW..."
                   />
+                  {errors.sow && (
+                    <p className="mt-1 text-sm text-red-600">{errors.sow}</p>
+                  )}
                 </div>
               </div>
 
@@ -323,7 +415,7 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                 {/* Keterangan */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Keterangan
+                    Keterangan <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={formData.keterangan}
@@ -332,12 +424,15 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                     placeholder="Masukkan keterangan..."
                   />
+                  {errors.keterangan && (
+                    <p className="mt-1 text-sm text-red-600">{errors.keterangan}</p>
+                  )}
                 </div>
 
                 {/* Syarat Penerimaan Invoice */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Syarat Penerimaan Invoice
+                    Syarat Penerimaan Invoice <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={formData.syaratPenerimaanInvoice}
@@ -346,13 +441,53 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                     placeholder="Masukkan syarat penerimaan invoice..."
                   />
+                  {errors.syaratPenerimaanInvoice && (
+                    <p className="mt-1 text-sm text-red-600">{errors.syaratPenerimaanInvoice}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Transportasi & Akomodasi (Required) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Transportasi */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Transportasi <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={formData.transportasi}
+                    onChange={(e) => handleInputChange('transportasi', e.target.value)}
+                    rows={3}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${errors.transportasi ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                    placeholder="Detail kebutuhan transportasi proyek..."
+                  />
+                  {errors.transportasi && (
+                    <p className="mt-1 text-sm text-red-600">{errors.transportasi}</p>
+                  )}
+                </div>
+
+                {/* Akomodasi */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Akomodasi <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={formData.akomodasi}
+                    onChange={(e) => handleInputChange('akomodasi', e.target.value)}
+                    rows={3}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${errors.akomodasi ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                    placeholder="Detail kebutuhan akomodasi proyek..."
+                  />
+                  {errors.akomodasi && (
+                    <p className="mt-1 text-sm text-red-600">{errors.akomodasi}</p>
+                  )}
                 </div>
               </div>
 
               {/* Syarat Penagihan Dokumen */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Syarat Penagihan Dokumen
+                  Syarat Penagihan Dokumen <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={formData.syaratPenagihanDokumen}
@@ -361,6 +496,9 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Masukkan syarat penagihan dokumen..."
                 />
+                {errors.syaratPenagihanDokumen && (
+                  <p className="mt-1 text-sm text-red-600">{errors.syaratPenagihanDokumen}</p>
+                )}
               </div>
 
               {/* Document Table */}
@@ -399,10 +537,19 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
             Close
           </button>
           <button
-            type="button"
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 font-medium text-sm"
+            type="submit"
+            form="kickoff-form"
+            disabled={isLoading || !isFormComplete}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
           >
-            Simpan
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <span>Simpan</span>
+            )}
           </button>
         </div>
       </div>

@@ -13,7 +13,7 @@ export interface ProspectFormData {
   catatan: string;
   keterangan: string;
   tanggalUpdate: string;
-  status: "Cold" | "Warm" | "Hot";
+  status: "Cold" | "Warm" | "Hot" | "Close";
 }
 
 interface ProspectModalProps {
@@ -295,6 +295,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, onSave, 
                   <option value="Cold">Cold</option>
                   <option value="Warm">Warm</option>
                   <option value="Hot">Hot</option>
+                  <option value="Close">Close</option>
                 </select>
               </div>
 

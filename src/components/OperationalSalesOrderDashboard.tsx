@@ -180,6 +180,21 @@ const OperationalSalesOrderDashboard: React.FC = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
 
+  // Compute delay penagihan based on DEMOB date (format: DD-MM-YYYY)
+  const computeDelayPenagihan = (demob: string): string => {
+    if (!demob) return "-";
+    const [dd, mm, yyyy] = demob.split("-").map((v) => parseInt(v, 10));
+    if (!dd || !mm || !yyyy) return "-";
+    const demobDate = new Date(yyyy, (mm - 1), dd);
+    const today = new Date();
+    // zero out time
+    demobDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    const diffMs = today.getTime() - demobDate.getTime();
+    const diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+    return `${diffDays} Hari`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -541,9 +556,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">DEMOB</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Kontrak</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">HPP</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Plan Penagihan</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Produksi</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Actual Penagihan</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Delay Penagihan</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -565,9 +580,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                       <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
                       <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nilaiKontrak}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{item.hpp}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.planPenagihan}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{item.nilaiProduksi}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{item.actualPenagihan}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{computeDelayPenagihan(item.demob)}</td>
                     </tr>
                   ))}
                 </tbody>

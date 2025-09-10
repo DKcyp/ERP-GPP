@@ -15,6 +15,10 @@ export interface HPPIndukFormData {
   namaProject: string;
   jenisPekerjaan: string;
   estimasiNilaiKontrak: string;
+  pekerjaanRingkas: Array<{
+    jenisPekerjaan: string;
+    jumlah: string;
+  }>;
   activeTab: string;
   tenagaKerja: Array<{
     tenaga: string;
@@ -85,6 +89,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
     namaProject: '',
     jenisPekerjaan: 'On Call',
     estimasiNilaiKontrak: '',
+    pekerjaanRingkas: [{ jenisPekerjaan: '', jumlah: '' }],
     activeTab: 'Tenaga Kerja',
     tenagaKerja: [{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
     jasa: [{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
@@ -132,6 +137,29 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
+
+  // Handlers for pekerjaanRingkas (summary table below Estimasi Nilai Kontrak)
+  const addPekerjaanRow = () => {
+    setFormData(prev => ({
+      ...prev,
+      pekerjaanRingkas: [...prev.pekerjaanRingkas, { jenisPekerjaan: '', jumlah: '' }],
+    }));
+  };
+
+  const updatePekerjaanRow = (index: number, field: 'jenisPekerjaan' | 'jumlah', value: string) => {
+    setFormData(prev => {
+      const next = [...prev.pekerjaanRingkas];
+      next[index] = { ...next[index], [field]: value };
+      return { ...prev, pekerjaanRingkas: next };
+    });
+  };
+
+  const removePekerjaanRow = (index: number) => {
+    setFormData(prev => {
+      if (prev.pekerjaanRingkas.length === 1) return prev;
+      return { ...prev, pekerjaanRingkas: prev.pekerjaanRingkas.filter((_, i) => i !== index) };
+    });
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<HPPIndukFormData> = {};
@@ -357,6 +385,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
       namaProject: '',
       jenisPekerjaan: 'On Call',
       estimasiNilaiKontrak: '',
+      pekerjaanRingkas: [{ jenisPekerjaan: '', jumlah: '' }],
       activeTab: 'Tenaga Kerja',
       tenagaKerja: [{ tenaga: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
       jasa: [{ jasa: '', tunjangan: '', projectRate: '', hari: '', hargaAwal: '', margin: '', hargaAkhir: '' }],
@@ -537,6 +566,66 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({ isOpen, onClose, onSave }
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   placeholder="Rp 0"
                 />
+              </div>
+
+              {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
+              <div className="lg:col-span-2 mt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                  <button
+                    type="button"
+                    onClick={addPekerjaanRow}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                  >
+                    <Plus className="h-3 w-3" /> Tambah
+                  </button>
+                </div>
+                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jenis Pekerjaan</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {formData.pekerjaanRingkas.map((row, idx) => (
+                        <tr key={idx}>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={row.jenisPekerjaan}
+                              onChange={(e) => updatePekerjaanRow(idx, 'jenisPekerjaan', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="On Call / Project Based / Maintenance"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              min={0}
+                              value={row.jumlah}
+                              onChange={(e) => updatePekerjaanRow(idx, 'jumlah', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="0"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removePekerjaanRow(idx)}
+                              disabled={formData.pekerjaanRingkas.length === 1}
+                              className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 

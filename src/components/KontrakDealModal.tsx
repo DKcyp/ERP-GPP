@@ -13,6 +13,8 @@ export interface KontrakDealFormData {
   id?: string; // Add optional ID for editing
   noKontrak: string;
   namaClient: string;
+  namaPerusahaan: string;
+  alamatPerusahaan: string;
   namaKontrak: string;
   jenisKontrak: string;
   tanggalKontrak: string;
@@ -28,6 +30,8 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
   const initialEmptyFormData: KontrakDealFormData = {
     noKontrak: '',
     namaClient: '',
+    namaPerusahaan: '',
+    alamatPerusahaan: '',
     namaKontrak: '',
     jenisKontrak: '',
     tanggalKontrak: '',
@@ -42,16 +46,19 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
   const [formData, setFormData] = useState<KontrakDealFormData>(initialEmptyFormData);
   const [errors, setErrors] = useState<Partial<KontrakDealFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [clientDropdownOpen, setClientDropdownOpen] = useState(false);
+  const [clientSearch, setClientSearch] = useState("");
 
-  const clientOptions = [
-    'PT Teknologi Maju',
-    'CV Digital Solutions',
-    'PT Industri Kreatif',
-    'UD Berkah Jaya',
-    'PT Global Mandiri',
-    'PT Inovasi Digital',
-    'CV Solusi Terpadu',
-    'PT Mitra Sejahtera'
+  type ClientOption = { name: string; company: string; address: string };
+  const clientOptions: ClientOption[] = [
+    { name: 'PT Teknologi Maju', company: 'PT Teknologi Maju Tbk.', address: 'Jl. Pangeran Antasari No. 12, Jakarta Selatan' },
+    { name: 'CV Digital Solutions', company: 'CV Digital Solutions', address: 'Jl. Setiabudi No. 45, Bandung' },
+    { name: 'PT Industri Kreatif', company: 'PT Industri Kreatif Nusantara', address: 'Jl. Pemuda No. 9, Surabaya' },
+    { name: 'UD Berkah Jaya', company: 'UD Berkah Jaya', address: 'Jl. Kaliurang No. 88, Yogyakarta' },
+    { name: 'PT Global Mandiri', company: 'PT Global Mandiri', address: 'Jl. Gatot Subroto No. 21, Medan' },
+    { name: 'PT Inovasi Digital', company: 'PT Inovasi Digital', address: 'Jl. Gajah Mada No. 77, Jakarta Barat' },
+    { name: 'CV Solusi Terpadu', company: 'CV Solusi Terpadu', address: 'Jl. Imam Bonjol No. 18, Semarang' },
+    { name: 'PT Mitra Sejahtera', company: 'PT Mitra Sejahtera', address: 'Jl. Veteran No. 5, Makassar' }
   ];
 
   const jenisKontrakOptions = [
@@ -71,6 +78,7 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
       document.body.style.overflow = 'hidden';
       // Set form data when modal opens, either from initialData or reset to empty
       setFormData(initialData || initialEmptyFormData);
+      setClientSearch(initialData?.namaClient || "");
       setErrors({}); // Clear errors when opening
     }
 
@@ -283,26 +291,102 @@ const KontrakDealModal: React.FC<KontrakDealModalProps> = ({ isOpen, onClose, on
                 )}
               </div>
 
-              {/* Nama Client */}
+              {/* Nama Client (Searchable Select) */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Nama Client <span className="text-red-500">*</span>
                 </label>
-                <select
-                  value={formData.namaClient}
-                  onChange={(e) => handleInputChange('namaClient', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.namaClient ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                >
-                  <option value="">Pilih Nama Client</option>
-                  {clientOptions.map((client) => (
-                    <option key={client} value={client}>{client}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    onFocus={() => setClientDropdownOpen(true)}
+                    onBlur={() => setTimeout(() => setClientDropdownOpen(false), 150)}
+                    placeholder="Cari / ketik nama client"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
+                      errors.namaClient ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    }`}
+                  />
+                  {clientDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-auto">
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          handleInputChange('namaClient', '');
+                          handleInputChange('namaPerusahaan', '');
+                          handleInputChange('alamatPerusahaan', '');
+                          setClientSearch('');
+                          setClientDropdownOpen(false);
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-xs"
+                      >
+                        Kosongkan pilihan
+                      </button>
+                      {clientOptions
+                        .filter((c) => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
+                        .map((client) => (
+                          <button
+                            key={client.name}
+                            type="button"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                namaClient: client.name,
+                                namaPerusahaan: client.company,
+                                alamatPerusahaan: client.address,
+                              }));
+                              setClientSearch(client.name);
+                              setClientDropdownOpen(false);
+                            }}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-xs"
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-gray-900">{client.name}</span>
+                              <span className="text-[10px] text-gray-500">{client.company} — {client.address}</span>
+                            </div>
+                          </button>
+                        ))}
+                      {clientOptions.filter((c) => c.name.toLowerCase().includes(clientSearch.toLowerCase())).length === 0 && (
+                        <div className="px-3 py-2 text-xs text-gray-500">Tidak ada hasil</div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 {errors.namaClient && (
                   <p className="mt-1 text-xs text-red-600">{errors.namaClient}</p>
                 )}
+                <p className="mt-1 text-[10px] text-gray-500">Tersimpan: {formData.namaClient || '-'}</p>
+              </div>
+
+              {/* Nama Perusahaan */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Nama Perusahaan
+                </label>
+                <input
+                  type="text"
+                  value={formData.namaPerusahaan}
+                  onChange={(e) => handleInputChange('namaPerusahaan', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                  placeholder="Otomatis terisi saat memilih client"
+                />
+              </div>
+
+              {/* Alamat Perusahaan */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Alamat Perusahaan
+                </label>
+                <textarea
+                  value={formData.alamatPerusahaan}
+                  onChange={(e) => handleInputChange('alamatPerusahaan', e.target.value)}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-xs"
+                  placeholder="Otomatis terisi saat memilih client"
+                />
               </div>
 
               {/* Lokasi Pekerjaan */}

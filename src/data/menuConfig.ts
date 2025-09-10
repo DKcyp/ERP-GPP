@@ -75,6 +75,27 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    {
+      title: "Man Power",
+      icon: "Users",
+      items: [
+        {
+          title: "Man Power",
+          icon: "User",
+          path: "/operational/man-power/man-power",
+        },
+        {
+          title: "Man Power Plan",
+          icon: "Calendar",
+          path: "/operational/man-power/plan",
+        },
+        {
+          title: "Pengajuan Pegawai Baru",
+          icon: "UserPlus",
+          path: "/operational/man-power/pengajuan-pegawai-baru",
+        },
+      ],
+    },
     // Purchase Request for non-procon roles
     ...(role !== "procon"
       ? [
@@ -103,14 +124,22 @@ const createGeneralMenu = (role: string): MenuSection => ({
             title: "Purchase Request",
             icon: "ShoppingCart",
             items: [
-              { title: "Approval Purchase Request", icon: "CheckCircle", path: "/procon/purchase-request/approval" },
+              {
+                title: "Approval Purchase Request",
+                icon: "CheckCircle",
+                path: "/procon/purchase-request/approval",
+              },
             ],
           },
           {
             title: "Purchase Order",
             icon: "FileBox",
             items: [
-              { title: "Approval Purchase Order", icon: "CheckCircle", path: "/procon/purchase-order/approval" },
+              {
+                title: "Approval Purchase Order",
+                icon: "CheckCircle",
+                path: "/procon/purchase-order/approval",
+              },
             ],
           },
         ]
@@ -226,12 +255,6 @@ export const marketingMenu: MenuSection[] = [
     directPath: "/marketing/prospect/dashboard",
   },
   {
-    title: "SO Turunan",
-    icon: "GitBranch",
-    items: [],
-    directPath: "/operational3/sales-order/so-turunan",
-  },
-  {
     title: "Penawaran",
     icon: "DollarSign",
     items: [
@@ -244,6 +267,17 @@ export const marketingMenu: MenuSection[] = [
         title: "Penawaran Tender",
         icon: "Award",
         path: "/marketing/penawaran/tender",
+      },
+    ],
+  },
+  {
+    title: "Master",
+    icon: "Database",
+    items: [
+      {
+        title: "Master Data Customer",
+        icon: "Users",
+        path: "/marketing/master/master-data-customer",
       },
     ],
   },
@@ -282,6 +316,28 @@ export const marketingMenu: MenuSection[] = [
     icon: "FileText",
     items: [],
     directPath: "/marketing/report-kontrak",
+  },
+  {
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Marketing",
+        icon: "BarChart3",
+        path: "/marketing/monitoring/marketing",
+      },
+    ],
+  },
+  {
+    title: "CSI",
+    icon: "Smile",
+    items: [
+      {
+        title: "Master CSI",
+        icon: "Database",
+        path: "/marketing/csi/master",
+      },
+    ],
   },
   createGeneralMenu("marketing"),
 ];
@@ -441,24 +497,24 @@ export const operationalMenu: MenuSection[] = [
       },
     ],
   },
+  // {
+  //   title: "Man Power",
+  //   icon: "Users",
+  //   items: [
+  //     {
+  //       title: "Man Power",
+  //       icon: "User",
+  //       path: "/operational/man-power/man-power",
+  //     },
+  //     {
+  //       title: "Man Power Plan",
+  //       icon: "Calendar",
+  //       path: "/operational/man-power/plan",
+  //     },
+  //   ],
+  // },
   {
-    title: "Man Power",
-    icon: "Users",
-    items: [
-      {
-        title: "Man Power",
-        icon: "User",
-        path: "/operational/man-power/man-power",
-      },
-      {
-        title: "Man Power Plan",
-        icon: "Calendar",
-        path: "/operational/man-power/plan",
-      },
-    ],
-  },
-  {
-    title: "HPP Turunan",
+    title: "HPP",
     icon: "Calculator",
     items: [],
     directPath: "/operational/hpp-turunan/dashboard",
@@ -631,9 +687,35 @@ export const hrdMenu: MenuSection[] = [
         icon: "Banknote",
         path: "/hrd/pegawai/master-umr",
       },
+      // {
+      //   title: "Approve PR Training",
+      //   icon: "GraduationCap",
+      //   path: "/hrd/pegawai/pr-training",
+      // },
+    ],
+  },
+  {
+    title: "Training",
+    icon: "GraduationCap",
+    items: [
       {
-        title: "Approve PR Training",
-        icon: "GraduationCap",
+        title: "List Training",
+        icon: "List",
+        path: "/hrd/training/list",
+      },
+      {
+        title: "Training Need Analysis (TNA)",
+        icon: "ClipboardList",
+        path: "/hrd/training/tna",
+      },
+      {
+        title: "Matrix Training",
+        icon: "Grid",
+        path: "/qhse/monitoring-personnel/training-matrix",
+      },
+      {
+        title: "PR Training",
+        icon: "ShoppingCart",
         path: "/hrd/pegawai/pr-training",
       },
     ],
@@ -643,13 +725,31 @@ export const hrdMenu: MenuSection[] = [
     icon: "Wallet",
     items: [
       { title: "Daftar Gaji", icon: "FileText", path: "/hrd/gaji/daftar" },
-      { title: "Pengajian", icon: "Calculator", path: "/hrd/gaji/pengajian" },
-      { title: "Potongan Gaji", icon: "Scissors", path: "/hrd/gaji/potongan" },
       {
-        title: "History Peminjaman",
-        icon: "History",
-        path: "/hrd/gaji/history-peminjaman",
+        title: "Earning/Income",
+        icon: "Calculator",
+        path: "/hrd/gaji/pengajian",
       },
+      {
+        title: "Deduct/Pengurangan",
+        icon: "Scissors",
+        path: "/hrd/gaji/potongan",
+      },
+      {
+        title: "Pendebetan",
+        icon: "MinusCircle",
+        path: "/hrd/gaji/pendebetan",
+      },
+      {
+        title: "Payslip",
+        icon: "FileSignature",
+        path: "/hrd/gaji/payslip",
+      },
+      // {
+      //   title: "History Peminjaman",
+      //   icon: "History",
+      //   path: "/hrd/gaji/history-peminjaman",
+      // },
       {
         title: "Daftar Peminjam Karyawan",
         icon: "UsersRound",
@@ -662,7 +762,7 @@ export const hrdMenu: MenuSection[] = [
     icon: "CalendarCheck",
     items: [
       {
-        title: "Absensi Teknisi",
+        title: "Absensi",
         icon: "CalendarDays",
         path: "/hrd/absensi/teknisi",
       },
@@ -670,6 +770,11 @@ export const hrdMenu: MenuSection[] = [
         title: "Approval Timesheet",
         icon: "CheckCircle",
         path: "/hrd/absensi/approval-timesheet",
+      },
+      {
+        title: "Kalender",
+        icon: "Calendar",
+        path: "/hrd/absensi/kalender",
       },
     ],
   },
@@ -1231,6 +1336,12 @@ export const managementMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Management Monitoring Marketing",
+    icon: "Monitor",
+    items: [],
+    directPath: "/management/monitoring/marketing",
+  },
+  {
     title: "Approve Kontrak",
     icon: "FileSignature", // Using FileSignature for contract approval
     items: [],
@@ -1594,7 +1705,7 @@ export const proconMenu: MenuSection[] = [
     items: [],
     directPath: "/procon/sales-order/dashboard",
   },
-  
+
   {
     title: "Proforma Invoice",
     icon: "ReceiptText",
@@ -1644,21 +1755,57 @@ export const proconMenu: MenuSection[] = [
     title: "Marketing",
     icon: "Megaphone",
     items: [
-      { title: "Kontrak Deal", icon: "FileCheck", path: "/marketing/kontrak-deal/dashboard" },
-      { title: "HPP Induk", icon: "Calculator", path: "/marketing/hpp-induk/dashboard" },
-      { title: "Sales Order", icon: "ShoppingCart", path: "/marketing/sales-order/dashboard" },
-      { title: "Kick Off Meeting", icon: "Users", path: "/marketing/kick-off-meeting" },
-      { title: "Insentif Marketing", icon: "Award", path: "/marketing/insentif" },
+      {
+        title: "Kontrak Deal",
+        icon: "FileCheck",
+        path: "/marketing/kontrak-deal/dashboard",
+      },
+      {
+        title: "HPP Induk",
+        icon: "Calculator",
+        path: "/marketing/hpp-induk/dashboard",
+      },
+      {
+        title: "Sales Order",
+        icon: "ShoppingCart",
+        path: "/marketing/sales-order/dashboard",
+      },
+      {
+        title: "Kick Off Meeting",
+        icon: "Users",
+        path: "/marketing/kick-off-meeting",
+      },
+      {
+        title: "Insentif Marketing",
+        icon: "Award",
+        path: "/marketing/insentif",
+      },
     ],
   },
   {
     title: "Operasional",
     icon: "Settings",
     items: [
-      { title: "HPP Turunan", icon: "Calculator", path: "/operational/hpp-turunan/dashboard" },
-      { title: "Proses Produksi", icon: "Cog", path: "/operational/produksi/proses" },
-      { title: "Timesheet", icon: "Clock", path: "/operational/timesheet/dashboard" },
-      { title: "Report", icon: "FileText", path: "/operational/produksi/dashboard" },
+      {
+        title: "HPP Turunan",
+        icon: "Calculator",
+        path: "/operational/hpp-turunan/dashboard",
+      },
+      {
+        title: "Proses Produksi",
+        icon: "Cog",
+        path: "/operational/produksi/proses",
+      },
+      {
+        title: "Timesheet",
+        icon: "Clock",
+        path: "/operational/timesheet/dashboard",
+      },
+      {
+        title: "Report",
+        icon: "FileText",
+        path: "/operational/produksi/dashboard",
+      },
     ],
   },
   {

@@ -17,6 +17,12 @@ export interface PotonganGajiFormData {
     namaPotongan: string;
     nominal: string;
   }>;
+  // Specific named deductions
+  bpjsTk?: string;
+  bpjsKes?: string;
+  pph21?: string;
+  ca?: string;
+  potonganMess?: string;
 }
 
 const PotonganGajiModal: React.FC<PotonganGajiModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -26,7 +32,12 @@ const PotonganGajiModal: React.FC<PotonganGajiModalProps> = ({ isOpen, onClose, 
     jenisPegawai: '',
     periode: '',
     keterangan: '',
-    potonganItems: [{ namaPotongan: '', nominal: '' }]
+    potonganItems: [{ namaPotongan: '', nominal: '' }],
+    bpjsTk: '',
+    bpjsKes: '',
+    pph21: '',
+    ca: '',
+    potonganMess: ''
   });
 
   const [errors, setErrors] = useState<Partial<PotonganGajiFormData>>({});
@@ -124,6 +135,11 @@ const PotonganGajiModal: React.FC<PotonganGajiModalProps> = ({ isOpen, onClose, 
     setFormData(prev => ({ ...prev, potonganItems: newPotongan }));
   };
 
+  const formatRp = (value: string) => {
+    const numeric = value.replace(/[^\d]/g, '');
+    return numeric ? `Rp ${parseInt(numeric, 10).toLocaleString('id-ID')}` : '';
+  };
+
   const addPotongan = () => {
     setFormData(prev => ({
       ...prev,
@@ -162,7 +178,12 @@ const PotonganGajiModal: React.FC<PotonganGajiModalProps> = ({ isOpen, onClose, 
       jenisPegawai: '',
       periode: '',
       keterangan: '',
-      potonganItems: [{ namaPotongan: '', nominal: '' }]
+      potonganItems: [{ namaPotongan: '', nominal: '' }],
+      bpjsTk: '',
+      bpjsKes: '',
+      pph21: '',
+      ca: '',
+      potonganMess: ''
     });
     setErrors({});
     onClose();
@@ -218,6 +239,60 @@ const PotonganGajiModal: React.FC<PotonganGajiModalProps> = ({ isOpen, onClose, 
                   <p className="mt-1 text-sm text-red-600">{errors.kodePegawai}</p>
                 )}
               </div>
+
+          {/* Specific Deductions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">BPJS TK</label>
+              <input
+                type="text"
+                value={formData.bpjsTk || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, bpjsTk: formatRp(e.target.value) }))}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Rp 0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">BPJS KES</label>
+              <input
+                type="text"
+                value={formData.bpjsKes || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, bpjsKes: formatRp(e.target.value) }))}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Rp 0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">PPH21</label>
+              <input
+                type="text"
+                value={formData.pph21 || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, pph21: formatRp(e.target.value) }))}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Rp 0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">CA</label>
+              <input
+                type="text"
+                value={formData.ca || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, ca: formatRp(e.target.value) }))}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Rp 0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Potongan Mess</label>
+              <input
+                type="text"
+                value={formData.potonganMess || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, potonganMess: formatRp(e.target.value) }))}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Rp 0"
+              />
+            </div>
+          </div>
 
               {/* Nama Pegawai */}
               <div>

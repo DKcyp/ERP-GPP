@@ -130,6 +130,12 @@ import GeneralPertanggungJawabanVoucherDashboard from "./GeneralPertanggungJawab
 import GeneralPengajuanCutiDashboard from "./GeneralPengajuanCutiDashboard"; // NEW: Pengajuan Cuti
 import GeneralApproveCutiDashboard from "./GeneralApproveCutiDashboard"; // NEW: Approve Cuti
 import PegawaiListCutiDashboard from "./PegawaiListCutiDashboard"; // NEW: HRD Pegawai List Cuti
+import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD List Training
+import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
+import PendebetanDashboard from "./PendebetanDashboard";
+import PayslipDashboard from "./PayslipDashboard";
+import CalendarAbsensiDashboard from "./CalendarAbsensiDashboard";
+import PengajuanPegawaiBaruDashboard from "./PengajuanPegawaiBaruDashboard";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -245,6 +251,11 @@ import GAIBPTroubleshootSaranaKerjaDashboard from "./GAIBPTroubleshootSaranaKerj
 import GAIBPPersediaanATKDashboard from "./GAIBPPersediaanATKDashboard";
 import GAIBPKebersihanLingkunganDashboard from "./GAIBPKebersihanLingkunganDashboard";
 import GeneralUtilityDashboard from "./GeneralUtilityDashboard";
+import MasterDataCustomerDashboard from "./MasterDataCustomerDashboard";
+import MonitoringMarketingDashboard from "./MonitoringMarketingDashboard";
+import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarketingDashboard";
+import CSIMasterDashboard from "./CSIMasterDashboard";
+import CSIPenilaianFormDashboard from "./CSIPenilaianFormDashboard";
 
 import {
   BarChart3,
@@ -322,6 +333,18 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
   // Route to specific pages based on currentPage
   const renderPageContent = () => {
     console.log("Dashboard: Current page received:", currentPage);
+    // Management Routes
+    if (currentPage === "/management/monitoring/marketing") {
+      return <ManagementMonitoringMarketingDashboard />;
+    }
+    // Marketing CSI
+    if (currentPage === "/marketing/csi/master") {
+      return <CSIMasterDashboard />;
+    }
+    if (currentPage === "/marketing/csi/form") {
+      return <CSIPenilaianFormDashboard />;
+    }
+
     // Gudang Routes
     if (currentPage === "/gudang/dashboard") {
       return <GudangMainDashboard />;
@@ -535,6 +558,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/pengadaan/penerimaan/gudang") {
       return <GudangDashboard />;
     }
+    // Operational Man Power - Pengajuan Pegawai Baru
+    if (currentPage === "/operational/man-power/pengajuan-pegawai-baru") {
+      return <PengajuanPegawaiBaruDashboard />;
+    }
     // Pengadaan General Routes
     if (currentPage === "/pengadaan/general/kpi/dashboard") {
       return <DashboardKPIDashboard />;
@@ -633,6 +660,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/pegawai/list-cuti") {
       return <PegawaiListCutiDashboard />;
     }
+    if (currentPage === "/hrd/training/list") {
+      return <HRDTrainingListDashboard />;
+    }
+    if (currentPage === "/hrd/training/tna") {
+      return <HRDTNADashboard />;
+    }
+
     if (currentPage === "/hrd/gaji/daftar") {
       return <DaftarGajiDashboard />;
     }
@@ -641,6 +675,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/gaji/potongan") {
       return <PotonganGajiDashboard />;
+    }
+    if (currentPage === "/hrd/gaji/pendebetan") {
+      return <PendebetanDashboard />;
+    }
+    if (currentPage === "/hrd/gaji/payslip") {
+      return <PayslipDashboard />;
     }
     if (currentPage === "/hrd/gaji/history-peminjaman") {
       return <HistoryPeminjamanDashboard />;
@@ -653,6 +693,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/absensi/approval-timesheet") {
       return <ApprovalTimesheetDashboard />;
+    }
+    if (currentPage === "/hrd/absensi/kalender") {
+      return <CalendarAbsensiDashboard />;
     }
     if (currentPage === "/hrd/penilaian/daftar") {
       return <DaftarPenilaianDashboard />;
@@ -733,6 +776,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/penawaran/tender") {
       return <PenawaranTenderDashboard />;
+    }
+    if (currentPage === "/marketing/master/master-data-customer") {
+      return <MasterDataCustomerDashboard />;
+    }
+    if (currentPage === "/marketing/monitoring/marketing") {
+      return <MonitoringMarketingDashboard />;
     }
     if (currentPage === "/marketing/kontrak-deal/dashboard") {
       return <KontrakDealDashboard />;
@@ -1062,7 +1111,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <OperationalSalesOrderDashboard />;
     }
     if (currentPage === "/operational/sales-order/so-turunan") {
-      return <SOTurunanDashboard />;
+      return <SOTurunanDashboard role="operational" />;
     }
     if (currentPage === "/operational2/sales-order/so-turunan") {
       return <SOTurunanDashboard role="operational2" />;

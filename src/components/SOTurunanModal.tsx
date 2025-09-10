@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { X, Calendar, Save, Loader2, ChevronDown, Plus, Trash2 } from "lucide-react";
+import {
+  X,
+  Calendar,
+  Save,
+  Loader2,
+  ChevronDown,
+  Plus,
+  Trash2,
+} from "lucide-react";
 
 interface SOTurunanModalProps {
   isOpen: boolean;
@@ -21,6 +29,8 @@ export interface SOTurunanFormData {
   tanggalDemob: string;
   estimasiSO: string;
   keterangan: string;
+  jumlahQty?: string;
+  pekerjaanRingkas?: Array<{ jenisPekerjaan: string; jumlah: string }>;
 }
 
 const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
@@ -42,6 +52,8 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
     tanggalDemob: "",
     estimasiSO: "",
     keterangan: "",
+    jumlahQty: "",
+    pekerjaanRingkas: [{ jenisPekerjaan: "", jumlah: "" }],
   });
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
@@ -76,22 +88,68 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
   const [tenagaKerja, setTenagaKerja] = useState<any[]>([
-    { tenaga: "Teknisi", tunjangan: "Uang Makan", projectRate: "250000", hari: "5", margin: "10", hargaAkhir: "1375000" },
+    {
+      tenaga: "Teknisi",
+      tunjangan: "Uang Makan",
+      projectRate: "250000",
+      hari: "5",
+      unit: "Hari",
+      margin: "10",
+      hargaAkhir: "1375000",
+    },
   ]);
   const [jasa, setJasa] = useState<any[]>([
-    { jasa: "Maintenance", tunjangan: "Transport", projectRate: "500000", hari: "2", margin: "15", hargaAkhir: "1150000" },
+    {
+      jasa: "Maintenance",
+      tunjangan: "Transport",
+      projectRate: "500000",
+      hari: "2",
+      unit: "Hari",
+      margin: "15",
+      hargaAkhir: "1150000",
+    },
   ]);
   const [alat, setAlat] = useState<any[]>([
-    { alat: "Forklift", jumlah: "1", hari: "2", satuan: "unit", hargaSatuan: "1500000", margin: "5", hargaAkhir: "1575000" },
+    {
+      alat: "Forklift",
+      jumlah: "1",
+      hari: "2",
+      satuan: "unit",
+      hargaSatuan: "1500000",
+      margin: "5",
+      hargaAkhir: "1575000",
+    },
   ]);
   const [barang, setBarang] = useState<any[]>([
-    { namaBarang: "Kabel NYA", jumlah: "100", hari: "1", satuan: "meter", hargaSatuan: "5000", margin: "10", hargaAkhir: "550000" },
+    {
+      namaBarang: "Kabel NYA",
+      jumlah: "100",
+      hari: "1",
+      satuan: "meter",
+      hargaSatuan: "5000",
+      margin: "10",
+      hargaAkhir: "550000",
+    },
   ]);
   const [mobDemob, setMobDemob] = useState<any[]>([
-    { namaTransportasi: "Truck", tunjangan: "-", projectRate: "200000", hari: "1", margin: "5", hargaAkhir: "210000" },
+    {
+      namaTransportasi: "Truck",
+      tunjangan: "-",
+      projectRate: "200000",
+      hari: "1",
+      margin: "5",
+      hargaAkhir: "210000",
+    },
   ]);
   const [biayaLainLain, setBiayaLainLain] = useState<any[]>([
-    { namaBiaya: "BBM", tunjangan: "-", projectRate: "300000", hari: "1", margin: "5", hargaAkhir: "315000" },
+    {
+      namaBiaya: "BBM",
+      tunjangan: "-",
+      projectRate: "300000",
+      hari: "1",
+      margin: "5",
+      hargaAkhir: "315000",
+    },
   ]);
 
   // Options for datalists
@@ -101,14 +159,20 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
   const alatOptions = ["Crane", "Forklift", "Truck", "Komputer"];
   const barangOptions = ["Kabel NYA", "Panel", "Pipa", "Baut"];
 
-  const updateRow = (setter: any, index: number, field: string, value: string) => {
+  const updateRow = (
+    setter: any,
+    index: number,
+    field: string,
+    value: string
+  ) => {
     setter((prev: any[]) => {
       const next = [...prev];
       next[index] = { ...next[index], [field]: value };
       return next;
     });
   };
-  const addRow = (setter: any, empty: any) => setter((prev: any[]) => [...prev, empty]);
+  const addRow = (setter: any, empty: any) =>
+    setter((prev: any[]) => [...prev, empty]);
   const removeRow = (setter: any, data: any[]) => {
     if (data.length === 1) return;
     setter((prev: any[]) => prev.slice(0, -1));
@@ -217,6 +281,30 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
     }
   };
 
+  // Ringkasan pekerjaan handlers
+  const addPekerjaanRow = () => {
+    if (readOnly) return;
+    setFormData(prev => ({
+      ...prev,
+      pekerjaanRingkas: [...(prev.pekerjaanRingkas || []), { jenisPekerjaan: "", jumlah: "" }],
+    }));
+  };
+  const updatePekerjaanRow = (idx: number, field: "jenisPekerjaan" | "jumlah", value: string) => {
+    setFormData(prev => {
+      const rows = [...(prev.pekerjaanRingkas || [])];
+      rows[idx] = { ...rows[idx], [field]: value } as any;
+      return { ...prev, pekerjaanRingkas: rows };
+    });
+  };
+  const removePekerjaanRow = (idx: number) => {
+    if (readOnly) return;
+    setFormData(prev => {
+      const rows = prev.pekerjaanRingkas || [];
+      if (rows.length <= 1) return prev;
+      return { ...prev, pekerjaanRingkas: rows.filter((_, i) => i !== idx) };
+    });
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -228,7 +316,11 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
           <h2 className="text-2xl font-bold text-gray-900">
-            {readOnly ? "Detail SO Turunan" : isProcess ? "Proses SO Turunan" : "Entry SO Turunan"}
+            {readOnly
+              ? "Detail SO Turunan"
+              : isProcess
+              ? "Proses SO Turunan"
+              : "Entry SO Turunan"}
           </h2>
           <button
             onClick={onClose}
@@ -276,7 +368,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 </label>
                 <select
                   value={formData.jenisPekerjaan}
-                  onChange={(e) => handleInputChange("jenisPekerjaan", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("jenisPekerjaan", e.target.value)
+                  }
                   disabled={readOnly || isProcess}
                   className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
@@ -297,7 +391,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 <input
                   type="text"
                   value={formData.soTurunan}
-                  onChange={(e) => handleInputChange("soTurunan", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("soTurunan", e.target.value)
+                  }
                   disabled={readOnly || isProcess}
                   className={`w-full px-2 py-2 text-xs border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.soTurunan
@@ -322,7 +418,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                   <input
                     type="date"
                     value={formData.tanggalMOB}
-                    onChange={(e) => handleInputChange("tanggalMOB", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalMOB", e.target.value)
+                    }
                     disabled={readOnly}
                     className="w-full px-2 py-2 pr-8 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="dd/mm/yyyy"
@@ -339,7 +437,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 <input
                   type="text"
                   value={formData.nomorKontrak}
-                  onChange={(e) => handleInputChange("nomorKontrak", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("nomorKontrak", e.target.value)
+                  }
                   disabled={readOnly || isProcess}
                   className={`w-full px-2 py-2 text-xs border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.nomorKontrak
@@ -364,7 +464,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                   <input
                     type="date"
                     value={formData.tanggalDemob}
-                    onChange={(e) => handleInputChange("tanggalDemob", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("tanggalDemob", e.target.value)
+                    }
                     disabled={readOnly}
                     className="w-full px-2 py-2 pr-8 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="dd/mm/yyyy"
@@ -381,7 +483,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 <input
                   type="text"
                   value={formData.namaProyek}
-                  onChange={(e) => handleInputChange("namaProyek", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namaProyek", e.target.value)
+                  }
                   disabled={readOnly || isProcess}
                   className={`w-full px-2 py-2 text-xs border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaProyek
@@ -405,7 +509,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 <input
                   type="text"
                   value={formData.estimasiSO}
-                  onChange={(e) => handleInputChange("estimasiSO", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("estimasiSO", e.target.value)
+                  }
                   disabled={readOnly}
                   className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Rp 0"
@@ -419,7 +525,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 </label>
                 <select
                   value={formData.namaClient}
-                  onChange={(e) => handleInputChange("namaClient", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namaClient", e.target.value)
+                  }
                   disabled={readOnly || isProcess}
                   className={`w-full px-2 py-2 text-xs border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                     errors.namaClient
@@ -448,12 +556,80 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 </label>
                 <textarea
                   value={formData.keterangan}
-                  onChange={(e) => handleInputChange("keterangan", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("keterangan", e.target.value)
+                  }
                   disabled={readOnly}
                   rows={3}
                   className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Masukkan keterangan..."
                 />
+              </div>
+
+              {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
+              <div className="lg:col-span-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                  {!readOnly && (
+                    <button
+                      type="button"
+                      onClick={addPekerjaanRow}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                    >
+                      Tambah
+                    </button>
+                  )}
+                </div>
+                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jenis Pekerjaan</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {(formData.pekerjaanRingkas || []).map((row, idx) => (
+                        <tr key={idx}>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={row.jenisPekerjaan}
+                              onChange={(e) => updatePekerjaanRow(idx, "jenisPekerjaan", e.target.value)}
+                              disabled={readOnly}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                              placeholder="On Call / Project Based / Maintenance"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              min={0}
+                              value={row.jumlah}
+                              onChange={(e) => updatePekerjaanRow(idx, "jumlah", e.target.value)}
+                              disabled={readOnly}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                              placeholder="0"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            {!readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => removePekerjaanRow(idx)}
+                                disabled={(formData.pekerjaanRingkas || []).length === 1}
+                                className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Hapus
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
             </div>
@@ -466,7 +642,11 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-t-md ${activeTab === tab ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'}`}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-t-md ${
+                      activeTab === tab
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                    }`}
                   >
                     {tab}
                   </button>
@@ -482,7 +662,8 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                         <th className="px-2 py-2 text-left">Tenaga</th>
                         <th className="px-2 py-2 text-left">Tunjangan</th>
                         <th className="px-2 py-2 text-left">Project Rate</th>
-                        <th className="px-2 py-2 text-left">Hari</th>
+                        <th className="px-2 py-2 text-left">Unit/Hari</th>
+                        <th className="px-2 py-2 text-left">Satuan</th>
                         <th className="px-2 py-2 text-left">Margin</th>
                         <th className="px-2 py-2 text-left">Harga Akhir</th>
                         <th className="px-2 py-2 text-left">Aksi</th>
@@ -492,23 +673,142 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                       {tenagaKerja.map((row, idx) => (
                         <tr key={idx} className="border-t">
                           <td className="px-2 py-2">
-                            <input value={row.tenaga} onChange={(e) => updateRow(setTenagaKerja, idx, 'tenaga', e.target.value)} list={`tenagaOptions-${idx}`} className="w-full px-2 py-1 border border-gray-200 rounded" />
-                            <datalist id={`tenagaOptions-${idx}`}>{tenagaOptions.map(o => <option key={o} value={o} />)}</datalist>
+                            <input
+                              value={row.tenaga}
+                              onChange={(e) =>
+                                updateRow(
+                                  setTenagaKerja,
+                                  idx,
+                                  "tenaga",
+                                  e.target.value
+                                )
+                              }
+                              list={`tenagaOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`tenagaOptions-${idx}`}>
+                              {tenagaOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-2 py-2">
-                            <input value={row.tunjangan} onChange={(e) => updateRow(setTenagaKerja, idx, 'tunjangan', e.target.value)} list={`tunjanganOptions-${idx}`} className="w-full px-2 py-1 border border-gray-200 rounded" />
-                            <datalist id={`tunjanganOptions-${idx}`}>{tunjanganOptions.map(o => <option key={o} value={o} />)}</datalist>
+                            <input
+                              value={row.tunjangan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setTenagaKerja,
+                                  idx,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              list={`tunjanganOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`tunjanganOptions-${idx}`}>
+                              {tunjanganOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-2"><input value={row.projectRate} onChange={(e) => updateRow(setTenagaKerja, idx, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hari} onChange={(e) => updateRow(setTenagaKerja, idx, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.margin} onChange={(e) => updateRow(setTenagaKerja, idx, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><button type="button" onClick={() => removeRow(setTenagaKerja, tenagaKerja)} className="px-2 py-1 bg-red-600 text-white rounded text-xs"><Trash2 className="h-3 w-3" /></button></td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.projectRate}
+                              onChange={(e) =>
+                                updateRow(
+                                  setTenagaKerja,
+                                  idx,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(
+                                  setTenagaKerja,
+                                  idx,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.unit}
+                              onChange={(e) =>
+                                updateRow(
+                                  setTenagaKerja,
+                                  idx,
+                                  "unit",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(
+                                  setTenagaKerja,
+                                  idx,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeRow(setTenagaKerja, tenagaKerja)
+                              }
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2"><button type="button" onClick={() => addRow(setTenagaKerja, { tenaga: "", tunjangan: "", projectRate: "", hari: "", margin: "", hargaAkhir: "" })} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Plus className="h-3 w-3" />Tambah Baris</button></div>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setTenagaKerja, {
+                          tenaga: "",
+                          tunjangan: "",
+                          projectRate: "",
+                          hari: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -531,23 +831,116 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                       {jasa.map((row, idx) => (
                         <tr key={idx} className="border-t">
                           <td className="px-2 py-2">
-                            <input value={row.jasa} onChange={(e) => updateRow(setJasa, idx, 'jasa', e.target.value)} list={`jasaOptions-${idx}`} className="w-full px-2 py-1 border border-gray-200 rounded" />
-                            <datalist id={`jasaOptions-${idx}`}>{jasaOptions.map(o => <option key={o} value={o} />)}</datalist>
+                            <input
+                              value={row.jasa}
+                              onChange={(e) =>
+                                updateRow(setJasa, idx, "jasa", e.target.value)
+                              }
+                              list={`jasaOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`jasaOptions-${idx}`}>
+                              {jasaOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
                           </td>
                           <td className="px-2 py-2">
-                            <input value={row.tunjangan} onChange={(e) => updateRow(setJasa, idx, 'tunjangan', e.target.value)} list={`tunjanganJasaOptions-${idx}`} className="w-full px-2 py-1 border border-gray-200 rounded" />
-                            <datalist id={`tunjanganJasaOptions-${idx}`}>{tunjanganOptions.map(o => <option key={o} value={o} />)}</datalist>
+                            <input
+                              value={row.tunjangan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setJasa,
+                                  idx,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              list={`tunjanganJasaOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`tunjanganJasaOptions-${idx}`}>
+                              {tunjanganOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-2"><input value={row.projectRate} onChange={(e) => updateRow(setJasa, idx, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hari} onChange={(e) => updateRow(setJasa, idx, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.margin} onChange={(e) => updateRow(setJasa, idx, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><button type="button" onClick={() => removeRow(setJasa, jasa)} className="px-2 py-1 bg-red-600 text-white rounded text-xs"><Trash2 className="h-3 w-3" /></button></td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.projectRate}
+                              onChange={(e) =>
+                                updateRow(
+                                  setJasa,
+                                  idx,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(setJasa, idx, "hari", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(
+                                  setJasa,
+                                  idx,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(setJasa, jasa)}
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2"><button type="button" onClick={() => addRow(setJasa, { jasa: "", tunjangan: "", projectRate: "", hari: "", margin: "", hargaAkhir: "" })} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Plus className="h-3 w-3" />Tambah Baris</button></div>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setJasa, {
+                          jasa: "",
+                          tunjangan: "",
+                          projectRate: "",
+                          hari: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -571,21 +964,118 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                       {alat.map((row, idx) => (
                         <tr key={idx} className="border-t">
                           <td className="px-2 py-2">
-                            <input value={row.alat} onChange={(e) => updateRow(setAlat, idx, 'alat', e.target.value)} list={`alatOptions-${idx}`} className="w-full px-2 py-1 border border-gray-200 rounded" />
-                            <datalist id={`alatOptions-${idx}`}>{alatOptions.map(o => <option key={o} value={o} />)}</datalist>
+                            <input
+                              value={row.alat}
+                              onChange={(e) =>
+                                updateRow(setAlat, idx, "alat", e.target.value)
+                              }
+                              list={`alatOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`alatOptions-${idx}`}>
+                              {alatOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-2"><input value={row.jumlah} onChange={(e) => updateRow(setAlat, idx, 'jumlah', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hari} onChange={(e) => updateRow(setAlat, idx, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.satuan} onChange={(e) => updateRow(setAlat, idx, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaSatuan} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><input value={row.margin} onChange={(e) => updateRow(setAlat, idx, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><button type="button" onClick={() => removeRow(setAlat, alat)} className="px-2 py-1 bg-red-600 text-white rounded text-xs"><Trash2 className="h-3 w-3" /></button></td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.jumlah}
+                              onChange={(e) =>
+                                updateRow(
+                                  setAlat,
+                                  idx,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(setAlat, idx, "hari", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.satuan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setAlat,
+                                  idx,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(
+                                  setAlat,
+                                  idx,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(setAlat, alat)}
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2"><button type="button" onClick={() => addRow(setAlat, { alat: "", jumlah: "", hari: "", satuan: "", hargaSatuan: "", margin: "", hargaAkhir: "" })} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Plus className="h-3 w-3" />Tambah Baris</button></div>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setAlat, {
+                          alat: "",
+                          jumlah: "",
+                          hari: "",
+                          satuan: "",
+                          hargaSatuan: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -609,21 +1099,128 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                       {barang.map((row, idx) => (
                         <tr key={idx} className="border-t">
                           <td className="px-2 py-2">
-                            <input value={row.namaBarang} onChange={(e) => updateRow(setBarang, idx, 'namaBarang', e.target.value)} list={`barangOptions-${idx}`} className="w-full px-2 py-1 border border-gray-200 rounded" />
-                            <datalist id={`barangOptions-${idx}`}>{barangOptions.map(o => <option key={o} value={o} />)}</datalist>
+                            <input
+                              value={row.namaBarang}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBarang,
+                                  idx,
+                                  "namaBarang",
+                                  e.target.value
+                                )
+                              }
+                              list={`barangOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`barangOptions-${idx}`}>
+                              {barangOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
                           </td>
-                          <td className="px-2 py-2"><input value={row.jumlah} onChange={(e) => updateRow(setBarang, idx, 'jumlah', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hari} onChange={(e) => updateRow(setBarang, idx, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.satuan} onChange={(e) => updateRow(setBarang, idx, 'satuan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaSatuan} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><input value={row.margin} onChange={(e) => updateRow(setBarang, idx, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><button type="button" onClick={() => removeRow(setBarang, barang)} className="px-2 py-1 bg-red-600 text-white rounded text-xs"><Trash2 className="h-3 w-3" /></button></td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.jumlah}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBarang,
+                                  idx,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBarang,
+                                  idx,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.satuan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBarang,
+                                  idx,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBarang,
+                                  idx,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(setBarang, barang)}
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2"><button type="button" onClick={() => addRow(setBarang, { namaBarang: "", jumlah: "", hari: "", satuan: "", hargaSatuan: "", margin: "", hargaAkhir: "" })} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Plus className="h-3 w-3" />Tambah Baris</button></div>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setBarang, {
+                          namaBarang: "",
+                          jumlah: "",
+                          hari: "",
+                          satuan: "",
+                          hargaSatuan: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -633,7 +1230,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                   <table className="w-full text-xs">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left">Nama Transportasi</th>
+                        <th className="px-2 py-2 text-left">
+                          Nama Transportasi
+                        </th>
                         <th className="px-2 py-2 text-left">Tunjangan</th>
                         <th className="px-2 py-2 text-left">Project Rate</th>
                         <th className="px-2 py-2 text-left">Hari</th>
@@ -645,18 +1244,115 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                     <tbody>
                       {mobDemob.map((row, idx) => (
                         <tr key={idx} className="border-t">
-                          <td className="px-2 py-2"><input value={row.namaTransportasi} onChange={(e) => updateRow(setMobDemob, idx, 'namaTransportasi', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.tunjangan} onChange={(e) => updateRow(setMobDemob, idx, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.projectRate} onChange={(e) => updateRow(setMobDemob, idx, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hari} onChange={(e) => updateRow(setMobDemob, idx, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.margin} onChange={(e) => updateRow(setMobDemob, idx, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><button type="button" onClick={() => removeRow(setMobDemob, mobDemob)} className="px-2 py-1 bg-red-600 text-white rounded text-xs"><Trash2 className="h-3 w-3" /></button></td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.namaTransportasi}
+                              onChange={(e) =>
+                                updateRow(
+                                  setMobDemob,
+                                  idx,
+                                  "namaTransportasi",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.tunjangan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setMobDemob,
+                                  idx,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.projectRate}
+                              onChange={(e) =>
+                                updateRow(
+                                  setMobDemob,
+                                  idx,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(
+                                  setMobDemob,
+                                  idx,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(
+                                  setMobDemob,
+                                  idx,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(setMobDemob, mobDemob)}
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2"><button type="button" onClick={() => addRow(setMobDemob, { namaTransportasi: "", tunjangan: "", projectRate: "", hari: "", margin: "", hargaAkhir: "" })} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Plus className="h-3 w-3" />Tambah Baris</button></div>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setMobDemob, {
+                          namaTransportasi: "",
+                          tunjangan: "",
+                          projectRate: "",
+                          hari: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -678,18 +1374,117 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                     <tbody>
                       {biayaLainLain.map((row, idx) => (
                         <tr key={idx} className="border-t">
-                          <td className="px-2 py-2"><input value={row.namaBiaya} onChange={(e) => updateRow(setBiayaLainLain, idx, 'namaBiaya', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.tunjangan} onChange={(e) => updateRow(setBiayaLainLain, idx, 'tunjangan', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.projectRate} onChange={(e) => updateRow(setBiayaLainLain, idx, 'projectRate', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hari} onChange={(e) => updateRow(setBiayaLainLain, idx, 'hari', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.margin} onChange={(e) => updateRow(setBiayaLainLain, idx, 'margin', e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" /></td>
-                          <td className="px-2 py-2"><input value={row.hargaAkhir} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" /></td>
-                          <td className="px-2 py-2"><button type="button" onClick={() => removeRow(setBiayaLainLain, biayaLainLain)} className="px-2 py-1 bg-red-600 text-white rounded text-xs"><Trash2 className="h-3 w-3" /></button></td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.namaBiaya}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBiayaLainLain,
+                                  idx,
+                                  "namaBiaya",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.tunjangan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBiayaLainLain,
+                                  idx,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.projectRate}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBiayaLainLain,
+                                  idx,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBiayaLainLain,
+                                  idx,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBiayaLainLain,
+                                  idx,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeRow(setBiayaLainLain, biayaLainLain)
+                              }
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2"><button type="button" onClick={() => addRow(setBiayaLainLain, { namaBiaya: "", tunjangan: "", projectRate: "", hari: "", margin: "", hargaAkhir: "" })} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Plus className="h-3 w-3" />Tambah Baris</button></div>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setBiayaLainLain, {
+                          namaBiaya: "",
+                          tunjangan: "",
+                          projectRate: "",
+                          hari: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

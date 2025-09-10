@@ -1,65 +1,97 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Calendar, ChevronDown, Search, FileText, FileDown, Printer, Plus, Eye, Edit, Trash2, CheckCircle } from 'lucide-react';
-import GajiModal, { GajiFormData } from './GajiModal'; // Import GajiModal and GajiFormData
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  Calendar,
+  ChevronDown,
+  Search,
+  FileText,
+  FileDown,
+  Printer,
+  Plus,
+  Edit,
+  Trash2,
+  CheckCircle,
+} from "lucide-react";
+import PengajianEntryModal, {
+  PengajianEntryFormData,
+} from "./PengajianEntryModal";
 
 interface PenggajianEntry {
   no: number;
-  kodePegawai: string;
-  namaPegawai: string;
-  jenisPegawai: string;
-  tanggal: string;
-  gaji: string;
-  keterangan: string;
+  absenGapok: string;
+  umUt: string;
+  tunjanganJabatan: string;
+  tunjanganLainnya: string;
+  tunjanganBpjs: string;
+  tunjanganProyek: string;
 }
 
 interface PengajianActiveDashboardProps {
   role?: string; // Add role prop
 }
 
-const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ role }) => {
+const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
+  role,
+}) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [isGajiModalOpen, setIsGajiModalOpen] = useState(false); // State for GajiModal
+  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
 
-  const penggajianData: PenggajianEntry[] = [
-    { no: 1, kodePegawai: 'EMP001', namaPegawai: 'Ahmad Fauzi', jenisPegawai: 'Tetap', tanggal: '2024-09-05', gaji: 'Rp 7.500.000', keterangan: 'Bonus' },
-    { no: 2, kodePegawai: 'EMP002', namaPegawai: 'Siti Nurhaliza', jenisPegawai: 'Kontrak', tanggal: '2024-09-04', gaji: 'Rp 5.500.000', keterangan: 'Tunjangan' },
-    { no: 3, kodePegawai: 'EMP003', namaPegawai: 'Budi Santoso', jenisPegawai: 'Magang', tanggal: '2024-09-03', gaji: 'Rp 2.000.000', keterangan: 'Penggajian Honorer' },
-    { no: 4, kodePegawai: 'EMP004', namaPegawai: 'Dewi Lestari', jenisPegawai: 'Tetap', tanggal: '2024-09-02', gaji: 'Rp 8.000.000', keterangan: 'Cuti' },
-    { no: 5, kodePegawai: 'EMP005', namaPegawai: 'Rizki Pratama', jenisPegawai: 'Kontrak', tanggal: '2024-09-01', gaji: 'Rp 6.200.000', keterangan: 'Tunjangan' },
-  ];
+  const [penggajianData, setPenggajianData] = useState<PenggajianEntry[]>([
+    {
+      no: 1,
+      absenGapok: "Rp 5.000.000",
+      umUt: "Rp 500.000",
+      tunjanganJabatan: "Rp 1.000.000",
+      tunjanganLainnya: "Rp 250.000",
+      tunjanganBpjs: "Rp 200.000",
+      tunjanganProyek: "Rp 750.000",
+    },
+    {
+      no: 2,
+      absenGapok: "Rp 4.500.000",
+      umUt: "Rp 400.000",
+      tunjanganJabatan: "Rp 800.000",
+      tunjanganLainnya: "Rp 150.000",
+      tunjanganBpjs: "Rp 180.000",
+      tunjanganProyek: "Rp 500.000",
+    },
+  ]);
 
-  // Handlers for GajiModal
-  const handleOpenGajiModal = () => {
-    setIsGajiModalOpen(true);
-  };
-
-  const handleCloseGajiModal = () => {
-    setIsGajiModalOpen(false);
-  };
-
-  const handleSaveGaji = (data: GajiFormData) => {
-    console.log('Saving Gaji Data:', data);
-    // Here you would typically send this data to your backend API
-    // After successful save, you might want to refresh the table data
+  // Handlers for Entry Modal
+  const handleOpenEntryModal = () => setIsEntryModalOpen(true);
+  const handleCloseEntryModal = () => setIsEntryModalOpen(false);
+  const handleSaveEntry = (data: PengajianEntryFormData) => {
+    setPenggajianData((prev) => [
+      { no: prev.length + 1, ...data },
+      ...prev.map((r) => ({ ...r, no: r.no + 1 })),
+    ]);
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Penggajian</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">
+          Earning/Income
+        </h1>
 
         {/* Filter Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Periode Filter */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Periode</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Periode
+              </h2>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="tanggal-awal" className="block text-sm font-medium text-gray-700 mb-1">Tanggal Awal</label>
+                  <label
+                    htmlFor="tanggal-awal"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Tanggal Awal
+                  </label>
                   <div className="relative">
                     <DatePicker
                       selected={startDate}
@@ -74,7 +106,12 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="tanggal-akhir" className="block text-sm font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                  <label
+                    htmlFor="tanggal-akhir"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Tanggal Akhir
+                  </label>
                   <div className="relative">
                     <DatePicker
                       selected={endDate}
@@ -93,10 +130,17 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
 
             {/* Filter Pegawai */}
             <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Filter Pegawai</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Filter Pegawai
+              </h2>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="kode-pegawai" className="block text-sm font-medium text-gray-700 mb-1">Kode Pegawai</label>
+                  <label
+                    htmlFor="kode-pegawai"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Kode Pegawai
+                  </label>
                   <div className="relative">
                     <select
                       id="kode-pegawai"
@@ -113,7 +157,12 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="nama-pegawai" className="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
+                  <label
+                    htmlFor="nama-pegawai"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Nama Pegawai
+                  </label>
                   <input
                     type="text"
                     id="nama-pegawai"
@@ -152,9 +201,9 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
                 Cetak Semua Penggajian
               </button>
             </div>
-            {role !== 'management' && ( // Only show Add button if not management role
+            {role !== "management" && (
               <button
-                onClick={handleOpenGajiModal} // Connect to GajiModal
+                onClick={handleOpenEntryModal}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -163,7 +212,9 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
             )}
           </div>
 
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Daftar Penggajian</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Daftar Penggajian
+          </h2>
 
           {/* Table Controls */}
           <div className="flex justify-between items-center mb-4">
@@ -182,7 +233,9 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
               <span className="text-gray-700">entries</span>
             </div>
             <div className="flex items-center space-x-2">
-              <label htmlFor="search-table" className="text-gray-700">Search:</label>
+              <label htmlFor="search-table" className="text-gray-700">
+                Search:
+              </label>
               <input
                 type="text"
                 id="search-table"
@@ -197,58 +250,95 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">No <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      No <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Kode Pegawai <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      Absen (Gapok) <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Nama Pegawai <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      UM/UT <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Jenis Pegawai <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      Tunjangan Jabatan <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Tanggal <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      Tunjangan Lainnya <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Gaji <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      Tunjangan BPJS <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Keterangan <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      Tunjangan Proyek <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Aksi <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">
+                      Aksi <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {penggajianData.map((entry) => (
                   <tr key={entry.no}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.kodePegawai}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.namaPegawai}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.jenisPegawai}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.tanggal}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.gaji}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.keterangan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {entry.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.absenGapok}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.umUt}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.tunjanganJabatan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.tunjanganLainnya}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.tunjanganBpjs}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.tunjanganProyek}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        {role === 'management' ? (
-                          <button 
-														onClick={handleOpenGajiModal} // Connect to GajiModal
-														className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="Approve">
+                        {role === "management" ? (
+                          <button
+                            onClick={handleOpenEntryModal}
+                            className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                            title="Approve"
+                          >
                             <CheckCircle className="h-4 w-4" />
                           </button>
                         ) : (
                           <>
                             {/* Removed Eye and Printer buttons as requested */}
-                            <button 
-															onClick={handleOpenGajiModal} // Connect to GajiModal
-															className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Edit">
+                            <button
+                              onClick={handleOpenEntryModal}
+                              className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors"
+                              title="Edit"
+                            >
                               <Edit className="h-4 w-4" />
                             </button>
-                            <button className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Delete">
+                            <button
+                              className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                              title="Delete"
+                            >
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </>
@@ -264,9 +354,13 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
           {/* Pagination */}
           <div className="flex justify-between items-center mt-4">
             <div className="text-sm text-gray-700">
-              Showing 1 to {penggajianData.length} of {penggajianData.length} entries
+              Showing 1 to {penggajianData.length} of {penggajianData.length}{" "}
+              entries
             </div>
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <nav
+              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
               <button className="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
                 Previous
               </button>
@@ -281,11 +375,11 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({ rol
         </div>
       </div>
 
-      {/* Gaji Entry Modal */}
-      <GajiModal
-        isOpen={isGajiModalOpen}
-        onClose={handleCloseGajiModal}
-        onSave={handleSaveGaji}
+      {/* Penggajian Entry Modal */}
+      <PengajianEntryModal
+        isOpen={isEntryModalOpen}
+        onClose={handleCloseEntryModal}
+        onSave={handleSaveEntry}
       />
     </div>
   );

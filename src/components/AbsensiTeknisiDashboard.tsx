@@ -1,183 +1,268 @@
-import React, { useState, useEffect } from 'react';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { AbsensiTeknisiData } from '../types';
-import { 
-  Search, 
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { AbsensiTeknisiData } from "../types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const AbsensiTeknisiDashboard: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<AbsensiTeknisiData | null>(null);
-  const [sortField, setSortField] = useState<keyof AbsensiTeknisiData | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedNama, setSelectedNama] = useState<string | null>(null);
 
   // Sample data matching the first image
   const [absensiTeknisiData, setAbsensiTeknisiData] = useState<AbsensiTeknisiData[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      namaTeknisi: 'Ahmad',
-      tanggalAbsensi: '01-01-2025',
-      zonaKerja: 'Zona 1',
-      statusAbsensi: 'DL',
-      lampiran: 'Rp 1.500.000',
-      statusApprove: 'Approved'
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "01-01-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "DL",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      namaTeknisi: 'Budi Santoso',
-      tanggalAbsensi: '02-01-2025',
-      zonaKerja: 'Zona 3',
-      statusAbsensi: 'H',
-      lampiran: 'Rp 2.000.000',
-      statusApprove: 'Process'
+      namaTeknisi: "Budi Santoso",
+      tanggalAbsensi: "02-01-2025",
+      zonaKerja: "Zona 3",
+      statusAbsensi: "H",
+      lampiran: "Rp 2.000.000",
+      statusApprove: "Process",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      namaTeknisi: 'Slamet Riyadi',
-      tanggalAbsensi: '03-01-2025',
-      zonaKerja: 'Zona 2',
-      statusAbsensi: 'CT',
-      lampiran: 'Rp 1.750.000',
-      statusApprove: 'Rejected'
+      namaTeknisi: "Slamet Riyadi",
+      tanggalAbsensi: "03-01-2025",
+      zonaKerja: "Zona 2",
+      statusAbsensi: "CT",
+      lampiran: "Rp 1.750.000",
+      statusApprove: "Rejected",
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      namaTeknisi: 'Agus Prasetyo',
-      tanggalAbsensi: '04-01-2025',
-      zonaKerja: 'Zona 1',
-      statusAbsensi: 'CP',
-      lampiran: 'Rp 1.250.000',
-      statusApprove: 'Approved'
+      namaTeknisi: "Agus Prasetyo",
+      tanggalAbsensi: "04-01-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "CP",
+      lampiran: "Rp 1.250.000",
+      statusApprove: "Approved",
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      namaTeknisi: 'Rudi Hartono',
-      tanggalAbsensi: '05-01-2025',
-      zonaKerja: 'Zona 3',
-      statusAbsensi: 'TM',
-      lampiran: 'Rp 1.800.000',
-      statusApprove: 'Process'
+      namaTeknisi: "Rudi Hartono",
+      tanggalAbsensi: "05-01-2025",
+      zonaKerja: "Zona 3",
+      statusAbsensi: "TM",
+      lampiran: "Rp 1.800.000",
+      statusApprove: "Process",
     },
     {
-      id: '6',
+      id: "6",
       no: 6,
-      namaTeknisi: 'Fauzan Malik',
-      tanggalAbsensi: '06-01-2025',
-      zonaKerja: 'Zona 2',
-      statusAbsensi: 'DL',
-      lampiran: 'Rp 1.600.000',
-      statusApprove: 'Rejected'
+      namaTeknisi: "Fauzan Malik",
+      tanggalAbsensi: "06-01-2025",
+      zonaKerja: "Zona 2",
+      statusAbsensi: "DL",
+      lampiran: "Rp 1.600.000",
+      statusApprove: "Rejected",
     },
     {
-      id: '7',
+      id: "7",
       no: 7,
-      namaTeknisi: 'Joko Widodo',
-      tanggalAbsensi: '07-01-2025',
-      zonaKerja: 'Zona 1',
-      statusAbsensi: 'H',
-      lampiran: 'Rp 2.100.000',
-      statusApprove: 'Approved'
+      namaTeknisi: "Joko Widodo",
+      tanggalAbsensi: "07-01-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "H",
+      lampiran: "Rp 2.100.000",
+      statusApprove: "Approved",
     },
     {
-      id: '8',
+      id: "8",
       no: 8,
-      namaTeknisi: 'Hariyanto',
-      tanggalAbsensi: '08-01-2025',
-      zonaKerja: 'Zona 3',
-      statusAbsensi: 'CT',
-      lampiran: 'Rp 1.450.000',
-      statusApprove: 'Process'
-    }
+      namaTeknisi: "Hariyanto",
+      tanggalAbsensi: "08-01-2025",
+      zonaKerja: "Zona 3",
+      statusAbsensi: "CT",
+      lampiran: "Rp 1.450.000",
+      statusApprove: "Process",
+    },
+    // Recent dummy records for Ahmad (within last 16 days from 10-09-2025)
+    { id: "A1", no: 9, namaTeknisi: "Ahmad", tanggalAbsensi: "26-08-2025", zonaKerja: "Zona 1", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A2", no: 10, namaTeknisi: "Ahmad", tanggalAbsensi: "28-08-2025", zonaKerja: "Zona 1", statusAbsensi: "DL", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A3", no: 11, namaTeknisi: "Ahmad", tanggalAbsensi: "30-08-2025", zonaKerja: "Zona 2", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A4", no: 12, namaTeknisi: "Ahmad", tanggalAbsensi: "01-09-2025", zonaKerja: "Zona 2", statusAbsensi: "CP", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A5", no: 13, namaTeknisi: "Ahmad", tanggalAbsensi: "02-09-2025", zonaKerja: "Zona 1", statusAbsensi: "CT", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A6", no: 14, namaTeknisi: "Ahmad", tanggalAbsensi: "04-09-2025", zonaKerja: "Zona 3", statusAbsensi: "TM", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A7", no: 15, namaTeknisi: "Ahmad", tanggalAbsensi: "06-09-2025", zonaKerja: "Zona 1", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A8", no: 16, namaTeknisi: "Ahmad", tanggalAbsensi: "08-09-2025", zonaKerja: "Zona 1", statusAbsensi: "DL", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A9", no: 17, namaTeknisi: "Ahmad", tanggalAbsensi: "09-09-2025", zonaKerja: "Zona 2", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    { id: "A10", no: 18, namaTeknisi: "Ahmad", tanggalAbsensi: "10-09-2025", zonaKerja: "Zona 2", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
   ]);
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleSort = (field: keyof AbsensiTeknisiData) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
+  // No delete flow in this screen
 
-  const handleDeleteClick = (item: AbsensiTeknisiData) => {
-    setItemToDelete(item);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      setAbsensiTeknisiData(prev => prev.filter(a => a.id !== itemToDelete.id));
-      setItemToDelete(null);
-    }
+  // Normalize raw code to label: Izin, Sakit, Libur, Cuti, Alpha, Hadir
+  const normalizeStatusLabel = (status: string): "Izin" | "Sakit" | "Libur" | "Cuti" | "Alpha" | "Hadir" => {
+    const s = status.trim().toUpperCase();
+    if (s === "DL" || s === "CP" || s === "IZIN") return "Izin";
+    if (s === "S" || s === "SAKIT") return "Sakit";
+    if (s === "LBR" || s === "LIBUR") return "Libur";
+    if (s === "CT" || s === "CUTI") return "Cuti";
+    if (s === "TM" || s === "ALPHA") return "Alpha";
+    return "Hadir"; // default for H
   };
 
   const getStatusAbsensiColor = (status: string) => {
-    switch (status) {
-      case 'DL': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'H': return 'bg-green-100 text-green-800 border-green-200';
-      case 'CT': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'CP': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'TM': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    switch (normalizeStatusLabel(status)) {
+      case "Izin":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Sakit":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "Libur":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      case "Cuti":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "Alpha":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "Hadir":
+        return "bg-green-100 text-green-800 border-green-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getStatusApproveColor = (status: string) => {
     switch (status) {
-      case 'Approved': return 'bg-green-600 text-white';
-      case 'Process': return 'bg-yellow-500 text-white';
-      case 'Rejected': return 'bg-red-600 text-white';
-      default: return 'bg-gray-100 text-gray-800';
+      case "Approved":
+        return "bg-green-600 text-white";
+      case "Process":
+        return "bg-yellow-500 text-white";
+      case "Rejected":
+        return "bg-red-600 text-white";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
-  // Filter data based on search criteria
-  const filteredData = absensiTeknisiData.filter(item => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      item.namaTeknisi.toLowerCase().includes(searchLower) ||
-      item.tanggalAbsensi.toLowerCase().includes(searchLower) ||
-      item.zonaKerja.toLowerCase().includes(searchLower) ||
-      item.statusAbsensi.toLowerCase().includes(searchLower) ||
-      item.lampiran.toLowerCase().includes(searchLower)
-    );
-  });
+  // Helpers for 16-day period
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - 15); // 16 days window including today
 
-  // Sort data
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortField) return 0;
-    
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
-    }
-  });
+  const formatDate = (d: Date) => {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
+  const isWithinPeriod = (ddmmyyyy: string) => {
+    const [dd, mm, yyyy] = ddmmyyyy.split("-").map((v) => parseInt(v, 10));
+    if (!dd || !mm || !yyyy) return false;
+    const d = new Date(yyyy, mm - 1, dd);
+    d.setHours(0, 0, 0, 0);
+    const s = new Date(startDate); s.setHours(0, 0, 0, 0);
+    const t = new Date(today); t.setHours(0, 0, 0, 0);
+    return d >= s && d <= t;
+  };
+
+  // Map raw status to categories requested by user
+  const mapStatusToCategory = (status: string): "izin" | "sakit" | "libur" | "cuti" | "alpha" | "hadir" | null => {
+    const label = normalizeStatusLabel(status);
+    if (label === "Izin") return "izin";
+    if (label === "Sakit") return "sakit";
+    if (label === "Libur") return "libur";
+    if (label === "Cuti") return "cuti";
+    if (label === "Alpha") return "alpha";
+    if (label === "Hadir") return "hadir";
+    return null;
+  };
+
+  type EmployeeSummary = {
+    no: number;
+    nama: string;
+    periode: string;
+    izin: number;
+    sakit: number;
+    libur: number;
+    cuti: number;
+    alpha: number;
+    hadir: number;
+    gajiPokok: string;
+    statusApprove: string;
+  };
+
+  // Build summaries per employee for the last 16 days
+  const buildSummaries = (): EmployeeSummary[] => {
+    const byNama = new Map<string, AbsensiTeknisiData[]>();
+    absensiTeknisiData.forEach((r) => {
+      if (!byNama.has(r.namaTeknisi)) byNama.set(r.namaTeknisi, []);
+      byNama.get(r.namaTeknisi)!.push(r);
+    });
+
+    const results: EmployeeSummary[] = [];
+    let counter = 1;
+    byNama.forEach((rows, nama) => {
+      let izin = 0, sakit = 0, libur = 0, cuti = 0, alpha = 0, hadir = 0;
+      // consider only within period
+      const within = rows.filter((r) => isWithinPeriod(r.tanggalAbsensi));
+      within.forEach((r) => {
+        const cat = mapStatusToCategory(r.statusAbsensi);
+        if (cat === "izin") izin += 1;
+        else if (cat === "sakit") sakit += 1;
+        else if (cat === "libur") libur += 1;
+        else if (cat === "cuti") cuti += 1;
+        else if (cat === "alpha") alpha += 1;
+        else if (cat === "hadir") hadir += 1;
+      });
+      // pick last known gaji from rows (using lampiran as placeholder)
+      const last = rows[rows.length - 1];
+      const gajiPokok = last?.lampiran ?? "Rp 0";
+      const statusApprove = last?.statusApprove ?? "-";
+      results.push({
+        no: counter++,
+        nama,
+        periode: `${formatDate(startDate)} s.d ${formatDate(today)}`,
+        izin,
+        sakit,
+        libur,
+        cuti,
+        alpha,
+        hadir,
+        gajiPokok,
+        statusApprove,
+      });
+    });
+    return results;
+  };
+
+  const summariesAll = buildSummaries();
+
+  // Filter summaries
+  const filteredSummaries = summariesAll.filter((s) =>
+    s.nama.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort summaries by name by default
+  const sortedSummaries = [...filteredSummaries].sort((a, b) =>
+    a.nama.localeCompare(b.nama)
+  );
 
   // Pagination logic
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedSummaries.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = sortedData.slice(startIndex, endIndex);
+  const currentData = sortedSummaries.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -188,31 +273,13 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            Absensi Teknisi
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Absensi</h1>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
         {/* Controls Section */}
         <div className="flex items-center justify-between">
-          {/* Show entries control */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-700">Show</span>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => setItemsPerPage(Number(e.target.value))}
-              className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-sm text-gray-700">entries</span>
-          </div>
-
           {/* Search */}
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-700">Search:</span>
@@ -221,7 +288,7 @@ const AbsensiTeknisiDashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent w-64"
-              placeholder="Search..."
+              placeholder="Cari nama pegawai..."
             />
           </div>
         </div>
@@ -232,110 +299,48 @@ const AbsensiTeknisiDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaTeknisi')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Nama Teknisi</span>
-                      {sortField === 'namaTeknisi' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggalAbsensi')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Tanggal Absensi</span>
-                      {sortField === 'tanggalAbsensi' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('zonaKerja')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Zona Kerja</span>
-                      {sortField === 'zonaKerja' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('statusAbsensi')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Status Absensi</span>
-                      {sortField === 'statusAbsensi' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('lampiran')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Lampiran</span>
-                      {sortField === 'lampiran' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('statusApprove')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Status Approve</span>
-                      {sortField === 'statusApprove' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Pegawai</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Periode (16 hari sebelumnya)</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Izin</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sakit</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Libur</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cuti</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Alpha</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Hadir</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Gaji pokok</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Approve</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {currentData.map((item, index) => (
-                  <tr 
-                    key={item.id}
+                {currentData.map((row, index) => (
+                  <tr
+                    key={row.nama}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${animateRows ? "animate-in fade-in slide-in-from-bottom-2" : "opacity-0"}`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
+                    }}
+                    onClick={() => {
+                      setSelectedNama(row.nama);
+                      setDetailOpen(true);
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaTeknisi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalAbsensi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.zonaKerja}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.no}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{row.nama}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{row.periode}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.izin}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.sakit}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.libur}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.cuti}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.alpha}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{row.hadir}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{row.gajiPokok}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusAbsensiColor(item.statusAbsensi)}`}>
-                        {item.statusAbsensi}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.lampiran}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusApproveColor(item.statusApprove)}`}>
-                        {item.statusApprove}
+                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusApproveColor(row.statusApprove)}`}>
+                        {row.statusApprove}
                       </span>
                     </td>
                   </tr>
@@ -348,34 +353,22 @@ const AbsensiTeknisiDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to {Math.min(endIndex, sortedSummaries.length)} of {sortedSummaries.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
-                  Previous
+                  <ChevronLeft className="h-4 w-4" /> Previous
                 </button>
-                
-                <button
-                  onClick={() => handlePageChange(1)}
-                  className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
-                    currentPage === 1
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  1
-                </button>
-                
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
-                  Next
+                  Next <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -383,13 +376,56 @@ const AbsensiTeknisiDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <ConfirmDeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaTeknisi}
-      />
+      {/* Detail Modal */}
+      {detailOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setDetailOpen(false)}>
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Detail Absensi {selectedNama}</h3>
+              <button onClick={() => setDetailOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">Periode: {`${formatDate(startDate)} s.d ${formatDate(today)}`}</p>
+            <div className="max-h-96 overflow-auto border border-gray-200 rounded">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Tanggal</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Status</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Zona Kerja</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 text-sm">
+                  {absensiTeknisiData
+                    .filter(r => r.namaTeknisi === selectedNama && isWithinPeriod(r.tanggalAbsensi))
+                    .sort((a,b) => {
+                      // sort by date ascending
+                      const [da, ma, ya] = a.tanggalAbsensi.split('-').map(n=>parseInt(n,10));
+                      const [db, mb, yb] = b.tanggalAbsensi.split('-').map(n=>parseInt(n,10));
+                      const ta = new Date(ya, ma-1, da).getTime();
+                      const tb = new Date(yb, mb-1, db).getTime();
+                      return ta - tb;
+                    })
+                    .map((r) => (
+                      <tr key={r.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2 text-gray-900">{r.tanggalAbsensi}</td>
+                        <td className="px-3 py-2"><span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusAbsensiColor(r.statusAbsensi)}`}>{normalizeStatusLabel(r.statusAbsensi)}</span></td>
+                        <td className="px-3 py-2 text-gray-700">{r.zonaKerja}</td>
+                      </tr>
+                    ))}
+                  {absensiTeknisiData.filter(r => r.namaTeknisi === selectedNama && isWithinPeriod(r.tanggalAbsensi)).length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="px-3 py-4 text-center text-gray-500">Tidak ada data absensi pada periode ini.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-4 text-right">
+              <button onClick={() => setDetailOpen(false)} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

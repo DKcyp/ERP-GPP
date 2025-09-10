@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import KontrakModal, { KontrakFormData } from './KontrakModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import ApprovalActionModal from './ApprovalActionModal'; // Import ApprovalActionModal
-import { ApprovalActionData } from '../types'; // Assuming you have this type defined
-import { 
-  Search, 
-  Plus, 
-  FileSpreadsheet, 
-  FileText, 
+import React, { useState, useEffect } from "react";
+import KontrakModal, { KontrakFormData } from "./KontrakModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ApprovalActionModal from "./ApprovalActionModal"; // Import ApprovalActionModal
+import { ApprovalActionData } from "../types"; // Assuming you have this type defined
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -18,8 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  Check // Import Check icon for approve
-} from 'lucide-react';
+  Check, // Import Check icon for approve
+} from "lucide-react";
 
 interface Kontrak {
   id: string;
@@ -36,10 +36,10 @@ interface Kontrak {
 }
 
 const KontrakDashboard: React.FC = () => {
-  const [searchNoSO, setSearchNoSO] = useState('');
-  const [searchNamaClient, setSearchNamaClient] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchNamaClient, setSearchNamaClient] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,81 +47,83 @@ const KontrakDashboard: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Kontrak | null>(null);
   const [sortField, setSortField] = useState<keyof Kontrak | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // State for Approval Modal
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
-  const [selectedKontrakIdForApproval, setSelectedKontrakIdForApproval] = useState<string | null>(null);
-  const [approvalActionType, setApprovalActionType] = useState<'approve' | 'reject' | null>(null);
-
+  const [selectedKontrakIdForApproval, setSelectedKontrakIdForApproval] =
+    useState<string | null>(null);
+  const [approvalActionType, setApprovalActionType] = useState<
+    "approve" | "reject" | null
+  >(null);
 
   // Sample data matching the image
   const [kontrakData, setKontrakData] = useState<Kontrak[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      noSO: 'SO001',
-      namaClient: 'PT. Jakarta Tank Terminal',
-      tanggalAwal: '01-01-2025',
-      tanggalAkhir: '01-06-2025',
-      nilaiKontrak: 'Rp. 200.000.000',
-      sudahDitagihkan: 'Rp. 150.000.000',
-      sisaPenagihan: 'Rp. 50.000.000',
-      estimasiPenagihan: 'Rp. 40.000.000',
-      delayPenagihan: '150 Hari'
+      noSO: "SO001",
+      namaClient: "PT. Jakarta Tank Terminal",
+      tanggalAwal: "01-01-2025",
+      tanggalAkhir: "01-06-2025",
+      nilaiKontrak: "Rp. 200.000.000",
+      sudahDitagihkan: "Rp. 150.000.000",
+      sisaPenagihan: "Rp. 50.000.000",
+      estimasiPenagihan: "Rp. 40.000.000",
+      delayPenagihan: "150 Hari",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      noSO: 'SO002',
-      namaClient: 'PT. Surabaya Shipping Lines',
-      tanggalAwal: '15-02-2025',
-      tanggalAkhir: '15-08-2025',
-      nilaiKontrak: 'Rp. 500.000.000',
-      sudahDitagihkan: 'Rp. 300.000.000',
-      sisaPenagihan: 'Rp. 200.000.000',
-      estimasiPenagihan: 'Rp. 60.000.000',
-      delayPenagihan: '180 Hari'
+      noSO: "SO002",
+      namaClient: "PT. Surabaya Shipping Lines",
+      tanggalAwal: "15-02-2025",
+      tanggalAkhir: "15-08-2025",
+      nilaiKontrak: "Rp. 500.000.000",
+      sudahDitagihkan: "Rp. 300.000.000",
+      sisaPenagihan: "Rp. 200.000.000",
+      estimasiPenagihan: "Rp. 60.000.000",
+      delayPenagihan: "180 Hari",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      noSO: 'SO003',
-      namaClient: 'PT. Bandung Logistics',
-      tanggalAwal: '01-03-2025',
-      tanggalAkhir: '01-09-2025',
-      nilaiKontrak: 'Rp. 300.000.000',
-      sudahDitagihkan: 'Rp. 200.000.000',
-      sisaPenagihan: 'Rp. 100.000.000',
-      estimasiPenagihan: 'Rp. 45.000.000',
-      delayPenagihan: '180 Hari'
+      noSO: "SO003",
+      namaClient: "PT. Bandung Logistics",
+      tanggalAwal: "01-03-2025",
+      tanggalAkhir: "01-09-2025",
+      nilaiKontrak: "Rp. 300.000.000",
+      sudahDitagihkan: "Rp. 200.000.000",
+      sisaPenagihan: "Rp. 100.000.000",
+      estimasiPenagihan: "Rp. 45.000.000",
+      delayPenagihan: "180 Hari",
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      noSO: 'SO004',
-      namaClient: 'PT. Medan Cargo Express',
-      tanggalAwal: '10-04-2025',
-      tanggalAkhir: '10-10-2025',
-      nilaiKontrak: 'Rp. 700.000.000',
-      sudahDitagihkan: 'Rp. 500.000.000',
-      sisaPenagihan: 'Rp. 200.000.000',
-      estimasiPenagihan: 'Rp. 30.000.000',
-      delayPenagihan: '180 Hari'
+      noSO: "SO004",
+      namaClient: "PT. Medan Cargo Express",
+      tanggalAwal: "10-04-2025",
+      tanggalAkhir: "10-10-2025",
+      nilaiKontrak: "Rp. 700.000.000",
+      sudahDitagihkan: "Rp. 500.000.000",
+      sisaPenagihan: "Rp. 200.000.000",
+      estimasiPenagihan: "Rp. 30.000.000",
+      delayPenagihan: "180 Hari",
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      noSO: 'SO005',
-      namaClient: 'PT. Semarang Port Services',
-      tanggalAwal: '01-05-2025',
-      tanggalAkhir: '01-11-2025',
-      nilaiKontrak: 'Rp. 600.000.000',
-      sudahDitagihkan: 'Rp. 400.000.000',
-      sisaPenagihan: 'Rp. 200.000.000',
-      estimasiPenagihan: 'Rp. 50.000.000',
-      delayPenagihan: '180 Hari'
-    }
+      noSO: "SO005",
+      namaClient: "PT. Semarang Port Services",
+      tanggalAwal: "01-05-2025",
+      tanggalAkhir: "01-11-2025",
+      nilaiKontrak: "Rp. 600.000.000",
+      sudahDitagihkan: "Rp. 400.000.000",
+      sisaPenagihan: "Rp. 200.000.000",
+      estimasiPenagihan: "Rp. 50.000.000",
+      delayPenagihan: "180 Hari",
+    },
   ]);
 
   useEffect(() => {
@@ -133,26 +135,32 @@ const KontrakDashboard: React.FC = () => {
     const newKontrak: Kontrak = {
       id: (kontrakData.length + 1).toString(),
       no: kontrakData.length + 1,
-      noSO: `SO${String(kontrakData.length + 1).padStart(3, '0')}`,
+      noSO: `SO${String(kontrakData.length + 1).padStart(3, "0")}`,
       namaClient: formData.namaClient,
-      tanggalAwal: new Date(formData.tanggalAwal).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
+      tanggalAwal: new Date(formData.tanggalAwal).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
       }),
-      tanggalAkhir: new Date(formData.tanggalAkhir).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
+      tanggalAkhir: new Date(formData.tanggalAkhir).toLocaleDateString(
+        "id-ID",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }
+      ),
       nilaiKontrak: formData.nilaiKontrak,
-      sudahDitagihkan: formData.sudahDitagihkan || 'Rp. 0',
-      sisaPenagihan: formData.sisaPenagihan || 'Rp. 0',
-      estimasiPenagihan: formData.estimasiPenagihan || 'Rp. 0',
-      delayPenagihan: formData.delayPenagihan || '0 Hari'
+      sudahDitagihkan: formData.sudahDitagihkan || "Rp. 0",
+      sisaPenagihan: formData.sisaPenagihan || "Rp. 0",
+      estimasiPenagihan: formData.estimasiPenagihan || "Rp. 0",
+      delayPenagihan: formData.delayPenagihan || "0 Hari",
     };
 
-    setKontrakData(prev => [newKontrak, ...prev.map(k => ({ ...k, no: k.no + 1 }))]);
+    setKontrakData((prev) => [
+      newKontrak,
+      ...prev.map((k) => ({ ...k, no: k.no + 1 })),
+    ]);
   };
 
   const handleDeleteClick = (kontrak: Kontrak) => {
@@ -162,36 +170,40 @@ const KontrakDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setKontrakData(prev => prev.filter(k => k.id !== itemToDelete.id));
+      setKontrakData((prev) => prev.filter((k) => k.id !== itemToDelete.id));
       setItemToDelete(null);
     }
   };
 
   const handleSort = (field: keyof Kontrak) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = kontrakData.filter(item => {
-    const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
-    const matchesNamaClient = item.namaClient.toLowerCase().includes(searchNamaClient.toLowerCase());
-    
+  const filteredData = kontrakData.filter((item) => {
+    const matchesNoSO = item.noSO
+      .toLowerCase()
+      .includes(searchNoSO.toLowerCase());
+    const matchesNamaClient = item.namaClient
+      .toLowerCase()
+      .includes(searchNamaClient.toLowerCase());
+
     return matchesNoSO && matchesNamaClient;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -213,34 +225,46 @@ const KontrakDashboard: React.FC = () => {
   };
 
   // Calculate totals
-  const totals = kontrakData.reduce((acc, item) => {
-    const nilaiKontrak = parseFloat(item.nilaiKontrak.replace(/[^\d]/g, '')) || 0;
-    const sudahDitagihkan = parseFloat(item.sudahDitagihkan.replace(/[^\d]/g, '')) || 0;
-    const sisaPenagihan = parseFloat(item.sisaPenagihan.replace(/[^\d]/g, '')) || 0;
-    const estimasiPenagihan = parseFloat(item.estimasiPenagihan.replace(/[^\d]/g, '')) || 0;
+  const totals = kontrakData.reduce(
+    (acc, item) => {
+      const nilaiKontrak =
+        parseFloat(item.nilaiKontrak.replace(/[^\d]/g, "")) || 0;
+      const sudahDitagihkan =
+        parseFloat(item.sudahDitagihkan.replace(/[^\d]/g, "")) || 0;
+      const sisaPenagihan =
+        parseFloat(item.sisaPenagihan.replace(/[^\d]/g, "")) || 0;
+      const estimasiPenagihan =
+        parseFloat(item.estimasiPenagihan.replace(/[^\d]/g, "")) || 0;
 
-    return {
-      nilaiKontrak: acc.nilaiKontrak + nilaiKontrak,
-      sudahDitagihkan: acc.sudahDitagihkan + sudahDitagihkan,
-      sisaPenagihan: acc.sisaPenagihan + sisaPenagihan,
-      estimasiPenagihan: acc.estimasiPenagihan + estimasiPenagihan
-    };
-  }, { nilaiKontrak: 0, sudahDitagihkan: 0, sisaPenagihan: 0, estimasiPenagihan: 0 });
+      return {
+        nilaiKontrak: acc.nilaiKontrak + nilaiKontrak,
+        sudahDitagihkan: acc.sudahDitagihkan + sudahDitagihkan,
+        sisaPenagihan: acc.sisaPenagihan + sisaPenagihan,
+        estimasiPenagihan: acc.estimasiPenagihan + estimasiPenagihan,
+      };
+    },
+    {
+      nilaiKontrak: 0,
+      sudahDitagihkan: 0,
+      sisaPenagihan: 0,
+      estimasiPenagihan: 0,
+    }
+  );
 
   const formatCurrency = (amount: number) => {
-    return `Rp. ${amount.toLocaleString('id-ID')}`;
+    return `Rp. ${amount.toLocaleString("id-ID")}`;
   };
 
   // Handle Approve Kontrak button click
   const handleApproveKontrakClick = (kontrakId: string) => {
     setSelectedKontrakIdForApproval(kontrakId);
-    setApprovalActionType('approve');
+    setApprovalActionType("approve");
     setIsApprovalModalOpen(true);
   };
 
   // Handle confirmation from ApprovalActionModal
   const handleApprovalConfirm = (data: ApprovalActionData) => {
-    console.log('Kontrak Approved:', data);
+    console.log("Kontrak Approved:", data);
     // Here you would typically update the status of the kontrak in your state or send to API
     // For demonstration, we'll just log it.
     setIsApprovalModalOpen(false);
@@ -256,9 +280,13 @@ const KontrakDashboard: React.FC = () => {
           DASHBOARD KONTRAK
         </h1>
         <nav className="text-sm text-gray-600">
-          <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
+          <span className="hover:text-blue-600 cursor-pointer transition-colors">
+            Finance
+          </span>
           <span className="mx-2">›</span>
-          <span className="hover:text-blue-600 cursor-pointer transition-colors">Kontrak</span>
+          <span className="hover:text-blue-600 cursor-pointer transition-colors">
+            Kontrak
+          </span>
           <span className="mx-2">›</span>
           <span className="text-blue-600 font-medium">Dashboard</span>
         </nav>
@@ -322,7 +350,7 @@ const KontrakDashboard: React.FC = () => {
               </div>
               {/* Full-width Button */}
               <div className="space-y-2">
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full px-3 py-2 flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm"
                 >
@@ -332,7 +360,6 @@ const KontrakDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -395,95 +422,136 @@ const KontrakDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('noSO')}
+                    onClick={() => handleSort("noSO")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No SO</span>
-                      {sortField === 'noSO' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "noSO" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaClient')}
+                    onClick={() => handleSort("namaClient")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama Client</span>
-                      {sortField === 'namaClient' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "namaClient" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Awal</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Akhir</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Kontrak</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sudah Ditagihkan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sisa Penagihan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Estimasi Penagihan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Delay Penagihan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th> {/* New Aksi column */}
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Tanggal Awal
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Tanggal Akhir
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nilai Kontrak
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Sudah Ditagihkan
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Sisa Penagihan
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Estimasi Penagihan
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaClient}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalAwal}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalAkhir}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nilaiKontrak}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.sudahDitagihkan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.sisaPenagihan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.estimasiPenagihan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.delayPenagihan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.noSO}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.namaClient}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleApproveKontrakClick(item.id)}
-                          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-blue-600/30 ring-2 ring-blue-200/50"
-                        >
-                          <Check className="h-3.5 w-3.5" />
-                          <span>Approve Kontrak</span>
-                        </button>
-                        {/* You can add other action buttons here if needed */}
-                      </div>
+                      {item.tanggalAwal}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggalAkhir}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.nilaiKontrak}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.sudahDitagihkan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.sisaPenagihan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.estimasiPenagihan}
                     </td>
                   </tr>
                 ))}
-                
+
                 {/* Total Row */}
                 <tr className="bg-gray-100 font-semibold border-t-2 border-gray-300">
-                  <td className="px-4 py-3 text-sm text-gray-900" colSpan={5}>Total</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.nilaiKontrak)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.sudahDitagihkan)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.sisaPenagihan)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.estimasiPenagihan)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900"></td>
-                  <td className="px-4 py-3 text-sm text-gray-900"></td> {/* Empty cell for Aksi column in total row */}
+                  <td className="px-4 py-3 text-sm text-gray-900" colSpan={5}>
+                    Total
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {formatCurrency(totals.nilaiKontrak)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {formatCurrency(totals.sudahDitagihkan)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {formatCurrency(totals.sisaPenagihan)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">
+                    {formatCurrency(totals.estimasiPenagihan)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900"></td>{" "}
+                  {/* Empty cell for Aksi column in total row */}
                 </tr>
               </tbody>
             </table>
@@ -493,7 +561,9 @@ const KontrakDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -503,7 +573,7 @@ const KontrakDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <div className="flex items-center space-x-1">
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     let page;
@@ -516,15 +586,15 @@ const KontrakDashboard: React.FC = () => {
                     } else {
                       page = currentPage - 2 + i;
                     }
-                    
+
                     return (
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
                         className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                           currentPage === page
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            ? "bg-blue-600 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
                         {page}
@@ -532,7 +602,7 @@ const KontrakDashboard: React.FC = () => {
                     );
                   })}
                 </div>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
