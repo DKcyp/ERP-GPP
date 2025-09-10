@@ -250,6 +250,8 @@ import GAIBPTroubleshootSaranaKerjaDashboard from "./GAIBPTroubleshootSaranaKerj
 import GAIBPPersediaanATKDashboard from "./GAIBPPersediaanATKDashboard";
 import GAIBPKebersihanLingkunganDashboard from "./GAIBPKebersihanLingkunganDashboard";
 import GeneralUtilityDashboard from "./GeneralUtilityDashboard";
+import MasterDataCustomerDashboard from "./MasterDataCustomerDashboard";
+import MonitoringMarketingDashboard from "./MonitoringMarketingDashboard";
 
 import {
   BarChart3,
@@ -754,6 +756,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/penawaran/tender") {
       return <PenawaranTenderDashboard />;
+    }
+    if (currentPage === "/marketing/master/master-data-customer") {
+      return <MasterDataCustomerDashboard />;
+    }
+    if (currentPage === "/marketing/monitoring/marketing") {
+      return <MonitoringMarketingDashboard />;
     }
     if (currentPage === "/marketing/kontrak-deal/dashboard") {
       return <KontrakDealDashboard />;

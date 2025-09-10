@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { X, Calendar, Save, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Editor } from '@tinymce/tinymce-react';
+import React, { useState, useEffect } from "react";
+import {
+  X,
+  Calendar,
+  Save,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { Editor } from "@tinymce/tinymce-react";
 
 interface PenawaranTwoStepModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: PenawaranTwoStepFormData) => void;
-  type: 'on-call' | 'tender';
+  type: "on-call" | "tender";
 }
 
 export interface PenawaranTwoStepFormData {
@@ -22,7 +29,7 @@ export interface PenawaranTwoStepFormData {
   namaCustomer: string;
   tanggalKirim: string;
   tanggalFollowUp: string;
-  
+
   // Step 2 data
   nama: string;
   alamat: string;
@@ -39,90 +46,113 @@ export interface PenawaranTwoStepFormData {
   }>;
 }
 
-const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, onClose, onSave, type }) => {
+const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  type,
+}) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<PenawaranTwoStepFormData>({
-    noPenawaran: '',
-    kategoriPajak: '',
-    kodeCustomer: '',
-    pajak: '',
-    tanggalPenawaran: '',
-    tanggalPenawaranEnd: '',
-    namaSales: '',
-    noRefReq: '',
-    namaCustomer: '',
-    tanggalKirim: '',
-    tanggalFollowUp: '',
-    nama: '',
-    alamat: '',
-    jenisPekerjaan: '',
-    perusahaan: '',
-    jenisPenawaran: '',
-    termCondition: '',
-    supplies: [{ item: '', description: '', qty: '', unitPrice: '', totalPrice: '' }]
+    noPenawaran: "",
+    kategoriPajak: "",
+    kodeCustomer: "",
+    pajak: "",
+    tanggalPenawaran: "",
+    tanggalPenawaranEnd: "",
+    namaSales: "",
+    noRefReq: "",
+    namaCustomer: "",
+    tanggalKirim: "",
+    tanggalFollowUp: "",
+    nama: "",
+    alamat: "",
+    jenisPekerjaan: "",
+    perusahaan: "",
+    jenisPenawaran: "",
+    termCondition: "",
+    supplies: [
+      { item: "", description: "", qty: "", unitPrice: "", totalPrice: "" },
+    ],
   });
 
   const [errors, setErrors] = useState<Partial<PenawaranTwoStepFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const kategoriPajakOptions = ['PPN', 'Non-PPN'];
-  const pajakOptions = ['Include', 'Exclude'];
-  const salesOptions = ['Ahmad Rizki', 'Sari Dewi', 'Budi Santoso', 'Maya Putri', 'Andi Wijaya'];
-  const jenisPekerjaanOptions = ['On Call', 'Project Based', 'Maintenance'];
-  const jenisPenawaranOptions = ['Lumpsum', 'Unit Price', 'Time & Material'];
+  const kategoriPajakOptions = ["PPN", "Non-PPN"];
+  const pajakOptions = ["Include", "Exclude"];
+  const salesOptions = [
+    "Ahmad Rizki",
+    "Sari Dewi",
+    "Budi Santoso",
+    "Maya Putri",
+    "Andi Wijaya",
+  ];
+  const jenisPekerjaanOptions = ["On Call", "Project Based", "Maintenance"];
+  const jenisPenawaranOptions = ["Lumpsum", "Unit Price", "Time & Material"];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
-  const handleInputChange = (field: keyof PenawaranTwoStepFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+  const handleInputChange = (
+    field: keyof PenawaranTwoStepFormData,
+    value: string
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleSupplyChange = (index: number, field: string, value: string) => {
     const newSupplies = [...formData.supplies];
     newSupplies[index] = { ...newSupplies[index], [field]: value };
-    
+
     // Auto calculate total price
-    if (field === 'qty' || field === 'unitPrice') {
-      const qty = parseFloat(field === 'qty' ? value : newSupplies[index].qty) || 0;
-      const unitPrice = parseFloat(field === 'unitPrice' ? value : newSupplies[index].unitPrice) || 0;
+    if (field === "qty" || field === "unitPrice") {
+      const qty =
+        parseFloat(field === "qty" ? value : newSupplies[index].qty) || 0;
+      const unitPrice =
+        parseFloat(
+          field === "unitPrice" ? value : newSupplies[index].unitPrice
+        ) || 0;
       newSupplies[index].totalPrice = (qty * unitPrice).toString();
     }
-    
-    setFormData(prev => ({ ...prev, supplies: newSupplies }));
+
+    setFormData((prev) => ({ ...prev, supplies: newSupplies }));
   };
 
   const addSupply = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      supplies: [...prev.supplies, { item: '', description: '', qty: '', unitPrice: '', totalPrice: '' }]
+      supplies: [
+        ...prev.supplies,
+        { item: "", description: "", qty: "", unitPrice: "", totalPrice: "" },
+      ],
     }));
   };
 
   const removeSupply = (index: number) => {
     if (formData.supplies.length > 1) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        supplies: prev.supplies.filter((_, i) => i !== index)
+        supplies: prev.supplies.filter((_, i) => i !== index),
       }));
     }
   };
@@ -154,33 +184,35 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
     // Validation disabled
 
     setIsLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     onSave(formData);
     setIsLoading(false);
-    
+
     // Reset form
     setFormData({
-      noPenawaran: '',
-      kategoriPajak: '',
-      kodeCustomer: '',
-      pajak: '',
-      tanggalPenawaran: '',
-      tanggalPenawaranEnd: '',
-      namaSales: '',
-      noRefReq: '',
-      namaCustomer: '',
-      tanggalKirim: '',
-      tanggalFollowUp: '',
-      nama: '',
-      alamat: '',
-      jenisPekerjaan: '',
-      perusahaan: '',
-      jenisPenawaran: '',
-      termCondition: '',
-      supplies: [{ item: '', description: '', qty: '', unitPrice: '', totalPrice: '' }]
+      noPenawaran: "",
+      kategoriPajak: "",
+      kodeCustomer: "",
+      pajak: "",
+      tanggalPenawaran: "",
+      tanggalPenawaranEnd: "",
+      namaSales: "",
+      noRefReq: "",
+      namaCustomer: "",
+      tanggalKirim: "",
+      tanggalFollowUp: "",
+      nama: "",
+      alamat: "",
+      jenisPekerjaan: "",
+      perusahaan: "",
+      jenisPenawaran: "",
+      termCondition: "",
+      supplies: [
+        { item: "", description: "", qty: "", unitPrice: "", totalPrice: "" },
+      ],
     });
     setCurrentStep(1);
     setErrors({});
@@ -195,10 +227,11 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
 
   if (!isOpen) return null;
 
-  const modalTitle = type === 'on-call' ? 'Entry Penawaran On Call' : 'Entry Penawaran Tender';
+  const modalTitle =
+    type === "on-call" ? "Entry Penawaran On Call" : "Entry Penawaran Tender";
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
@@ -207,52 +240,58 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{modalTitle}</h2>
-            
+
             {/* Stepper */}
             <div className="flex items-center justify-between mt-6 max-w-md">
               {/* Step 1 */}
               <div className="flex items-center space-x-3">
-                <div 
+                <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
-                    currentStep === 1 
-                      ? 'bg-blue-600 text-white shadow-lg' 
+                    currentStep === 1
+                      ? "bg-blue-600 text-white shadow-lg"
                       : currentStep > 1
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-600"
                   }`}
                 >
                   1
                 </div>
-                <span className={`text-sm font-medium transition-colors duration-200 ${
-                  currentStep === 1 ? 'text-blue-600' : 'text-gray-500'
-                }`}>
+                <span
+                  className={`text-sm font-medium transition-colors duration-200 ${
+                    currentStep === 1 ? "text-blue-600" : "text-gray-500"
+                  }`}
+                >
                   Entry 1
                 </span>
               </div>
-              
+
               {/* Connector Line */}
               <div className="flex-1 mx-4">
-                <div className={`h-0.5 w-full transition-colors duration-200 ${
-                  currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'
-                }`}></div>
+                <div
+                  className={`h-0.5 w-full transition-colors duration-200 ${
+                    currentStep >= 2 ? "bg-blue-600" : "bg-gray-300"
+                  }`}
+                ></div>
               </div>
-              
+
               {/* Step 2 */}
               <div className="flex items-center space-x-3">
-                <div 
+                <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
-                    currentStep === 2 
-                      ? 'bg-blue-600 text-white shadow-lg' 
+                    currentStep === 2
+                      ? "bg-blue-600 text-white shadow-lg"
                       : currentStep > 2
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-600"
                   }`}
                 >
                   2
                 </div>
-                <span className={`text-sm font-medium transition-colors duration-200 ${
-                  currentStep === 2 ? 'text-blue-600' : 'text-gray-500'
-                }`}>
+                <span
+                  className={`text-sm font-medium transition-colors duration-200 ${
+                    currentStep === 2 ? "text-blue-600" : "text-gray-500"
+                  }`}
+                >
                   Various information
                 </span>
               </div>
@@ -279,7 +318,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   <input
                     type="text"
                     value={formData.noPenawaran}
-                    onChange={(e) => handleInputChange('noPenawaran', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("noPenawaran", e.target.value)
+                    }
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     placeholder="Masukkan no penawaran"
                   />
@@ -293,7 +334,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   <input
                     type="text"
                     value={formData.namaSales}
-                    onChange={(e) => handleInputChange('namaSales', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("namaSales", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="Masukkan Nama Sales"
                   />
@@ -306,18 +349,22 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   </label>
                   <select
                     value={formData.kategoriPajak}
-                    onChange={(e) => handleInputChange('kategoriPajak', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("kategoriPajak", e.target.value)
+                    }
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                   >
                     <option value="">Pilih Kategori Pajak</option>
                     {kategoriPajakOptions.map((option) => (
-                      <option key={option} value={option}>{option}</option>
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 {/* No. Ref Req - removed per request */}
-              
+
                 {/* Kode Customer - removed per request */}
 
                 {/* Nama Customer */}
@@ -328,7 +375,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   <input
                     type="text"
                     value={formData.namaCustomer}
-                    onChange={(e) => handleInputChange('namaCustomer', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("namaCustomer", e.target.value)
+                    }
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     placeholder="Masukkan nama customer"
                   />
@@ -341,12 +390,14 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                   </label>
                   <select
                     value={formData.pajak}
-                    onChange={(e) => handleInputChange('pajak', e.target.value)}
+                    onChange={(e) => handleInputChange("pajak", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   >
                     <option value="">Pilih Pajak</option>
                     {pajakOptions.map((option) => (
-                      <option key={option} value={option}>{option}</option>
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -360,7 +411,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     <input
                       type="date"
                       value={formData.tanggalKirim}
-                      onChange={(e) => handleInputChange('tanggalKirim', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("tanggalKirim", e.target.value)
+                      }
                       className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     />
                     <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -377,7 +430,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                       <input
                         type="date"
                         value={formData.tanggalPenawaran}
-                        onChange={(e) => handleInputChange('tanggalPenawaran', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("tanggalPenawaran", e.target.value)
+                        }
                         className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                       />
                       <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -389,7 +444,12 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                       <input
                         type="date"
                         value={formData.tanggalPenawaranEnd}
-                        onChange={(e) => handleInputChange('tanggalPenawaranEnd', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "tanggalPenawaranEnd",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                       />
                       <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -406,7 +466,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     <input
                       type="date"
                       value={formData.tanggalFollowUp}
-                      onChange={(e) => handleInputChange('tanggalFollowUp', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("tanggalFollowUp", e.target.value)
+                      }
                       className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     />
                     <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -427,7 +489,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     <input
                       type="text"
                       value={formData.nama}
-                      onChange={(e) => handleInputChange('nama', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("nama", e.target.value)
+                      }
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                       placeholder="Masukkan nama"
                     />
@@ -441,7 +505,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     <input
                       type="text"
                       value={formData.perusahaan}
-                      onChange={(e) => handleInputChange('perusahaan', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("perusahaan", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                       placeholder="Masukkan nama perusahaan"
                     />
@@ -454,7 +520,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     </label>
                     <textarea
                       value={formData.alamat}
-                      onChange={(e) => handleInputChange('alamat', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("alamat", e.target.value)
+                      }
                       rows={3}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-xs border-gray-200`}
                       placeholder="Masukkan alamat"
@@ -468,12 +536,16 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     </label>
                     <select
                       value={formData.jenisPenawaran}
-                      onChange={(e) => handleInputChange('jenisPenawaran', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("jenisPenawaran", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     >
                       <option value="">Pilih Jenis Penawaran</option>
                       {jenisPenawaranOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -485,12 +557,16 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     </label>
                     <select
                       value={formData.jenisPekerjaan}
-                      onChange={(e) => handleInputChange('jenisPekerjaan', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("jenisPekerjaan", e.target.value)
+                      }
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     >
                       <option value="">Pilih Jenis Pekerjaan</option>
                       {jenisPekerjaanOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -502,20 +578,28 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     Term & Condition
                   </label>
                   <div className="border border-gray-200 rounded-xl p-3 bg-gray-50 min-h-[200px]">
-     <Editor
-      apiKey='oevuvo9pv4lces7pexy2lbdy5khujbg9jz6i278knnmj5f5i'
-      init={{
-        // Keep only essential, lightweight plugins to speed up load
-        plugins: [
-          'autolink', 'lists', 'link', 'table', 'charmap', 'searchreplace', 'visualblocks', 'wordcount'
-        ],
-        toolbar: 'undo redo | bold italic underline | numlist bullist outdent indent | link table | removeformat',
-        menubar: false,
-        statusbar: false,
-        branding: false,
-        content_style: 'body{font-size:12px; line-height:1.4; margin:0;} ol,ul{margin:0 0 0.5rem 1.25rem; padding:0;} li{margin:0.15rem 0;}',
-      }}
-      initialValue="
+                    <Editor
+                      apiKey="oevuvo9pv4lces7pexy2lbdy5khujbg9jz6i278knnmj5f5i"
+                      init={{
+                        plugins: [
+                          "autolink",
+                          "lists",
+                          "link",
+                          "table",
+                          "charmap",
+                          "searchreplace",
+                          "visualblocks",
+                          "wordcount",
+                        ],
+                        toolbar:
+                          "undo redo | bold italic underline | numlist bullist outdent indent | link table | removeformat",
+                        menubar: false,
+                        statusbar: false,
+                        branding: false,
+                        content_style:
+                          "body{font-size:12px; line-height:1.4; margin:0;} ol,ul{margin:0 0 0.5rem 1.25rem; padding:0;} li{margin:0.15rem 0;}",
+                      }}
+                      initialValue="
 <ol>
   <li>Price above excluded VAT 11%.</li>
   <li>Term of payment must be pay DP Rp. 35.000.000,- (for 250 Sheet) before the work is carried out.</li>
@@ -538,7 +622,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
   <li>This quotation is valid for one (1) week from the date of quotation.</li>
 </ol>
       "
-    />
+                    />
                   </div>
                 </div>
 
@@ -549,17 +633,29 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                       Supply
                     </label>
                   </div>
-                  
+
                   <div className="overflow-x-auto border border-gray-200 rounded-xl">
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Item</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Description</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">QTY</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Unit Price</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Total Price</th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                            Item
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                            Description
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                            QTY
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                            Unit Price
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                            Total Price
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                            Aksi
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
@@ -569,7 +665,13 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                               <input
                                 type="text"
                                 value={supply.item}
-                                onChange={(e) => handleSupplyChange(index, 'item', e.target.value)}
+                                onChange={(e) =>
+                                  handleSupplyChange(
+                                    index,
+                                    "item",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Item"
                               />
@@ -578,7 +680,13 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                               <input
                                 type="text"
                                 value={supply.description}
-                                onChange={(e) => handleSupplyChange(index, 'description', e.target.value)}
+                                onChange={(e) =>
+                                  handleSupplyChange(
+                                    index,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Description"
                               />
@@ -587,7 +695,13 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                               <input
                                 type="number"
                                 value={supply.qty}
-                                onChange={(e) => handleSupplyChange(index, 'qty', e.target.value)}
+                                onChange={(e) =>
+                                  handleSupplyChange(
+                                    index,
+                                    "qty",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Qty"
                               />
@@ -596,7 +710,13 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                               <input
                                 type="number"
                                 value={supply.unitPrice}
-                                onChange={(e) => handleSupplyChange(index, 'unitPrice', e.target.value)}
+                                onChange={(e) =>
+                                  handleSupplyChange(
+                                    index,
+                                    "unitPrice",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                                 placeholder="Unit Price"
                               />
@@ -626,14 +746,14 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
                     </table>
                   </div>
                 </div>
-                    
-                                        <button
-                      type="button"
-                      onClick={addSupply}
-                      className="px-2.5 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Add Supply
-                    </button>
+
+                <button
+                  type="button"
+                  onClick={addSupply}
+                  className="px-2.5 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Add Supply
+                </button>
               </div>
             )}
           </form>
@@ -660,7 +780,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({ isOpen, o
               Close
             </button>
           </div>
-          
+
           <div className="flex space-x-3">
             {currentStep === 1 ? (
               <button

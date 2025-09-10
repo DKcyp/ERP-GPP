@@ -27,7 +27,7 @@ interface Prospect {
   email: string;
   keterangan: string;
   tanggalUpdate: string; // DD-MM-YYYY
-  status: "Cold" | "Warm" | "Hot";
+  status: "Cold" | "Warm" | "Hot" | "Close";
 }
 
 const ProspectDashboard: React.FC = () => {
@@ -94,6 +94,34 @@ const ProspectDashboard: React.FC = () => {
       keterangan: "Perusahaan jasa konsultan, potensial menjadi partner",
       tanggalUpdate: "02-01-2025",
       status: "Warm",
+    },
+    {
+      id: "4",
+      no: 4,
+      namaPerusahaan: "PT Nusantara Energi",
+      pic: "Rudi Hartono",
+      jabatan: "Manager",
+      noTelp: "082211334455",
+      deadlineProspect: "15-02-2025",
+      alamat: "Bekasi",
+      email: "contact@nusantara-energi.co.id",
+      keterangan: "Prospek ditutup karena proyek dibatalkan klien",
+      tanggalUpdate: "05-02-2025",
+      status: "Close",
+    },
+    {
+      id: "5",
+      no: 5,
+      namaPerusahaan: "CV Mitra Abadi",
+      pic: "Sari Purnama",
+      jabatan: "Procurement",
+      noTelp: "081355577799",
+      deadlineProspect: "20-02-2025",
+      alamat: "Depok",
+      email: "mitra.abadi@company.co.id",
+      keterangan: "Close: kebutuhan sudah dipenuhi vendor lain",
+      tanggalUpdate: "06-02-2025",
+      status: "Close",
     },
   ]);
 
@@ -218,12 +246,14 @@ const ProspectDashboard: React.FC = () => {
         return "bg-yellow-500 text-white";
       case "Cold":
         return "bg-blue-500 text-white";
+      case "Close":
+        return "bg-gray-500 text-white";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const statusOptions = ["Cold", "Warm", "Hot"];
+  const statusOptions = ["Cold", "Warm", "Hot", "Close"];
 
   // Filter prospects based on search criteria
   const filteredProspects = prospects.filter((prospect) => {

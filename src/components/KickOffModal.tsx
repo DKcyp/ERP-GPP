@@ -14,6 +14,8 @@ export interface KickOffFormData {
   caraPenagihan: string;
   sow: string;
   keterangan: string;
+  transportasi: string;
+  akomodasi: string;
   syaratPenerimaanInvoice: string;
   syaratPenagihanDokumen: string;
   pics: Array<{
@@ -32,6 +34,8 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
     caraPenagihan: '',
     sow: '',
     keterangan: '',
+    transportasi: '',
+    akomodasi: '',
     syaratPenerimaanInvoice: '',
     syaratPenagihanDokumen: '',
     pics: [{ namaPIC: '', divisiPIC: '', noHPPIC: '', emailPIC: '' }]
@@ -95,7 +99,16 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    // Validate required fields
+    const newErrors: Partial<KickOffFormData> = {};
+    if (!formData.transportasi.trim()) newErrors.transportasi = 'Transportasi wajib diisi';
+    if (!formData.akomodasi.trim()) newErrors.akomodasi = 'Akomodasi wajib diisi';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setIsLoading(true);
     
     // Simulate API call
@@ -112,6 +125,8 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
       caraPenagihan: '',
       sow: '',
       keterangan: '',
+      transportasi: '',
+      akomodasi: '',
       syaratPenerimaanInvoice: '',
       syaratPenagihanDokumen: '',
       pics: [{ namaPIC: '', divisiPIC: '', noHPPIC: '', emailPIC: '' }]
@@ -349,6 +364,43 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
                 </div>
               </div>
 
+              {/* Transportasi & Akomodasi (Required) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Transportasi */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Transportasi <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={formData.transportasi}
+                    onChange={(e) => handleInputChange('transportasi', e.target.value)}
+                    rows={3}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${errors.transportasi ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                    placeholder="Detail kebutuhan transportasi proyek..."
+                  />
+                  {errors.transportasi && (
+                    <p className="mt-1 text-sm text-red-600">{errors.transportasi}</p>
+                  )}
+                </div>
+
+                {/* Akomodasi */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Akomodasi <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={formData.akomodasi}
+                    onChange={(e) => handleInputChange('akomodasi', e.target.value)}
+                    rows={3}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${errors.akomodasi ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                    placeholder="Detail kebutuhan akomodasi proyek..."
+                  />
+                  {errors.akomodasi && (
+                    <p className="mt-1 text-sm text-red-600">{errors.akomodasi}</p>
+                  )}
+                </div>
+              </div>
+
               {/* Syarat Penagihan Dokumen */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -399,10 +451,15 @@ const KickOffModal: React.FC<KickOffModalProps> = ({ isOpen, onClose, onSave }) 
             Close
           </button>
           <button
-            type="button"
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 font-medium text-sm"
+            type="submit"
+            disabled={isLoading}
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Simpan
+            {isLoading ? (
+              <span>Menyimpan...</span>
+            ) : (
+              <span>Simpan</span>
+            )}
           </button>
         </div>
       </div>

@@ -256,6 +256,17 @@ export const marketingMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Master",
+    icon: "Database",
+    items: [
+      {
+        title: "Master Data Customer",
+        icon: "Users",
+        path: "/marketing/master/master-data-customer",
+      },
+    ],
+  },
+  {
     title: "Kontrak/SPK/PO",
     icon: "FileCheck",
     items: [],
@@ -290,6 +301,17 @@ export const marketingMenu: MenuSection[] = [
     icon: "FileText",
     items: [],
     directPath: "/marketing/report-kontrak",
+  },
+  {
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Marketing",
+        icon: "BarChart3",
+        path: "/marketing/monitoring/marketing",
+      },
+    ],
   },
   createGeneralMenu("marketing"),
 ];
