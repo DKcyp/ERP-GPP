@@ -9,6 +9,7 @@ interface SalesOrderModalProps {
 
 // Row types for tabs (shared to detail via onSave)
 export type TenagaKerjaRow = {
+  pegawai: string;
   tenaga: string;
   tunjangan: string;
   projectRate: string;
@@ -123,8 +124,18 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
   
 
   const [activeTab, setActiveTab] = useState<string>("Tenaga Kerja");
+  // Ringkasan pekerjaan (kopi dari HPP Induk)
+  type RingkasRow = { jenisPekerjaan: string; hargaSatuan: string; jumlah: string; total: string };
+  const [pekerjaanRingkas, setPekerjaanRingkas] = useState<RingkasRow[]>([
+    { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
+  ]);
+  const jenisPekerjaanUnitPrice: Record<string, number> = {
+    "On Call": 1500000,
+    "Tender": 2000000,
+  };
   const [tenagaKerja, setTenagaKerja] = useState<TenagaKerjaRow[]>([
     {
+      pegawai: "",
       tenaga: "",
       tunjangan: "",
       projectRate: "",
@@ -215,6 +226,120 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     }
   };
 
+  // Handlers Ringkasan Pekerjaan
+  const addPekerjaanRow = () => {
+    setPekerjaanRingkas((prev) => [
+      ...prev,
+      { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
+    ]);
+  };
+  const removePekerjaanRow = (idx: number) => {
+    setPekerjaanRingkas((prev) => (prev.length === 1 ? prev : prev.filter((_, i) => i !== idx)));
+  };
+  const updatePekerjaanRow = (
+    idx: number,
+    field: "jenisPekerjaan" | "jumlah",
+    value: string
+  ) => {
+    setPekerjaanRingkas((prev) => {
+      const next = [...prev];
+      let row = { ...next[idx], [field]: value } as RingkasRow;
+      // isi hargaSatuan dari mapping saat pilih jenis pekerjaan
+      if (field === "jenisPekerjaan") {
+        const unit = jenisPekerjaanUnitPrice[value] || 0;
+        row.hargaSatuan = unit ? String(unit) : "";
+      }
+      const jumlahNum = parseFloat(field === "jumlah" ? value : row.jumlah || "0") || 0;
+      const hargaNum = parseFloat(row.hargaSatuan || "0") || 0;
+      row.total = jumlahNum > 0 && hargaNum > 0 ? String(jumlahNum * hargaNum) : row.total || "";
+      next[idx] = row;
+
+      // Auto-fill semua baris tab Tenaga Kerja & Barang, dan tambahkan 2 baris baru di masing-masing
+      if (field === "jenisPekerjaan") {
+        const unit = jenisPekerjaanUnitPrice[value] || 0;
+        if (unit > 0) {
+          // Tenaga Kerja
+          const filledTK = tenagaKerja.map((r, i) => {
+            const projectRate = unit;
+            const hari = 1;
+            const hargaAwal = projectRate * hari;
+            const margin = 10;
+            const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
+            return {
+              pegawai: pegawaiOptions[i % pegawaiOptions.length] || r.pegawai || "",
+              tenaga: tenagaOptions[i % tenagaOptions.length] || r.tenaga || "",
+              tunjangan: tunjanganOptions[i % tunjanganOptions.length] || r.tunjangan || "",
+              projectRate: String(projectRate),
+              hari: String(hari),
+              hargaAwal: String(hargaAwal),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            } as TenagaKerjaRow;
+          });
+          const mkTK = (seed: number): TenagaKerjaRow => {
+            const projectRate = unit;
+            const hari = 1;
+            const hargaAwal = projectRate * hari;
+            const margin = 10;
+            const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
+            return {
+              pegawai: pegawaiOptions[seed % pegawaiOptions.length] || "",
+              tenaga: tenagaOptions[seed % tenagaOptions.length] || "",
+              tunjangan: tunjanganOptions[seed % tunjanganOptions.length] || "",
+              projectRate: String(projectRate),
+              hari: String(hari),
+              hargaAwal: String(hargaAwal),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            };
+          };
+          setTenagaKerja([...filledTK, mkTK(filledTK.length), mkTK(filledTK.length + 1)]);
+
+          // Barang
+          const filledBRG = barang.map((r, i) => {
+            const jumlah = 1;
+            const harga = unit;
+            const hargaSatuan = jumlah > 0 ? harga / jumlah : 0;
+            const margin = 10;
+            const hargaAkhir = harga + (harga * margin) / 100;
+            return {
+              namaBarang: barangOptions[i % barangOptions.length] || r.namaBarang || "",
+              harga: String(harga),
+              jumlah: String(jumlah),
+              hari: r.hari || "",
+              satuan: r.satuan || "Unit",
+              hargaSatuan: String(hargaSatuan),
+              hargaAwal: String(harga),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            } as BarangRow;
+          });
+          const mkBRG = (seed: number): BarangRow => {
+            const jumlah = 1;
+            const harga = unit;
+            const hargaSatuan = jumlah > 0 ? harga / jumlah : 0;
+            const margin = 10;
+            const hargaAkhir = harga + (harga * margin) / 100;
+            return {
+              namaBarang: barangOptions[seed % barangOptions.length] || "",
+              harga: String(harga),
+              jumlah: String(jumlah),
+              hari: "",
+              satuan: "Unit",
+              hargaSatuan: String(hargaSatuan),
+              hargaAwal: String(harga),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            };
+          };
+          setBarang([...filledBRG, mkBRG(filledBRG.length), mkBRG(filledBRG.length + 1)]);
+        }
+      }
+
+      return next;
+    });
+  };
+
   const setCurrentTabData = (data: any[]) => {
     switch (activeTab) {
       case "Tenaga Kerja":
@@ -276,6 +401,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         setTenagaKerja((prev) => [
           ...prev,
           {
+            pegawai: "",
             tenaga: "",
             tunjangan: "",
             projectRate: "",
@@ -419,7 +545,17 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     "Helper",
     "Safety Officer",
   ];
+  const pegawaiOptions = [
+    "Budi Santoso",
+    "Siti Aminah",
+    "Joko Susilo",
+    "Dewi Lestari",
+    "Agus Salim",
+    "Ahmad Rizki",
+    "Maya Putri",
+  ];
   const jasaOptions = ["Jasa Inspeksi", "Jasa Maintenance", "Jasa Kalibrasi"];
+  const tunjanganOptions = ["Uang Makan", "Transport", "Lembur"];
   const alatOptions = ["Forklift", "Crane", "Truck", "Compressor"];
   const barangOptions = ["Pipa 2 inch", "Valve 1 inch", "Kabel NYA", "Baut M8"];
   const transportOptions = [
@@ -484,9 +620,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         {open && (
           <div className="absolute z-50 mt-1 w-full max-h-44 overflow-auto bg-white border border-gray-200 rounded shadow-lg">
             {filtered.length === 0 ? (
-              <div className="px-2 py-1 text-xs text-gray-500">
-                Tidak ada hasil
-              </div>
+              <div className="px-2 py-1 text-xs text-gray-500">Tidak ada hasil</div>
             ) : (
               filtered.map((opt) => (
                 <button
@@ -618,6 +752,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     setActiveTab("Tenaga Kerja");
     setTenagaKerja([
       {
+        pegawai: "",
         tenaga: "",
         tunjangan: "",
         projectRate: "",
@@ -892,31 +1027,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 )}
               </div>
 
-              {/* Estimasi SO */}
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Estimasi SO <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.estimasiSO}
-                  onChange={(e) =>
-                    handleInputChange("estimasiSO", e.target.value)
-                  }
-                  className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.estimasiSO
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-200"
-                  }`}
-                  placeholder="Estimasi SO"
-                />
-                {errors.estimasiSO && (
-                  <p className="mt-1 text-xs text-red-600">
-                    {errors.estimasiSO}
-                  </p>
-                )}
-              </div>
-
               {/* Lokasi - old position hidden to avoid duplicate */}
               <div className="hidden"></div>
 
@@ -937,6 +1047,64 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 {errors.keterangan && (
                   <p className="mt-1 text-xs text-red-600">{errors.keterangan}</p>
                 )}
+              </div>
+
+              {/* Ringkasan Pekerjaan (kopi HPP Induk) */}
+              <div className="lg:col-span-2 mt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                  <button
+                    type="button"
+                    onClick={addPekerjaanRow}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                  >
+                    <Plus className="h-3 w-3" /> Tambah
+                  </button>
+                </div>
+                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">Jenis Pekerjaan</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">Harga Satuan</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">Jumlah</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">Total</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {pekerjaanRingkas.map((row, idx) => (
+                        <tr key={idx}>
+                          <td className="px-3 py-2">
+                            <select
+                              value={row.jenisPekerjaan}
+                              onChange={(e) => updatePekerjaanRow(idx, "jenisPekerjaan", e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            >
+                              <option value="">Pilih Jenis Pekerjaan</option>
+                              <option value="On Call">On Call</option>
+                              <option value="Tender">Tender</option>
+                            </select>
+                          </td>
+                          <td className="px-3 py-2">
+                            <input type="text" value={row.hargaSatuan} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" placeholder="Harga Satuan" />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input type="number" min={0} value={row.jumlah} onChange={(e) => updatePekerjaanRow(idx, "jumlah", e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" placeholder="0" />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input type="text" value={row.total} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" placeholder="Total" />
+                          </td>
+                          <td className="px-3 py-2">
+                            <button type="button" onClick={() => removePekerjaanRow(idx)} disabled={pekerjaanRingkas.length === 1} className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
@@ -975,6 +1143,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Pegawai
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Tenaga
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
@@ -1000,6 +1171,21 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                     <tbody>
                       {tenagaKerja.map((row, index) => (
                         <tr key={index}>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.pegawai}
+                              onChange={(e) => handleTabDataChange(index, "pegawai", e.target.value)}
+                              list={`pegawaiOptions-${index}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Pilih / cari pegawai"
+                            />
+                            <datalist id={`pegawaiOptions-${index}`}>
+                              {pegawaiOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
+                          </td>
                           <td className="px-2 py-2">
                             <input
                               type="text"

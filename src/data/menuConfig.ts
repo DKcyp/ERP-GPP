@@ -271,17 +271,6 @@ export const marketingMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Master",
-    icon: "Database",
-    items: [
-      {
-        title: "Master Data Customer",
-        icon: "Users",
-        path: "/marketing/master/master-data-customer",
-      },
-    ],
-  },
-  {
     title: "Kontrak/SPK/PO",
     icon: "FileCheck",
     items: [],
@@ -336,6 +325,17 @@ export const marketingMenu: MenuSection[] = [
         title: "Master CSI",
         icon: "Database",
         path: "/marketing/csi/master",
+      },
+    ],
+  },
+  {
+    title: "Master",
+    icon: "Database",
+    items: [
+      {
+        title: "Master Data Customer",
+        icon: "Users",
+        path: "/marketing/master/master-data-customer",
       },
     ],
   },
