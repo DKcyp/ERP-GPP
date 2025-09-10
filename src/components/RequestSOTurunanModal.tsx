@@ -29,6 +29,24 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
+  // Ringkasan pekerjaan (jenis pekerjaan vs jumlah)
+  const [pekerjaanRingkas, setPekerjaanRingkas] = useState<Array<{ jenisPekerjaan: string; jumlah: string }>>([
+    { jenisPekerjaan: "", jumlah: "" },
+  ]);
+
+  const addPekerjaanRow = () => {
+    setPekerjaanRingkas((prev) => [...prev, { jenisPekerjaan: "", jumlah: "" }]);
+  };
+  const updatePekerjaanRow = (idx: number, field: "jenisPekerjaan" | "jumlah", value: string) => {
+    setPekerjaanRingkas((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], [field]: value } as any;
+      return next;
+    });
+  };
+  const removePekerjaanRow = (idx: number) => {
+    setPekerjaanRingkas((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx)));
+  };
 
   useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
@@ -259,6 +277,66 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                 placeholder="Masukkan keterangan..."
                 className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
+            </div>
+
+            {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                <button
+                  type="button"
+                  onClick={addPekerjaanRow}
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                >
+                  Tambah
+                </button>
+              </div>
+              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jenis Pekerjaan</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {pekerjaanRingkas.map((row, idx) => (
+                      <tr key={idx}>
+                        <td className="px-3 py-2">
+                          <input
+                            type="text"
+                            value={row.jenisPekerjaan}
+                            onChange={(e) => updatePekerjaanRow(idx, "jenisPekerjaan", e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            placeholder="On Call / Project Based / Maintenance"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number"
+                            min={0}
+                            value={row.jumlah}
+                            onChange={(e) => updatePekerjaanRow(idx, "jumlah", e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            placeholder="0"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <button
+                            type="button"
+                            onClick={() => removePekerjaanRow(idx)}
+                            disabled={pekerjaanRingkas.length === 1}
+                            className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Hapus
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div className="lg:col-span-2 flex justify-end gap-2 mt-2">

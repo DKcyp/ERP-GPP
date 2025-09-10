@@ -434,7 +434,6 @@ const KontrakDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sudah Ditagihkan</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sisa Penagihan</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Estimasi Penagihan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Delay Penagihan</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th> {/* New Aksi column */}
                 </tr>
               </thead>
@@ -459,7 +458,6 @@ const KontrakDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-600">{item.sudahDitagihkan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.sisaPenagihan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.estimasiPenagihan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.delayPenagihan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">
                       <div className="flex items-center space-x-2">
                         <button 
@@ -482,7 +480,6 @@ const KontrakDashboard: React.FC = () => {
                   <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.sudahDitagihkan)}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.sisaPenagihan)}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(totals.estimasiPenagihan)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900"></td>
                   <td className="px-4 py-3 text-sm text-gray-900"></td> {/* Empty cell for Aksi column in total row */}
                 </tr>
               </tbody>

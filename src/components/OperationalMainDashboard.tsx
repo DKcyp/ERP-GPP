@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, TrendingUp, Users, Calendar, Clock } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Calendar, Clock, DollarSign } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
   LineChart, Line, AreaChart, Area, CartesianGrid
@@ -108,6 +108,41 @@ const OperationalMainDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600 font-medium">On Schedule</p>
                 <p className="text-3xl font-bold text-gray-900">78%</p>
                 <p className="text-sm text-red-600 font-medium">-2% dari bulan lalu</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Man Power Summary (below Active Projects) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Current Man Power & Total Gaji */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Current Man Power</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">156</p>
+                <p className="text-xs text-green-600 font-medium mt-1">+8% dari bulan lalu</p>
+              </div>
+              <div className="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
+                <DollarSign className="h-4 w-4 text-green-600" />
+                <div>
+                  <p className="text-[10px] text-gray-500 leading-none">Total Gaji</p>
+                  <p className="text-sm font-semibold text-gray-900">Rp 1.250.000.000</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Akumulatif Man Power */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Users className="h-8 w-8 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Akumulatif Man Power</p>
+                <p className="text-3xl font-bold text-gray-900">1.234</p>
+                <p className="text-sm text-gray-500 font-medium">YTD (Jan – Sep)</p>
               </div>
             </div>
           </div>
