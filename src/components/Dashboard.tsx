@@ -139,7 +139,10 @@ import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
 import PendebetanDashboard from "./PendebetanDashboard";
 import PayslipDashboard from "./PayslipDashboard";
 import CalendarAbsensiDashboard from "./CalendarAbsensiDashboard";
+import PengajuanIzinDashboard from "./PengajuanIzinDashboard";
 import PengajuanPegawaiBaruDashboard from "./PengajuanPegawaiBaruDashboard";
+import PerjanjianIkatanDinasDashboard from "./PerjanjianIkatanDinasDashboard";
+import SuratIzinBekerjaDashboard from "./SuratIzinBekerjaDashboard";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -703,6 +706,15 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/absensi/kalender") {
       return <CalendarAbsensiDashboard />;
+    }
+    if (currentPage === "/hrd/absensi/pengajuan-izin") {
+      return <PengajuanIzinDashboard />;
+    }
+    if (currentPage === "/hrd/perjanjian/perjanjian-ikatan-dinas") {
+      return <PerjanjianIkatanDinasDashboard />;
+    }
+    if (currentPage === "/hrd/perjanjian/surat-izin-bekerja") {
+      return <SuratIzinBekerjaDashboard />;
     }
     if (currentPage === "/hrd/penilaian/daftar") {
       return <DaftarPenilaianDashboard />;

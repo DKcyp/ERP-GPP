@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import UpdateStatusModal from "./UpdateStatusModal"; // Import the new modal
+import TambahRekrutmenModal from "./TambahRekrutmenModal";
 import {
   Search,
   FileSpreadsheet,
@@ -18,8 +19,10 @@ import {
   ChevronRight,
   ArrowUp,
   ChevronDown,
+  Download,
+  Paperclip,
 } from "lucide-react";
-import { LamaranData, UpdateStatusFormData } from "../types"; // Import LamaranData and UpdateStatusFormData from types
+// Removed unused LamaranData/UpdateStatusFormData import to align with UpdateStatusModal props
 
 // Updated ReqrutmenData interface to be compatible with LamaranData for the modal
 interface ReqrutmenData {
@@ -27,6 +30,9 @@ interface ReqrutmenData {
   no: number;
   namaPelamar: string;
   email: string;
+  posisi?: string;
+  fileName?: string;
+  fileUrl?: string;
   status:
     | "Pending"
     | "Accepted"
@@ -52,6 +58,7 @@ const ReqrutmenDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<ReqrutmenData | null>(null);
   const [sortField, setSortField] = useState<keyof ReqrutmenData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [isTambahOpen, setIsTambahOpen] = useState(false);
 
   // State for Update Status Modal
   const [isUpdateStatusModalOpen, setIsUpdateStatusModalOpen] = useState(false);
@@ -68,6 +75,7 @@ const ReqrutmenDashboard: React.FC = () => {
       no: 1,
       namaPelamar: "Farid Maulana",
       email: "farid.maulana@email.com",
+      posisi: "Staff HR",
       status: "Pending",
       keterangan: "Menunggu review HRD.",
     },
@@ -76,6 +84,7 @@ const ReqrutmenDashboard: React.FC = () => {
       no: 2,
       namaPelamar: "Rahmat Hidayat",
       email: "rahmat.hidayat@email.com",
+      posisi: "Teknisi",
       status: "Accepted",
       keterangan: "Lolos seleksi administrasi, menunggu jadwal interview.",
     },
@@ -84,6 +93,7 @@ const ReqrutmenDashboard: React.FC = () => {
       no: 3,
       namaPelamar: "Fauzan Alfarizi",
       email: "fauzan.alfarizi@email.com",
+      posisi: "Operator",
       status: "Rejected",
       keterangan: "Kualifikasi tidak sesuai.",
     },
@@ -92,6 +102,7 @@ const ReqrutmenDashboard: React.FC = () => {
       no: 4,
       namaPelamar: "Andini Pratiwi",
       email: "andini.pratiwi@email.com",
+      posisi: "Admin",
       status: "Interview",
       keterangan: "Jadwal interview tanggal 10 April 2025.",
     },
@@ -100,6 +111,7 @@ const ReqrutmenDashboard: React.FC = () => {
       no: 5,
       namaPelamar: "Joko Santoso",
       email: "joko.santoso@email.com",
+      posisi: "Supervisor",
       status: "Hired",
       keterangan: "Telah diterima dan mulai bekerja.",
     },
@@ -108,6 +120,7 @@ const ReqrutmenDashboard: React.FC = () => {
       no: 6,
       namaPelamar: "Siti Aisyah",
       email: "siti.aisyah@email.com",
+      posisi: "QC",
       status: "Accepted",
       keterangan: "Lolos seleksi administrasi, menunggu jadwal interview.",
     },
@@ -257,14 +270,21 @@ const ReqrutmenDashboard: React.FC = () => {
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
 
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = a[sortField] as any;
+    const bValue = b[sortField] as any;
 
-    if (sortDirection === "asc") {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
+    // Numeric compare for 'no'
+    if (sortField === "no") {
+      const aNum = typeof aValue === "number" ? aValue : parseFloat(aValue ?? 0);
+      const bNum = typeof bValue === "number" ? bValue : parseFloat(bValue ?? 0);
+      return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
     }
+
+    // String compare for others, safe for undefined
+    const aStr = (aValue ?? "").toString().toLowerCase();
+    const bStr = (bValue ?? "").toString().toLowerCase();
+    const cmp = aStr.localeCompare(bStr, undefined, { numeric: true, sensitivity: "base" });
+    return sortDirection === "asc" ? cmp : -cmp;
   });
 
   // Pagination logic
@@ -285,6 +305,31 @@ const ReqrutmenDashboard: React.FC = () => {
     window.open(`mailto:${email}`, "_blank");
   };
 
+  const handleTambahSave = (data: {
+    namaPelamar: string;
+    email: string;
+    posisi: string;
+    fileName?: string;
+    fileUrl?: string;
+  }) => {
+    setReqrutmenData((prev) => {
+      const nextNo = prev.length > 0 ? Math.max(...prev.map((p) => p.no)) + 1 : 1;
+      const newItem: ReqrutmenData = {
+        id: Date.now().toString(),
+        no: nextNo,
+        namaPelamar: data.namaPelamar,
+        email: data.email,
+        posisi: data.posisi,
+        fileName: data.fileName,
+        fileUrl: data.fileUrl,
+        status: "Pending",
+        keterangan: "-",
+      };
+      return [newItem, ...prev];
+    });
+    setIsTambahOpen(false);
+  };
+
   // --- Update Status Modal Handlers ---
   const handleOpenUpdateStatusModal = (
     item: ReqrutmenData,
@@ -301,7 +346,7 @@ const ReqrutmenDashboard: React.FC = () => {
     setIsEditableMode(false);
   };
 
-  const handleSaveStatus = (id: string, data: UpdateStatusFormData) => {
+  const handleSaveStatus = (id: string, data: any) => {
     setReqrutmenData((prev) =>
       prev.map((item) =>
         item.id === id
@@ -404,20 +449,31 @@ const ReqrutmenDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Export Buttons */}
-          <div className="flex justify-end space-x-2 mb-6">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export Excel</span>
-            </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <File className="h-4 w-4" />
-              <span>Export CSV</span>
-            </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <FileText className="h-4 w-4" />
-              <span>Export PDF</span>
-            </button>
+          {/* Export & Tambah Buttons */}
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <button
+                onClick={() => setIsTambahOpen(true)}
+                className="inline-flex items-center space-x-2 rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-cyan-700"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Export Excel</span>
+              </button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <File className="h-4 w-4" />
+                <span>Export CSV</span>
+              </button>
+              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <FileText className="h-4 w-4" />
+                <span>Export PDF</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -477,6 +533,21 @@ const ReqrutmenDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort("posisi" as keyof ReqrutmenData)}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Posisi</span>
+                      {sortField === ("posisi" as keyof ReqrutmenData) && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
+                      )}
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort("email")}
                   >
                     <div className="flex items-center space-x-1">
@@ -495,6 +566,9 @@ const ReqrutmenDashboard: React.FC = () => {
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Hasil Interview
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    File
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
@@ -539,6 +613,9 @@ const ReqrutmenDashboard: React.FC = () => {
                       {item.namaPelamar}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.posisi || "-"}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
                       {item.email}
                     </td>
                     <td className="px-4 py-3">
@@ -575,6 +652,28 @@ const ReqrutmenDashboard: React.FC = () => {
                           );
                         })()}
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {item.fileUrl ? (
+                        <a
+                          href={item.fileUrl}
+                          download={item.fileName || true}
+                          className="inline-flex items-center gap-1 rounded bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-700"
+                        >
+                          <Download className="h-3 w-3" />
+                          <span>Download</span>
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          title="File belum diupload"
+                          className="inline-flex items-center gap-1 rounded bg-gray-300 px-3 py-1 text-xs font-medium text-white cursor-not-allowed"
+                        >
+                          <Download className="h-3 w-3" />
+                          <span>Download</span>
+                        </button>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -662,13 +761,28 @@ const ReqrutmenDashboard: React.FC = () => {
         itemName={itemToDelete?.namaPelamar}
       />
 
-      {/* Update Status Modal */}
+      {/* Tambah Rekrutmen Modal */}
+      <TambahRekrutmenModal
+        isOpen={isTambahOpen}
+        onClose={() => setIsTambahOpen(false)}
+        onSave={handleTambahSave}
+      />
+
+      {/* Update Status Modal (align with its prop signature) */}
       <UpdateStatusModal
         isOpen={isUpdateStatusModalOpen}
         onClose={handleCloseUpdateStatusModal}
-        onSave={handleSaveStatus}
-        initialData={selectedReqrutmenForStatusUpdate as LamaranData}
-        isEditable={isEditableMode}
+        onSave={(data) => {
+          if (selectedReqrutmenForStatusUpdate) {
+            handleSaveStatus(selectedReqrutmenForStatusUpdate.id, data as any);
+          }
+        }}
+        currentItem={{
+          id: selectedReqrutmenForStatusUpdate?.id || "",
+          namaClient: selectedReqrutmenForStatusUpdate?.namaPelamar || "",
+          // Map current status to the modal's expected field name
+          statusPenawaran: "Minat",
+        }}
       />
     </div>
   );

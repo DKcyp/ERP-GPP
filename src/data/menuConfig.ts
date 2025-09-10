@@ -620,7 +620,7 @@ export const hrdMenu: MenuSection[] = [
         path: "/hrd/rekrutmen/dashboard",
       },
       {
-        title: "List Lamaran",
+        title: "Talent Pool",
         icon: "FileText",
         path: "/hrd/rekrutmen/list-lamaran",
       },
@@ -781,6 +781,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Calendar",
         path: "/hrd/absensi/kalender",
       },
+      {
+        title: "Pengajuan Izin",
+        icon: "FilePlus",
+        path: "/hrd/absensi/pengajuan-izin",
+      },
     ],
   },
   {
@@ -805,12 +810,28 @@ export const hrdMenu: MenuSection[] = [
     ],
   },
   {
-    title: "SPK", // Moved SPK Section to HRD
-    icon: "FileSignature",
+    title: "Perjanjian Kerjasama",
+    icon: "Handshake",
     items: [
-      { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+      {
+        title: "Perjanjian Ikatan Dinas",
+        icon: "FileSignature",
+        path: "/hrd/perjanjian/perjanjian-ikatan-dinas",
+      },
+      {
+        title: "Surat Izin Bekerja",
+        icon: "FileText",
+        path: "/hrd/perjanjian/surat-izin-bekerja",
+      },
     ],
   },
+  // {
+  //   title: "SPK", // Moved SPK Section to HRD
+  //   icon: "FileSignature",
+  //   items: [
+  //     { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
+  //   ],
+  // },
   {
     title: "Monitoring", // Moved SPK Section to HRD
     icon: "Monitor",
