@@ -620,7 +620,7 @@ export const hrdMenu: MenuSection[] = [
         path: "/hrd/rekrutmen/dashboard",
       },
       {
-        title: "List Lamaran",
+        title: "Talent Pool",
         icon: "FileText",
         path: "/hrd/rekrutmen/list-lamaran",
       },

@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import {
-  Search,
-  FileSpreadsheet,
-  FileText,
-  File,
-  ThumbsUp, // Changed to ThumbsUp icon
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp,
-} from "lucide-react";
-import { LamaranData } from "../types"; // Import LamaranData from types
+import { Search, FileSpreadsheet, FileText, File, ThumbsUp, ChevronDown, ArrowUp, Download, Plus } from "lucide-react";
+import TambahTalentPoolModal from "./TambahTalentPoolModal";
+
+interface TalentPoolData {
+  id: string;
+  no: number;
+  namaPelamar: string;
+  noTelp: string;
+  email: string;
+  kualifikasi: string;
+  fileName?: string;
+  fileUrl?: string;
+  status: "Pending" | "Accepted" | "Rejected" | "Interview" | "Hired";
+  keterangan: string;
+}
 
 const ListLamaranDashboard: React.FC = () => {
   const [searchNamaPelamar, setSearchNamaPelamar] = useState("");
@@ -19,11 +22,12 @@ const ListLamaranDashboard: React.FC = () => {
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState<keyof LamaranData | null>(null);
+  const [sortField, setSortField] = useState<keyof TalentPoolData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [isTambahOpen, setIsTambahOpen] = useState(false);
 
   // Sample data matching the image, now with status and keterangan
-  const [lamaranData, setLamaranData] = useState<LamaranData[]>([
+  const [lamaranData, setLamaranData] = useState<TalentPoolData[]>([
     {
       id: "1",
       no: 1,
@@ -79,7 +83,7 @@ const ListLamaranDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleSort = (field: keyof LamaranData) => {
+  const handleSort = (field: keyof TalentPoolData) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -104,14 +108,19 @@ const ListLamaranDashboard: React.FC = () => {
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
 
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = a[sortField] as any;
+    const bValue = b[sortField] as any;
 
-    if (sortDirection === "asc") {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
+    if (sortField === "no") {
+      const aNum = typeof aValue === "number" ? aValue : parseFloat(aValue ?? 0);
+      const bNum = typeof bValue === "number" ? bValue : parseFloat(bValue ?? 0);
+      return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
     }
+
+    const aStr = (aValue ?? "").toString().toLowerCase();
+    const bStr = (bValue ?? "").toString().toLowerCase();
+    const cmp = aStr.localeCompare(bStr, undefined, { numeric: true, sensitivity: "base" });
+    return sortDirection === "asc" ? cmp : -cmp;
   });
 
   // Pagination logic
@@ -128,13 +137,13 @@ const ListLamaranDashboard: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleThumbUpClick = (item: LamaranData) => {
+  const handleThumbUpClick = (item: TalentPoolData) => {
     console.log(`Thumb up clicked for ${item.namaPelamar}`);
     // Implement your logic for the thumb up button here
     alert(`Approving application for ${item.namaPelamar}`);
   };
 
-  const getStatusColor = (status: LamaranData["status"]) => {
+  const getStatusColor = (status: TalentPoolData["status"]) => {
     switch (status) {
       case "Pending":
         return "bg-yellow-100 text-yellow-800";
@@ -156,9 +165,7 @@ const ListLamaranDashboard: React.FC = () => {
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            LIST LAMARAN
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">TALENT POOL</h1>
 
           {/* Search and Filter Section */}
           <div className="space-y-4 mb-6">
@@ -242,13 +249,23 @@ const ListLamaranDashboard: React.FC = () => {
                       ))}
                     </div>
                   )}
-                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Export Buttons */}
-          <div className="flex justify-end space-x-2 mb-6">
+        {/* Tambah & Export Buttons */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <button
+              onClick={() => setIsTambahOpen(true)}
+              className="inline-flex items-center space-x-2 rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-cyan-700"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Tambah</span>
+            </button>
+          </div>
+          <div className="flex justify-end space-x-2">
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
@@ -264,23 +281,24 @@ const ListLamaranDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+    </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        {/* Show entries control */}
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-700">Show</span>
-          <select
-            value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-          <span className="text-sm text-gray-700">entries</span>
-        </div>
+    <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      {/* Show entries control */}
+      <div className="flex items-center space-x-4">
+        <span className="text-sm text-gray-700">Show</span>
+        <select
+          value={itemsPerPage}
+          onChange={(e) => setItemsPerPage(Number(e.target.value))}
+          className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+        >
+          <option value={10}>10</option>
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+        <span className="text-sm text-gray-700">entries</span>
+      </div>
 
         {/* Data Table */}
         <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
@@ -363,6 +381,9 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    File
+                  </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort("status")}
@@ -420,6 +441,28 @@ const ListLamaranDashboard: React.FC = () => {
                       <div className="truncate" title={item.kualifikasi}>
                         {item.kualifikasi}
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {item.fileUrl ? (
+                        <a
+                          href={item.fileUrl}
+                          download={item.fileName || true}
+                          className="inline-flex items-center gap-1 rounded bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-700"
+                        >
+                          <Download className="h-3 w-3" />
+                          <span>Download</span>
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          title="File belum diupload"
+                          className="inline-flex items-center gap-1 rounded bg-gray-300 px-3 py-1 text-xs font-medium text-white cursor-not-allowed"
+                        >
+                          <Download className="h-3 w-3" />
+                          <span>Download</span>
+                        </button>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -487,6 +530,30 @@ const ListLamaranDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Tambah Talent Pool Modal */}
+      <TambahTalentPoolModal
+        isOpen={isTambahOpen}
+        onClose={() => setIsTambahOpen(false)}
+        onSave={(data) => {
+          setLamaranData((prev: TalentPoolData[]) => {
+            const nextNo = prev.length > 0 ? Math.max(...prev.map((p) => p.no || 0)) + 1 : 1;
+            const newItem: TalentPoolData = {
+              id: Date.now().toString(),
+              no: nextNo,
+              namaPelamar: data.namaPelamar,
+              noTelp: data.noTelp,
+              email: data.email,
+              kualifikasi: data.kualifikasi,
+              fileName: data.fileName,
+              fileUrl: data.fileUrl,
+              status: "Pending",
+              keterangan: "-",
+            };
+            return [newItem, ...prev];
+          });
+          setIsTambahOpen(false);
+        }}
+      />
     </div>
   );
 };

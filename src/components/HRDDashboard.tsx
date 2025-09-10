@@ -6,7 +6,6 @@ import {
   Wrench,
   Calendar,
   TrendingUp,
-  TrendingDown,
   Clock,
   CheckCircle,
   XCircle,
@@ -109,14 +108,7 @@ const HRDDashboard: React.FC = () => {
     }
   };
 
-  // Pie chart data
-  const pieChartData = [
-    { label: 'Kontrak Habis', value: 90, color: '#3B82F6' },
-    { label: 'Diberhentikan', value: 5, color: '#10B981' },
-    { label: 'Resign', value: 5, color: '#EF4444' }
-  ];
-
-  const total = pieChartData.reduce((sum, item) => sum + item.value, 0);
+  // (Removed chart data; using tables instead)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -143,10 +135,10 @@ const HRDDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Employee Cards */}
-          <div className="space-y-6">
-            {/* Teknisi Reguler Card */}
+        <div className="w-full">
+          {/* KPI Boxes aligned to the right */}
+          <div className="flex flex-col lg:flex-row justify-end gap-6">
+            {/* Staf (PKWT) */}
             <div className={`bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
               animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
             }`}>
@@ -156,9 +148,9 @@ const HRDDashboard: React.FC = () => {
                     <div className="p-2 bg-white/20 rounded-lg">
                       <Wrench className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg font-semibold">Teknisi Reguler</h3>
+                    <h3 className="text-lg font-semibold">Staf (PKWT)</h3>
                   </div>
-                  <p className="text-3xl font-bold">150</p>
+                  <p className="text-3xl font-bold">85</p>
                 </div>
                 <div className="text-right">
                   <TrendingUp className="h-8 w-8 opacity-70" />
@@ -166,7 +158,7 @@ const HRDDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Teknisi Lepas Card */}
+            {/* Staf (PKWTT) */}
             <div className={`bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
               animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
             }`} style={{ animationDelay: '200ms' }}>
@@ -176,9 +168,9 @@ const HRDDashboard: React.FC = () => {
                     <div className="p-2 bg-white/20 rounded-lg">
                       <BarChart3 className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg font-semibold">Teknisi Lepas</h3>
+                    <h3 className="text-lg font-semibold">Staf (PKWTT)</h3>
                   </div>
-                  <p className="text-3xl font-bold">250</p>
+                  <p className="text-3xl font-bold">60</p>
                 </div>
                 <div className="text-right">
                   <TrendingUp className="h-8 w-8 opacity-70" />
@@ -186,7 +178,7 @@ const HRDDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Staf Kantor Card */}
+            {/* Teknisi (PKWT) */}
             <div className={`bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
               animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
             }`} style={{ animationDelay: '400ms' }}>
@@ -196,157 +188,49 @@ const HRDDashboard: React.FC = () => {
                     <div className="p-2 bg-white/20 rounded-lg">
                       <FileText className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg font-semibold">Staf Kantor</h3>
+                    <h3 className="text-lg font-semibold">Teknisi (PKWT)</h3>
                   </div>
-                  <p className="text-3xl font-bold">125</p>
+                  <p className="text-3xl font-bold">140</p>
                 </div>
                 <div className="text-right">
                   <TrendingUp className="h-8 w-8 opacity-70" />
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Center Column - Pie Chart */}
-          <div className="flex items-center justify-center">
-            <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-8 w-full max-w-md ${
-              animateChart ? 'animate-in zoom-in-95 fade-in-0' : 'opacity-0'
-            }`}>
-              <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">
-                Status Karyawan
-              </h3>
-              
-              {/* Pie Chart */}
-              <div className="relative w-64 h-64 mx-auto mb-6">
-                <svg viewBox="0 0 200 200" className="w-full h-full transform -rotate-90">
-                  {/* Background circle */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#E5E7EB"
-                    strokeWidth="2"
-                  />
-                  
-                  {/* Kontrak Habis segment (blue) - 90% */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#3B82F6"
-                    strokeWidth="40"
-                    strokeDasharray={`${(90 / 100) * 502.65} 502.65`}
-                    strokeDashoffset="0"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                  
-                  {/* Diberhentikan segment (green) - 5% */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#10B981"
-                    strokeWidth="40"
-                    strokeDasharray={`${(5 / 100) * 502.65} 502.65`}
-                    strokeDashoffset={`-${(90 / 100) * 502.65}`}
-                    className="transition-all duration-1000 ease-out"
-                  />
-                  
-                  {/* Resign segment (red) - 5% */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#EF4444"
-                    strokeWidth="40"
-                    strokeDasharray={`${(5 / 100) * 502.65} 502.65`}
-                    strokeDashoffset={`-${(95 / 100) * 502.65}`}
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-                
-                {/* Center text */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">
-                      {total}
+            {/* Teknisi (PKWTT) */}
+            <div className={`bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
+              animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
+            }`} style={{ animationDelay: '600ms' }}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="p-2 bg-white/20 rounded-lg">
+                      <FileText className="h-6 w-6" />
                     </div>
-                    <div className="text-sm text-gray-600">Total</div>
+                    <h3 className="text-lg font-semibold">Teknisi (PKWTT)</h3>
                   </div>
-                </div>
-              </div>
-
-              {/* Legend */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm text-gray-700">Resign</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">5%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-gray-700">Diberhentikan</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">5%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-gray-700">Kontrak Habis</span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">90%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Status Cards */}
-          <div className="space-y-6">
-            {/* Resign Card */}
-            <div className={`bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-right-5 fade-in-0' : 'opacity-0'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Resign</h3>
-                  <p className="text-3xl font-bold">5%</p>
+                  <p className="text-3xl font-bold">110</p>
                 </div>
                 <div className="text-right">
-                  <TrendingDown className="h-8 w-8 opacity-70" />
+                  <TrendingUp className="h-8 w-8 opacity-70" />
                 </div>
               </div>
             </div>
 
-            {/* Diberhentikan Card */}
-            <div className={`bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-right-5 fade-in-0' : 'opacity-0'
-            }`} style={{ animationDelay: '200ms' }}>
+            {/* Teknisi (Freelance) */}
+            <div className={`bg-gradient-to-br from-teal-500 to-teal-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
+              animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
+            }`} style={{ animationDelay: '800ms' }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Diberhentikan</h3>
-                  <p className="text-3xl font-bold">5%</p>
-                </div>
-                <div className="text-right">
-                  <TrendingDown className="h-8 w-8 opacity-70" />
-                </div>
-              </div>
-            </div>
-
-            {/* Kontrak Habis Card */}
-            <div className={`bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-right-5 fade-in-0' : 'opacity-0'
-            }`} style={{ animationDelay: '400ms' }}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Kontrak Habis</h3>
-                  <p className="text-3xl font-bold">90%</p>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="p-2 bg-white/20 rounded-lg">
+                      <FileText className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-lg font-semibold">Teknisi (Freelance)</h3>
+                  </div>
+                  <p className="text-3xl font-bold">95</p>
                 </div>
                 <div className="text-right">
                   <TrendingUp className="h-8 w-8 opacity-70" />
@@ -354,92 +238,93 @@ const HRDDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Center/Right columns removed as requested; tables moved below */}
         </div>
 
-        {/* Tables Section */}
+        {/* Tables Section (Below Boxes) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-          {/* Program Kerja Aktif Table */}
+          {/* Monitoring Kontrak Habis H-3 Bulan */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-              <h3 className="text-xl font-bold text-gray-900">Program Kerja Aktif</h3>
+              <h3 className="text-xl font-bold text-gray-900">Monitoring Kontrak Habis H-3 Bulan</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Program</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Durasi Plan</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Durasi Actual</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jabatan</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Kontrak Habis</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Sisa Hari</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {programKerjaData.map((item, index) => (
-                    <tr 
-                      key={item.no}
-                      className={`hover:bg-gray-50 transition-colors ${
-                        index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                      } ${animateCards ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                      style={{ 
-                        animationDelay: animateCards ? `${(index + 6) * 100}ms` : '0ms',
-                        animationFillMode: 'forwards'
-                      }}
-                    >
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.no}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{item.namaProgram}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.durasiPlan}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.durasiActual}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-2">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
-                            <span className="mr-1">{getStatusIcon(item.status)}</span>
-                            {item.status}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td className="px-4 py-3 text-sm text-gray-900">Budi Santoso</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Teknisi</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">10-12-2025</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">75</td>
+                    <td className="px-4 py-3"><span className="px-3 py-1 rounded-full text-xs font-medium border bg-yellow-100 text-yellow-800 border-yellow-200">H-3 Bulan</span></td>
+                  </tr>
+                  <tr className="bg-gray-25">
+                    <td className="px-4 py-3 text-sm text-gray-900">Siti Aminah</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Staf</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">02-11-2025</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">36</td>
+                    <td className="px-4 py-3"><span className="px-3 py-1 rounded-full text-xs font-medium border bg-blue-100 text-blue-800 border-blue-200">H-3 Bulan</span></td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-sm text-gray-900">Joko Susilo</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Teknisi</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">20-02-2026</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">130</td>
+                    <td className="px-4 py-3"><span className="px-3 py-1 rounded-full text-xs font-medium border bg-green-100 text-green-800 border-green-200">H &gt; 3 Bulan</span></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Komposisi Biaya Gaji Table */}
+          {/* Turn Over Rate */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
-              <h3 className="text-xl font-bold text-gray-900">Komposisi Biaya Gaji</h3>
+              <h3 className="text-xl font-bold text-gray-900">Turn Over Rate</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Karyawan</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Project</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Gaji</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Tunjangan</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Bulan</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Masuk</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Keluar</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Turn Over Rate</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {komposisiBiayaGajiData.map((item, index) => (
-                    <tr 
-                      key={item.no}
-                      className={`hover:bg-gray-50 transition-colors ${
-                        index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                      } ${animateCards ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                      style={{ 
-                        animationDelay: animateCards ? `${(index + 10) * 100}ms` : '0ms',
-                        animationFillMode: 'forwards'
-                      }}
-                    >
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.no}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{item.namaKaryawan}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.project}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.gaji}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.tunjangan}</td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td className="px-4 py-3 text-sm text-gray-900">Jan 2025</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">18</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">12</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">530</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">2.3%</td>
+                  </tr>
+                  <tr className="bg-gray-25">
+                    <td className="px-4 py-3 text-sm text-gray-900">Feb 2025</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">22</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">15</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">537</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">2.8%</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 text-sm text-gray-900">Mar 2025</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">20</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">17</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">540</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">2.6%</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
