@@ -28,7 +28,7 @@ interface SOTurunan {
   namaClient: string;
   tanggalDibuat: string;
   total: string;
-  status: 'Menunggu Review' | 'Approve' | 'Reject';
+  status: "Menunggu Review" | "Approve" | "Reject";
 }
 
 interface SOTurunanDashboardProps {
@@ -66,7 +66,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       namaClient: "PT Adem Ayem",
       tanggalDibuat: "10-02-2025",
       total: "Rp 90.000.000",
-      status: 'Menunggu Review',
+      status: "Menunggu Review",
     },
     {
       id: "2",
@@ -76,7 +76,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       namaClient: "PT Permata Buana",
       tanggalDibuat: "15-02-2025",
       total: "Rp 150.000.000",
-      status: 'Approve',
+      status: "Approve",
     },
     {
       id: "3",
@@ -86,7 +86,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       namaClient: "CV Sejahtera",
       tanggalDibuat: "18-02-2025",
       total: "Rp 200.000.000",
-      status: 'Reject',
+      status: "Reject",
     },
     {
       id: "4",
@@ -96,7 +96,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       namaClient: "CV Makmur",
       tanggalDibuat: "22-02-2025",
       total: "Rp 175.000.000",
-      status: 'Menunggu Review',
+      status: "Menunggu Review",
     },
     {
       id: "5",
@@ -106,7 +106,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       namaClient: "PT WorkHome",
       tanggalDibuat: "25-02-2025",
       total: "Rp 250.000.000",
-      status: 'Approve',
+      status: "Approve",
     },
   ]);
 
@@ -131,7 +131,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
         }
       ),
       total: formData.estimasiSO || "Rp 0",
-      status: 'Menunggu Review',
+      status: "Menunggu Review",
     };
     setSOTurunanData((prev) => [
       newSOTurunan,
@@ -158,16 +158,16 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
     setIsModalOpen(true);
   };
 
-  const getStatusBadge = (status: SOTurunan['status']) => {
+  const getStatusBadge = (status: SOTurunan["status"]) => {
     switch (status) {
-      case 'Menunggu Review':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'Approve':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'Reject':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
+      case "Menunggu Review":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      case "Approve":
+        return "bg-emerald-100 text-emerald-800 border-emerald-200";
+      case "Reject":
+        return "bg-rose-100 text-rose-800 border-rose-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -326,7 +326,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                   <input
                     type="text"
                     value={searchNoSO}
-                    onChange={(e) => { setSearchNoSO(e.target.value); handleSearch(); }}
+                    onChange={(e) => {
+                      setSearchNoSO(e.target.value);
+                      handleSearch();
+                    }}
                     className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="SO001"
                   />
@@ -342,7 +345,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                   <input
                     type="text"
                     value={searchNamaProject}
-                    onChange={(e) => { setSearchNamaProject(e.target.value); handleSearch(); }}
+                    onChange={(e) => {
+                      setSearchNamaProject(e.target.value);
+                      handleSearch();
+                    }}
                     className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="PHE ONWJ"
                   />
@@ -412,26 +418,65 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 text-xs">
                 <tr>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">No</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">No SO</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">SO Turunan</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nama Client</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Tanggal Dibuat</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Total</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Status</th>
-                  <th className="px-2 py-2 text-center font-medium text-gray-700">Aksi</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    No
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    No SO
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    SO Turunan
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Nama Client
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Tanggal Dibuat
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Total
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Status
+                  </th>
+                  <th className="px-2 py-2 text-center font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr key={item.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                  <tr
+                    key={item.id}
+                    className={`hover:bg-gray-50 ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    }`}
+                  >
                     <td className="px-2 py-2">{item.no}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.soTurunan}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.namaClient}</td>
-                    <td className="px-2 py-2 text-xs text-gray-600">{item.tanggalDibuat}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.total}</td>
-                    <td className="px-2 py-2 text-xs"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(item.status)}`}>{item.status}</span></td>
+                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">
+                      {item.noSO}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.soTurunan}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.namaClient}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-600">
+                      {item.tanggalDibuat}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">
+                      {item.total}
+                    </td>
+                    <td className="px-2 py-2 text-xs">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(
+                          item.status
+                        )}`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
                     <td className="px-2 py-2 text-center">
                       {role === "operational" && (
                         <div className="flex items-center justify-center gap-2">
@@ -458,7 +503,12 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                         </button>
                       )}
                       {role !== "operational" && role !== "operational2" && (
-                        <button onClick={() => openProcess(item)} className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors">Proses</button>
+                        <button
+                          onClick={() => openProcess(item)}
+                          className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors"
+                        >
+                          Proses
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -470,7 +520,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {currentData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {currentData.length === 0 ? 0 : startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -481,17 +533,21 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                   Previous
                 </button>
                 <div className="flex items-center space-x-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-                        currentPage === page ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
                 </div>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
