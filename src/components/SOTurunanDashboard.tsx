@@ -52,6 +52,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
   const [sortField, setSortField] = useState<keyof SOTurunan | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Debug: log current role for this page
+  useEffect(() => {
+    console.log("[SOTurunanDashboard] role:", role);
+  }, [role]);
   // Sample data matching the image
   const [soTurunanData, setSOTurunanData] = useState<SOTurunan[]>([
     {
@@ -369,8 +373,18 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             </div>
             {/* Removed explicit search and tambah buttons; filtering triggers on change */}
           </div>
+          {role === "operational" && (
+            <div className="flex justify-end">
+              <button
+                onClick={openAddModal}
+                className="inline-flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            </div>
+          )}
         </div>
-
         {/* Quick Export Bar */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
           <div className="flex items-center justify-between">
@@ -419,7 +433,33 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.total}</td>
                     <td className="px-2 py-2 text-xs"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(item.status)}`}>{item.status}</span></td>
                     <td className="px-2 py-2 text-center">
-                      <button onClick={() => openProcess(item)} className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors">Proses</button>
+                      {role === "operational" && (
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => openProcess(item)}
+                            className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item)}
+                            className="px-2 py-1 bg-rose-600 text-white rounded-lg text-xs hover:bg-rose-700 transition-colors"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      )}
+                      {role === "operational2" && (
+                        <button
+                          onClick={() => openViewModal(item)}
+                          className="px-2 py-1 bg-gray-600 text-white rounded-lg text-xs hover:bg-gray-700 transition-colors"
+                        >
+                          Detail
+                        </button>
+                      )}
+                      {role !== "operational" && role !== "operational2" && (
+                        <button onClick={() => openProcess(item)} className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors">Proses</button>
+                      )}
                     </td>
                   </tr>
                 ))}
