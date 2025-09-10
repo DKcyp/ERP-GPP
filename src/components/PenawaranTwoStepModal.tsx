@@ -29,6 +29,8 @@ export interface PenawaranTwoStepFormData {
   namaCustomer: string;
   tanggalKirim: string;
   tanggalFollowUp: string;
+  // Attachment for non on-call type
+  attachmentFile?: File | null;
 
   // Step 2 data
   nama: string;
@@ -65,6 +67,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
     namaCustomer: "",
     tanggalKirim: "",
     tanggalFollowUp: "",
+    attachmentFile: null,
     nama: "",
     alamat: "",
     jenisPekerjaan: "",
@@ -108,6 +111,13 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
       document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
+
+  // Ensure we are always on step 1 when not on-call
+  useEffect(() => {
+    if (type !== "on-call" && currentStep !== 1) {
+      setCurrentStep(1);
+    }
+  }, [type, currentStep]);
 
   const handleInputChange = (
     field: keyof PenawaranTwoStepFormData,
@@ -204,6 +214,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
       namaCustomer: "",
       tanggalKirim: "",
       tanggalFollowUp: "",
+      attachmentFile: null,
       nama: "",
       alamat: "",
       jenisPekerjaan: "",
@@ -264,37 +275,40 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                   Entry 1
                 </span>
               </div>
+              {type === "on-call" && (
+                <>
+                  {/* Connector Line */}
+                  <div className="flex-1 mx-4">
+                    <div
+                      className={`h-0.5 w-full transition-colors duration-200 ${
+                        currentStep >= 2 ? "bg-blue-600" : "bg-gray-300"
+                      }`}
+                    ></div>
+                  </div>
 
-              {/* Connector Line */}
-              <div className="flex-1 mx-4">
-                <div
-                  className={`h-0.5 w-full transition-colors duration-200 ${
-                    currentStep >= 2 ? "bg-blue-600" : "bg-gray-300"
-                  }`}
-                ></div>
-              </div>
-
-              {/* Step 2 */}
-              <div className="flex items-center space-x-3">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
-                    currentStep === 2
-                      ? "bg-blue-600 text-white shadow-lg"
-                      : currentStep > 2
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
-                >
-                  2
-                </div>
-                <span
-                  className={`text-sm font-medium transition-colors duration-200 ${
-                    currentStep === 2 ? "text-blue-600" : "text-gray-500"
-                  }`}
-                >
-                  Various information
-                </span>
-              </div>
+                  {/* Step 2 */}
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
+                        currentStep === 2
+                          ? "bg-blue-600 text-white shadow-lg"
+                          : currentStep > 2
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      2
+                    </div>
+                    <span
+                      className={`text-sm font-medium transition-colors duration-200 ${
+                        currentStep === 2 ? "text-blue-600" : "text-gray-500"
+                      }`}
+                    >
+                      Various information
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <button
@@ -474,10 +488,32 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                     <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
+
+                {/* Upload File (only for non on-call) */}
+                {type !== "on-call" && (
+                  <div className="lg:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Upload Dokumen Penawaran
+                    </label>
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          attachmentFile: e.target.files && e.target.files[0] ? e.target.files[0] : null,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200"
+                    />
+                    <p className="mt-1 text-[10px] text-gray-500">
+                      Format yang didukung: PDF, DOCX, XLSX, gambar. Maks 10MB.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
-            {currentStep === 2 && (
+            {type === "on-call" && currentStep === 2 && (
               <div className="space-y-4">
                 {/* Basic Info */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -762,7 +798,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
           <div className="flex space-x-3">
-            {currentStep === 2 && (
+            {type === "on-call" && currentStep === 2 && (
               <button
                 type="button"
                 onClick={handlePrevious}
@@ -782,7 +818,7 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
           </div>
 
           <div className="flex space-x-3">
-            {currentStep === 1 ? (
+            {currentStep === 1 && type === "on-call" ? (
               <button
                 type="button"
                 onClick={handleNext}

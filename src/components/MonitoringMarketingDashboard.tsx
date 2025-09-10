@@ -10,6 +10,7 @@ import {
   Info,
   ChevronDown,
   Calendar,
+  X,
 } from "lucide-react";
 
 interface Row {
@@ -115,6 +116,11 @@ const MonitoringMarketingDashboard: React.FC = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Detail & History modals
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [selected, setSelected] = useState<Row | null>(null);
+
   useEffect(() => {
     const t = setTimeout(() => setAnimateRows(true), 100);
     return () => clearTimeout(t);
@@ -198,6 +204,16 @@ const MonitoringMarketingDashboard: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     link.remove();
+  };
+
+  const handleOpenDetail = (row: Row) => {
+    setSelected(row);
+    setDetailOpen(true);
+  };
+
+  const handleOpenHistory = (row: Row) => {
+    setSelected(row);
+    setHistoryOpen(true);
   };
 
   return (
@@ -415,9 +431,9 @@ const MonitoringMarketingDashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-3 text-xs">
-                        <button className="text-yellow-700 hover:underline">Detail</button>
+                        <button onClick={() => handleOpenDetail(r)} className="text-yellow-700 hover:underline">Detail</button>
                         <span className="text-gray-300">|</span>
-                        <button className="text-teal-700 hover:underline">History</button>
+                        <button onClick={() => handleOpenHistory(r)} className="text-teal-700 hover:underline">History</button>
                       </div>
                     </td>
                   </tr>
@@ -463,6 +479,125 @@ const MonitoringMarketingDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      {detailOpen && selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.currentTarget === e.target) setDetailOpen(false);
+          }}
+        >
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h3 className="text-lg font-semibold text-gray-900">Detail Kontrak</h3>
+              <button
+                onClick={() => setDetailOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(85vh-120px)] p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-gray-500 text-xs">No Kontrak</p>
+                  <p className="font-medium text-gray-900">{selected.noKontrak}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">Nama Client</p>
+                  <p className="font-medium text-gray-900">{selected.namaClient}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">PIC</p>
+                  <p className="font-medium text-gray-900">{selected.pic}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">Jenis Kontrak</p>
+                  <p className="font-medium text-gray-900">{selected.jenisKontrak}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">Tanggal Kontrak</p>
+                  <p className="font-medium text-gray-900">{selected.tanggalKontrak}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">Durasi Kontrak</p>
+                  <p className="font-medium text-gray-900">{selected.durasiKontrak}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">Nilai Kontrak</p>
+                  <p className="font-medium text-gray-900">{selected.nilaiKontrak}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs">Lokasi Pekerjaan</p>
+                  <p className="font-medium text-gray-900">{selected.lokasiPekerjaan}</p>
+                </div>
+                <div className="md:col-span-2">
+                  <p className="text-gray-500 text-xs">Status Penawaran</p>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusBadge(selected.statusPenawaran)}`}>
+                    {selected.statusPenawaran}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-xs text-gray-500 mb-2">Ringkasan</p>
+                <div className="rounded-lg border border-gray-200 p-3 text-sm text-gray-700 bg-gray-50">
+                  Proyek {selected.namaKontrak} untuk {selected.namaClient} dengan PIC {selected.pic}. Nilai kontrak {selected.nilaiKontrak}, lokasi {selected.lokasiPekerjaan}.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-200 bg-gray-50">
+              <button onClick={() => setDetailOpen(false)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {historyOpen && selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.currentTarget === e.target) setHistoryOpen(false);
+          }}
+        >
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h3 className="text-lg font-semibold text-gray-900">Riwayat Proses: {selected.noKontrak}</h3>
+              <button
+                onClick={() => setHistoryOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(85vh-120px)] p-4">
+              <ol className="relative border-s-2 border-gray-100 ps-4 space-y-4">
+                {[
+                  { step: "Suspect", date: "01-12-2024", note: `Lead masuk atas nama ${selected.namaClient}` },
+                  { step: "Register", date: "05-12-2024", note: "Registrasi peluang dan penunjukan PIC" },
+                  { step: "Pra-kualifikasi", date: "10-12-2024", note: "Pengumpulan dokumen prasyarat" },
+                  { step: "Evaluasi", date: "18-12-2024", note: "Evaluasi teknis & komersial" },
+                  { step: "Tender", date: "28-12-2024", note: "Pengajuan penawaran & negosiasi" },
+                  { step: selected.statusPenawaran === "Deal" ? "Kontrak Deal" : "Cancel", date: selected.tanggalKontrak, note: selected.statusPenawaran === "Deal" ? "Kontrak ditandatangani" : "Peluang dibatalkan" },
+                ].map((h, idx) => (
+                  <li key={idx} className="ms-0">
+                    <div className="absolute -start-2.5 mt-1 h-2.5 w-2.5 rounded-full bg-blue-500" />
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-gray-900">{h.step}</p>
+                      <span className="text-xs text-gray-500">{h.date}</span>
+                    </div>
+                    <p className="text-sm text-gray-700 mt-1">{h.note}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-200 bg-gray-50">
+              <button onClick={() => setHistoryOpen(false)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
