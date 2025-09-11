@@ -204,40 +204,29 @@ const FinanceBuktiBankMasukDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No BBM</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Divisi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. BBM</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl BBM (….... s/d…...)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Divisi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode Bank</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Bank</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis Transaksi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Dokumen</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Terima Dari</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bank</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map(row => (
                   <tr key={row.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{row.noBBM}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.divisi}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{bankMeta[row.bank]?.kode || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.bank}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.jenisTransaksi}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumen}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.terimaDari}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.keterangan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.bank}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">Rp {row.total.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button onClick={() => handleEdit(row)} className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50" title="Edit">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleDelete(row)} className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50" title="Hapus">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 ))}
               </tbody>

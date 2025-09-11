@@ -1,18 +1,58 @@
-import React from 'react';
-import { Clock, FileText, Download, FileSpreadsheet } from 'lucide-react';
+import React from "react";
+import { Clock, FileText, Download, FileSpreadsheet } from "lucide-react";
 
 const LaporanAPDashboard: React.FC = () => {
   const dummyTableData = [
-    { id: 1, date: '2024-06-28', vendor: 'PT Maju Jaya', description: 'Pembelian Server', amount: 'Rp 25.000.000', status: 'Paid' },
-    { id: 2, date: '2024-06-29', vendor: 'CV Solusi Digital', description: 'Lisensi Software', amount: 'Rp 12.000.000', status: 'Pending' },
-    { id: 3, date: '2024-06-30', vendor: 'UD Bersama', description: 'Jasa Kebersihan', amount: 'Rp 2.500.000', status: 'Paid' },
-    { id: 4, date: '2024-07-01', vendor: 'PT Global Tech', description: 'Maintenance Jaringan', amount: 'Rp 8.000.000', status: 'Approved' },
-    { id: 5, date: '2024-07-02', vendor: 'CV Kreatif', description: 'Desain Grafis', amount: 'Rp 4.000.000', status: 'Pending' },
-    { id: 6, date: '2024-07-03', vendor: 'PT Indah Karya', description: 'Sewa Kantor', amount: 'Rp 18.000.000', status: 'Paid' },
-    { id: 7, date: '2024-07-04', vendor: 'UD Sejahtera', description: 'Pengadaan ATK', amount: 'Rp 1.500.000', status: 'Approved' },
-    { id: 8, date: '2024-07-05', vendor: 'PT Cepat Tanggap', description: 'Perbaikan AC', amount: 'Rp 3.200.000', status: 'Pending' },
-    { id: 9, date: '2024-07-06', vendor: 'CV Makmur Abadi', description: 'Biaya Listrik', amount: 'Rp 6.700.000', status: 'Paid' },
-    { id: 10, date: '2024-07-07', vendor: 'PT Sentosa', description: 'Transportasi Logistik', amount: 'Rp 900.000', status: 'Approved' },
+    {
+      id: 1,
+      kodeSupplier: 'SUP-001',
+      namaSupplier: 'PT Maju Jaya',
+      noNpwpNik: '01.234.567.8-901.000',
+      noInvoice: 'INV-001/2025',
+      noFakturPajak: '010.001-22.12345678',
+      jenisDokumen: 'Invoice',
+      noDokumen: 'DOC-AP-001',
+      tglDokumen: '2025-08-25',
+      tglJatuhTempo: '2025-09-24',
+      keterangan: 'Pembelian material',
+      mataUang: 'IDR',
+      nominalDpp: 20000000,
+      nominalPpn: 2000000,
+      subTotal: 22000000,
+      umurHutang: '15 hari',
+      bayar1: 10000000,
+      bayar2: 0,
+      bayar3: 0,
+      bayar4: 0,
+      bayar5: 0,
+      bayar6: 0,
+      totalOutstanding: 12000000,
+    },
+    {
+      id: 2,
+      kodeSupplier: 'SUP-002',
+      namaSupplier: 'CV Solusi Digital',
+      noNpwpNik: '3275xxxxxxxxxxxx',
+      noInvoice: 'INV-045/2025',
+      noFakturPajak: '-',
+      jenisDokumen: 'Tagihan Jasa',
+      noDokumen: 'DOC-AP-045',
+      tglDokumen: '2025-08-18',
+      tglJatuhTempo: '2025-09-17',
+      keterangan: 'Lisensi software',
+      mataUang: 'IDR',
+      nominalDpp: 12000000,
+      nominalPpn: 1200000,
+      subTotal: 13200000,
+      umurHutang: '22 hari',
+      bayar1: 5000000,
+      bayar2: 2500000,
+      bayar3: 0,
+      bayar4: 0,
+      bayar5: 0,
+      bayar6: 0,
+      totalOutstanding: 5700000,
+    },
   ];
 
   return (
@@ -23,19 +63,23 @@ const LaporanAPDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                LAPORAN AP
+                Laporan Outstanding Hutang
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Finance
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">AP</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  AP
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Laporan AP</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -61,31 +105,55 @@ const LaporanAPDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Supplier</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Supplier</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No NPWP / No NIK</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Invoice</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Faktur Pajak</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Dokumen</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Dokumen</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl. Dokumen (….... s/d…...)</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl. Jatuh Tempo (….... s/d…...)</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Uang</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal DPP</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal PPN</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SubTotal</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umur Hutang / Aging</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 1</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 2</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 3</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 4</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 5</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 6</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Outstanding Hutang</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dummyTableData.map((item, index) => (
-                  <tr key={item.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.date}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.vendor}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.description}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.amount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        item.status === 'Paid' ? 'bg-green-100 text-green-800' :
-                        item.status === 'Approved' ? 'bg-blue-100 text-blue-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </td>
+                {dummyTableData.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeSupplier}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaSupplier}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noNpwpNik}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noInvoice}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noFakturPajak}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.jenisDokumen}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noDokumen}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglDokumen).toLocaleDateString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglJatuhTempo).toLocaleDateString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.keterangan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.mataUang}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.nominalDpp.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.nominalPpn.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.subTotal.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.umurHutang}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar1.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar2.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar3.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar4.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar5.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar6.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {item.totalOutstanding.toLocaleString('id-ID')}</td>
                   </tr>
                 ))}
               </tbody>

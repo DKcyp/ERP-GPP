@@ -12,6 +12,10 @@ interface TTDRow {
   pengirim: string;
   keterangan: string;
   jumlahBerkas: number;
+  // New fields for TTPG display
+  tglDiserahkanProcon?: string; // yyyy-mm-dd
+  tglDiterimaAR?: string; // yyyy-mm-dd
+  tglDiterimaCustomer?: string; // yyyy-mm-dd
 }
 
 const FinanceTandaTerimaDokumeniDashboard: React.FC = () => {
@@ -31,8 +35,8 @@ const FinanceTandaTerimaDokumeniDashboard: React.FC = () => {
   const divisiOptions = ['Marketing','HRD','GA','Procurement','Project Control','Operasional','QHSE','Finance','Accounting','Tax','Gudang'];
 
   const [rows, setRows] = useState<TTDRow[]>([
-    { id: 1, tanggal: '2025-09-08', noTTD: 'TTD-2025-09-001', divisi: 'Finance', penerima: 'Andi', pengirim: 'Vendor A', keterangan: 'Dokumen Invoice', jumlahBerkas: 3 },
-    { id: 2, tanggal: '2025-09-09', noTTD: 'TTD-2025-09-002', divisi: 'Accounting', penerima: 'Dewi', pengirim: 'Kurir', keterangan: 'BAST & Faktur', jumlahBerkas: 2 },
+    { id: 1, tanggal: '2025-09-08', noTTD: 'TTPG-2025-09-001', divisi: 'Finance', penerima: 'Andi', pengirim: 'Vendor A', keterangan: 'Dokumen Invoice', jumlahBerkas: 3, tglDiserahkanProcon: '2025-09-09', tglDiterimaAR: '2025-09-10', tglDiterimaCustomer: '2025-09-12' },
+    { id: 2, tanggal: '2025-09-09', noTTD: 'TTPG-2025-09-002', divisi: 'Accounting', penerima: 'Dewi', pengirim: 'Kurir', keterangan: 'BAST & Faktur', jumlahBerkas: 2, tglDiserahkanProcon: '2025-09-10', tglDiterimaAR: '2025-09-11' },
   ]);
 
   const handleAdd = () => {
@@ -159,41 +163,30 @@ const FinanceTandaTerimaDokumeniDashboard: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Daftar Tanda Terima Dokumen</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Daftar Tanda Terima Pengiriman (TTPG)</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No TTD</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Divisi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penerima</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pengirim</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Jumlah Berkas</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. TTPG</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl TTPG (….... s/d…...)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Diserahkan oleh</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Diterima oleh</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl diserahkan Procon</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl di terima AR</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl di terima Customer</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map(row => (
-                  <tr key={row.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
+                  <tr key={row.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{row.noTTD}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.divisi}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.penerima}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.pengirim}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.keterangan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">{row.jumlahBerkas}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button onClick={() => handleEdit(row)} className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50" title="Edit">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleDelete(row)} className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50" title="Hapus">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.penerima}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglDiserahkanProcon ? new Date(row.tglDiserahkanProcon).toLocaleDateString('id-ID') : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglDiterimaAR ? new Date(row.tglDiterimaAR).toLocaleDateString('id-ID') : '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglDiterimaCustomer ? new Date(row.tglDiterimaCustomer).toLocaleDateString('id-ID') : '-'}</td>
                   </tr>
                 ))}
               </tbody>

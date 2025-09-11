@@ -117,6 +117,71 @@ export interface LamaranData {
   keterangan: string;
 }
 
+// ================= Tax (PPh) Data Types =================
+export interface PPh21Data {
+  id: number;
+  namaPegawai: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  pph21: number;
+}
+
+export interface PPh23Data {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  pph23: number;
+}
+
+export interface PPh4Ayat2Data {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  pph4Ayat2: number;
+}
+
+export interface PPh22Data {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  pph22: number;
+}
+
+export interface PPh29Data {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  pph29: number;
+}
+
+export interface PPh25Data {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  pph25: number;
+}
+
+export interface SKPKBData {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  skpkb: number;
+}
+
+export interface SP2DKData {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  sp2dk: number;
+}
+
 // ================= Evaluasi Vendor =================
 export type YaTidak = 'Ya' | 'Tidak';
 export type MutuKategori = 'Baik' | 'Cukup' | 'Kurang';

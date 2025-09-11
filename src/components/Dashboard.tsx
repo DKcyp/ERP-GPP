@@ -91,6 +91,8 @@ import FinanceBuktiBankKeluarDashboard from "./FinanceBuktiBankKeluarDashboard";
 import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboard";
 import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
 import FinancePermintaanPencairanDanaDashboard from "./FinancePermintaanPencairanDanaDashboard";
+import FinanceVoucherDashboard from "./FinanceVoucherDashboard";
+import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumenPembelianDashboard";
 import CollectionDashboardSO from "./CollectionDashboardSO";
 import CollectionDashboardProformaInvoice from "./CollectionDashboardProformaInvoice";
 import CollectionDashboardInvoice from "./CollectionDashboardInvoice";
@@ -212,6 +214,13 @@ import TaxMainDashboard from "./TaxMainDashboard";
 import PajakMasukanDashboard from "./PajakMasukanDashboard";
 import PajakKeluaranDashboard from "./PajakKeluaranDashboard";
 import PPh21Dashboard from "./PPh21Dashboard";
+import PPh23Dashboard from "./PPh23Dashboard";
+import PPh4Ayat2Dashboard from "./PPh4Ayat2Dashboard";
+import PPh22Dashboard from "./PPh22Dashboard";
+import PPh29Dashboard from "./PPh29Dashboard";
+import PPh25Dashboard from "./PPh25Dashboard";
+import SKPKBDashboard from "./SKPKBDashboard";
+import SP2DKDashboard from "./SP2DKDashboard";
 
 // Procon Dashboards
 import ProconMainDashboard from "./ProconMainDashboard";
@@ -1321,6 +1330,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/tanda-terima-dokumeni") {
       return <FinanceTandaTerimaDokumeniDashboard />;
     }
+    if (currentPage === "/finance/tanda-terima-dokumen-pembelian") {
+      return <FinanceTandaTerimaDokumenPembelianDashboard />;
+    }
     if (currentPage === "/finance/ap/dashboard") {
       return <APDashboard />;
     }
@@ -1374,6 +1386,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/approval/voucher") {
       return <ApprovalVoucherDashboard />;
+    }
+    if (currentPage === "/finance/voucher/dashboard") {
+      return <FinanceVoucherDashboard />;
     }
     if (currentPage === "/finance/voucher/daftar-pembayaran") {
       return <DaftarPembayaranDashboard />;
@@ -1564,6 +1579,27 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/tax/pph-21") {
       return <PPh21Dashboard />;
+    }
+    if (currentPage === "/tax/pph-23") {
+      return <PPh23Dashboard />;
+    }
+    if (currentPage === "/tax/pph-4-ayat-2") {
+      return <PPh4Ayat2Dashboard />;
+    }
+    if (currentPage === "/tax/pph-22") {
+      return <PPh22Dashboard />;
+    }
+    if (currentPage === "/tax/pph-29") {
+      return <PPh29Dashboard />;
+    }
+    if (currentPage === "/tax/pph-25") {
+      return <PPh25Dashboard />;
+    }
+    if (currentPage === "/tax/tagihan/skpkb") {
+      return <SKPKBDashboard />;
+    }
+    if (currentPage === "/tax/tagihan/sp2dk") {
+      return <SP2DKDashboard />;
     }
 
     // Procon Routes

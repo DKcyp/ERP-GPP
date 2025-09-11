@@ -1173,92 +1173,97 @@ export const financeMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Collection",
-    icon: "Wallet",
-    items: [
-      {
-        title: "DashBoard SO",
-        icon: "LayoutDashboard",
-        path: "/finance/collection/dashboard-so",
-      },
-      {
-        title: "DashBoard Proforma Invoice",
-        icon: "FileSignature",
-        path: "/finance/collection/dashboard-proforma-invoice",
-      },
-      {
-        title: "DashBoard Invoice",
-        icon: "FileText",
-        path: "/finance/collection/dashboard-invoice",
-      },
-      {
-        title: "DashBoard Invoice Outstanding",
-        icon: "FileBarChart",
-        path: "/finance/collection/dashboard-invoice-outstanding",
-      },
-      {
-        title: "DashBoard Cash in",
-        icon: "Banknote",
-        path: "/finance/collection/dashboard-cash-in",
-      },
-      {
-        title: "Database Customer",
-        icon: "Database",
-        path: "/finance/collection/database-customer",
-      },
-    ],
-  },
-  {
-    title: "Approval",
-    icon: "CheckCircle",
-    items: [
-      {
-        title: "Approval Tiket",
-        icon: "TicketCheck",
-        path: "/finance/approval/tiket",
-      },
-      {
-        title: "Approval Invoice",
-        icon: "FileCheck",
-        path: "/finance/approval/invoice",
-      },
-      {
-        title: "Approval Penggajian",
-        icon: "Wallet",
-        path: "/finance/approval/penggajian",
-      },
-      {
-        title: "Approval PO Training",
-        icon: "Award",
-        path: "/finance/approval/po-training",
-      },
-      {
-        title: "Approval Voucher",
-        icon: "Ticket",
-        path: "/finance/approval/voucher",
-      },
-    ],
-  },
+  // {
+  //   title: "Collection",
+  //   icon: "Wallet",
+  //   items: [
+  //     {
+  //       title: "DashBoard SO",
+  //       icon: "LayoutDashboard",
+  //       path: "/finance/collection/dashboard-so",
+  //     },
+  //     {
+  //       title: "DashBoard Proforma Invoice",
+  //       icon: "FileSignature",
+  //       path: "/finance/collection/dashboard-proforma-invoice",
+  //     },
+  //     {
+  //       title: "DashBoard Invoice",
+  //       icon: "FileText",
+  //       path: "/finance/collection/dashboard-invoice",
+  //     },
+  //     {
+  //       title: "DashBoard Invoice Outstanding",
+  //       icon: "FileBarChart",
+  //       path: "/finance/collection/dashboard-invoice-outstanding",
+  //     },
+  //     {
+  //       title: "DashBoard Cash in",
+  //       icon: "Banknote",
+  //       path: "/finance/collection/dashboard-cash-in",
+  //     },
+  //     {
+  //       title: "Database Customer",
+  //       icon: "Database",
+  //       path: "/finance/collection/database-customer",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Approval",
+  //   icon: "CheckCircle",
+  //   items: [
+  //     {
+  //       title: "Approval Tiket",
+  //       icon: "TicketCheck",
+  //       path: "/finance/approval/tiket",
+  //     },
+  //     {
+  //       title: "Approval Invoice",
+  //       icon: "FileCheck",
+  //       path: "/finance/approval/invoice",
+  //     },
+  //     {
+  //       title: "Approval Penggajian",
+  //       icon: "Wallet",
+  //       path: "/finance/approval/penggajian",
+  //     },
+  //     {
+  //       title: "Approval PO Training",
+  //       icon: "Award",
+  //       path: "/finance/approval/po-training",
+  //     },
+  //     {
+  //       title: "Approval Voucher",
+  //       icon: "Ticket",
+  //       path: "/finance/approval/voucher",
+  //     },
+  //   ],
+  // },
   {
     title: "Voucher",
     icon: "Ticket",
     items: [
       {
-        title: "Daftar Pembayaran",
-        icon: "CreditCard",
-        path: "/finance/voucher/daftar-pembayaran",
+        title: "Dashboard Voucher",
+        icon: "LayoutDashboard",
+        path: "/finance/voucher/dashboard",
       },
-      {
-        title: "Daftar Voucher",
-        icon: "TicketPercent",
-        path: "/finance/voucher/daftar-voucher",
-      },
-      {
-        title: "Laporan Hutang Usaha",
-        icon: "FileText",
-        path: "/finance/voucher/laporan-hutang-usaha",
-      },
+      // {
+      //   title: "Daftar Pembayaran",
+      //   icon: "CreditCard",
+      //   path: "/finance/voucher/daftar-pembayaran",
+      // },
+      // {
+      //   title: "Daftar Voucher",
+      //   icon: "TicketPercent",
+      //   path: "/finance/voucher/daftar-voucher",
+      // },
+      // {
+      //   title: "Laporan Hutang Usaha",
+      //   icon: "FileText",
+      //   path: "/finance/voucher/laporan-hutang-usaha",
+      // },
     ],
   },
   {
@@ -1272,6 +1277,12 @@ export const financeMenu: MenuSection[] = [
     icon: "FileText",
     items: [],
     directPath: "/finance/tanda-terima-dokumeni",
+  },
+  {
+    title: "Tandaterima Dokumen Pembelian",
+    icon: "FileText",
+    items: [],
+    directPath: "/finance/tanda-terima-dokumen-pembelian",
   },
 ];
 
@@ -1839,10 +1850,30 @@ export const taxMenu: MenuSection[] = [
     ],
   },
   {
-    title: "PPh 21",
-    icon: "FileText",
-    items: [],
-    directPath: "/tax/pph-21",
+    title: "PPH UNIFIKASI",
+    icon: "Layers",
+    items: [
+      { title: "PPh 21", icon: "FileText", path: "/tax/pph-21" },
+      { title: "PPh 23", icon: "FileText", path: "/tax/pph-23" },
+      { title: "PPh 4 Ayat 2", icon: "FileText", path: "/tax/pph-4-ayat-2" },
+      { title: "PPh 22", icon: "FileText", path: "/tax/pph-22" },
+    ],
+  },
+  {
+    title: "PPH BADAN",
+    icon: "Briefcase",
+    items: [
+      { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
+      { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
+    ],
+  },
+  {
+    title: "Tagihan Pajak Lainya",
+    icon: "Receipt",
+    items: [
+      { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
+      { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
+    ],
   },
 ];
 
@@ -1874,7 +1905,7 @@ export const proconMenu: MenuSection[] = [
     title: "Sales Order",
     icon: "ShoppingCart",
     items: [],
-    directPath: "/procon/sales-order/dashboard",
+    directPath: "/marketing/sales-order/dashboard",
   },
   {
     title: "Laba Rugi Project",

@@ -5,15 +5,31 @@ import { Clock, FileSpreadsheet, FileDown, Search } from 'lucide-react';
 
 interface PembayaranRow {
   id: number;
-  tanggalBayar: string; // yyyy-mm-dd
-  vendor: string;
-  noInvoice: string;
-  noPembayaran: string;
-  metodeBayar: string;
-  bank: string;
-  nominalBayar: number;
+  // Existing fields kept for filters/compatibility
+  tanggalBayar: string; // yyyy-mm-dd (first payment date fallback)
+  vendor: string; // Nama Supplier
+  noInvoice: string; // kept for search filter compatibility
+  status: 'Posted' | 'Pending' | 'Draft'; // kept for filter compatibility
+
+  // New columns
+  kodeSupplier: string;
+  jenisDokumen: string;
+  noDokumen: string;
+  tglDokumen: string; // yyyy-mm-dd
+  tglJatuhTempo: string; // yyyy-mm-dd
   keterangan: string;
-  status: 'Posted' | 'Pending' | 'Draft';
+  mataUang: string; // e.g., IDR
+  nominalDpp: number;
+  nominalPpn: number;
+  subTotal: number;
+
+  // Per-payment details (up to 6)
+  tglPembayaran1?: string; noDokumenPembayaran1?: string; nominalPembayaran1?: number;
+  tglPembayaran2?: string; noDokumenPembayaran2?: string; nominalPembayaran2?: number;
+  tglPembayaran3?: string; noDokumenPembayaran3?: string; nominalPembayaran3?: number;
+  tglPembayaran4?: string; noDokumenPembayaran4?: string; nominalPembayaran4?: number;
+  tglPembayaran5?: string; noDokumenPembayaran5?: string; nominalPembayaran5?: number;
+  tglPembayaran6?: string; noDokumenPembayaran6?: string; nominalPembayaran6?: number;
 }
 
 const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
@@ -28,23 +44,70 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
 
   // Dummy data (placeholder)
   const [rows] = useState<PembayaranRow[]>([
-    { id: 1, tanggalBayar: '2025-09-02', vendor: 'PT Sinar Abadi', noInvoice: 'INV-2025-0901', noPembayaran: 'PAY-2025-0901', metodeBayar: 'Transfer', bank: 'Bank Mandiri Operasional', nominalBayar: 3500000, keterangan: 'Pelunasan sebagian', status: 'Posted' },
-    { id: 2, tanggalBayar: '2025-09-05', vendor: 'CV Mitra Jaya', noInvoice: 'INV-2025-0902', noPembayaran: 'PAY-2025-0902', metodeBayar: 'Giro', bank: 'Bank BCA', nominalBayar: 5000000, keterangan: 'Pembayaran termin', status: 'Pending' },
-    { id: 3, tanggalBayar: '2025-09-06', vendor: 'PT Teknologi Nusantara', noInvoice: 'INV-2025-0903', noPembayaran: 'PAY-2025-0903', metodeBayar: 'Transfer', bank: 'Bank Mandiri PPN', nominalBayar: 2750000, keterangan: 'Pelunasan', status: 'Posted' },
+    {
+      id: 1,
+      tanggalBayar: '2025-09-02',
+      vendor: 'PT Sinar Abadi',
+      noInvoice: 'INV-2025-0901',
+      status: 'Posted',
+      kodeSupplier: 'SUP-010',
+      jenisDokumen: 'Invoice',
+      noDokumen: 'DOC-AP-1001',
+      tglDokumen: '2025-08-20',
+      tglJatuhTempo: '2025-09-20',
+      keterangan: 'Pembelian material proyek',
+      mataUang: 'IDR',
+      nominalDpp: 15000000,
+      nominalPpn: 1500000,
+      subTotal: 16500000,
+      noDokumenPembayaran1: 'PAY-2025-0901', tglPembayaran1: '2025-09-02', nominalPembayaran1: 3500000,
+      noDokumenPembayaran2: 'PAY-2025-0915', tglPembayaran2: '2025-09-15', nominalPembayaran2: 5000000,
+      noDokumenPembayaran3: undefined, tglPembayaran3: undefined, nominalPembayaran3: 0,
+      noDokumenPembayaran4: undefined, tglPembayaran4: undefined, nominalPembayaran4: 0,
+      noDokumenPembayaran5: undefined, tglPembayaran5: undefined, nominalPembayaran5: 0,
+      noDokumenPembayaran6: undefined, tglPembayaran6: undefined, nominalPembayaran6: 0,
+    },
+    {
+      id: 2,
+      tanggalBayar: '2025-09-05',
+      vendor: 'CV Mitra Jaya',
+      noInvoice: 'INV-2025-0902',
+      status: 'Pending',
+      kodeSupplier: 'SUP-022',
+      jenisDokumen: 'Tagihan Jasa',
+      noDokumen: 'DOC-AP-1002',
+      tglDokumen: '2025-08-25',
+      tglJatuhTempo: '2025-09-25',
+      keterangan: 'Jasa instalasi',
+      mataUang: 'IDR',
+      nominalDpp: 8000000,
+      nominalPpn: 800000,
+      subTotal: 8800000,
+      noDokumenPembayaran1: 'PAY-2025-0905', tglPembayaran1: '2025-09-05', nominalPembayaran1: 3000000,
+      noDokumenPembayaran2: undefined, tglPembayaran2: undefined, nominalPembayaran2: 0,
+      noDokumenPembayaran3: undefined, tglPembayaran3: undefined, nominalPembayaran3: 0,
+      noDokumenPembayaran4: undefined, tglPembayaran4: undefined, nominalPembayaran4: 0,
+      noDokumenPembayaran5: undefined, tglPembayaran5: undefined, nominalPembayaran5: 0,
+      noDokumenPembayaran6: undefined, tglPembayaran6: undefined, nominalPembayaran6: 0,
+    },
   ]);
 
   const filtered = useMemo(() => {
     return rows.filter(r => {
       const okVendor = searchVendor ? r.vendor.toLowerCase().includes(searchVendor.toLowerCase()) : true;
-      const okInv = searchNoInvoice ? r.noInvoice.toLowerCase().includes(searchNoInvoice.toLowerCase()) : true;
+      const okInv = searchNoInvoice ? r.noDokumen.toLowerCase().includes(searchNoInvoice.toLowerCase()) : true;
       const okStatus = status ? r.status === (status as any) : true;
-      const okFrom = periodeDari ? new Date(r.tanggalBayar) >= new Date(periodeDari.setHours(0,0,0,0)) : true;
-      const okTo = periodeSampai ? new Date(r.tanggalBayar) <= new Date(periodeSampai.setHours(23,59,59,999)) : true;
+      const baseDate = r.tglDokumen || r.tanggalBayar;
+      const okFrom = periodeDari ? new Date(baseDate) >= new Date(periodeDari.setHours(0,0,0,0)) : true;
+      const okTo = periodeSampai ? new Date(baseDate) <= new Date(periodeSampai.setHours(23,59,59,999)) : true;
       return okVendor && okInv && okStatus && okFrom && okTo;
     });
   }, [rows, searchVendor, searchNoInvoice, status, periodeDari, periodeSampai]);
 
-  const totalBayar = useMemo(() => filtered.reduce((s, r) => s + r.nominalBayar, 0), [filtered]);
+  const totalBayar = useMemo(() => filtered.reduce((s, r) => {
+    const sumRow = (r.nominalPembayaran1 || 0) + (r.nominalPembayaran2 || 0) + (r.nominalPembayaran3 || 0) + (r.nominalPembayaran4 || 0) + (r.nominalPembayaran5 || 0) + (r.nominalPembayaran6 || 0);
+    return s + sumRow;
+  }, 0), [filtered]);
 
   const applyFilter = () => {
     // no-op, all filters are reactive
@@ -126,37 +189,93 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Bayar</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vendor</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Invoice</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Pembayaran</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metode Bayar</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bank</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Nominal Bayar</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode Supplier</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Supplier</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis Dokumen</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl. Dokumen (….... s/d…...)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl. Jatuh Tempo (….... s/d…...)</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mata Uang</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal DPP</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal PPN</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SubTotal</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran (….... s/d…...)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen Pembayaran ke 1</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran ke 1</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Pembayaran ke 1</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen Pembayaran ke 2</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran ke 2</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Pembayaran ke 2</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen Pembayaran ke 3</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran ke 3</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Pembayaran ke 3</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen Pembayaran ke 4</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran ke 4</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Pembayaran ke 4</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen Pembayaran ke 5</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran ke 5</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Pembayaran ke 5</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen Pembayaran ke 6</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Pembayaran ke 6</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Pembayaran ke 6</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Pembayaran</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filtered.map(row => (
-                  <tr key={row.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tanggalBayar).toLocaleDateString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.vendor}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noInvoice}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noPembayaran}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.metodeBayar}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.bank}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">Rp {row.nominalBayar.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.keterangan}</td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${row.status === 'Posted' ? 'text-green-700' : row.status === 'Pending' ? 'text-yellow-700' : 'text-gray-600'}`}>{row.status}</td>
-                  </tr>
-                ))}
+                {filtered.map(row => {
+                  const payments = [
+                    { d: row.tglPembayaran1, n: row.nominalPembayaran1 },
+                    { d: row.tglPembayaran2, n: row.nominalPembayaran2 },
+                    { d: row.tglPembayaran3, n: row.nominalPembayaran3 },
+                    { d: row.tglPembayaran4, n: row.nominalPembayaran4 },
+                    { d: row.tglPembayaran5, n: row.nominalPembayaran5 },
+                    { d: row.tglPembayaran6, n: row.nominalPembayaran6 },
+                  ].filter(p => p.d);
+                  const tglRange = payments.length
+                    ? `${new Date(payments[0].d as string).toLocaleDateString('id-ID')} s/d ${new Date(payments[payments.length - 1].d as string).toLocaleDateString('id-ID')}`
+                    : '-';
+                  const totalPembRow = (row.nominalPembayaran1 || 0) + (row.nominalPembayaran2 || 0) + (row.nominalPembayaran3 || 0) + (row.nominalPembayaran4 || 0) + (row.nominalPembayaran5 || 0) + (row.nominalPembayaran6 || 0);
+                  return (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.kodeSupplier}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.vendor}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.jenisDokumen}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumen}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tglDokumen).toLocaleDateString('id-ID')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tglJatuhTempo).toLocaleDateString('id-ID')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.keterangan}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.mataUang}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {row.nominalDpp.toLocaleString('id-ID')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {row.nominalPpn.toLocaleString('id-ID')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {row.subTotal.toLocaleString('id-ID')}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{tglRange}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumenPembayaran1 || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglPembayaran1 ? new Date(row.tglPembayaran1).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.nominalPembayaran1 ? `Rp ${row.nominalPembayaran1.toLocaleString('id-ID')}` : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumenPembayaran2 || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglPembayaran2 ? new Date(row.tglPembayaran2).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.nominalPembayaran2 ? `Rp ${row.nominalPembayaran2.toLocaleString('id-ID')}` : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumenPembayaran3 || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglPembayaran3 ? new Date(row.tglPembayaran3).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.nominalPembayaran3 ? `Rp ${row.nominalPembayaran3.toLocaleString('id-ID')}` : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumenPembayaran4 || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglPembayaran4 ? new Date(row.tglPembayaran4).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.nominalPembayaran4 ? `Rp ${row.nominalPembayaran4.toLocaleString('id-ID')}` : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumenPembayaran5 || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglPembayaran5 ? new Date(row.tglPembayaran5).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.nominalPembayaran5 ? `Rp ${row.nominalPembayaran5.toLocaleString('id-ID')}` : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noDokumenPembayaran6 || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.tglPembayaran6 ? new Date(row.tglPembayaran6).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {totalPembRow.toLocaleString('id-ID')}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr>
-                  <td className="px-6 py-3 text-sm font-semibold text-gray-900 text-right" colSpan={6}>Total Pembayaran</td>
+                  <td className="px-6 py-3 text-sm font-semibold text-gray-900 text-right" colSpan={29}>Total Pembayaran</td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-gray-900">Rp {totalBayar.toLocaleString('id-ID')}</td>
-                  <td colSpan={2}></td>
                 </tr>
               </tfoot>
             </table>

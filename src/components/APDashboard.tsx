@@ -1,12 +1,42 @@
 import React from 'react';
-import { Clock, DollarSign, Banknote, Calendar, TrendingUp, TrendingDown, CreditCard, BarChart2 } from 'lucide-react';
+import { Clock, BarChart2, Users, AlertTriangle, Calculator } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+} from 'recharts';
 
 const APDashboard: React.FC = () => {
-  const dummyCashFlow = 'Rp 125.000.000';
-  const dummyBankBalance = 'Rp 350.000.000';
-  const dummyMappingPayments = 12; // Number of payments mapped this week
-  const dummyIncomingProjection = 'Rp 80.000.000';
-  const dummyOutgoingProjection = 'Rp 110.000.000';
+  // KPI dummy data (can be replaced with API data)
+  const totalUtangUsaha = 1250000000; // Rp
+  const jumlahVendorTerutang = 58; // vendors
+  const totalUtangJatuhTempo = 320000000; // Rp
+
+  // Aging Report dummy data
+  const agingData = [
+    { bucket: 'Belum jatuh tempo', nilai: 480_000_000 },
+    { bucket: '1 - 30 hari', nilai: 260_000_000 },
+    { bucket: '31 - 60 hari', nilai: 190_000_000 },
+    { bucket: '61 - 90 hari', nilai: 110_000_000 },
+    { bucket: '> 90 hari', nilai: 70_000_000 },
+  ];
+
+  // Trend Pembayaran 6 bulan terakhir
+  const trendData = [
+    { bulan: 'Apr', bayar: 120_000_000 },
+    { bulan: 'Mei', bayar: 95_000_000 },
+    { bulan: 'Jun', bayar: 140_000_000 },
+    { bulan: 'Jul', bayar: 110_000_000 },
+    { bulan: 'Agu', bayar: 175_000_000 },
+    { bulan: 'Sep', bayar: 130_000_000 },
+  ];
 
   const dummyTableData = [
     { id: 1, date: '2024-07-01', vendor: 'PT ABC', description: 'Pembelian Bahan Baku', amount: 'Rp 15.000.000', status: 'Pending' },
@@ -48,100 +78,85 @@ const APDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-blue-100 rounded-xl">
-                <DollarSign className="h-8 w-8 text-blue-600" />
+                <Calculator className="h-8 w-8 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 font-medium">Cash Flow (Net)</p>
-                <p className="text-3xl font-bold text-gray-900">{dummyCashFlow}</p>
-                <p className="text-sm text-green-600 font-medium">+10% from last month</p>
+                <p className="text-sm text-gray-600 font-medium">Total Utang Usaha (terupdate)</p>
+                <p className="text-3xl font-bold text-gray-900">Rp {totalUtangUsaha.toLocaleString('id-ID')}</p>
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-green-100 rounded-xl">
-                <Banknote className="h-8 w-8 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Saldo Bank</p>
-                <p className="text-3xl font-bold text-gray-900">{dummyBankBalance}</p>
-                <p className="text-sm text-green-600 font-medium">Stable</p>
-              </div>
-            </div>
-          </div>
-
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-purple-100 rounded-xl">
-                <CreditCard className="h-8 w-8 text-purple-600" />
+                <Users className="h-8 w-8 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 font-medium">Mapping Pembayaran (1 Minggu)</p>
-                <p className="text-3xl font-bold text-gray-900">{dummyMappingPayments}</p>
-                <p className="text-sm text-gray-600 font-medium">Payments mapped</p>
+                <p className="text-sm text-gray-600 font-medium">Jumlah Vendor Terutang</p>
+                <p className="text-3xl font-bold text-gray-900">{jumlahVendorTerutang}</p>
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-yellow-100 rounded-xl">
-                <Calendar className="h-8 w-8 text-yellow-600" />
+              <div className="p-3 bg-amber-100 rounded-xl">
+                <AlertTriangle className="h-8 w-8 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 font-medium">Proyeksi Uang Masuk & Keluar (1 Minggu)</p>
-                <p className="text-xl font-bold text-gray-900">Masuk: {dummyIncomingProjection}</p>
-                <p className="text-xl font-bold text-gray-900">Keluar: {dummyOutgoingProjection}</p>
+                <p className="text-sm text-gray-600 font-medium">Total Utang Usaha Jatuh Tempo</p>
+                <p className="text-3xl font-bold text-gray-900">Rp {totalUtangJatuhTempo.toLocaleString('id-ID')}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Chart and Multiple Button */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">Cash Flow Trend</h3>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors flex items-center space-x-2">
-              <BarChart2 className="h-5 w-5" />
-              <span>Multiple Actions</span>
-            </button>
-          </div>
-          <div className="h-64 flex items-end justify-center space-x-4">
-            {[
-              { label: 'Week 1', incoming: 120, outgoing: 80, colorIncoming: 'bg-green-500', colorOutgoing: 'bg-red-500' },
-              { label: 'Week 2', incoming: 150, outgoing: 90, colorIncoming: 'bg-green-500', colorOutgoing: 'bg-red-500' },
-              { label: 'Week 3', incoming: 100, outgoing: 110, colorIncoming: 'bg-green-500', colorOutgoing: 'bg-red-500' },
-              { label: 'Week 4', incoming: 130, outgoing: 70, colorIncoming: 'bg-green-500', colorOutgoing: 'bg-red-500' },
-            ].map((item, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2">
-                <div className="flex items-end h-48">
-                  <div
-                    className={`w-6 ${item.colorIncoming} rounded-t-lg transition-all duration-1000 ease-out hover:opacity-80`}
-                    style={{ height: `${item.incoming * 1.5}px` }}
-                  ></div>
-                  <div
-                    className={`w-6 ${item.colorOutgoing} rounded-t-lg transition-all duration-1000 ease-out hover:opacity-80 ml-1`}
-                    style={{ height: `${item.outgoing * 1.5}px` }}
-                  ></div>
-                </div>
-                <span className="text-sm text-gray-600 font-medium">{item.label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center space-x-4 mt-4 text-sm text-gray-700">
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span>Incoming</span>
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Aging Report Bar Chart */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold text-gray-900">Aging Report (Umur Utang)</h3>
+              <BarChart2 className="h-5 w-5 text-gray-500" />
             </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span>Outgoing</span>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={agingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="bucket" tick={{ fontSize: 12 }} />
+                  <YAxis tickFormatter={(v) => `Rp ${v / 1_000_000}jt`} />
+                  <Tooltip formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Nilai']} />
+                  <Legend />
+                  <Bar dataKey="nilai" name="Nilai" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="text-sm text-gray-600 mt-3">
+              Bucket: Belum jatuh tempo, 1 - 30 hari, 31 - 60 hari, 61 - 90 hari, &gt; 90 hari
+            </div>
+          </div>
+
+          {/* Trend Pembayaran Line Chart */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold text-gray-900">Trend Pembayaran Utang Usaha Bulanan</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-2">Menunjukkan nilai pembayaran ke vendor selama 6 bulan terakhir.</p>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="bulan" tick={{ fontSize: 12 }} />
+                  <YAxis tickFormatter={(v) => `Rp ${v / 1_000_000}jt`} />
+                  <Tooltip formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Pembayaran']} />
+                  <Legend />
+                  <Line type="monotone" dataKey="bayar" name="Pembayaran" stroke="#10B981" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
