@@ -21,6 +21,7 @@ interface TrainingRecord {
 }
 
 const sampleData: TrainingRecord[] = [
+  // Andi has multiple certificates
   {
     nama: "Andi Wijaya",
     posisi: "Radiographer",
@@ -28,11 +29,33 @@ const sampleData: TrainingRecord[] = [
     expiry: "2025-05-20",
   },
   {
+    nama: "Andi Wijaya",
+    posisi: "Radiographer",
+    certificate: "BNSP RT Level 1",
+    expiry: "2024-11-05",
+  },
+  {
+    nama: "Andi Wijaya",
+    posisi: "Radiographer",
+    certificate: "H2S Awareness",
+    expiry: "2026-02-12",
+  },
+
+  // Budi has multiple certificates
+  {
     nama: "Budi Santoso",
     posisi: "Assistant Radiographer",
     certificate: "BNSP RT Level 1",
     expiry: "2024-08-15",
   },
+  {
+    nama: "Budi Santoso",
+    posisi: "Assistant Radiographer",
+    certificate: "First Aid",
+    expiry: "2025-03-10",
+  },
+
+  // Citra has multiple certificates
   {
     nama: "Citra Lestari",
     posisi: "QHSE Officer",
@@ -40,16 +63,38 @@ const sampleData: TrainingRecord[] = [
     expiry: "2026-01-10",
   },
   {
+    nama: "Citra Lestari",
+    posisi: "QHSE Officer",
+    certificate: "ISO 14001 Lead Auditor",
+    expiry: "2025-10-01",
+  },
+
+  // Dewi has multiple certificates
+  {
     nama: "Dewi Puspita",
     posisi: "Technician",
     certificate: "First Aid",
     expiry: "2024-07-01",
   },
   {
+    nama: "Dewi Puspita",
+    posisi: "Technician",
+    certificate: "Fire Safety",
+    expiry: "2025-09-20",
+  },
+
+  // Eko has multiple certificates
+  {
     nama: "Eko Prasetyo",
     posisi: "Supervisor",
     certificate: "H2S Awareness",
     expiry: "2025-12-31",
+  },
+  {
+    nama: "Eko Prasetyo",
+    posisi: "Supervisor",
+    certificate: "SMK3 Auditor",
+    expiry: "2026-06-15",
   },
 ];
 
