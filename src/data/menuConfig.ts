@@ -407,11 +407,10 @@ export const gaMenu: MenuSection[] = [
           },
         ],
       },
-      
     ],
   },
   {
-    title: "Legalitas Perusahaan",
+    title: "Kompetensi Perusahaan",
     icon: "ShieldCheck",
     items: [],
     directPath: "/ga/legalitas/monitoring",
@@ -1102,9 +1101,21 @@ export const financeMenu: MenuSection[] = [
         icon: "Folder",
         items: [
           { title: "Tresuri", icon: "FolderUp", path: "/finance/ap/tresuri" },
-          { title: "Laporan Hutang", icon: "FileText", path: "/finance/ap/laporan-hutang" },
-          { title: "Pengajuan Dana Hutang", icon: "Send", path: "/finance/ap/pengajuan-dana-hutang" },
-          { title: "Pembayaran Hutang", icon: "Wallet", path: "/finance/ap/pembayaran-hutang" },
+          {
+            title: "Laporan Hutang",
+            icon: "FileText",
+            path: "/finance/ap/laporan-hutang",
+          },
+          {
+            title: "Pengajuan Dana Hutang",
+            icon: "Send",
+            path: "/finance/ap/pengajuan-dana-hutang",
+          },
+          {
+            title: "Pembayaran Hutang",
+            icon: "Wallet",
+            path: "/finance/ap/pembayaran-hutang",
+          },
         ],
       },
     ],
