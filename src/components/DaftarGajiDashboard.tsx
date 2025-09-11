@@ -62,7 +62,7 @@ const DaftarGajiDashboard: React.FC = () => {
   }, []);
 
   const handleAddGaji = (formData: GajiFormData) => {
-    const newGaji: GajiData = {
+    const newGaji: any = {
       id: (gajiData.length + 1).toString(),
       no: gajiData.length + 1,
       namaPegawai: formData.namaPegawai,
@@ -70,7 +70,11 @@ const DaftarGajiDashboard: React.FC = () => {
       tunjangan: formData.tunjangan,
       pph21: formData.pph21,
       potonganMess: formData.potonganMess,
-      gajiBersih: formData.gajiBersih
+      gajiBersih: formData.gajiBersih,
+      tahap1: formData.tahap1 || 'Rp 0',
+      tahap2: formData.tahap2 || 'Rp 0',
+      tahap3: formData.tahap3 || 'Rp 0',
+      outstanding: formData.outstanding || formData.gajiBersih,
     };
 
     setGajiData(prev => [newGaji, ...prev.map(g => ({ ...g, no: g.no + 1 }))]);
@@ -112,6 +116,7 @@ const DaftarGajiDashboard: React.FC = () => {
   const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
   const totalIncome = (g: GajiData) => toNumber(g.gajiPokok) + toNumber(g.tunjangan);
   const totalDeduct = (g: GajiData) => toNumber(g.pph21) + toNumber(g.potonganMess);
+  const formatRp = (val: number) => `Rp ${val.toLocaleString('id-ID')}`;
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
@@ -266,6 +271,10 @@ const DaftarGajiDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahap 1</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahap 2</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahap 3</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Outstanding</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
@@ -283,9 +292,14 @@ const DaftarGajiDashboard: React.FC = () => {
                   >
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaPegawai}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{`Rp ${totalIncome(item).toLocaleString('id-ID')}`}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{`Rp ${totalDeduct(item).toLocaleString('id-ID')}`}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{formatRp(totalIncome(item))}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{formatRp(totalDeduct(item))}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.gajiBersih}</td>
+                    {/* Pembayaran bertahap */}
+                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).tahap1 || formatRp(0)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).tahap2 || formatRp(0)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).tahap3 || formatRp(0)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).outstanding || item.gajiBersih}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         <button 

@@ -342,6 +342,8 @@ const DaftarPegawaiDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tgl Kontrak Awal</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tgl Kontrak Akhir</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Status
                   </th>
@@ -392,6 +394,12 @@ const DaftarPegawaiDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
                       {item.gajiPokok}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {((item as any).tanggalKontrakAwal && new Date((item as any).tanggalKontrakAwal).toLocaleDateString('id-ID')) || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {((item as any).tanggalKontrakAkhir && new Date((item as any).tanggalKontrakAkhir).toLocaleDateString('id-ID')) || '-'}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
                       {item.status}

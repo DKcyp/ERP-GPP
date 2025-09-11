@@ -688,11 +688,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "FileSignature",
         path: "/hrd/pegawai/kontrak-pegawai",
       },
-      {
-        title: "Monitoring Kontrak Pegawai",
-        icon: "ClipboardCheck",
-        path: "/hrd/pegawai/monitoring-kontrak",
-      },
+      // {
+      //   title: "Monitoring Kontrak Pegawai",
+      //   icon: "ClipboardCheck",
+      //   path: "/hrd/pegawai/monitoring-kontrak",
+      // },
       {
         title: "Daftar Cuti Pegawai",
         icon: "Calendar",

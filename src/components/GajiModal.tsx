@@ -15,6 +15,10 @@ export interface GajiFormData {
   potonganMess: string;
   bpjs: string;
   gajiBersih: string;
+  tahap1?: string;
+  tahap2?: string;
+  tahap3?: string;
+  outstanding?: string;
 }
 
 const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -23,6 +27,10 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
   const [totalIncome, setTotalIncome] = useState<string>('');
   const [totalDeduct, setTotalDeduct] = useState<string>('');
   const [gajiBersih, setGajiBersih] = useState<string>('');
+  const [tahap1, setTahap1] = useState<string>('');
+  const [tahap2, setTahap2] = useState<string>('');
+  const [tahap3, setTahap3] = useState<string>('');
+  const [outstanding, setOutstanding] = useState<string>('');
 
   const [errors, setErrors] = useState<Partial<Record<'namaPegawai' | 'totalIncome' | 'totalDeduct', string>>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -68,6 +76,16 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
     setGajiBersih(formatRp(bersih));
   }, [totalIncome, totalDeduct]);
 
+  // Auto-calc Outstanding = Gaji Bersih - (Tahap 1 + Tahap 2 + Tahap 3)
+  useEffect(() => {
+    const bersih = toNumber(gajiBersih);
+    const t1 = toNumber(tahap1);
+    const t2 = toNumber(tahap2);
+    const t3 = toNumber(tahap3);
+    const sisa = Math.max(bersih - (t1 + t2 + t3), 0);
+    setOutstanding(formatRp(sisa));
+  }, [gajiBersih, tahap1, tahap2, tahap3]);
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<'namaPegawai' | 'totalIncome' | 'totalDeduct', string>> = {};
     if (!namaPegawai.trim()) newErrors.namaPegawai = 'Nama Pegawai wajib dipilih';
@@ -104,6 +122,10 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
       potonganMess: 'Rp 0',
       bpjs: 'Rp 0',
       gajiBersih,
+      tahap1,
+      tahap2,
+      tahap3,
+      outstanding,
     };
     onSave(mapped);
     setIsLoading(false);
@@ -113,6 +135,10 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
     setTotalIncome('');
     setTotalDeduct('');
     setGajiBersih('');
+    setTahap1('');
+    setTahap2('');
+    setTahap3('');
+    setOutstanding('');
     setErrors({});
     onClose();
   };
@@ -221,6 +247,53 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
                 <p className="mt-1 text-xs text-gray-500">
                   Otomatis dihitung: Total Income - Total Deduct
                 </p>
+              </div>
+
+              {/* Tahap Pembayaran */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahap 1</label>
+                  <input
+                    type="text"
+                    value={tahap1}
+                    onChange={(e) => handleCurrencyChange(setTahap1, 'totalIncome')(e.target.value)}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
+                    placeholder="Rp 0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahap 2</label>
+                  <input
+                    type="text"
+                    value={tahap2}
+                    onChange={(e) => handleCurrencyChange(setTahap2, 'totalIncome')(e.target.value)}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
+                    placeholder="Rp 0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahap 3</label>
+                  <input
+                    type="text"
+                    value={tahap3}
+                    onChange={(e) => handleCurrencyChange(setTahap3, 'totalIncome')(e.target.value)}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
+                    placeholder="Rp 0"
+                  />
+                </div>
+              </div>
+
+              {/* Outstanding (Read-only) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Outstanding</label>
+                <input
+                  type="text"
+                  value={outstanding}
+                  readOnly
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-700 font-medium"
+                  placeholder="Rp 0"
+                />
+                <p className="mt-1 text-xs text-gray-500">Outstanding = Gaji Bersih - (Tahap 1 + Tahap 2 + Tahap 3)</p>
               </div>
             </div>
           </form>
