@@ -120,6 +120,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
         nama: string;
         departemen: string;
         jabatan?: string;
+        tahunan: number;
+        zona: number;
         total: number;
         pending: number;
         disetujui: number;
@@ -136,6 +138,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
           nama: r.nama,
           departemen: r.departemen,
           jabatan: r.jabatan,
+          tahunan: 0,
+          zona: 0,
           total: 0,
           pending: 0,
           disetujui: 0,
@@ -144,6 +148,9 @@ const PegawaiListCutiDashboard: React.FC = () => {
         });
       }
       const g = map.get(key)!;
+      if (r.jenisCuti === "Tahunan") g.tahunan += 1;
+      // Heuristik: deteksi 'zona' di alasan untuk menghitung Cuti Zona
+      if (/zona/i.test(r.alasan)) g.zona += 1;
       g.total += 1;
       if (r.status === "Pending") g.pending += 1;
       else if (r.status === "Disetujui") g.disetujui += 1;
@@ -556,6 +563,12 @@ const PegawaiListCutiDashboard: React.FC = () => {
                     Departemen
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cuti Tahunan
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cuti Zona
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total Cuti
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -600,6 +613,16 @@ const PegawaiListCutiDashboard: React.FC = () => {
                           {g.departemen}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                            {g.tahunan}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold">
+                            {g.zona}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                           <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
                             {g.total}
                           </span>
@@ -622,7 +645,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
                       </tr>
                       {isOpen && (
                         <tr>
-                          <td colSpan={7} className="bg-gray-50">
+                          <td colSpan={9} className="bg-gray-50">
                             <div className="px-6 py-4">
                               <div className="text-xs text-gray-500 mb-2">
                                 Detail Cuti {g.nama}

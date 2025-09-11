@@ -703,11 +703,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "LogOut",
         path: "/hrd/resign/dashboard",
       },
-      {
-        title: "Master UMR",
-        icon: "Banknote",
-        path: "/hrd/pegawai/master-umr",
-      },
+      // {
+      //   title: "Master UMR",
+      //   icon: "Banknote",
+      //   path: "/hrd/pegawai/master-umr",
+      // },
       // {
       //   title: "Approve PR Training",
       //   icon: "GraduationCap",
