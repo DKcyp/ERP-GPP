@@ -24,6 +24,37 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
   ]);
 
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+
+  // Example detail items per PR row; in real usage, replace with actual data
+  const detailMap: Record<number, { nama: string; jumlah: number; tanggal: string }[]> = {
+    1: [
+      { nama: 'Safety Helmet', jumlah: 10, tanggal: '07-02-2025' },
+      { nama: 'Safety Gloves', jumlah: 20, tanggal: '07-02-2025' },
+    ],
+    2: [
+      { nama: 'License Akuntansi', jumlah: 5, tanggal: '08-02-2025' },
+    ],
+    3: [
+      { nama: 'Training Kit', jumlah: 15, tanggal: '09-02-2025' },
+    ],
+    4: [
+      { nama: 'ATK - Kertas A4', jumlah: 3, tanggal: '10-02-2025' },
+      { nama: 'ATK - Pulpen', jumlah: 12, tanggal: '10-02-2025' },
+    ],
+    5: [
+      { nama: 'ATK - Map Folder', jumlah: 8, tanggal: '11-02-2025' },
+    ],
+  };
+
+  const toggleExpand = (id: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const handleOpenEntryModal = () => setIsEntryModalOpen(true);
   const handleCloseEntryModal = () => setIsEntryModalOpen(false);
@@ -120,6 +151,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="w-10 px-3 py-3"></th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">No <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
@@ -151,47 +183,87 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {purchasingRequests.map((request, index) => (
-                  <tr key={request.id} className={getRowBackgroundColor(index)}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.tanggalPR}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPR}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noSO}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.departemen}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.keterangan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        request.statusPR === 'Approve' ? 'bg-green-100 text-green-800' : request.statusPR === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {request.statusPR}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        request.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {request.statusPO}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        {request.statusPO === 'PO' ? (
-                          <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors">
-                            <Eye className="h-4 w-4" />
+                  <React.Fragment key={request.id}>
+                    <tr className={getRowBackgroundColor(index)}>
+                      <td className="px-3 py-4 whitespace-nowrap text-sm">
+                        <button
+                          type="button"
+                          onClick={() => toggleExpand(request.id)}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 text-gray-600"
+                          aria-label={expanded.has(request.id) ? 'Collapse' : 'Expand'}
+                        >
+                          <ChevronDown className={`h-4 w-4 transition-transform ${expanded.has(request.id) ? 'rotate-180' : ''}`} />
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.tanggalPR}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPR}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noSO}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.departemen}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.keterangan}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          request.statusPR === 'Approve' ? 'bg-green-100 text-green-800' : request.statusPR === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {request.statusPR}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          request.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {request.statusPO}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex items-center space-x-2">
+                          {request.statusPO === 'PO' ? (
+                            <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors">
+                              <Eye className="h-4 w-4" />
+                            </button>
+                          ) : (
+                            <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          )}
+                          <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors">
+                            <Clock className="h-4 w-4" />
                           </button>
-                        ) : (
                           <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-                            <Plus className="h-4 w-4" />
+                            <Printer className="h-4 w-4" />
                           </button>
-                        )}
-                        <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors">
-                          <Clock className="h-4 w-4" />
-                        </button>
-                        <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-                          <Printer className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                        </div>
+                      </td>
+                    </tr>
+                    {expanded.has(request.id) && (
+                      <tr className="bg-gray-50">
+                        <td colSpan={10} className="px-6 py-4">
+                          <div className="border border-gray-200 rounded-lg overflow-hidden">
+                            <table className="w-full text-xs">
+                              <thead className="bg-gray-100">
+                                <tr>
+                                  <th className="px-3 py-2 text-left font-medium text-gray-700">Nama</th>
+                                  <th className="px-3 py-2 text-left font-medium text-gray-700">Jumlah</th>
+                                  <th className="px-3 py-2 text-left font-medium text-gray-700">Tanggal</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-200">
+                                {(detailMap[request.id] || [
+                                  { nama: 'Item', jumlah: 1, tanggal: request.tanggalPR },
+                                ]).map((d, i) => (
+                                  <tr key={i}>
+                                    <td className="px-3 py-2 text-gray-700">{d.nama}</td>
+                                    <td className="px-3 py-2 text-gray-700">{d.jumlah}</td>
+                                    <td className="px-3 py-2 text-gray-700">{d.tanggal}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
