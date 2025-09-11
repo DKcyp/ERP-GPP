@@ -8,16 +8,21 @@ import {
   Download,
   Pencil,
   Trash2,
+  CheckCircle,
+  CalendarPlus,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface Sertifikat {
   id: string;
+  noSertifikat: string;
   nama: string;
   jenis: string;
+  vendor: string;
   tanggalTerbit: string; // ISO date yyyy-mm-dd
   masaBerlaku: string; // expiry date ISO yyyy-mm-dd
   document?: string; // URL or filename
+  status?: "Aktif" | "Segera Perpanjang" | "Kadaluarsa";
 }
 
 interface ModalState {
@@ -37,16 +42,20 @@ const jenisOptions = [
 const initialData: Sertifikat[] = [
   {
     id: "1",
+    noSertifikat: "ISO-9001-001",
     nama: "ISO 9001:2015",
     jenis: "ISO 9001",
+    vendor: "TUV Rheinland",
     tanggalTerbit: "2024-01-10",
     masaBerlaku: "2025-01-09",
     document: "iso9001.pdf",
   },
   {
     id: "2",
+    noSertifikat: "K3-PTM-002",
     nama: "Sertifikat K3 Migas",
     jenis: "Sertifikat K3",
+    vendor: "SKKMigas",
     tanggalTerbit: "2024-06-01",
     masaBerlaku: "2024-12-01",
   },
@@ -108,21 +117,63 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
 
   const fmtDate = (d: string) => new Date(d).toLocaleDateString();
 
+  const addYear = (isoDate: string, years = 1) => {
+    const d = new Date(isoDate);
+    const y = d.getFullYear() + years;
+    // keep month/day; handle Feb 29
+    const nd = new Date(d);
+    nd.setFullYear(y);
+    return nd.toISOString().slice(0, 10);
+  };
+
+  const handleApprove = (id: string) => {
+    const todayIso = new Date().toISOString().slice(0, 10);
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              status: "Aktif",
+              // keep tanggalTerbit if already set, otherwise set today
+              tanggalTerbit: r.tanggalTerbit || todayIso,
+            }
+          : r
+      )
+    );
+  };
+
+  const handlePerpanjang = (id: string) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              masaBerlaku: addYear(r.masaBerlaku, 1),
+              status: "Aktif",
+            }
+          : r
+      )
+    );
+  };
+
   const resetModal = () =>
     setModal({ open: false, mode: "add", data: undefined });
 
   const onSubmit = () => {
     if (!modal.data) return;
-    const { id, nama, jenis, tanggalTerbit, masaBerlaku, document } =
+    const { id, noSertifikat, nama, jenis, vendor, tanggalTerbit, masaBerlaku, document } =
       modal.data as Sertifikat;
 
-    if (!nama || !jenis || !tanggalTerbit || !masaBerlaku) return;
+    if (!noSertifikat || !nama || !vendor || !tanggalTerbit || !masaBerlaku)
+      return;
 
     if (modal.mode === "add") {
       const newItem: Sertifikat = {
         id: String(Date.now()),
+        noSertifikat,
         nama,
         jenis,
+        vendor,
         tanggalTerbit,
         masaBerlaku,
         document,
@@ -132,7 +183,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
       setRows((prev) =>
         prev.map((p) =>
           p.id === id
-            ? { ...p, nama, jenis, tanggalTerbit, masaBerlaku, document }
+            ? { ...p, noSertifikat, nama, jenis, vendor, tanggalTerbit, masaBerlaku, document }
             : p
         )
       );
@@ -145,8 +196,10 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
       open: true,
       mode: "add",
       data: {
+        noSertifikat: "",
         nama: "",
         jenis: "",
+        vendor: "",
         tanggalTerbit: "",
         masaBerlaku: "",
         document: "",
@@ -169,7 +222,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                  LEGALITAS PERUSAHAAN
+                  Kompetensi Perusahaan
                 </h1>
                 <nav className="text-sm text-gray-600">
                   <span className="hover:text-blue-600 cursor-pointer transition-colors">
@@ -177,7 +230,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                   </span>
                   <span className="mx-2">›</span>
                   <span className="text-blue-600 font-medium">
-                    Legalitas Perusahaan
+                    Kompetensi Perusahaan
                   </span>
                 </nav>
               </div>
@@ -300,16 +353,25 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      No Sertifikat
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Nama Sertifikat
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tanggal Terbit
+                      Vendor
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Masa Berlaku
+                      Tgl Terbit
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Document
+                      Tgl Exp
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Upload File
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Aksi
@@ -321,6 +383,11 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                     const sisaHari = daysUntil(r.masaBerlaku);
                     const expired = sisaHari <= 0;
                     const expiringSoon = !expired && sisaHari < 90;
+                    const computedStatus: "Aktif" | "Segera Perpanjang" | "Kadaluarsa" = expired
+                      ? "Kadaluarsa"
+                      : expiringSoon
+                      ? "Segera Perpanjang"
+                      : "Aktif";
                     return (
                       <tr
                         key={r.id}
@@ -332,6 +399,9 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                             : "hover:bg-gray-50 transition-colors"
                         }
                       >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {r.noSertifikat}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {r.nama}
                           {expired && (
@@ -347,6 +417,9 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {r.vendor}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {fmtDate(r.tanggalTerbit)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -359,15 +432,42 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                               onClick={(e) => e.preventDefault()}
                               className="text-blue-600 hover:text-blue-800 flex items-center"
                             >
-                              <FileText className="h-4 w-4 mr-1" /> View
-                              Document
+                              <FileText className="h-4 w-4 mr-1" /> {r.document}
                             </a>
                           ) : (
                             <span className="text-gray-400">-</span>
                           )}
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span
+                            className={
+                              "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border " +
+                              (r.status === "Kadaluarsa" || computedStatus === "Kadaluarsa"
+                                ? "bg-red-50 text-red-700 border-red-200"
+                                : (r.status === "Segera Perpanjang" || computedStatus === "Segera Perpanjang")
+                                ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                : "bg-green-50 text-green-700 border-green-200")
+                            }
+                          >
+                            {r.status ?? computedStatus}
+                          </span>
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleApprove(r.id)}
+                              className="inline-flex items-center px-3 py-1.5 border border-emerald-300 rounded-md text-emerald-700 hover:bg-emerald-50 transition-colors"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handlePerpanjang(r.id)}
+                              className="inline-flex items-center px-3 py-1.5 border border-indigo-300 rounded-md text-indigo-700 hover:bg-indigo-50 transition-colors"
+                              title="Perpanjang 1 tahun"
+                            >
+                              <CalendarPlus className="h-4 w-4" />
+                            </button>
                             <button
                               onClick={() => openEdit(r)}
                               className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
@@ -432,6 +532,22 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
             <div className="grid grid-cols-1 gap-3">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">
+                  No Sertifikat
+                </label>
+                <input
+                  type="text"
+                  value={modal.data?.noSertifikat ?? ""}
+                  onChange={(e) =>
+                    setModal((m) => ({
+                      ...m,
+                      data: { ...m.data, noSertifikat: e.target.value },
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
                   Nama Sertifikat
                 </label>
                 <input
@@ -483,16 +599,35 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">
-                  Document (opsional)
+                  Vendor
                 </label>
                 <input
                   type="text"
-                  placeholder="Nama file atau URL"
-                  value={modal.data?.document ?? ""}
+                  value={modal.data?.vendor ?? ""}
                   onChange={(e) =>
                     setModal((m) => ({
                       ...m,
-                      data: { ...m.data, document: e.target.value },
+                      data: { ...m.data, vendor: e.target.value },
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
+                  Upload File
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setModal((m) => ({
+                      ...m,
+                      data: {
+                        ...m.data,
+                        document: e.currentTarget.files && e.currentTarget.files[0]
+                          ? e.currentTarget.files[0].name
+                          : m.data?.document,
+                      },
                     }))
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"

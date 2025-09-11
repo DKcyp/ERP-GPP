@@ -20,6 +20,19 @@ type AlatUkur = {
   masaBerlaku: string; // ISO date string
   posisiBarang: string;
   kategori: SubKategoriKey;
+  // New optional fields for richer table
+  jenisKelompokAlat?: string;
+  merkAlat?: string;
+  tipeAlat?: string;
+  tahunPembelian?: string; // yyyy or yyyy-mm-dd
+  noSeriAlat?: string;
+  tglKalibrasiAlat?: string; // ISO date
+  tglExpiredKalibrasiAlat?: string; // ISO date
+  vendorKalibrasi?: string;
+  posisiAlat?: string;
+  fotoAlat?: string; // url or filename
+  statusAlat?: string;
+  statusProses?: 'Pengajuan' | 'Proses' | 'Selesai';
 };
 
 const SUB_KATEGORI = [
@@ -153,7 +166,24 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
     jenisBarang: "",
     masaBerlaku: "",
     posisiBarang: "",
+    // extended fields
+    jenisKelompokAlat: "",
+    merkAlat: "",
+    tipeAlat: "",
+    tahunPembelian: "",
+    noSeriAlat: "",
+    tglKalibrasiAlat: "",
+    tglExpiredKalibrasiAlat: "",
+    vendorKalibrasi: "",
+    posisiAlat: "",
+    fotoAlat: "",
+    statusAlat: "",
+    statusProses: "",
   });
+
+  const jenisOptions = useMemo(() => {
+    return Array.from(new Set(rows.map((r) => r.jenisBarang)));
+  }, [rows]);
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -170,8 +200,12 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
 
   const expiringItems = useMemo(() => {
     return filtered
-      .filter((r) => daysTo(r.masaBerlaku) <= 60)
-      .sort((a, b) => daysTo(a.masaBerlaku) - daysTo(b.masaBerlaku));
+      .filter((r) => daysTo(r.tglExpiredKalibrasiAlat ?? r.masaBerlaku) <= 60)
+      .sort(
+        (a, b) =>
+          daysTo(a.tglExpiredKalibrasiAlat ?? a.masaBerlaku) -
+          daysTo(b.tglExpiredKalibrasiAlat ?? b.masaBerlaku)
+      );
   }, [filtered]);
 
   const handleExport = (fmt: string) => alert(`Export ${fmt} (dummy)`);
@@ -199,6 +233,19 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
       masaBerlaku: form.masaBerlaku,
       posisiBarang: form.posisiBarang,
       kategori: activeSub,
+      // map extended fields
+      jenisKelompokAlat: form.jenisKelompokAlat || form.jenisBarang,
+      merkAlat: form.merkAlat || undefined,
+      tipeAlat: form.tipeAlat || undefined,
+      tahunPembelian: form.tahunPembelian || undefined,
+      noSeriAlat: form.noSeriAlat || form.serialNumber,
+      tglKalibrasiAlat: form.tglKalibrasiAlat || undefined,
+      tglExpiredKalibrasiAlat: form.tglExpiredKalibrasiAlat || form.masaBerlaku,
+      vendorKalibrasi: form.vendorKalibrasi || undefined,
+      posisiAlat: form.posisiAlat || form.posisiBarang,
+      fotoAlat: form.fotoAlat || undefined,
+      statusAlat: form.statusAlat || undefined,
+      statusProses: (form.statusProses as 'Pengajuan' | 'Proses' | 'Selesai') || undefined,
     };
     setRows((prev) => [newItem, ...prev]);
     setForm({
@@ -207,6 +254,18 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
       jenisBarang: "",
       masaBerlaku: "",
       posisiBarang: "",
+      jenisKelompokAlat: "",
+      merkAlat: "",
+      tipeAlat: "",
+      tahunPembelian: "",
+      noSeriAlat: "",
+      tglKalibrasiAlat: "",
+      tglExpiredKalibrasiAlat: "",
+      vendorKalibrasi: "",
+      posisiAlat: "",
+      fotoAlat: "",
+      statusAlat: "",
+      statusProses: "",
     });
     setOpenAdd(false);
   };
@@ -246,7 +305,7 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
               <div>
                 <p className="font-semibold">
                   {expiringItems.length} item akan habis masa berlaku dalam ≤ 60
-                  hari pada tab ini.
+                  hari berdasarkan filter saat ini.
                 </p>
                 <ul className="mt-1 text-sm list-disc pl-5">
                   {expiringItems.slice(0, 5).map((it) => (
@@ -263,25 +322,8 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Subkategori Tabs */}
-        <div className="mb-6 overflow-x-auto">
-          <div className="inline-flex gap-2 bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
-            {SUB_KATEGORI.map((s) => (
-              <button
-                key={s.key}
-                onClick={() => setActiveSub(s.key)}
-                className={
-                  "px-3 py-2 rounded-lg text-sm whitespace-nowrap " +
-                  (activeSub === s.key
-                    ? "bg-blue-600 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-50")
-                }
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Subkategori Filter (dropdown) */}
+        {/* Tabs removed, replaced by filter controls below */}
 
         {/* Filters */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
@@ -300,7 +342,39 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
             </div>
-
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subkategori
+              </label>
+              <select
+                value={activeSub}
+                onChange={(e) => setActiveSub(e.target.value as SubKategoriKey)}
+                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              >
+                {SUB_KATEGORI.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Jenis Barang
+              </label>
+              <select
+                value={jenisBarang}
+                onChange={(e) => setJenisBarang(e.target.value)}
+                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="">Semua</option>
+                {jenisOptions.map((j) => (
+                  <option key={j} value={j}>
+                    {j}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Periode Masa Berlaku
@@ -383,23 +457,25 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Serial Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama Barang
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Masa Berlaku Certificate
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Posisi Barang
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kelompok Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merk Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tahun Pembelian</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Seri Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Kalibrasi Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Expired Kalibrasi Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor Kalibrasi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Alat</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map((row) => {
-                  const sisa = daysTo(row.masaBerlaku);
+                  const expiredDate = row.tglExpiredKalibrasiAlat ?? row.masaBerlaku;
+                  const sisa = daysTo(expiredDate);
                   const danger = sisa <= 60; // highlight merah jika <= 60 hari lagi
                   return (
                     <tr
@@ -410,18 +486,19 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                           : "hover:bg-gray-50 transition-colors"
                       }
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {row.serialNumber}
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.namaBarang}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.jenisKelompokAlat ?? row.jenisBarang}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.merkAlat ?? '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.tipeAlat ?? '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.tahunPembelian ?? '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.noSeriAlat ?? row.serialNumber}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {row.namaBarang}
+                        {row.tglKalibrasiAlat ? new Date(row.tglKalibrasiAlat).toLocaleDateString('id-ID') : '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         <span className="inline-flex items-center">
                           <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                          {new Date(row.masaBerlaku).toLocaleDateString(
-                            "id-ID"
-                          )}
+                          {new Date(expiredDate).toLocaleDateString('id-ID')}
                         </span>
                         {danger && (
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -429,12 +506,22 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                           </span>
                         )}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.vendorKalibrasi ?? '-'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         <span className="inline-flex items-center">
                           <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                          {row.posisiBarang}
+                          {row.posisiAlat ?? row.posisiBarang}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {row.fotoAlat ? (
+                          <a href={row.fotoAlat} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">Lihat Foto</a>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.statusAlat ?? '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.statusProses ?? '-'}</td>
                     </tr>
                   );
                 })}
@@ -489,6 +576,71 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Jenis Kelompok Alat
+                    </label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.jenisKelompokAlat}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, jenisKelompokAlat: e.target.value }))
+                      }
+                      placeholder="Instrument / Safety / ..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Merk Alat
+                    </label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.merkAlat}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, merkAlat: e.target.value }))
+                      }
+                      placeholder="Merk"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tipe Alat
+                    </label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.tipeAlat}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, tipeAlat: e.target.value }))
+                      }
+                      placeholder="Tipe"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tahun Pembelian
+                    </label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.tahunPembelian}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, tahunPembelian: e.target.value }))
+                      }
+                      placeholder="2024"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      No Seri Alat
+                    </label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.noSeriAlat}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, noSeriAlat: e.target.value }))
+                      }
+                      placeholder="No Seri"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Posisi Barang
                     </label>
                     <input
@@ -512,6 +664,73 @@ const MonitoringDaftarAlatUkurDashboard: React.FC = () => {
                         setForm((f) => ({ ...f, masaBerlaku: e.target.value }))
                       }
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Kalibrasi Alat</label>
+                    <input
+                      type="date"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.tglKalibrasiAlat}
+                      onChange={(e) => setForm((f) => ({ ...f, tglKalibrasiAlat: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Expired Kalibrasi Alat</label>
+                    <input
+                      type="date"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.tglExpiredKalibrasiAlat}
+                      onChange={(e) => setForm((f) => ({ ...f, tglExpiredKalibrasiAlat: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Vendor Kalibrasi</label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.vendorKalibrasi}
+                      onChange={(e) => setForm((f) => ({ ...f, vendorKalibrasi: e.target.value }))}
+                      placeholder="Nama vendor"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Posisi Alat</label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.posisiAlat}
+                      onChange={(e) => setForm((f) => ({ ...f, posisiAlat: e.target.value }))}
+                      placeholder="Posisi alat detail"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Foto Alat (URL)</label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.fotoAlat}
+                      onChange={(e) => setForm((f) => ({ ...f, fotoAlat: e.target.value }))}
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status Alat</label>
+                    <input
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.statusAlat}
+                      onChange={(e) => setForm((f) => ({ ...f, statusAlat: e.target.value }))}
+                      placeholder="Aktif / Rusak / ..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status (Pengajuan/Proses/Selesai)</label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      value={form.statusProses}
+                      onChange={(e) => setForm((f) => ({ ...f, statusProses: e.target.value }))}
+                    >
+                      <option value="">Pilih Status</option>
+                      <option value="Pengajuan">Pengajuan</option>
+                      <option value="Proses">Proses</option>
+                      <option value="Selesai">Selesai</option>
+                    </select>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">

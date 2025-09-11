@@ -1,21 +1,18 @@
 import React, { useMemo, useState } from "react";
-import {
-  Search,
-  PlusCircle,
-  Download,
-  Clock,
-  AlertTriangle,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Search, PlusCircle, Download, Clock, Pencil, Trash2 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface MCURecord {
-  nama: string;
-  posisi: string;
-  provider: string; // Medical Provider
-  expiry: string; // ISO date string (Masa Berlaku)
-  keterangan?: string; // catatan tambahan
+  nama: string; // Nama Personil
+  posisi: string; // Posisi / Jabatan
+  tglMCU?: string; // Tgl MCU Personil
+  expiry: string; // Tgl Expired MCU Tahunan (ISO)
+  masaBerlakuReview?: string; // Masa berlaku MCU review user
+  paketMCU?: string; // Paket MCU
+  keterangan?: string; // Keterangan (P1-P7)
+  provider?: string; // Provider MCU (back-compat)
+  providerMCU?: string; // Provider MCU (preferred)
+  statusProses?: "Permintaan Ops" | "Pengajuan" | "Proses" | "Selesai"; // Status
 }
 
 const sampleData: MCURecord[] = [
@@ -24,35 +21,55 @@ const sampleData: MCURecord[] = [
     posisi: "Radiographer",
     provider: "RS Medika Sejahtera",
     expiry: "2025-01-15",
-    keterangan: "Fit to work",
+    tglMCU: "2024-01-15",
+    masaBerlakuReview: "1 Tahun",
+    paketMCU: "Paket A",
+    keterangan: "P1",
+    statusProses: "Selesai",
   },
   {
     nama: "Budi Santoso",
     posisi: "Assistant Radiographer",
     provider: "Klinik Prima",
     expiry: "2024-10-20",
-    keterangan: "Perlu kontrol ulang",
+    tglMCU: "2023-10-20",
+    masaBerlakuReview: "1 Tahun",
+    paketMCU: "Paket B",
+    keterangan: "P3",
+    statusProses: "Proses",
   },
   {
     nama: "Citra Lestari",
     posisi: "QHSE Officer",
     provider: "RSU Harapan",
     expiry: "2025-12-31",
-    keterangan: "",
+    tglMCU: "2024-12-31",
+    masaBerlakuReview: "1 Tahun",
+    paketMCU: "Paket C",
+    keterangan: "P2",
+    statusProses: "Pengajuan",
   },
   {
     nama: "Dewi Puspita",
     posisi: "Technician",
     provider: "Klinik Mitra",
     expiry: "2024-11-05",
-    keterangan: "Catatan alergi",
+    tglMCU: "2023-11-05",
+    masaBerlakuReview: "1 Tahun",
+    paketMCU: "Paket A",
+    keterangan: "P4",
+    statusProses: "Permintaan Ops",
   },
   {
     nama: "Eko Prasetyo",
     posisi: "Supervisor",
     provider: "RS Duta",
     expiry: "2024-12-10",
-    keterangan: "",
+    tglMCU: "2023-12-10",
+    masaBerlakuReview: "1 Tahun",
+    paketMCU: "Paket D",
+    keterangan: "P1",
+    statusProses: "Selesai",
   },
 ];
 
@@ -120,7 +137,17 @@ const MedicalCheckUpDashboard: React.FC = () => {
 
   const openAdd = () => {
     setModalMode("add");
-    setForm({ nama: "", posisi: "", provider: "", expiry: "", keterangan: "" });
+    setForm({
+      nama: "",
+      posisi: "",
+      tglMCU: "",
+      expiry: "",
+      masaBerlakuReview: "",
+      paketMCU: "",
+      keterangan: "",
+      providerMCU: "",
+      statusProses: undefined,
+    });
     setModalOpen(true);
   };
   const openEdit = (item: MCURecord) => {
@@ -131,14 +158,21 @@ const MedicalCheckUpDashboard: React.FC = () => {
     setModalOpen(true);
   };
   const saveForm = () => {
-    if (!form.nama || !form.posisi || !form.provider || !form.expiry) return;
+    if (!form.nama || !form.posisi || !form.expiry) return;
     if (modalMode === "add") {
       const newItem: MCURecord = {
         nama: String(form.nama),
         posisi: String(form.posisi),
-        provider: String(form.provider),
+        tglMCU: form.tglMCU ? String(form.tglMCU) : undefined,
         expiry: String(form.expiry),
+        masaBerlakuReview: form.masaBerlakuReview
+          ? String(form.masaBerlakuReview)
+          : undefined,
+        paketMCU: form.paketMCU ? String(form.paketMCU) : undefined,
         keterangan: (form.keterangan ?? "").toString(),
+        providerMCU: form.providerMCU ? String(form.providerMCU) : undefined,
+        provider: form.provider ? String(form.provider) : undefined,
+        statusProses: form.statusProses as MCURecord["statusProses"],
       };
       setRows((prev) => [newItem, ...prev]);
     } else if (modalMode === "edit" && editIndex !== null) {
@@ -148,9 +182,18 @@ const MedicalCheckUpDashboard: React.FC = () => {
             ? {
                 nama: String(form.nama),
                 posisi: String(form.posisi),
-                provider: String(form.provider),
+                tglMCU: form.tglMCU ? String(form.tglMCU) : undefined,
                 expiry: String(form.expiry),
+                masaBerlakuReview: form.masaBerlakuReview
+                  ? String(form.masaBerlakuReview)
+                  : undefined,
+                paketMCU: form.paketMCU ? String(form.paketMCU) : undefined,
                 keterangan: (form.keterangan ?? "").toString(),
+                providerMCU: form.providerMCU
+                  ? String(form.providerMCU)
+                  : p.providerMCU,
+                provider: form.provider ? String(form.provider) : p.provider,
+                statusProses: form.statusProses as MCURecord["statusProses"],
               }
             : p
         )
@@ -300,42 +343,16 @@ const MedicalCheckUpDashboard: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Nama
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Posisi
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Medical Provider
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Masa Berlaku
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Keterangan
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Aksi
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Personil</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi / Jabatan</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl MCU Personil</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Expired MCU Tahunan</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa berlaku MCU review user</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket MCU</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan (P1-P7)</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider MCU</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -348,46 +365,35 @@ const MedicalCheckUpDashboard: React.FC = () => {
                         key={idx}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {row.nama}
-                          {(expiringSoon || expired) && (
-                            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              <AlertTriangle className="h-3 w-3 mr-1" />{" "}
-                              {expired ? "Expired" : `≤ 60 hari`}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {row.posisi}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {row.provider}
-                        </td>
-                        <td
-                          className={`px-6 py-4 whitespace-nowrap text-sm ${
-                            expiringSoon || expired
-                              ? "text-red-700 bg-red-50"
-                              : "text-gray-500"
-                          }`}
-                        >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.nama}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.posisi}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.tglMCU ? formatDate(row.tglMCU) : '-'}</td>
+                        <td className={`px-6 py-4 whitespace-nowrap text-sm ${expiringSoon || expired ? 'text-red-700 bg-red-50' : 'text-gray-500'}`}>
                           <div className="flex flex-col">
-                            <span className="font-medium">
-                              {formatDate(row.expiry)}
-                            </span>
-                            <span className="text-xs">
-                              {remaining >= 0
-                                ? `${remaining} hari lagi`
-                                : `${Math.abs(remaining)} hari lewat`}
-                            </span>
+                            <span className="font-medium">{formatDate(row.expiry)}</span>
+                            <span className="text-xs">{remaining >= 0 ? `${remaining} hari lagi` : `${Math.abs(remaining)} hari lewat`}</span>
                           </div>
                         </td>
-                        <td
-                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate"
-                          title={row.keterangan || ""}
-                        >
-                          {row.keterangan && row.keterangan.trim() !== ""
-                            ? row.keterangan
-                            : "-"}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.masaBerlakuReview ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.paketMCU ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.keterangan ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.providerMCU ?? row.provider ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {row.statusProses ? (
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              row.statusProses === 'Selesai'
+                                ? 'bg-green-100 text-green-800'
+                                : row.statusProses === 'Proses'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : row.statusProses === 'Pengajuan'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {row.statusProses}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center gap-2">
@@ -442,7 +448,7 @@ const MedicalCheckUpDashboard: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 gap-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Nama</label>
+                <label className="block text-xs text-gray-500 mb-1">Nama Personil</label>
                 <input
                   type="text"
                   value={form.nama || ""}
@@ -454,7 +460,7 @@ const MedicalCheckUpDashboard: React.FC = () => {
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">
-                  Posisi
+                  Posisi / Jabatan
                 </label>
                 <select
                   value={form.posisi || ""}
@@ -472,34 +478,46 @@ const MedicalCheckUpDashboard: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
-                  Medical Provider
-                </label>
+                <label className="block text-xs text-gray-500 mb-1">Tgl MCU Personil</label>
                 <input
-                  type="text"
-                  value={form.provider || ""}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, provider: e.target.value }))
-                  }
+                  type="date"
+                  value={form.tglMCU || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, tglMCU: e.target.value }))}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">
-                  Masa Berlaku
+                  Tgl Expired MCU Tahunan
                 </label>
                 <input
                   type="date"
                   value={form.expiry || ""}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, expiry: e.target.value }))
-                  }
+                  onChange={(e) => setForm((f) => ({ ...f, expiry: e.target.value }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Masa berlaku MCU review user</label>
+                <input
+                  type="text"
+                  value={form.masaBerlakuReview || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, masaBerlakuReview: e.target.value }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Paket MCU</label>
+                <input
+                  type="text"
+                  value={form.paketMCU || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, paketMCU: e.target.value }))}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">
-                  Keterangan
+                  Keterangan (P1-P7)
                 </label>
                 <textarea
                   value={form.keterangan || ""}
@@ -510,6 +528,34 @@ const MedicalCheckUpDashboard: React.FC = () => {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="Catatan tambahan..."
                 />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Provider MCU</label>
+                <input
+                  type="text"
+                  value={form.providerMCU || form.provider || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, providerMCU: e.target.value }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Status</label>
+                <select
+                  value={form.statusProses || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      statusProses: (e.target.value || undefined) as MCURecord["statusProses"],
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">Pilih Status</option>
+                  <option value="Permintaan Ops">Permintaan Ops</option>
+                  <option value="Pengajuan">Pengajuan</option>
+                  <option value="Proses">Proses</option>
+                  <option value="Selesai">Selesai</option>
+                </select>
               </div>
             </div>
             <div className="mt-5 flex justify-end gap-2">

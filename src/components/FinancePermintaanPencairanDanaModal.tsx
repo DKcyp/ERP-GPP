@@ -378,8 +378,8 @@ const FinancePermintaanPencairanDanaModal: React.FC<
                   }
                   className="block w-full border rounded-lg px-4 py-2 text-sm appearance-none"
                 >
-                  <option value="Terbuka">Belum</option>
-                  <option value="Tertutup">Lunas</option>
+                  <option value="Belum">Belum</option>
+                  <option value="Lunas">Lunas</option>
                 </select>
               </div>
               <div>

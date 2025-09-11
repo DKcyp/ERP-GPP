@@ -1553,20 +1553,11 @@ export const qhseMenu: MenuSection[] = [
             path: "/qhse/radiography/monitoring-kamera-radiography",
           },
           {
-            title: "SIB Personnel Radiasi",
+            title: "Proses Isotop",
             icon: "UserCheck",
             path: "/qhse/radiography/sib-personnel-radiasi",
           },
-          {
-            title: "Dosimeter Saku",
-            icon: "ClipboardCheck",
-            path: "/qhse/radiography/dosimeter-saku",
-          },
-          {
-            title: "Surveymeter",
-            icon: "Activity",
-            path: "/qhse/radiography/surveymeter",
-          },
+
           {
             title: "ThermoLuminescent Dosimeter (TLD) Badge",
             icon: "Tag",
@@ -1576,11 +1567,6 @@ export const qhseMenu: MenuSection[] = [
             title: "Uji Usap Kamera",
             icon: "ClipboardCheck",
             path: "/qhse/radiography/uji-usap-kamera",
-          },
-          {
-            title: "Masa berlaku kontrak SIB",
-            icon: "FileSignature",
-            path: "/qhse/radiography/kontrak-sib",
           },
         ],
       },

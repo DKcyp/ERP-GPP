@@ -3,17 +3,19 @@ import { Search, PlusCircle, Download, Clock, Pencil, Trash2, X } from 'lucide-r
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface APDRecord {
-  nama: string;
-  jenis: string; // Jenis APD
-  status: 'Tersedia' | 'Kurang';
+  nama: string; // Nama Personil
+  jenis: string; // Nama APD
+  tglPenerimaan?: string; // Tgl Penerimaan APD (ISO date)
+  documentBA?: string; // Document BA (URL/nama dokumen)
+  status: 'Pengajuan' | 'Proses' | 'Selesai';
 }
 
 const sampleData: APDRecord[] = [
-  { nama: 'Andi Wijaya', jenis: 'Helm Safety', status: 'Tersedia' },
-  { nama: 'Budi Santoso', jenis: 'Kacamata Safety', status: 'Kurang' },
-  { nama: 'Citra Lestari', jenis: 'Sarung Tangan', status: 'Tersedia' },
-  { nama: 'Dewi Puspita', jenis: 'Sepatu Safety', status: 'Tersedia' },
-  { nama: 'Eko Prasetyo', jenis: 'Masker Respirator', status: 'Kurang' },
+  { nama: 'Andi Wijaya', jenis: 'Helm Safety', tglPenerimaan: '2024-07-01', documentBA: 'BA-001.pdf', status: 'Selesai' },
+  { nama: 'Budi Santoso', jenis: 'Kacamata Safety', tglPenerimaan: '2024-07-03', documentBA: 'BA-002.pdf', status: 'Proses' },
+  { nama: 'Citra Lestari', jenis: 'Sarung Tangan', tglPenerimaan: '2024-06-25', documentBA: '', status: 'Pengajuan' },
+  { nama: 'Dewi Puspita', jenis: 'Sepatu Safety', tglPenerimaan: '2024-07-05', documentBA: 'BA-003.pdf', status: 'Selesai' },
+  { nama: 'Eko Prasetyo', jenis: 'Masker Respirator', tglPenerimaan: '', documentBA: '', status: 'Proses' },
 ];
 
 // jenis options will be derived from current state data dynamically
@@ -27,7 +29,7 @@ const APDDashboard: React.FC = () => {
   const [data, setData] = useState<APDRecord[]>(sampleData);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<APDRecord | null>(null);
-  const [form, setForm] = useState<APDRecord>({ nama: '', jenis: '', status: 'Tersedia' });
+  const [form, setForm] = useState<APDRecord>({ nama: '', jenis: '', tglPenerimaan: '', documentBA: '', status: 'Pengajuan' });
   const [showDelete, setShowDelete] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<APDRecord | null>(null);
 
@@ -53,7 +55,7 @@ const APDDashboard: React.FC = () => {
   // Handlers Add/Edit/Delete
   const openAdd = () => {
     setEditing(null);
-    setForm({ nama: '', jenis: '', status: 'Tersedia' });
+    setForm({ nama: '', jenis: '', tglPenerimaan: '', documentBA: '', status: 'Pengajuan' });
     setShowForm(true);
   };
 
@@ -64,13 +66,19 @@ const APDDashboard: React.FC = () => {
   };
 
   const saveForm = () => {
-    const payload: APDRecord = { nama: form.nama.trim(), jenis: form.jenis.trim(), status: form.status };
+    const payload: APDRecord = {
+      nama: form.nama.trim(),
+      jenis: form.jenis.trim(),
+      tglPenerimaan: form.tglPenerimaan || undefined,
+      documentBA: form.documentBA || undefined,
+      status: form.status,
+    };
     if (!payload.nama || !payload.jenis) {
       alert('Nama dan Jenis APD wajib diisi');
       return;
     }
     if (editing) {
-      setData(prev => prev.map(r => (r.nama === editing.nama && r.jenis === editing.jenis && r.status === editing.status ? payload : r)));
+      setData(prev => prev.map(r => (r === editing ? payload : r)));
     } else {
       setData(prev => [payload, ...prev]);
     }
@@ -214,19 +222,34 @@ const APDDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Pegawai</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis APD</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Personil</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama APD</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Penerimaan APD</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document BA</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {displayedData.map((row, idx) => {
-                  const statusColor = row.status === 'Tersedia' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                  const statusColor =
+                    row.status === 'Selesai'
+                      ? 'bg-green-100 text-green-800'
+                      : row.status === 'Proses'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-blue-100 text-blue-800';
                   return (
                     <tr key={idx} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.nama}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.jenis}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{row.tglPenerimaan ? new Date(row.tglPenerimaan).toLocaleDateString('id-ID') : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                        {row.documentBA ? (
+                          <a href={row.documentBA} target="_blank" rel="noreferrer" className="hover:underline">{row.documentBA}</a>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
                           {row.status}
@@ -276,21 +299,39 @@ const APDDashboard: React.FC = () => {
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Personil</label>
                     <input
                       value={form.nama}
                       onChange={(e)=>setForm(prev=>({...prev, nama: e.target.value}))}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                      placeholder="Masukkan nama pegawai"
+                      placeholder="Masukkan nama personil"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Jenis APD</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama APD</label>
                     <input
                       value={form.jenis}
                       onChange={(e)=>setForm(prev=>({...prev, jenis: e.target.value}))}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                       placeholder="Contoh: Helm Safety"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Penerimaan APD</label>
+                    <input
+                      type="date"
+                      value={form.tglPenerimaan || ''}
+                      onChange={(e)=>setForm(prev=>({...prev, tglPenerimaan: e.target.value}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Document BA</label>
+                    <input
+                      value={form.documentBA || ''}
+                      onChange={(e)=>setForm(prev=>({...prev, documentBA: e.target.value}))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      placeholder="Nama file atau URL"
                     />
                   </div>
                   <div>
@@ -300,8 +341,9 @@ const APDDashboard: React.FC = () => {
                       onChange={(e)=>setForm(prev=>({...prev, status: e.target.value as APDRecord['status']}))}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                     >
-                      <option value="Tersedia">Tersedia</option>
-                      <option value="Kurang">Kurang</option>
+                      <option value="Pengajuan">Pengajuan</option>
+                      <option value="Proses">Proses</option>
+                      <option value="Selesai">Selesai</option>
                     </select>
                   </div>
                 </div>
