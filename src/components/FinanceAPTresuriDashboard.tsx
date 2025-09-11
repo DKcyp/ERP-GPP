@@ -386,89 +386,161 @@ const FinanceAPTresuriDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Vendor (Upload)
+                    Invoice
                   </label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, vendor: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      value={editing.invoice || ""}
+                      onChange={(e) =>
+                        setEditing({ ...editing, invoice: e.target.value })
+                      }
+                      placeholder="Nama file atau link"
+                      className="w-full border rounded px-2 py-1.5 text-sm"
+                    />
+                    <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                      <Upload className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">
-                    No Dokumen (Upload)
+                    Faktur Pajak
                   </label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, noDokumen: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      value={editing.fakturPajak || ""}
+                      onChange={(e) =>
+                        setEditing({ ...editing, fakturPajak: e.target.value })
+                      }
+                      placeholder="Nama file atau link"
+                      className="w-full border rounded px-2 py-1.5 text-sm"
+                    />
+                    <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                      <Upload className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Invoice (Upload)
-                  </label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, invoice: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Faktur Pajak (Upload)
-                  </label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, fakturPajak: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">DO (Upload)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, do: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">LPB (Upload)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, lpb: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">RFI (Upload)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setEditing({ ...editing, rfi: f ? f.name : "" });
-                    }}
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
-                </div>
+
+                {editing.jenis === "jasa" ? (
+                  <>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        BA
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          value={editing.ba || ""}
+                          onChange={(e) =>
+                            setEditing({ ...editing, ba: e.target.value })
+                          }
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                        />
+                        <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                          <Upload className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Timesheet
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          value={editing.timesheet || ""}
+                          onChange={(e) =>
+                            setEditing({
+                              ...editing,
+                              timesheet: e.target.value,
+                            })
+                          }
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                        />
+                        <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                          <Upload className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Report
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          value={editing.report || ""}
+                          onChange={(e) =>
+                            setEditing({ ...editing, report: e.target.value })
+                          }
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                        />
+                        <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                          <Upload className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        DO
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          value={editing.do || ""}
+                          onChange={(e) =>
+                            setEditing({ ...editing, do: e.target.value })
+                          }
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                        />
+                        <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                          <Upload className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        LPB
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          value={editing.lpb || ""}
+                          onChange={(e) =>
+                            setEditing({ ...editing, lpb: e.target.value })
+                          }
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                        />
+                        <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                          <Upload className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        RFI
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          value={editing.rfi || ""}
+                          onChange={(e) =>
+                            setEditing({ ...editing, rfi: e.target.value })
+                          }
+                          className="w-full border rounded px-2 py-1.5 text-sm"
+                        />
+                        <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                          <Upload className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 p-4 border-t">
