@@ -1528,7 +1528,7 @@ export const qhseMenu: MenuSection[] = [
   //   directPath: "/qhse/perizinan-alat",
   // },
   {
-    title: "Legalitas Perusahaan",
+    title: "Kompetensi Perusahaan",
     icon: "ShieldCheck",
     items: [],
     directPath: "/qhse/legalitas-perusahaan",
