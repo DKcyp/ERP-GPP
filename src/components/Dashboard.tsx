@@ -118,6 +118,7 @@ import VerifikasiStockOpnameDashboard from "./VerifikasiStockOpnameDashboard";
 import LaporanSemuaStockDashboard from "./LaporanSemuaStockDashboard";
 import MonitoringAlatProyekDashboard from "./MonitoringAlatProyekDashboard";
 import PermintaanBarangGudangDashboard from "./PermintaanBarangGudangDashboard";
+import LaporanEvaluasiVendorDashboard from "./LaporanEvaluasiVendorDashboard";
 import GudangMainDashboard from "./GudangMainDashboard";
 import DashboardKPIDashboard from "./DashboardKPIDashboard"; // New import for KPI Dashboard
 import GeneralMasterKPIDashboard from "./GeneralMasterKPIDashboard"; // Import the new Master KPI component
@@ -547,6 +548,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/pengadaan/vendor/evaluasi") {
       // NEW: Route for Evaluasi Vendor
       return <EvaluasiVendorDashboard />;
+    }
+    if (currentPage === "/pengadaan/vendor/laporan") {
+      return <LaporanEvaluasiVendorDashboard />;
     }
     if (currentPage === "/pengadaan/seleksi/seleksi") {
       return <DaftarSeleksiSupplierBiddingDashboard />;

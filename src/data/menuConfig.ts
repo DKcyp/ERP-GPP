@@ -913,7 +913,11 @@ export const pengadaanMenu: MenuSection[] = [
         icon: "CheckCircle",
         path: "/pengadaan/vendor/evaluasi",
       }, // NEW: Evaluasi Vendor sub-menu
-      { title: "Laporan", icon: "BarChart", path: "/pengadaan/vendor/laporan" },
+      {
+        title: "Laporan Evaluasi",
+        icon: "BarChart",
+        path: "/pengadaan/vendor/laporan",
+      },
     ],
   },
   {
@@ -1025,6 +1029,22 @@ export const financeMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Kelola Bank",
+    icon: "Banknote",
+    items: [
+      {
+        title: "Laporan Bank Harian",
+        icon: "FileText",
+        path: "/finance/bank/laporan-bank-harian",
+      },
+      {
+        title: "Laporan Bank Harian Khusus",
+        icon: "FileText",
+        path: "/finance/bank/laporan-bank-harian-khusus",
+      },
+    ],
+  },
+  {
     title: "Bank",
     icon: "Banknote",
     items: [
@@ -1037,16 +1057,6 @@ export const financeMenu: MenuSection[] = [
         title: "Bukti Bank Keluar",
         icon: "Upload",
         path: "/finance/bank/bukti-bank-keluar",
-      },
-      {
-        title: "Laporan Bank Harian",
-        icon: "FileText",
-        path: "/finance/bank/laporan-bank-harian",
-      },
-      {
-        title: "Laporan Bank Harian Khusus",
-        icon: "FileText",
-        path: "/finance/bank/laporan-bank-harian-khusus",
       },
     ],
   },
