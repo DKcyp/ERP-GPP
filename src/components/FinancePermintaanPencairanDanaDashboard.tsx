@@ -17,6 +17,45 @@ interface PPDRow {
 
 const FinancePermintaanPencairanDanaDashboard: React.FC = () => {
   const today = new Date();
+  // New Form state (PPD)
+  const [noPPDForm, setNoPPDForm] = useState('');
+  const [tglPPDDari, setTglPPDDari] = useState('');
+  const [tglPPDSampai, setTglPPDSampai] = useState('');
+  const [namaDivisi, setNamaDivisi] = useState('');
+  const [kodeSupplier, setKodeSupplier] = useState('');
+  const [namaSupplier, setNamaSupplier] = useState('');
+  const [mataUang, setMataUang] = useState('IDR');
+  const [statusLunas, setStatusLunas] = useState<'Lunas' | 'Belum Lunas'>('Belum Lunas');
+  const [jenisDokumen, setJenisDokumen] = useState('');
+
+  type ItemRow = {
+    id: number;
+    noDokumen: string;
+    keterangan: string;
+    nominalDPP: number;
+    nominalPPN: number;
+  };
+  const [items, setItems] = useState<ItemRow[]>([{
+    id: 1,
+    noDokumen: '',
+    keterangan: '',
+    nominalDPP: 0,
+    nominalPPN: 0,
+  }]);
+
+  const addItem = () => {
+    const nextId = items.length ? Math.max(...items.map(i => i.id)) + 1 : 1;
+    setItems(prev => [...prev, { id: nextId, noDokumen: '', keterangan: '', nominalDPP: 0, nominalPPN: 0 }]);
+  };
+  const removeItem = (id: number) => setItems(prev => prev.filter(i => i.id !== id));
+  const updateItem = (id: number, field: keyof ItemRow, value: string) => {
+    setItems(prev => prev.map(i => i.id === id ? {
+      ...i,
+      [field]: field === 'nominalDPP' || field === 'nominalPPN' ? Number(value.replace(/[^0-9-]/g, '')) : value
+    } : i));
+  };
+  const subtotal = (i: ItemRow) => i.nominalDPP + i.nominalPPN;
+  const totalPembayaran = useMemo(() => items.reduce((s, i) => s + subtotal(i), 0), [items]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('Tambah Permintaan Pencairan Dana');
@@ -126,50 +165,120 @@ const FinancePermintaanPencairanDanaDashboard: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Filter</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Form Permintaan Pencairan Dana (PPD)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cari No PPD</label>
-              <input type="text" value={searchNo} onChange={e => setSearchNo(e.target.value)} placeholder="PPD-..." className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">No. PPD</label>
+              <input value={noPPDForm} onChange={e => setNoPPDForm(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="PPD-..." />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Pemohon</label>
-              <input type="text" value={searchPemohon} onChange={e => setSearchPemohon(e.target.value)} placeholder="Nama pemohon..." className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tgl PPD (Dari)</label>
+              <input type="date" value={tglPPDDari} onChange={e => setTglPPDDari(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
-              <select value={filterDivisi} onChange={e => setFilterDivisi(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none">
-                <option value="">Semua Divisi</option>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tgl PPD (Sampai)</label>
+              <input type="date" value={tglPPDSampai} onChange={e => setTglPPDSampai(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nama Divisi</label>
+              <select value={namaDivisi} onChange={e => setNamaDivisi(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Pilih Divisi</option>
                 {divisiOptions.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none">
-                <option value="">Semua</option>
-                <option value="Draft">Draft</option>
-                <option value="Submitted">Submitted</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Kode Supplier</label>
+              <input value={kodeSupplier} onChange={e => setKodeSupplier(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="SUP-001" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nama Supplier</label>
+              <input value={namaSupplier} onChange={e => setNamaSupplier(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="PT Contoh Abadi" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mata Uang</label>
+              <select value={mataUang} onChange={e => setMataUang(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="IDR">IDR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
               </select>
             </div>
-            <div className="flex items-end">
-              <button onClick={() => { /* trigger memo */ }} className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none h-[42px]">
-                <Search className="h-4 w-4 mr-2" /> Cari Data
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Status Lunas</label>
+              <select value={statusLunas} onChange={e => setStatusLunas(e.target.value as any)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="Belum Lunas">Belum Lunas</option>
+                <option value="Lunas">Lunas</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Dokumen</label>
+              <input value={jenisDokumen} onChange={e => setJenisDokumen(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Invoice / PO / PR ..." />
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-end items-center space-y-3 md:space-y-0 md:space-x-3 mt-2">
-            <button onClick={handleAdd} className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 w-full md:w-auto">
-              <PlusCircle className="h-5 w-5 mr-2" /> Tambah PPD
-            </button>
-            <button onClick={exportExcel} className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 w-full md:w-auto">
-              <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
-            </button>
-            <button onClick={exportPDF} className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 w-full md:w-auto">
-              <FileDown className="h-4 w-4 mr-2" /> Export PDF
-            </button>
+          {/* Items Table */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal DPP</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal PPN</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">SubTotal</th>
+                  <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {items.map((it) => (
+                  <tr key={it.id}>
+                    <td className="px-4 py-2">
+                      <input value={it.noDokumen} onChange={e => updateItem(it.id, 'noDokumen', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1" placeholder="No Dokumen" />
+                    </td>
+                    <td className="px-4 py-2">
+                      <input value={it.keterangan} onChange={e => updateItem(it.id, 'keterangan', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1" placeholder="Keterangan" />
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      <input
+                        value={it.nominalDPP ? it.nominalDPP : ''}
+                        onChange={e => updateItem(it.id, 'nominalDPP', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-right"
+                        placeholder="0"
+                        inputMode="numeric"
+                      />
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      <input
+                        value={it.nominalPPN ? it.nominalPPN : ''}
+                        onChange={e => updateItem(it.id, 'nominalPPN', e.target.value)}
+                        className="w-full border border-gray-300 rounded px-2 py-1 text-right"
+                        placeholder="0"
+                        inputMode="numeric"
+                      />
+                    </td>
+                    <td className="px-4 py-2 text-right font-medium">Rp {subtotal(it).toLocaleString('id-ID')}</td>
+                    <td className="px-4 py-2 text-center">
+                      <button onClick={() => removeItem(it.id)} className="inline-flex items-center px-2 py-1 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td colSpan={6} className="px-4 py-3">
+                    <button onClick={addItem} className="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-gray-300 hover:bg-gray-50">
+                      <PlusCircle className="h-4 w-4 mr-1" /> Tambah Baris
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr className="bg-gray-50">
+                  <td colSpan={4} className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Total Pembayaran</td>
+                  <td className="px-4 py-2 text-right text-sm font-semibold text-gray-900">Rp {totalPembayaran.toLocaleString('id-ID')}</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
 
