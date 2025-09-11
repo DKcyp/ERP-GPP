@@ -902,7 +902,7 @@ export const pengadaanMenu: MenuSection[] = [
     title: "Vendor / Supplier",
     icon: "Factory",
     items: [
-      { title: "List Vendor", icon: "List", path: "/pengadaan/vendor/list" },
+      // { title: "List Vendor", icon: "List", path: "/pengadaan/vendor/list" },
       {
         title: "Master Vendor",
         icon: "FileCog",

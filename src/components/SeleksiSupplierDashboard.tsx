@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Calendar, Plus, FileDown,Eye,ThumbsUp } from 'lucide-react';
+import { Search, Calendar, Plus, FileDown, Eye, ThumbsUp, ClipboardCheck } from 'lucide-react';
 import Modal from './Modal'; // Import the Modal component
 import DetailSeleksiModal from './DetailSeleksiModal'; // Import the new DetailSeleksiModal
 import ApproveSeleksiModal from './ApproveSeleksiModal'; // Import the new ApproveSeleksiModal
@@ -331,6 +331,11 @@ const SeleksiSupplierDashboard: React.FC = () => {
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false); // NEW: State for entry modal
   const [selectedBiddingDetail, setSelectedBiddingDetail] = useState<DetailedBiddingEntry | null>(null);
+  // NEW: Assessment modal & state
+  const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
+  const [assessmentTarget, setAssessmentTarget] = useState<string | null>(null);
+  const [assessments, setAssessments] = useState<Record<string, { pic: string; phone: string; visitTime: string; assessmentTime: string; notes?: string }>>({});
+  const [assessmentForm, setAssessmentForm] = useState<{ pic: string; phone: string; visitTime: string; assessmentTime: string; notes: string }>({ pic: '', phone: '', visitTime: '', assessmentTime: '', notes: '' });
 
   const handleViewDetails = (noBidding: string) => {
     console.log(`View details for Bidding No: ${noBidding}`);
@@ -339,6 +344,28 @@ const SeleksiSupplierDashboard: React.FC = () => {
       setSelectedBiddingDetail(detail);
       setIsDetailModalOpen(true);
     }
+  };
+
+  // NEW: Open assessment modal
+  const handleOpenAssessment = (noBidding: string) => {
+    setAssessmentTarget(noBidding);
+    const preset = assessments[noBidding];
+    setAssessmentForm({
+      pic: preset?.pic || '',
+      phone: preset?.phone || '',
+      visitTime: preset?.visitTime || '',
+      assessmentTime: preset?.assessmentTime || '',
+      notes: preset?.notes || ''
+    });
+    setIsAssessmentOpen(true);
+  };
+
+  // NEW: Save assessment
+  const handleSaveAssessment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assessmentTarget) return;
+    setAssessments(prev => ({ ...prev, [assessmentTarget]: { ...assessmentForm } }));
+    setIsAssessmentOpen(false);
   };
 
   const handleApproveVendor = (noBidding: string) => {
@@ -493,7 +520,11 @@ const SeleksiSupplierDashboard: React.FC = () => {
                     <th scope="col" className="px-6 py-3">Qty</th>
                     <th scope="col" className="px-6 py-3">Nama Vendor</th>
                     <th scope="col" className="px-6 py-3">Nama Pemenang</th>
-										<th scope="col" className="px-6 py-3">Aksi</th>
+                    <th scope="col" className="px-6 py-3">PIC</th>
+                    <th scope="col" className="px-6 py-3">No. Telp</th>
+                    <th scope="col" className="px-6 py-3">Waktu Kunjungan</th>
+                    <th scope="col" className="px-6 py-3">Waktu Penilaian</th>
+                    <th scope="col" className="px-6 py-3">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -516,27 +547,37 @@ const SeleksiSupplierDashboard: React.FC = () => {
                         </ul>
                       </td>
                       <td className="px-6 py-4 font-medium text-blue-600">{item.pemenang}</td>
-											{/* New Aksi Column Data */}
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button
-                          onClick={() => handleViewDetails(item.noBidding)}
-                          className="p-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-200 shadow-sm"
-                          title="Lihat Detail"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        {item.pemenang !== '-' && ( // Condition changed to check if a winner is present
+                      <td className="px-6 py-4">{assessments[item.noBidding]?.pic || '-'}</td>
+                      <td className="px-6 py-4">{assessments[item.noBidding]?.phone || '-'}</td>
+                      <td className="px-6 py-4">{assessments[item.noBidding]?.visitTime || '-'}</td>
+                      <td className="px-6 py-4">{assessments[item.noBidding]?.assessmentTime || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                        <div className="flex items-center justify-center space-x-2">
                           <button
-                            onClick={() => handleApproveVendor(item.noBidding)}
+                            onClick={() => handleViewDetails(item.noBidding)}
                             className="p-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-200 shadow-sm"
-                            title="Setuju Vendor"
+                            title="Lihat Detail"
                           >
-                            <ThumbsUp className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
                           </button>
-                        )}
-                      </div>
-                    </td>
+                          <button
+                            onClick={() => handleOpenAssessment(item.noBidding)}
+                            className="p-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors duration-200 shadow-sm"
+                            title="Form Penilaian Vendor"
+                          >
+                            <ClipboardCheck className="h-4 w-4" />
+                          </button>
+                          {item.pemenang !== '-' && (
+                            <button
+                              onClick={() => handleApproveVendor(item.noBidding)}
+                              className="p-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors duration-200 shadow-sm"
+                              title="Setuju Vendor"
+                            >
+                              <ThumbsUp className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -573,6 +614,46 @@ const SeleksiSupplierDashboard: React.FC = () => {
         onClose={() => setIsEntryModalOpen(false)}
         onSubmit={handleEntrySubmit}
       />
+
+      {/* NEW: Assessment Modal */}
+      {isAssessmentOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-xl rounded-lg bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b px-6 py-4">
+              <h3 className="text-lg font-semibold text-gray-900">Form Penilaian Vendor {assessmentTarget}</h3>
+              <button onClick={() => setIsAssessmentOpen(false)} className="rounded p-1 text-gray-500 hover:bg-gray-100">✕</button>
+            </div>
+            <form onSubmit={handleSaveAssessment} className="px-6 py-5 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">PIC</label>
+                  <input value={assessmentForm.pic} onChange={(e) => setAssessmentForm(prev => ({ ...prev, pic: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">No. Telp</label>
+                  <input value={assessmentForm.phone} onChange={(e) => setAssessmentForm(prev => ({ ...prev, phone: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Waktu Kunjungan</label>
+                  <input type="datetime-local" value={assessmentForm.visitTime} onChange={(e) => setAssessmentForm(prev => ({ ...prev, visitTime: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Waktu Penilaian</label>
+                  <input type="datetime-local" value={assessmentForm.assessmentTime} onChange={(e) => setAssessmentForm(prev => ({ ...prev, assessmentTime: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+                  <textarea rows={3} value={assessmentForm.notes} onChange={(e) => setAssessmentForm(prev => ({ ...prev, notes: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setIsAssessmentOpen(false)} className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Batal</button>
+                <button type="submit" className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -24,12 +24,14 @@ interface MasterVendorData {
   picVendor: string;
   noTelp: string;
   status: string;
+  barang?: string; // daftar barang/jasa terkait vendor (untuk filter)
 }
 
 const MasterVendorDashboard: React.FC = () => {
   const [searchNamaVendor, setSearchNamaVendor] = useState('');
   const [searchKodeVendor, setSearchKodeVendor] = useState('');
   const [searchPICVendor, setSearchPICVendor] = useState('');
+  const [searchBarang, setSearchBarang] = useState('');
   const [dateFrom, setDateFrom] = useState('03/03/2025');
   const [dateTo, setDateTo] = useState('03/03/2025');
   const [animateRows, setAnimateRows] = useState(false);
@@ -52,7 +54,8 @@ const MasterVendorDashboard: React.FC = () => {
       alamatVendor: 'Jl. Merdeka No. 1, Jakarta',
       picVendor: 'Andi Saputra',
       noTelp: '081234567890',
-      status: 'Aktif'
+      status: 'Aktif',
+      barang: 'Peralatan Inspeksi; Alat keselamatan kerja'
     },
     {
       id: '2',
@@ -63,7 +66,8 @@ const MasterVendorDashboard: React.FC = () => {
       alamatVendor: 'Jl. Diponegoro No. 5, Bandung',
       picVendor: 'Budi Santoso',
       noTelp: '081298765432',
-      status: 'Aktif'
+      status: 'Aktif',
+      barang: 'P3K; Peralatan peraga pelatihan'
     },
     {
       id: '3',
@@ -74,7 +78,8 @@ const MasterVendorDashboard: React.FC = () => {
       alamatVendor: 'Jl. Gatot Subroto No. 7, Surabaya',
       picVendor: 'Cahyo Widodo',
       noTelp: '082112345678',
-      status: 'Aktif'
+      status: 'Aktif',
+      barang: 'Dokumen sertifikasi; Stiker/Segel'
     },
     {
       id: '4',
@@ -85,7 +90,8 @@ const MasterVendorDashboard: React.FC = () => {
       alamatVendor: 'Jl. Ahmad Yani No. 10, Yogyakarta',
       picVendor: 'Dewi Lestari',
       noTelp: '085612345678',
-      status: 'Aktif'
+      status: 'Aktif',
+      barang: 'Kendaraan operasional; Suku cadang'
     }
   ]);
 
@@ -139,8 +145,9 @@ const MasterVendorDashboard: React.FC = () => {
     const matchesNamaVendor = item.namaVendor.toLowerCase().includes(searchNamaVendor.toLowerCase());
     const matchesKodeVendor = item.kodeVendor.toLowerCase().includes(searchKodeVendor.toLowerCase());
     const matchesPICVendor = item.picVendor.toLowerCase().includes(searchPICVendor.toLowerCase());
+    const matchesBarang = (item.barang || '').toLowerCase().includes(searchBarang.toLowerCase());
     
-    return matchesNamaVendor && matchesKodeVendor && matchesPICVendor;
+    return matchesNamaVendor && matchesKodeVendor && matchesPICVendor && matchesBarang;
   });
 
   // Sort data

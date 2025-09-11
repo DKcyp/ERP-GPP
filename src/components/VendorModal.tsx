@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, Loader2, CalendarDays } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, Save, Loader2, CalendarDays } from "lucide-react";
 
 interface VendorModalProps {
   isOpen: boolean;
@@ -24,66 +24,80 @@ export interface VendorFormData {
   status: string;
 }
 
-const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) => {
+const VendorModal: React.FC<VendorModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
   const [formData, setFormData] = useState<VendorFormData>({
-    tanggal: '',
-    namaVendor: '',
-    kodeVendor: '',
-    kodeGroupSupplier: '',
-    mataUang: '',
-    pajak: '',
-    alamatVendor: '',
-    kota: '',
-    negara: '',
-    picVendor: '',
-    noTelp: '',
-    email: '',
-    noNPWP: '',
-    status: ''
+    tanggal: "",
+    namaVendor: "",
+    kodeVendor: "",
+    kodeGroupSupplier: "",
+    mataUang: "",
+    pajak: "",
+    alamatVendor: "",
+    kota: "",
+    negara: "",
+    picVendor: "",
+    noTelp: "",
+    email: "",
+    noNPWP: "",
+    status: "",
   });
 
   const [errors, setErrors] = useState<Partial<VendorFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   // Dummy options for dropdowns
-  const kodeGroupSupplierOptions = ['Group A', 'Group B', 'Group C'];
-  const mataUangOptions = ['IDR', 'USD', 'EUR'];
-  const pajakOptions = ['PPN 11%', 'PPH 23', 'Tidak Kena Pajak'];
-  const statusOptions = ['Aktif', 'Tidak Aktif'];
+  const kodeGroupSupplierOptions = ["Group A", "Group B", "Group C"];
+  const mataUangOptions = ["IDR", "USD", "EUR"];
+  const pajakOptions = [
+    "PPH 4 ayat 2",
+    "PPH 21",
+    "PPN 11%",
+    "PPH 23",
+    "Tidak Kena Pajak",
+  ];
+  const statusOptions = ["Aktif", "Tidak Aktif"];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<VendorFormData> = {};
 
-    if (!formData.tanggal.trim()) newErrors.tanggal = 'Tanggal wajib diisi';
-    if (!formData.namaVendor.trim()) newErrors.namaVendor = 'Nama Vendor wajib diisi';
-    if (!formData.kodeVendor.trim()) newErrors.kodeVendor = 'Kode Vendor wajib diisi';
-    if (!formData.alamatVendor.trim()) newErrors.alamatVendor = 'Alamat Vendor wajib diisi';
-    if (!formData.kota.trim()) newErrors.kota = 'Kota wajib diisi';
-    if (!formData.negara.trim()) newErrors.negara = 'Negara wajib diisi';
-    if (!formData.picVendor.trim()) newErrors.picVendor = 'PIC Vendor wajib diisi';
-    if (!formData.noTelp.trim()) newErrors.noTelp = 'No. Telp wajib diisi';
+    if (!formData.tanggal.trim()) newErrors.tanggal = "Tanggal wajib diisi";
+    if (!formData.namaVendor.trim())
+      newErrors.namaVendor = "Nama Vendor wajib diisi";
+    if (!formData.kodeVendor.trim())
+      newErrors.kodeVendor = "Kode Vendor wajib diisi";
+    if (!formData.alamatVendor.trim())
+      newErrors.alamatVendor = "Alamat Vendor wajib diisi";
+    if (!formData.kota.trim()) newErrors.kota = "Kota wajib diisi";
+    if (!formData.negara.trim()) newErrors.negara = "Negara wajib diisi";
+    if (!formData.picVendor.trim())
+      newErrors.picVendor = "PIC Vendor wajib diisi";
+    if (!formData.noTelp.trim()) newErrors.noTelp = "No. Telp wajib diisi";
     if (!formData.email.trim()) {
-      newErrors.email = 'Email wajib diisi';
+      newErrors.email = "Email wajib diisi";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Format email tidak valid';
+      newErrors.email = "Format email tidak valid";
     }
     // No NPWP is optional based on the image, so no validation for it unless specified.
     // Dropdowns can have default empty value, so no validation unless required.
@@ -93,44 +107,44 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
   };
 
   const handleInputChange = (field: keyof VendorFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     onSave(formData);
     setIsLoading(false);
-    
+
     // Reset form
     setFormData({
-      tanggal: '',
-      namaVendor: '',
-      kodeVendor: '',
-      kodeGroupSupplier: '',
-      mataUang: '',
-      pajak: '',
-      alamatVendor: '',
-      kota: '',
-      negara: '',
-      picVendor: '',
-      noTelp: '',
-      email: '',
-      noNPWP: '',
-      status: ''
+      tanggal: "",
+      namaVendor: "",
+      kodeVendor: "",
+      kodeGroupSupplier: "",
+      mataUang: "",
+      pajak: "",
+      alamatVendor: "",
+      kota: "",
+      negara: "",
+      picVendor: "",
+      noTelp: "",
+      email: "",
+      noNPWP: "",
+      status: "",
     });
     setErrors({});
     onClose();
@@ -145,7 +159,7 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
@@ -176,15 +190,21 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                     <input
                       type="date"
                       value={formData.tanggal}
-                      onChange={(e) => handleInputChange('tanggal', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("tanggal", e.target.value)
+                      }
                       className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 pr-10 ${
-                        errors.tanggal ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                        errors.tanggal
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
                       }`}
                     />
                     <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                   </div>
                   {errors.tanggal && (
-                    <p className="mt-1 text-sm text-red-600">{errors.tanggal}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.tanggal}
+                    </p>
                   )}
                 </div>
 
@@ -196,14 +216,20 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="text"
                     value={formData.namaVendor}
-                    onChange={(e) => handleInputChange('namaVendor', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("namaVendor", e.target.value)
+                    }
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.namaVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.namaVendor
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="PT Maju Jaya"
                   />
                   {errors.namaVendor && (
-                    <p className="mt-1 text-sm text-red-600">{errors.namaVendor}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.namaVendor}
+                    </p>
                   )}
                 </div>
 
@@ -215,14 +241,20 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="text"
                     value={formData.kodeVendor}
-                    onChange={(e) => handleInputChange('kodeVendor', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("kodeVendor", e.target.value)
+                    }
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.kodeVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.kodeVendor
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="VND001"
                   />
                   {errors.kodeVendor && (
-                    <p className="mt-1 text-sm text-red-600">{errors.kodeVendor}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.kodeVendor}
+                    </p>
                   )}
                 </div>
 
@@ -233,12 +265,16 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   </label>
                   <select
                     value={formData.kodeGroupSupplier}
-                    onChange={(e) => handleInputChange('kodeGroupSupplier', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("kodeGroupSupplier", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Pilih Kode Group</option>
                     {kodeGroupSupplierOptions.map((option) => (
-                      <option key={option} value={option}>{option}</option>
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -250,29 +286,16 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   </label>
                   <select
                     value={formData.mataUang}
-                    onChange={(e) => handleInputChange('mataUang', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("mataUang", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Pilih Mata Uang</option>
                     {mataUangOptions.map((option) => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Pajak */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Pajak
-                  </label>
-                  <select
-                    value={formData.pajak}
-                    onChange={(e) => handleInputChange('pajak', e.target.value)}
-                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="">Pilih Pajak</option>
-                    {pajakOptions.map((option) => (
-                      <option key={option} value={option}>{option}</option>
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -284,12 +307,16 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   </label>
                   <select
                     value={formData.status}
-                    onChange={(e) => handleInputChange('status', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("status", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Pilih Status</option>
                     {statusOptions.map((option) => (
-                      <option key={option} value={option}>{option}</option>
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -301,15 +328,21 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   </label>
                   <textarea
                     value={formData.alamatVendor}
-                    onChange={(e) => handleInputChange('alamatVendor', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("alamatVendor", e.target.value)
+                    }
                     rows={3}
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${
-                      errors.alamatVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.alamatVendor
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="Jl. Merdeka No. 1, Jakarta"
                   />
                   {errors.alamatVendor && (
-                    <p className="mt-1 text-sm text-red-600">{errors.alamatVendor}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.alamatVendor}
+                    </p>
                   )}
                 </div>
               </div>
@@ -324,9 +357,11 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="text"
                     value={formData.kota}
-                    onChange={(e) => handleInputChange('kota', e.target.value)}
+                    onChange={(e) => handleInputChange("kota", e.target.value)}
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.kota ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.kota
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="Jakarta"
                   />
@@ -343,9 +378,13 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="text"
                     value={formData.negara}
-                    onChange={(e) => handleInputChange('negara', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("negara", e.target.value)
+                    }
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.negara ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.negara
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="Indonesia"
                   />
@@ -362,14 +401,20 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="text"
                     value={formData.picVendor}
-                    onChange={(e) => handleInputChange('picVendor', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("picVendor", e.target.value)
+                    }
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.picVendor ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.picVendor
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="Andi Saputra"
                   />
                   {errors.picVendor && (
-                    <p className="mt-1 text-sm text-red-600">{errors.picVendor}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.picVendor}
+                    </p>
                   )}
                 </div>
 
@@ -381,9 +426,13 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="tel"
                     value={formData.noTelp}
-                    onChange={(e) => handleInputChange('noTelp', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("noTelp", e.target.value)
+                    }
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.noTelp ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.noTelp
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="081234567890"
                   />
@@ -400,9 +449,11 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     className={`w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.email ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                      errors.email
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-200"
                     }`}
                     placeholder="vendor@email.com"
                   />
@@ -419,7 +470,9 @@ const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, onSave }) =>
                   <input
                     type="text"
                     value={formData.noNPWP}
-                    onChange={(e) => handleInputChange('noNPWP', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("noNPWP", e.target.value)
+                    }
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="XX.XXX.XXX.X-XXX.XXX"
                   />
