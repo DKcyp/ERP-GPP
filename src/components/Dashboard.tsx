@@ -107,6 +107,7 @@ import RestockExpiredBarangDashboard from "./RestockExpiredBarangDashboard";
 import StockBarangDashboard from "./StockBarangDashboard";
 import GudangProyekDashboard from "./GudangProyekDashboard";
 import PenerimaanBarangMasukDashboard from "./PenerimaanBarangMasukDashboard";
+import TrackingDokumenMonitoringDashboard from "./TrackingDokumenMonitoringDashboard";
 import MutasiBarangDashboard from "./MutasiBarangDashboard";
 import PengembalianBarangDashboard from "./PengembalianBarangDashboard";
 import BarangKarantinaDashboard from "./BarangKarantinaDashboard";
@@ -571,6 +572,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/penerimaan/gudang") {
       return <GudangDashboard />;
+    }
+    if (currentPage === "/pengadaan/tracking/monitoring") {
+      return <TrackingDokumenMonitoringDashboard />;
     }
     // Operational Man Power - Pengajuan Pegawai Baru
     if (currentPage === "/operational/man-power/pengajuan-pegawai-baru") {
