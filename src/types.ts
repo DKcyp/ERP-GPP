@@ -174,3 +174,74 @@ export interface MenuSection {
   subSections?: MenuSubSection[];
   directPath?: string; // if present, clicking section goes directly to this path
 }
+
+// ================= PO Barang Types =================
+export interface POBarangItemEntry {
+  id: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: string; // keep as string in form, parse as needed when saving
+  satuan: string;
+  hargaSatuan: string;
+  pajakItem: string;
+  discRp: string;
+  jumlah: string;
+  keterangan: string;
+  sertifikat?: boolean; // new: require certificate checkbox
+}
+
+export interface EntryPOBarangFormData {
+  noPR: string;
+  noSO: string;
+  metodePembayaran: string;
+  tanggalPO: string;
+  kodeVendor: string;
+  tanggalPengiriman: string;
+  noPO: string;
+  departemen: string;
+  vendor: string;
+  pajak: string;
+  tandaBukti: File | null;
+  daftarFile: File[];
+  items: POBarangItemEntry[];
+  total: string;
+  discAkhir: string;
+  subTotal: string;
+  ppn: string;
+  ongkosKirim: string;
+  grandTotal: string;
+}
+
+export interface POBarangData {
+  id: number;
+  noPr: string;
+  periodePr: string;
+  divisi: string;
+  kodeSupplier: string;
+  namaSupplier: string;
+  noPo: string;
+  tanggalPo: string;
+  tanggalPengiriman: string;
+  status: 'Paid' | 'Pending' | 'Unpaid';
+  noSO?: string;
+  metodePembayaran?: string;
+  kodeVendor?: string;
+  departemen?: string;
+  vendor?: string;
+  pajak?: string;
+  tandaBuktiUrl?: string;
+  daftarFileUrls: string[];
+  items: POBarangItemEntry[];
+  total?: string;
+  discAkhir?: string;
+  subTotal?: string;
+  ppn?: string;
+  ongkosKirim?: string;
+  grandTotal?: string;
+}
+
+export interface ApprovalPOBarangFormData {
+  poId: number;
+  action: 'approve' | 'reject';
+  keterangan: string;
+}

@@ -110,6 +110,7 @@ const initialPoData: POBarangData[] = [
     tanggalPengiriman: '04-05-2025',
     status: 'Paid',
     items: [], // Simplified for brevity
+    daftarFileUrls: [],
   },
   {
     id: 5,
@@ -123,8 +124,20 @@ const initialPoData: POBarangData[] = [
     tanggalPengiriman: '10-06-2025',
     status: 'Unpaid', // Still unpaid, not necessarily pending approval by management
     items: [], // Simplified for brevity
+    daftarFileUrls: [],
   },
 ];
+
+// Helper: add days to dd-mm-yyyy string and return dd-mm-yyyy
+const addDaysDdMmYyyy = (dateStr: string, days: number): string => {
+  // Expecting format 'dd-mm-yyyy'
+  const [dd, mm, yyyy] = dateStr.split('-').map((v) => parseInt(v, 10));
+  if (!dd || !mm || !yyyy) return dateStr;
+  const d = new Date(yyyy, mm - 1, dd);
+  d.setDate(d.getDate() + days);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
+};
 
 const POBarangDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -346,6 +359,7 @@ const POBarangDashboard: React.FC = () => {
                     <th scope="col" className="px-6 py-3">No PO</th>
                     <th scope="col" className="px-6 py-3">Tanggal PO</th>
                     <th scope="col" className="px-6 py-3">Tanggal Pengiriman</th>
+                    <th scope="col" className="px-6 py-3">Tanggal Estimasi Kedatangan</th>
                     <th scope="col" className="px-6 py-3">Status</th>
                     <th scope="col" className="px-6 py-3">Aksi</th>
                   </tr>
@@ -362,6 +376,7 @@ const POBarangDashboard: React.FC = () => {
                       <td className="px-6 py-4">{item.noPo}</td>
                       <td className="px-6 py-4">{item.tanggalPo}</td>
                       <td className="px-6 py-4">{item.tanggalPengiriman}</td>
+                      <td className="px-6 py-4">{addDaysDdMmYyyy(item.tanggalPengiriman, 3)}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                           item.status === 'Paid' ? 'bg-green-100 text-green-800' :

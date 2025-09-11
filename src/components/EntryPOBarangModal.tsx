@@ -34,6 +34,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
         discRp: '',
         jumlah: '',
         keterangan: '',
+        sertifikat: false,
       },
     ],
     total: 'Rp 1.500.000',
@@ -78,6 +79,12 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
     setFormData((prev) => ({ ...prev, items: newItems }));
   };
 
+  const handleItemCheckboxChange = (index: number, name: keyof POBarangItemEntry, checked: boolean) => {
+    const newItems = [...formData.items];
+    newItems[index] = { ...newItems[index], [name]: checked } as POBarangItemEntry;
+    setFormData((prev) => ({ ...prev, items: newItems }));
+  };
+
   const handleAddItem = () => {
     setFormData((prev) => ({
       ...prev,
@@ -94,6 +101,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
           discRp: '',
           jumlah: '',
           keterangan: '',
+          sertifikat: false,
         },
       ],
     }));
@@ -128,6 +136,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
           discRp: '',
           jumlah: '',
           keterangan: '',
+          sertifikat: false,
         },
       ],
       total: 'Rp 1.500.000',
@@ -344,6 +353,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
                     <tr>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Barang</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sertifikat</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Satuan</th>
@@ -361,6 +371,15 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
                         </td>
                         <td className="p-2">
                           <input type="text" name="kodeBarang" value={item.kodeBarang} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input
+                            type="checkbox"
+                            name="sertifikat"
+                            checked={!!item.sertifikat}
+                            onChange={(e) => handleItemCheckboxChange(index, 'sertifikat', e.target.checked)}
+                            className="h-4 w-4 text-blue-600"
+                          />
                         </td>
                         <td className="p-2">
                           <input type="number" name="qty" value={item.qty} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
