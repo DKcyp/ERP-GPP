@@ -772,7 +772,7 @@ export const hrdMenu: MenuSection[] = [
       //   path: "/hrd/gaji/history-peminjaman",
       // },
       {
-        title: "Daftar Peminjam Karyawan",
+        title: "Pinjaman Karyawan",
         icon: "UsersRound",
         path: "/hrd/gaji/daftar-peminjam-karyawan",
       },

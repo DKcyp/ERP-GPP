@@ -8,6 +8,10 @@ interface TrainingRequest {
   departemen: string;
   kebutuhanTraining: string;
   attachmentUrl?: string; // optional, highlight if missing
+  noDokumen?: string;
+  fileName?: string;
+  vendor?: string;
+  expiredDate?: string; // ISO date
 }
 
 const initialData: TrainingRequest[] = [
@@ -18,6 +22,10 @@ const initialData: TrainingRequest[] = [
     departemen: "HRD",
     kebutuhanTraining: "Leadership & Communication",
     attachmentUrl: "#",
+    noDokumen: "DOC/HRD/2025/001",
+    fileName: "leadership_kom.pdf",
+    vendor: "PT Pelatihan Maju",
+    expiredDate: "2025-12-31",
   },
   {
     id: "TRN-002",
@@ -26,6 +34,9 @@ const initialData: TrainingRequest[] = [
     departemen: "Operational",
     kebutuhanTraining: "Keselamatan Kerja (K3)",
     // missing attachment -> will be highlighted
+    noDokumen: "DOC/OPR/2025/015",
+    vendor: "PT Safety Prima",
+    expiredDate: "2025-07-15",
   },
 ];
 
@@ -219,12 +230,17 @@ const HRDTrainingListDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departemen</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Training yang dibutuhkan</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Dokumen</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expired Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attachment</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {paged.map((r) => {
                   const missingAttachment = !r.attachmentUrl;
+                  const isExpired = r.expiredDate ? new Date(r.expiredDate) < new Date() : false;
                   return (
                     <tr
                       key={r.id}
@@ -238,6 +254,33 @@ const HRDTrainingListDashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.jabatan}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.departemen}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.kebutuhanTraining}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.noDokumen || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                        {r.attachmentUrl ? (
+                          <a
+                            href={r.attachmentUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center hover:text-blue-800"
+                          >
+                            <Paperclip className="h-4 w-4 mr-1" /> {r.fileName || 'Lihat File'}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400 inline-flex items-center">
+                            <Paperclip className="h-4 w-4 mr-1" /> Tidak ada
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.vendor || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {r.expiredDate ? (
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${isExpired ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                            {new Date(r.expiredDate).toLocaleDateString('id-ID')}
+                          </span>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
                         {r.attachmentUrl ? (
                           <a
