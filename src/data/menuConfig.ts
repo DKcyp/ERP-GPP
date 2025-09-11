@@ -657,12 +657,6 @@ export const hrdMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Marketing",
-    icon: "Briefcase",
-    items: [],
-    directPath: "/hrd/marketing/dashboard",
-  },
-  {
     title: "Allowance",
     icon: "Wallet",
     items: [
