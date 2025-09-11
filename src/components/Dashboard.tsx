@@ -140,8 +140,10 @@ import PendebetanDashboard from "./PendebetanDashboard";
 import PayslipDashboard from "./PayslipDashboard";
 import MasterIncomeDashboard from "./MasterIncomeDashboard";
 import MasterDeductDashboard from "./MasterDeductDashboard";
+import PotonganLainDashboard from "./PotonganLainDashboard";
 import CalendarAbsensiDashboard from "./CalendarAbsensiDashboard";
 import PengajuanIzinDashboard from "./PengajuanIzinDashboard";
+import MasterIzinDashboard from "./MasterIzinDashboard";
 import PengajuanPegawaiBaruDashboard from "./PengajuanPegawaiBaruDashboard";
 import PerjanjianIkatanDinasDashboard from "./PerjanjianIkatanDinasDashboard";
 import SuratIzinBekerjaDashboard from "./SuratIzinBekerjaDashboard";
@@ -724,6 +726,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/absensi/pengajuan-izin") {
       return <PengajuanIzinDashboard />;
+    }
+    if (currentPage === "/hrd/absensi/master-izin") {
+      return <MasterIzinDashboard />;
     }
     if (currentPage === "/hrd/perjanjian/perjanjian-ikatan-dinas") {
       return <PerjanjianIkatanDinasDashboard />;

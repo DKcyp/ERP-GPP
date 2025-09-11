@@ -744,6 +744,11 @@ export const hrdMenu: MenuSection[] = [
     title: "Gaji",
     icon: "Wallet",
     items: [
+      {
+        title: "Potongan Lain-lain",
+        icon: "Scissors",
+        path: "/hrd/gaji/potongan-lain",
+      },
       { title: "Daftar Gaji", icon: "FileText", path: "/hrd/gaji/daftar" },
       {
         title: "Earning/Income",
@@ -754,11 +759,6 @@ export const hrdMenu: MenuSection[] = [
         title: "Deduct/Pengurangan",
         icon: "Scissors",
         path: "/hrd/gaji/potongan",
-      },
-      {
-        title: "Potongan Lain-lain",
-        icon: "Scissors",
-        path: "/hrd/gaji/potongan-lain",
       },
       {
         title: "Pendebetan",
@@ -815,6 +815,11 @@ export const hrdMenu: MenuSection[] = [
         title: "Pengajuan Izin",
         icon: "FilePlus",
         path: "/hrd/absensi/pengajuan-izin",
+      },
+      {
+        title: "Master Izin",
+        icon: "FileCog",
+        path: "/hrd/absensi/master-izin",
       },
     ],
   },
