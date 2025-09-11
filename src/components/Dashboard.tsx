@@ -192,6 +192,7 @@ import MonitoringRFIDashboard from "./MonitoringRFIDashboard";
 import QHSEMasterKPIDashboard from "./QHSEMasterKPIDashboard";
 import QHSEListKPIDashboard from "./QHSEListKPIDashboard";
 import ProconApprovalPBGDashboard from "./ProconApprovalPBGDashboard";
+import ISOSystemDaftarIndukDokumenInternalDashboard from "./ISOSystemDaftarIndukDokumenInternalDashboard";
 
 // Accounting Dashboards
 import AccountingMainDashboard from "./AccountingMainDashboard";
@@ -307,6 +308,11 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
   const renderMainDashboard = () => {
     if (user?.role === "hrd") {
       return <HRDDashboard />;
+    }
+
+    // QHSE ISO System
+    if (currentPage === "/qhse/iso/daftar-induk-dokumen-internal") {
+      return <ISOSystemDaftarIndukDokumenInternalDashboard />;
     }
 
     if (user?.role === "pengadaan") {

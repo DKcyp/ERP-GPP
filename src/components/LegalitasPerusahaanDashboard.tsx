@@ -15,14 +15,14 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface Sertifikat {
   id: string;
-  noSertifikat: string;
-  nama: string;
-  jenis: string;
-  vendor: string;
-  tanggalTerbit: string; // ISO date yyyy-mm-dd
-  masaBerlaku: string; // expiry date ISO yyyy-mm-dd
-  document?: string; // URL or filename
-  status?: "Aktif" | "Segera Perpanjang" | "Kadaluarsa";
+  nama: string; // Nama Sertifikat
+  tanggalTerbit: string; // Tgl Terbit Sertifikat (ISO yyyy-mm-dd)
+  masaBerlaku: string; // Masa Berlaku Sertifikat (ISO yyyy-mm-dd)
+  tempatPengurusan: string; // Tempat Pengurusan
+  keterangan?: string; // Keterangan
+  approval?: string; // Approval (nama/keputusan)
+  document?: string; // Document Certificate (filename/url)
+  status: "Pengajuan" | "Proses" | "Selesai"; // Status
 }
 
 interface ModalState {
@@ -31,33 +31,30 @@ interface ModalState {
   data?: Partial<Sertifikat> & { id?: string };
 }
 
-const jenisOptions = [
-  "ISO 9001",
-  "ISO 14001",
-  "ISO 45001",
-  "Sertifikat Usaha",
-  "Sertifikat K3",
-];
+// jenisOptions removed as the table no longer uses "jenis"
 
 const initialData: Sertifikat[] = [
   {
     id: "1",
-    noSertifikat: "ISO-9001-001",
     nama: "ISO 9001:2015",
-    jenis: "ISO 9001",
-    vendor: "TUV Rheinland",
     tanggalTerbit: "2024-01-10",
     masaBerlaku: "2025-01-09",
+    tempatPengurusan: "TUV Rheinland",
+    keterangan: "Sertifikasi mutu",
+    approval: "QHSE Manager",
     document: "iso9001.pdf",
+    status: "Selesai",
   },
   {
     id: "2",
-    noSertifikat: "K3-PTM-002",
     nama: "Sertifikat K3 Migas",
-    jenis: "Sertifikat K3",
-    vendor: "SKKMigas",
     tanggalTerbit: "2024-06-01",
     masaBerlaku: "2024-12-01",
+    tempatPengurusan: "SKKMigas",
+    keterangan: "-",
+    approval: "",
+    document: "",
+    status: "Proses",
   },
 ];
 
@@ -74,7 +71,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
   const [rows, setRows] = useState<Sertifikat[]>(initialData);
 
   const [search, setSearch] = useState("");
-  const [jenis, setJenis] = useState("");
+  // jenis filter removed
   const [startDate, setStartDate] = useState<string>(""); // yyyy-mm-dd
   const [endDate, setEndDate] = useState<string>(""); // yyyy-mm-dd
 
@@ -86,8 +83,9 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
-      const matchName = r.nama.toLowerCase().includes(search.toLowerCase());
-      const matchJenis = !jenis || r.jenis === jenis;
+      const matchName =
+        r.nama.toLowerCase().includes(search.toLowerCase()) ||
+        r.tempatPengurusan.toLowerCase().includes(search.toLowerCase());
       const withinRange = (() => {
         if (!startDate && !endDate) return true;
         const d = new Date(r.masaBerlaku);
@@ -104,9 +102,9 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
         }
         return true;
       })();
-      return matchName && matchJenis && withinRange;
+      return matchName && withinRange;
     });
-  }, [rows, search, jenis, startDate, endDate]);
+  }, [rows, search, startDate, endDate]);
 
   const perPage = Math.max(1, parseInt(showEntries, 10));
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
@@ -126,64 +124,36 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
     return nd.toISOString().slice(0, 10);
   };
 
-  const handleApprove = (id: string) => {
-    const todayIso = new Date().toISOString().slice(0, 10);
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              status: "Aktif",
-              // keep tanggalTerbit if already set, otherwise set today
-              tanggalTerbit: r.tanggalTerbit || todayIso,
-            }
-          : r
-      )
-    );
-  };
-
-  const handlePerpanjang = (id: string) => {
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              masaBerlaku: addYear(r.masaBerlaku, 1),
-              status: "Aktif",
-            }
-          : r
-      )
-    );
-  };
+  // action helpers (optional) can be added later if needed
 
   const resetModal = () =>
     setModal({ open: false, mode: "add", data: undefined });
 
   const onSubmit = () => {
     if (!modal.data) return;
-    const { id, noSertifikat, nama, jenis, vendor, tanggalTerbit, masaBerlaku, document } =
+    const { id, nama, tanggalTerbit, masaBerlaku, tempatPengurusan, keterangan, approval, document, status } =
       modal.data as Sertifikat;
 
-    if (!noSertifikat || !nama || !vendor || !tanggalTerbit || !masaBerlaku)
-      return;
+    if (!nama || !tanggalTerbit || !masaBerlaku || !tempatPengurusan || !status) return;
 
     if (modal.mode === "add") {
       const newItem: Sertifikat = {
         id: String(Date.now()),
-        noSertifikat,
         nama,
-        jenis,
-        vendor,
         tanggalTerbit,
         masaBerlaku,
+        tempatPengurusan,
+        keterangan,
+        approval,
         document,
+        status,
       };
       setRows((prev) => [newItem, ...prev]);
     } else if (modal.mode === "edit" && id) {
       setRows((prev) =>
         prev.map((p) =>
           p.id === id
-            ? { ...p, noSertifikat, nama, jenis, vendor, tanggalTerbit, masaBerlaku, document }
+            ? { ...p, nama, tanggalTerbit, masaBerlaku, tempatPengurusan, keterangan, approval, document, status }
             : p
         )
       );
@@ -196,13 +166,14 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
       open: true,
       mode: "add",
       data: {
-        noSertifikat: "",
         nama: "",
-        jenis: "",
-        vendor: "",
         tanggalTerbit: "",
         masaBerlaku: "",
+        tempatPengurusan: "",
+        keterangan: "",
+        approval: "",
         document: "",
+        status: "Pengajuan",
       },
     });
   const openEdit = (r: Sertifikat) =>
@@ -352,30 +323,15 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      No Sertifikat
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nama Sertifikat
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Vendor
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tgl Terbit
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tgl Exp
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Upload File
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Aksi
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sertifikat</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Terbit Sertifikat</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku Sertifikat</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tempat Pengurusan</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Certificate</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status (Pengajuan-Proses-Selesai)</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -383,11 +339,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                     const sisaHari = daysUntil(r.masaBerlaku);
                     const expired = sisaHari <= 0;
                     const expiringSoon = !expired && sisaHari < 90;
-                    const computedStatus: "Aktif" | "Segera Perpanjang" | "Kadaluarsa" = expired
-                      ? "Kadaluarsa"
-                      : expiringSoon
-                      ? "Segera Perpanjang"
-                      : "Aktif";
+                    const computedStatus = r.status; // keep provided status
                     return (
                       <tr
                         key={r.id}
@@ -399,9 +351,6 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                             : "hover:bg-gray-50 transition-colors"
                         }
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                          {r.noSertifikat}
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {r.nama}
                           {expired && (
@@ -417,13 +366,19 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {r.vendor}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {fmtDate(r.tanggalTerbit)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {fmtDate(r.masaBerlaku)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {r.tempatPengurusan}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {r.keterangan || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {r.approval || "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {r.document ? (
@@ -442,32 +397,18 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                           <span
                             className={
                               "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border " +
-                              (r.status === "Kadaluarsa" || computedStatus === "Kadaluarsa"
-                                ? "bg-red-50 text-red-700 border-red-200"
-                                : (r.status === "Segera Perpanjang" || computedStatus === "Segera Perpanjang")
+                              (computedStatus === "Pengajuan"
+                                ? "bg-gray-50 text-gray-700 border-gray-200"
+                                : computedStatus === "Proses"
                                 ? "bg-yellow-50 text-yellow-700 border-yellow-200"
                                 : "bg-green-50 text-green-700 border-green-200")
                             }
                           >
-                            {r.status ?? computedStatus}
+                            {computedStatus}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleApprove(r.id)}
-                              className="inline-flex items-center px-3 py-1.5 border border-emerald-300 rounded-md text-emerald-700 hover:bg-emerald-50 transition-colors"
-                              title="Approve"
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handlePerpanjang(r.id)}
-                              className="inline-flex items-center px-3 py-1.5 border border-indigo-300 rounded-md text-indigo-700 hover:bg-indigo-50 transition-colors"
-                              title="Perpanjang 1 tahun"
-                            >
-                              <CalendarPlus className="h-4 w-4" />
-                            </button>
                             <button
                               onClick={() => openEdit(r)}
                               className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
@@ -526,26 +467,8 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={resetModal} />
           <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-lg p-5">
-            <h2 className="text-lg font-semibold mb-4">
-              {modal.mode === "add" ? "Tambah Sertifikat" : "Edit Sertifikat"}
-            </h2>
+            <h2 className="text-lg font-semibold mb-4">{modal.mode === "add" ? "Tambah Sertifikat" : "Edit Sertifikat"}</h2>
             <div className="grid grid-cols-1 gap-3">
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">
-                  No Sertifikat
-                </label>
-                <input
-                  type="text"
-                  value={modal.data?.noSertifikat ?? ""}
-                  onChange={(e) =>
-                    setModal((m) => ({
-                      ...m,
-                      data: { ...m.data, noSertifikat: e.target.value },
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">
                   Nama Sertifikat
@@ -566,7 +489,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
-                    Tanggal Terbit
+                    Tgl Terbit Sertifikat
                   </label>
                   <input
                     type="date"
@@ -582,7 +505,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
-                    Masa Berlaku
+                    Masa Berlaku Sertifikat
                   </label>
                   <input
                     type="date"
@@ -598,25 +521,68 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
-                  Vendor
-                </label>
+                <label className="block text-xs text-gray-500 mb-1">Tempat Pengurusan</label>
                 <input
                   type="text"
-                  value={modal.data?.vendor ?? ""}
+                  value={modal.data?.tempatPengurusan ?? ""}
                   onChange={(e) =>
                     setModal((m) => ({
                       ...m,
-                      data: { ...m.data, vendor: e.target.value },
+                      data: { ...m.data, tempatPengurusan: e.target.value },
                     }))
                   }
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">
-                  Upload File
-                </label>
+                <label className="block text-xs text-gray-500 mb-1">Keterangan</label>
+                <textarea
+                  rows={3}
+                  value={modal.data?.keterangan ?? ""}
+                  onChange={(e) =>
+                    setModal((m) => ({
+                      ...m,
+                      data: { ...m.data, keterangan: e.target.value },
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Approval</label>
+                  <input
+                    type="text"
+                    value={modal.data?.approval ?? ""}
+                    onChange={(e) =>
+                      setModal((m) => ({
+                        ...m,
+                        data: { ...m.data, approval: e.target.value },
+                      }))
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Status</label>
+                  <select
+                    value={modal.data?.status ?? "Pengajuan"}
+                    onChange={(e) =>
+                      setModal((m) => ({
+                        ...m,
+                        data: { ...m.data, status: e.target.value as any },
+                      }))
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="Pengajuan">Pengajuan</option>
+                    <option value="Proses">Proses</option>
+                    <option value="Selesai">Selesai</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Document Certificate</label>
                 <input
                   type="file"
                   onChange={(e) =>

@@ -1680,6 +1680,17 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "ISO System",
+    icon: "Book",
+    items: [
+      {
+        title: "Daftar Induk Dokumen Internal",
+        icon: "FileText",
+        path: "/qhse/iso/daftar-induk-dokumen-internal",
+      },
+    ],
+  },
 
   createGeneralMenu("operational"),
 ];
