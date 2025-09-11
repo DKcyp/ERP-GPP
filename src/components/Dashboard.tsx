@@ -263,6 +263,7 @@ import MonitoringMarketingDashboard from "./MonitoringMarketingDashboard";
 import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarketingDashboard";
 import CSIMasterDashboard from "./CSIMasterDashboard";
 import CSIPenilaianFormDashboard from "./CSIPenilaianFormDashboard";
+import PerjalananDinasDashboard from "./PerjalananDinasDashboard";
 
 import {
   BarChart3,
@@ -650,6 +651,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/lembur/dashboard") {
       return <LemburDashboard />;
+    }
+    if (currentPage === "/hrd/allowance/perjalanan-dinas") {
+      return <PerjalananDinasDashboard />;
     }
     if (currentPage === "/hrd/pegawai/daftar") {
       return <DaftarPegawaiDashboard />;

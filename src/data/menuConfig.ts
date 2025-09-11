@@ -658,11 +658,22 @@ export const hrdMenu: MenuSection[] = [
     directPath: "/hrd/marketing/dashboard",
   },
   {
-    title: "Lembur",
-    icon: "Clock",
-    items: [],
-    directPath: "/hrd/lembur/dashboard",
+    title: "Allowance",
+    icon: "Wallet",
+    items: [
+      {
+        title: "Perjalanan Dinas",
+        icon: "Plane",
+        path: "/hrd/allowance/perjalanan-dinas",
+      },
+      {
+        title: "Lembur",
+        icon: "Clock",
+        path: "/hrd/lembur/dashboard",
+      },
+    ],
   },
+
   {
     title: "Pegawai",
     icon: "UserRound",

@@ -23,6 +23,13 @@ const MasterKualifikasiDashboard: React.FC = () => {
   ];
 
   const [data, setData] = useState<KualifikasiItem[]>(initialData);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  type DetailItem = { id: string; namaDetail: string; rateKualifikasi: string; harga: number; keterangan?: string };
+  const [details, setDetails] = useState<Record<string, DetailItem[]>>({
+    KQ001: [
+      { id: 'D1', namaDetail: 'Fillet Weld', rateKualifikasi: 'Harian', harga: 150000, keterangan: 'Kecil' },
+    ],
+  });
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingItem, setEditingItem] = useState<KualifikasiItem | null>(null);
   const [form, setForm] = useState<Omit<KualifikasiItem, 'id'>>({
@@ -94,6 +101,47 @@ const MasterKualifikasiDashboard: React.FC = () => {
 
   const handleExport = (type: string) => {
     alert(`Exporting as ${type}`);
+  };
+
+  const toggleExpand = (id: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const addDetail = (parentId: string, parent: KualifikasiItem) => {
+    setDetails((prev) => {
+      const list = prev[parentId] || [];
+      const newItem: DetailItem = {
+        id: `D${Date.now()}`,
+        namaDetail: 'Detail Baru',
+        rateKualifikasi: parent.rateKualifikasi || 'Harian',
+        harga: parent.harga || 0,
+        keterangan: '',
+      };
+      return { ...prev, [parentId]: [newItem, ...list] };
+    });
+    if (!expanded.has(parentId)) toggleExpand(parentId);
+  };
+
+  const updateDetail = (parentId: string, idx: number, field: keyof DetailItem, value: string | number) => {
+    setDetails((prev) => {
+      const list = [...(prev[parentId] || [])];
+      const item = { ...list[idx], [field]: field === 'harga' ? Number(value) : value } as DetailItem;
+      list[idx] = item;
+      return { ...prev, [parentId]: list };
+    });
+  };
+
+  const removeDetail = (parentId: string, idx: number) => {
+    setDetails((prev) => {
+      const list = [...(prev[parentId] || [])];
+      list.splice(idx, 1);
+      return { ...prev, [parentId]: list };
+    });
   };
 
   // Filtered data for display
@@ -234,7 +282,8 @@ const MasterKualifikasiDashboard: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <React.Fragment key={item.id}>
+                  <tr className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-2">
                       <Tag className="h-4 w-4 text-gray-400" /> {item.kualifikasi}
                     </td>
@@ -259,9 +308,101 @@ const MasterKualifikasiDashboard: React.FC = () => {
                         >
                           <Trash2 className="h-4 w-4 mr-1" /> Hapus
                         </button>
+                        <button
+                          onClick={() => toggleExpand(item.id)}
+                          className="inline-flex items-center px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-xs"
+                          title="Lihat Detail"
+                        >
+                          Detail
+                        </button>
+                        <button
+                          onClick={() => addDetail(item.id, item)}
+                          className="inline-flex items-center px-3 py-1.5 rounded-md bg-green-600 text-white hover:bg-green-700 text-xs"
+                          title="Tambah Detail"
+                        >
+                          Tambah Detail
+                        </button>
                       </div>
                     </td>
                   </tr>
+                  {expanded.has(item.id) && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4 bg-gray-50">
+                        <div className="border border-gray-200 rounded-lg overflow-hidden">
+                          <table className="w-full text-xs">
+                            <thead className="bg-white">
+                              <tr>
+                                <th className="px-3 py-2 text-left text-gray-700">Nama Detail</th>
+                                <th className="px-3 py-2 text-left text-gray-700">Rate</th>
+                                <th className="px-3 py-2 text-left text-gray-700">Harga</th>
+                                <th className="px-3 py-2 text-left text-gray-700">Keterangan</th>
+                                <th className="px-3 py-2 text-left text-gray-700">Aksi</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                              {(details[item.id] || []).map((d, idx) => (
+                                <tr key={d.id}>
+                                  <td className="px-3 py-2">
+                                    <input
+                                      type="text"
+                                      value={d.namaDetail}
+                                      onChange={(e) => updateDetail(item.id, idx, 'namaDetail', e.target.value)}
+                                      className="w-full px-2 py-1 border border-gray-300 rounded"
+                                      placeholder="Nama detail"
+                                    />
+                                  </td>
+                                  <td className="px-3 py-2">
+                                    <select
+                                      value={d.rateKualifikasi}
+                                      onChange={(e) => updateDetail(item.id, idx, 'rateKualifikasi', e.target.value)}
+                                      className="w-full px-2 py-1 border border-gray-300 rounded"
+                                    >
+                                      <option value="Harian">Harian</option>
+                                      <option value="Bulanan">Bulanan</option>
+                                      <option value="Per Jam">Per Jam</option>
+                                    </select>
+                                  </td>
+                                  <td className="px-3 py-2">
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      value={d.harga}
+                                      onChange={(e) => updateDetail(item.id, idx, 'harga', e.target.value)}
+                                      className="w-full px-2 py-1 border border-gray-300 rounded"
+                                    />
+                                  </td>
+                                  <td className="px-3 py-2">
+                                    <input
+                                      type="text"
+                                      value={d.keterangan || ''}
+                                      onChange={(e) => updateDetail(item.id, idx, 'keterangan', e.target.value)}
+                                      className="w-full px-2 py-1 border border-gray-300 rounded"
+                                      placeholder="Keterangan"
+                                    />
+                                  </td>
+                                  <td className="px-3 py-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => removeDetail(item.id, idx)}
+                                      className="px-2 py-1 bg-red-600 text-white rounded text-[10px] hover:bg-red-700"
+                                    >
+                                      Hapus
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                              {(!details[item.id] || details[item.id].length === 0) && (
+                                <tr>
+                                  <td colSpan={5} className="px-3 py-3 text-center text-gray-500">Belum ada detail</td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
