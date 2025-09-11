@@ -6,7 +6,18 @@ import {
   ProsesPengajuanTrainingFormData,
   RealisasiDocumentUploadFormData,
 } from "../types"; // Import the new FormData type
-import { Search, Plus, FileSpreadsheet, FileText, File, Edit, Trash2, ArrowUp, CheckCircle, FileUp } from "lucide-react";
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
+  File,
+  Edit,
+  Trash2,
+  ArrowUp,
+  CheckCircle,
+  FileUp,
+} from "lucide-react";
 
 // Updated interface for the dashboard's training data
 interface ProsesPengajuanTraining {
@@ -16,7 +27,7 @@ interface ProsesPengajuanTraining {
   jenisPelatihan: string;
   lokasiPelatihan: string;
   tanggalPelaksanaan: string; // ISO date
-  pid: 'PID' | 'TIDAK';
+  pid: "PID" | "TIDAK";
 }
 
 interface ProsesPengajuanTrainingDashboardProps {
@@ -50,22 +61,22 @@ const ProsesPengajuanTrainingDashboard: React.FC<
   // Sample data matching the new structure
   const [trainingData, setTrainingData] = useState<ProsesPengajuanTraining[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      namaPersonil: 'Budi Santoso',
-      jenisPelatihan: 'K3 Dasar',
-      lokasiPelatihan: 'Jakarta',
-      tanggalPelaksanaan: '2025-01-12',
-      pid: 'PID',
+      namaPersonil: "Budi Santoso",
+      jenisPelatihan: "K3 Dasar",
+      lokasiPelatihan: "Jakarta",
+      tanggalPelaksanaan: "2025-01-12",
+      pid: "PID",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      namaPersonil: 'Ani Wijaya',
-      jenisPelatihan: 'Leadership',
-      lokasiPelatihan: 'Bandung',
-      tanggalPelaksanaan: '2025-03-15',
-      pid: 'TIDAK',
+      namaPersonil: "Ani Wijaya",
+      jenisPelatihan: "Leadership",
+      lokasiPelatihan: "Bandung",
+      tanggalPelaksanaan: "2025-03-15",
+      pid: "TIDAK",
     },
   ]);
 
@@ -90,7 +101,10 @@ const ProsesPengajuanTrainingDashboard: React.FC<
       tanggalPelaksanaan: data.tanggalPelaksanaan,
       pid: data.pid,
     };
-    setTrainingData((prev) => [newTraining, ...prev.map((t) => ({ ...t, no: t.no + 1 }))]);
+    setTrainingData((prev) => [
+      newTraining,
+      ...prev.map((t) => ({ ...t, no: t.no + 1 })),
+    ]);
   };
 
   const handleDeleteClick = (training: ProsesPengajuanTraining) => {
@@ -134,12 +148,24 @@ const ProsesPengajuanTrainingDashboard: React.FC<
 
   // Filter data based on search criteria
   const filteredData = trainingData.filter((item) => {
-    const matchNama = searchNama ? item.namaPersonil.toLowerCase().includes(searchNama.toLowerCase()) : true;
-    const matchJenis = searchJenis ? item.jenisPelatihan.toLowerCase().includes(searchJenis.toLowerCase()) : true;
-    const matchLokasi = searchLokasi ? item.lokasiPelatihan.toLowerCase().includes(searchLokasi.toLowerCase()) : true;
-    const matchPid = pidFilter ? item.pid === (pidFilter as 'PID' | 'TIDAK') : true;
-    const matchesDateRange = (!dateFrom || item.tanggalPelaksanaan >= dateFrom) && (!dateTo || item.tanggalPelaksanaan <= dateTo);
-    return matchNama && matchJenis && matchLokasi && matchPid && matchesDateRange;
+    const matchNama = searchNama
+      ? item.namaPersonil.toLowerCase().includes(searchNama.toLowerCase())
+      : true;
+    const matchJenis = searchJenis
+      ? item.jenisPelatihan.toLowerCase().includes(searchJenis.toLowerCase())
+      : true;
+    const matchLokasi = searchLokasi
+      ? item.lokasiPelatihan.toLowerCase().includes(searchLokasi.toLowerCase())
+      : true;
+    const matchPid = pidFilter
+      ? item.pid === (pidFilter as "PID" | "TIDAK")
+      : true;
+    const matchesDateRange =
+      (!dateFrom || item.tanggalPelaksanaan >= dateFrom) &&
+      (!dateTo || item.tanggalPelaksanaan <= dateTo);
+    return (
+      matchNama && matchJenis && matchLokasi && matchPid && matchesDateRange
+    );
   });
 
   // Sort data
@@ -196,7 +222,9 @@ const ProsesPengajuanTrainingDashboard: React.FC<
             {/* First Row - Search Inputs */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">Cari Nama Personil</label>
+                <label className="block text-sm font-medium text-textSecondary">
+                  Cari Nama Personil
+                </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -205,13 +233,18 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                     className="flex-1 px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent text-sm bg-surface text-text"
                     placeholder="Budi Santoso"
                   />
-                  <button onClick={handleSearch} className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1">
+                  <button
+                    onClick={handleSearch}
+                    className="px-3 py-2 bg-secondary text-white rounded-md hover:bg-secondary/80 transition-colors flex items-center space-x-1"
+                  >
                     <Search className="h-4 w-4" />
                   </button>
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">Jenis Pelatihan</label>
+                <label className="block text-sm font-medium text-textSecondary">
+                  Jenis Pelatihan
+                </label>
                 <input
                   type="text"
                   value={searchJenis}
@@ -221,7 +254,9 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">Lokasi</label>
+                <label className="block text-sm font-medium text-textSecondary">
+                  Lokasi
+                </label>
                 <input
                   type="text"
                   value={searchLokasi}
@@ -231,7 +266,9 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-textSecondary">PID</label>
+                <label className="block text-sm font-medium text-textSecondary">
+                  PID
+                </label>
                 <select
                   value={pidFilter}
                   onChange={(e) => setPidFilter(e.target.value)}
@@ -342,25 +379,45 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors" onClick={() => handleSort('namaPersonil')}>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
+                    onClick={() => handleSort("namaPersonil")}
+                  >
                     <div className="flex items-center space-x-1">
                       <span>Nama Personil</span>
-                      {sortField === 'namaPersonil' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "namaPersonil" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">Jenis Pelatihan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">Lokasi</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors" onClick={() => handleSort('tanggalPelaksanaan')}>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">
+                    Jenis Pelatihan
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">
+                    Lokasi
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-textSecondary cursor-pointer hover:bg-border transition-colors"
+                    onClick={() => handleSort("tanggalPelaksanaan")}
+                  >
                     <div className="flex items-center space-x-1">
                       <span>Tanggal Pelaksanaan</span>
-                      {sortField === 'tanggalPelaksanaan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "tanggalPelaksanaan" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">PID</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-textSecondary">
+                    PID
+                  </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-textSecondary">
                     Aksi
                   </th>
@@ -383,10 +440,18 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                     }}
                   >
                     <td className="px-4 py-3 text-sm text-text">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-text font-medium">{item.namaPersonil}</td>
-                    <td className="px-4 py-3 text-sm text-text">{item.jenisPelatihan}</td>
-                    <td className="px-4 py-3 text-sm text-text">{item.lokasiPelatihan}</td>
-                    <td className="px-4 py-3 text-sm text-textSecondary">{item.tanggalPelaksanaan}</td>
+                    <td className="px-4 py-3 text-sm text-text font-medium">
+                      {item.namaPersonil}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-text">
+                      {item.jenisPelatihan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-text">
+                      {item.lokasiPelatihan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-textSecondary">
+                      {item.tanggalPelaksanaan}
+                    </td>
                     <td className="px-4 py-3 text-sm text-text">{item.pid}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
@@ -497,7 +562,11 @@ const ProsesPengajuanTrainingDashboard: React.FC<
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete ? `${itemToDelete.namaPersonil} - ${itemToDelete.jenisPelatihan}` : undefined}
+        itemName={
+          itemToDelete
+            ? `${itemToDelete.namaPersonil} - ${itemToDelete.jenisPelatihan}`
+            : undefined
+        }
       />
 
       {/* Realisasi Document Upload Modal */}

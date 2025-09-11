@@ -96,6 +96,22 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    {
+      title: "Training",
+      icon: "GraduationCap",
+      items: [
+        {
+          title: "Dashboard",
+          icon: "BarChart3",
+          path: "/operational/training/dashboard",
+        },
+        {
+          title: "Proses Training",
+          icon: "BarChart3",
+          path: "/operational/training/proses",
+        },
+      ],
+    },
     // Purchase Request for non-procon roles
     ...(role !== "procon"
       ? [
@@ -520,22 +536,6 @@ export const operationalMenu: MenuSection[] = [
     directPath: "/operational/hpp-turunan/dashboard",
   },
   {
-    title: "Produksi",
-    icon: "Factory",
-    items: [
-      {
-        title: "Dashboard",
-        icon: "BarChart3",
-        path: "/operational/produksi/dashboard",
-      },
-      {
-        title: "Proses Produksi",
-        icon: "Cog",
-        path: "/operational/produksi/proses",
-      },
-    ],
-  },
-  {
     title: "TimeSheet",
     icon: "Clock",
     items: [
@@ -557,18 +557,18 @@ export const operationalMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Training",
-    icon: "GraduationCap",
+    title: "Produksi",
+    icon: "Factory",
     items: [
       {
         title: "Dashboard",
         icon: "BarChart3",
-        path: "/operational/training/dashboard",
+        path: "/operational/produksi/dashboard",
       },
       {
-        title: "Proses Training",
-        icon: "BarChart3",
-        path: "/operational/training/proses",
+        title: "Proses Produksi",
+        icon: "Cog",
+        path: "/operational/produksi/proses",
       },
     ],
   },

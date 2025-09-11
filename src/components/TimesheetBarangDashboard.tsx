@@ -29,6 +29,8 @@ interface TimesheetBarang {
   tanggalPenyerahan: string;
   kondisiBarang: "Baik" | "Rusak";
   status: "Approve by Gudang" | "Approve by QHSE" | "Pending" | "Rejected";
+  noManifest?: string;
+  detailBarang?: string;
 }
 
 const TimesheetBarangDashboard: React.FC = () => {
@@ -63,6 +65,8 @@ const TimesheetBarangDashboard: React.FC = () => {
     tanggalPenyerahan: "",
     kondisiBarang: "Baik" as "Baik" | "Rusak",
     status: "Pending" as TimesheetBarang["status"],
+    noManifest: "",
+    detailBarang: "",
   });
   const handleOpenAddModal = () => setIsAddModalOpen(true);
   const handleCloseAddModal = () => setIsAddModalOpen(false);
@@ -86,6 +90,8 @@ const TimesheetBarangDashboard: React.FC = () => {
       tanggalPenyerahan: addForm.tanggalPenyerahan,
       kondisiBarang: addForm.kondisiBarang,
       status: addForm.status,
+      noManifest: addForm.noManifest,
+      detailBarang: addForm.detailBarang,
     };
     setTimesheetBarangData((prev) => [newItem, ...prev]);
     setIsAddModalOpen(false);
@@ -312,8 +318,8 @@ const TimesheetBarangDashboard: React.FC = () => {
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
 
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = (a[sortField] ?? "") as any;
+    const bValue = (b[sortField] ?? "") as any;
 
     if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
@@ -830,6 +836,16 @@ const TimesheetBarangDashboard: React.FC = () => {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">No Manifest</label>
+                <input
+                  type="text"
+                  value={addForm.noManifest}
+                  onChange={(e) => setAddForm((f) => ({ ...f, noManifest: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="MN-001"
+                />
+              </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nama Proyek
@@ -841,6 +857,16 @@ const TimesheetBarangDashboard: React.FC = () => {
                     setAddForm((f) => ({ ...f, namaProyek: e.target.value }))
                   }
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Detail Barang</label>
+                <textarea
+                  value={addForm.detailBarang}
+                  onChange={(e) => setAddForm((f) => ({ ...f, detailBarang: e.target.value }))}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="Deskripsikan rincian barang..."
                 />
               </div>
               <div>
