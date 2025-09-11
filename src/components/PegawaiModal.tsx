@@ -445,7 +445,7 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Marital Status
+                    Married Status
                   </label>
                   <select
                     value={formData.maritalStatus}
@@ -485,15 +485,21 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Department
                   </label>
-                  <input
-                    type="text"
-                    value={formData.department}
+                  <select
+                    value={formData.maritalStatus}
                     onChange={(e) =>
-                      handleInputChange("department", e.target.value)
+                      handleInputChange(
+                        "maritalStatus",
+                        e.target.value as "Single" | "Married" | "Other" | ""
+                      )
                     }
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="HRD / Operasional / Finance / ..."
-                  />
+                  >
+                    <option value="">Pilih</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
 
