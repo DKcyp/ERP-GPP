@@ -186,6 +186,17 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    {
+      title: "Kelola Dokumen",
+      icon: "FileText",
+      items: [
+        {
+          title: "Tracking Dokumen",
+          icon: "ClipboardList",
+          path: "/pengadaan/tracking/monitoring",
+        },
+      ],
+    },
     // Procon-only: PBG submenu replaces Purchase Request
     ...(role === "procon"
       ? [
@@ -985,12 +996,6 @@ export const pengadaanMenu: MenuSection[] = [
         path: "/pengadaan/penerimaan/laporan",
       },
     ],
-  },
-  {
-    title: "Tracking Dokumen",
-    icon: "ClipboardList",
-    items: [],
-    directPath: "/pengadaan/tracking/monitoring",
   },
   createGeneralMenu("pengadaan"),
 ];

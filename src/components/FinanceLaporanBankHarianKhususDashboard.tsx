@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, FileSpreadsheet, FileDown, Search } from 'lucide-react';
+import { Clock, FileSpreadsheet, FileDown, Search, Eye, X } from 'lucide-react';
 
 interface BankRow {
   id: number;
@@ -32,9 +32,35 @@ const FinanceLaporanBankHarianKhususDashboard: React.FC = () => {
     const totalMasuk = rows.reduce((s, r) => s + r.bankMasuk, 0);
     const totalKeluar = rows.reduce((s, r) => s + r.bankKeluar, 0);
     const totalTertahan = rows.reduce((s, r) => s + r.saldoTertahan, 0);
-    const totalSaldoAkhir = totalSaldoAwal + totalMasuk - totalKeluar - totalTertahan;
-    return { totalSaldoAwal, totalMasuk, totalKeluar, totalTertahan, totalSaldoAkhir };
+    const totalSaldoBank = totalSaldoAwal + totalMasuk - totalKeluar;
+    const totalSaldoAkhir = totalSaldoBank - totalTertahan;
+    return { totalSaldoAwal, totalMasuk, totalKeluar, totalTertahan, totalSaldoBank, totalSaldoAkhir };
   }, [rows]);
+
+  // Detail Mutasi Modal State
+  type BankMutation = { id: string; tanggal: string; keterangan: string; masuk: number; keluar: number };
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selected, setSelected] = useState<BankRow | null>(null);
+  const mutationsByBank: Record<number, BankMutation[]> = {
+    1: [
+      { id: 'm1', tanggal: '2025-03-01', keterangan: 'Saldo Awal', masuk: 8000000, keluar: 0 },
+      { id: 'm2', tanggal: '2025-03-02', keterangan: 'Setoran Customer', masuk: 1500000, keluar: 0 },
+      { id: 'm3', tanggal: '2025-03-03', keterangan: 'Pembayaran Vendor', masuk: 0, keluar: 750000 },
+    ],
+    2: [
+      { id: 'm4', tanggal: '2025-03-01', keterangan: 'Saldo Awal', masuk: 12000000, keluar: 0 },
+      { id: 'm5', tanggal: '2025-03-02', keterangan: 'Gaji Karyawan', masuk: 0, keluar: 3000000 },
+      { id: 'm6', tanggal: '2025-03-04', keterangan: 'Top Up Operasional', masuk: 2000000, keluar: 0 },
+    ],
+  };
+  const openDetail = (row: BankRow) => {
+    setSelected(row);
+    setDetailOpen(true);
+  };
+  const closeDetail = () => {
+    setDetailOpen(false);
+    setSelected(null);
+  };
 
   const applyFilter = () => {
     console.log('Filter applied', { periodeDari, periodeSampai });
@@ -96,43 +122,104 @@ const FinanceLaporanBankHarianKhususDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Bank</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Rekening</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Awal</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Bank Masuk</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Bank Keluar</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Bank (include Norek)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Laporan Bank Harian</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Bank</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Tertahan</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Akhir</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Dapat Digunakan</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Saldo Bank</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {rows.map((row, idx) => {
-                  const saldoAkhir = row.saldoAwal + row.bankMasuk - row.bankKeluar - row.saldoTertahan;
+                {rows.map((row) => {
+                  const saldoBank = row.saldoAwal + row.bankMasuk - row.bankKeluar;
+                  const saldoDapatDigunakan = saldoBank - row.saldoTertahan;
+                  const tglRange = periodeDari && periodeSampai
+                    ? `${periodeDari.toLocaleDateString('id-ID')} s/d ${periodeSampai.toLocaleDateString('id-ID')}`
+                    : "-";
                   return (
                     <tr key={row.id}>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900">{idx + 1}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900">{row.namaBank}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900">{row.norek}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900">{row.alamat}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-gray-900">{`Rp ${row.saldoAwal.toLocaleString('id-ID')}`}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-gray-900">{`Rp ${row.bankMasuk.toLocaleString('id-ID')}`}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-gray-900">{`Rp ${row.bankKeluar.toLocaleString('id-ID')}`}</td>
+                      <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900">{`${row.namaBank} (${row.norek})`}</td>
+                      <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900">{tglRange}</td>
+                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-gray-900">
+                        <div className="flex items-center justify-end gap-2">
+                          <span>{`Rp ${saldoBank.toLocaleString('id-ID')}`}</span>
+                          <button
+                            onClick={() => openDetail(row)}
+                            className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-md border border-gray-300 hover:bg-gray-50"
+                            title="Lihat Mutasi Bank"
+                          >
+                            <Eye className="h-3.5 w-3.5" /> Detail
+                          </button>
+                        </div>
+                      </td>
                       <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-gray-900">{`Rp ${row.saldoTertahan.toLocaleString('id-ID')}`}</td>
-                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right font-semibold text-gray-900">{`Rp ${saldoAkhir.toLocaleString('id-ID')}`}</td>
+                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-green-700 font-medium">{`Rp ${saldoDapatDigunakan.toLocaleString('id-ID')}`}</td>
+                      <td className="px-6 py-3 whitespace-nowrap text-sm text-right font-semibold text-gray-900">{`Rp ${totals.totalSaldoAkhir.toLocaleString('id-ID')}`}</td>
                     </tr>
                   );
                 })}
               </tbody>
-              <tfoot className="bg-gray-50">
-                <tr>
-                  <td className="px-6 py-3 text-sm font-semibold text-gray-900 text-right" colSpan={8}>Total Saldo Akhir</td>
-                  <td className="px-6 py-3 text-sm font-semibold text-right text-gray-900">{`Rp ${totals.totalSaldoAkhir.toLocaleString('id-ID')}`}</td>
-                </tr>
-              </tfoot>
             </table>
           </div>
+
+          {/* Detail Mutasi Modal */}
+          {detailOpen && selected && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="bg-white w-full max-w-3xl rounded-lg shadow-lg">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <div>
+                    <h3 className="text-sm font-semibold">Mutasi Bank</h3>
+                    <p className="text-xs text-gray-600">{selected.namaBank} ({selected.norek})</p>
+                  </div>
+                  <button onClick={closeDetail} className="p-1 rounded hover:bg-gray-100" aria-label="Close detail">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="p-4">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Tanggal</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Keterangan</th>
+                          <th className="px-3 py-2 text-right text-xs font-medium text-gray-700">Masuk</th>
+                          <th className="px-3 py-2 text-right text-xs font-medium text-gray-700">Keluar</th>
+                          <th className="px-3 py-2 text-right text-xs font-medium text-gray-700">Saldo Setelah</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {(() => {
+                          const list = mutationsByBank[selected.id] ?? [];
+                          let running = 0;
+                          return list.map((m) => {
+                            running = running + m.masuk - m.keluar;
+                            return (
+                              <tr key={m.id}>
+                                <td className="px-3 py-2">{m.tanggal}</td>
+                                <td className="px-3 py-2">{m.keterangan}</td>
+                                <td className="px-3 py-2 text-right">{m.masuk ? `Rp ${m.masuk.toLocaleString('id-ID')}` : '-'}</td>
+                                <td className="px-3 py-2 text-right">{m.keluar ? `Rp ${m.keluar.toLocaleString('id-ID')}` : '-'}</td>
+                                <td className="px-3 py-2 text-right font-medium">{`Rp ${running.toLocaleString('id-ID')}`}</td>
+                              </tr>
+                            );
+                          });
+                        })()}
+                        {(!mutationsByBank[selected.id] || mutationsByBank[selected.id].length === 0) && (
+                          <tr>
+                            <td className="px-3 py-6 text-center text-gray-500 text-xs" colSpan={5}>Belum ada mutasi untuk bank ini.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 p-4 border-t">
+                  <button onClick={closeDetail} className="px-3 py-1.5 text-xs rounded-md border">Tutup</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
