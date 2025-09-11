@@ -577,12 +577,12 @@ export const operationalMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "PBG",
-    icon: "Shield",
-    items: [],
-    directPath: "/operational/pbg/dashboard",
-  },
+  // {
+  //   title: "PBG",
+  //   icon: "Shield",
+  //   items: [],
+  //   directPath: "/operational/pbg/dashboard",
+  // },
   {
     title: "Nomor Report",
     icon: "FileText",

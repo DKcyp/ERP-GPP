@@ -123,11 +123,15 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     "Biaya Lain-lain",
     "Sisa HPP",
   ];
-  
 
   const [activeTab, setActiveTab] = useState<string>("Tenaga Kerja");
   // Ringkasan pekerjaan (kopi dari HPP Induk)
-  type RingkasRow = { jenisPekerjaan: string; hargaSatuan: string; jumlah: string; total: string };
+  type RingkasRow = {
+    jenisPekerjaan: string;
+    hargaSatuan: string;
+    jumlah: string;
+    total: string;
+  };
   const [pekerjaanRingkas, setPekerjaanRingkas] = useState<RingkasRow[]>([
     { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
   ]);
@@ -146,7 +150,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
   ]);
   const jenisPekerjaanUnitPrice: Record<string, number> = {
     "On Call": 1500000,
-    "Tender": 2000000,
+    Tender: 2000000,
   };
   const [tenagaKerja, setTenagaKerja] = useState<TenagaKerjaRow[]>([
     {
@@ -251,7 +255,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     ]);
   };
   const removePekerjaanRow = (idx: number) => {
-    setPekerjaanRingkas((prev) => (prev.length === 1 ? prev : prev.filter((_, i) => i !== idx)));
+    setPekerjaanRingkas((prev) =>
+      prev.length === 1 ? prev : prev.filter((_, i) => i !== idx)
+    );
   };
   const updatePekerjaanRow = (
     idx: number,
@@ -266,9 +272,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         const unit = jenisPekerjaanUnitPrice[value] || 0;
         row.hargaSatuan = unit ? String(unit) : "";
       }
-      const jumlahNum = parseFloat(field === "jumlah" ? value : row.jumlah || "0") || 0;
+      const jumlahNum =
+        parseFloat(field === "jumlah" ? value : row.jumlah || "0") || 0;
       const hargaNum = parseFloat(row.hargaSatuan || "0") || 0;
-      row.total = jumlahNum > 0 && hargaNum > 0 ? String(jumlahNum * hargaNum) : row.total || "";
+      row.total =
+        jumlahNum > 0 && hargaNum > 0
+          ? String(jumlahNum * hargaNum)
+          : row.total || "";
       next[idx] = row;
 
       // Auto-fill semua baris tab Tenaga Kerja & Barang, dan tambahkan 2 baris baru di masing-masing
@@ -283,9 +293,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
             const margin = 10;
             const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
             return {
-              pegawai: pegawaiOptions[i % pegawaiOptions.length] || r.pegawai || "",
+              pegawai:
+                pegawaiOptions[i % pegawaiOptions.length] || r.pegawai || "",
               tenaga: tenagaOptions[i % tenagaOptions.length] || r.tenaga || "",
-              tunjangan: tunjanganOptions[i % tunjanganOptions.length] || r.tunjangan || "",
+              tunjangan:
+                tunjanganOptions[i % tunjanganOptions.length] ||
+                r.tunjangan ||
+                "",
               projectRate: String(projectRate),
               hari: String(hari),
               hargaAwal: String(hargaAwal),
@@ -310,7 +324,11 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
               hargaAkhir: String(hargaAkhir),
             };
           };
-          setTenagaKerja([...filledTK, mkTK(filledTK.length), mkTK(filledTK.length + 1)]);
+          setTenagaKerja([
+            ...filledTK,
+            mkTK(filledTK.length),
+            mkTK(filledTK.length + 1),
+          ]);
 
           // Barang
           const filledBRG = barang.map((r, i) => {
@@ -320,7 +338,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
             const margin = 10;
             const hargaAkhir = harga + (harga * margin) / 100;
             return {
-              namaBarang: barangOptions[i % barangOptions.length] || r.namaBarang || "",
+              namaBarang:
+                barangOptions[i % barangOptions.length] || r.namaBarang || "",
               harga: String(harga),
               jumlah: String(jumlah),
               hari: r.hari || "",
@@ -349,7 +368,11 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
               hargaAkhir: String(hargaAkhir),
             };
           };
-          setBarang([...filledBRG, mkBRG(filledBRG.length), mkBRG(filledBRG.length + 1)]);
+          setBarang([
+            ...filledBRG,
+            mkBRG(filledBRG.length),
+            mkBRG(filledBRG.length + 1),
+          ]);
         }
       }
 
@@ -399,7 +422,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
 
     // Auto-calc hargaSatuan for Alat/Barang & Consumeble/PPE when harga or jumlah changes
     if (
-      (activeTab === "Alat" || activeTab === "Barang & Consumeble" || activeTab === "PPE") &&
+      (activeTab === "Alat" ||
+        activeTab === "Barang & Consumeble" ||
+        activeTab === "PPE") &&
       (field === "harga" || field === "jumlah")
     ) {
       const harga =
@@ -667,7 +692,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         {open && (
           <div className="absolute z-50 mt-1 w-full max-h-44 overflow-auto bg-white border border-gray-200 rounded shadow-lg">
             {filtered.length === 0 ? (
-              <div className="px-2 py-1 text-xs text-gray-500">Tidak ada hasil</div>
+              <div className="px-2 py-1 text-xs text-gray-500">
+                Tidak ada hasil
+              </div>
             ) : (
               filtered.map((opt) => (
                 <button
@@ -990,7 +1017,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
               {/* Jenis Pekerjaan */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Jenis Pekerjaan
+                  Metode Pengerjaan
                 </label>
                 <select
                   value={formData.jenisPekerjaan}
@@ -1041,7 +1068,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   value={formData.lokasi}
                   onChange={(e) => handleInputChange("lokasi", e.target.value)}
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.lokasi ? "border-red-300 bg-red-50" : "border-gray-200"
+                    errors.lokasi
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Lokasi"
                 />
@@ -1049,7 +1078,6 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   <p className="mt-1 text-xs text-red-600">{errors.lokasi}</p>
                 )}
               </div>
-
 
               {/* Tanggal Dibuat */}
               <div>
@@ -1098,22 +1126,30 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 </label>
                 <textarea
                   value={formData.keterangan}
-                  onChange={(e) => handleInputChange("keterangan", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("keterangan", e.target.value)
+                  }
                   rows={3}
                   className={`w-full px-2 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs ${
-                    errors.keterangan ? "border-red-300 bg-red-50" : "border-gray-200"
+                    errors.keterangan
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   } resize-none`}
                   placeholder="Masukkan keterangan"
                 />
                 {errors.keterangan && (
-                  <p className="mt-1 text-xs text-red-600">{errors.keterangan}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.keterangan}
+                  </p>
                 )}
               </div>
 
               {/* Ringkasan Pekerjaan (kopi HPP Induk) */}
               <div className="lg:col-span-2 mt-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                  <h4 className="text-xs font-semibold text-gray-900">
+                    Ringkasan Pekerjaan
+                  </h4>
                   <button
                     type="button"
                     onClick={addPekerjaanRow}
@@ -1126,11 +1162,21 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   <table className="w-full text-xs">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-2 text-left font-medium text-gray-700">Jenis Pekerjaan</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-700">Jumlah</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-700">Total</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-700">Aksi</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">
+                          Jenis Pekerjaan
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">
+                          Harga Satuan
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">
+                          Jumlah
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">
+                          Total
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -1139,7 +1185,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           <td className="px-3 py-2">
                             <select
                               value={row.jenisPekerjaan}
-                              onChange={(e) => updatePekerjaanRow(idx, "jenisPekerjaan", e.target.value)}
+                              onChange={(e) =>
+                                updatePekerjaanRow(
+                                  idx,
+                                  "jenisPekerjaan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded"
                             >
                               <option value="">Pilih Jenis Pekerjaan</option>
@@ -1148,16 +1200,46 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             </select>
                           </td>
                           <td className="px-3 py-2">
-                            <input type="text" value={row.hargaSatuan} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" placeholder="Harga Satuan" />
+                            <input
+                              type="text"
+                              value={row.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                              placeholder="Harga Satuan"
+                            />
                           </td>
                           <td className="px-3 py-2">
-                            <input type="number" min={0} value={row.jumlah} onChange={(e) => updatePekerjaanRow(idx, "jumlah", e.target.value)} className="w-full px-2 py-1 border border-gray-200 rounded" placeholder="0" />
+                            <input
+                              type="number"
+                              min={0}
+                              value={row.jumlah}
+                              onChange={(e) =>
+                                updatePekerjaanRow(
+                                  idx,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                              placeholder="0"
+                            />
                           </td>
                           <td className="px-3 py-2">
-                            <input type="text" value={row.total} readOnly className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50" placeholder="Total" />
+                            <input
+                              type="text"
+                              value={row.total}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                              placeholder="Total"
+                            />
                           </td>
                           <td className="px-3 py-2">
-                            <button type="button" onClick={() => removePekerjaanRow(idx)} disabled={pekerjaanRingkas.length === 1} className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button
+                              type="button"
+                              onClick={() => removePekerjaanRow(idx)}
+                              disabled={pekerjaanRingkas.length === 1}
+                              className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                               <Trash2 className="h-3 w-3" />
                             </button>
                           </td>
@@ -1236,7 +1318,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.pegawai}
-                              onChange={(e) => handleTabDataChange(index, "pegawai", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "pegawai",
+                                  e.target.value
+                                )
+                              }
                               list={`pegawaiOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari pegawai"
@@ -1251,7 +1339,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.tenaga}
-                              onChange={(e) => handleTabDataChange(index, "tenaga", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tenaga",
+                                  e.target.value
+                                )
+                              }
                               list={`tenagaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari tenaga"
@@ -1266,22 +1360,36 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.tunjangan}
-                              onChange={(e) => handleTabDataChange(index, "tunjangan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
                               list={`tunjanganOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari tunjangan"
                             />
                             <datalist id={`tunjanganOptions-${index}`}>
-                              {["Uang Makan","Transport","Lembur"].map((opt) => (
-                                <option key={opt} value={opt} />
-                              ))}
+                              {["Uang Makan", "Transport", "Lembur"].map(
+                                (opt) => (
+                                  <option key={opt} value={opt} />
+                                )
+                              )}
                             </datalist>
                           </td>
                           <td className="px-2 py-2">
                             <input
                               type="text"
                               value={row.projectRate}
-                              onChange={(e) => handleTabDataChange(index, "projectRate", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Project Rate"
                             />
@@ -1290,7 +1398,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.hari}
-                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1299,7 +1413,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.margin}
-                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
@@ -1334,14 +1454,30 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Nama Barang (PPE)</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Nama Barang (PPE)
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Satuan
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1351,7 +1487,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.namaBarang}
-                              onChange={(e) => handleTabDataChange(index, "namaBarang", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "namaBarang",
+                                  e.target.value
+                                )
+                              }
                               list={`ppeOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari PPE"
@@ -1366,7 +1508,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="number"
                               value={row.jumlah}
-                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Jumlah"
                             />
@@ -1375,7 +1523,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.hari}
-                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1384,7 +1538,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.satuan}
-                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Satuan"
                             />
@@ -1393,7 +1553,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.hargaSatuan}
-                              onChange={(e) => handleTabDataChange(index, "hargaSatuan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaSatuan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Harga Satuan"
                             />
@@ -1402,7 +1568,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="number"
                               value={row.margin}
-                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
@@ -1467,7 +1639,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.jasa}
-                              onChange={(e) => handleTabDataChange(index, "jasa", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jasa",
+                                  e.target.value
+                                )
+                              }
                               list={`jasaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari jasa"
@@ -1482,22 +1660,36 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.tunjangan}
-                              onChange={(e) => handleTabDataChange(index, "tunjangan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "tunjangan",
+                                  e.target.value
+                                )
+                              }
                               list={`tunjanganJasaOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari tunjangan"
                             />
                             <datalist id={`tunjanganJasaOptions-${index}`}>
-                              {["Uang Makan","Transport","Lembur"].map((opt) => (
-                                <option key={opt} value={opt} />
-                              ))}
+                              {["Uang Makan", "Transport", "Lembur"].map(
+                                (opt) => (
+                                  <option key={opt} value={opt} />
+                                )
+                              )}
                             </datalist>
                           </td>
                           <td className="px-2 py-2">
                             <input
                               type="text"
                               value={row.projectRate}
-                              onChange={(e) => handleTabDataChange(index, "projectRate", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "projectRate",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Project Rate"
                             />
@@ -1506,7 +1698,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.hari}
-                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1515,7 +1713,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.margin}
-                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
@@ -1583,7 +1787,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.alat}
-                              onChange={(e) => handleTabDataChange(index, "alat", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "alat",
+                                  e.target.value
+                                )
+                              }
                               list={`alatOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari alat"
@@ -1598,7 +1808,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.jumlah}
-                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Jumlah"
                             />
@@ -1607,7 +1823,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="number"
                               value={row.hari}
-                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1616,7 +1838,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.satuan}
-                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Satuan"
                             />
@@ -1634,7 +1862,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.margin}
-                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
@@ -1702,7 +1936,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.namaBarang}
-                              onChange={(e) => handleTabDataChange(index, "namaBarang", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "namaBarang",
+                                  e.target.value
+                                )
+                              }
                               list={`barangOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Pilih / cari barang"
@@ -1717,7 +1957,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.jumlah}
-                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Jumlah"
                             />
@@ -1726,7 +1972,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="number"
                               value={row.hari}
-                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1735,7 +1987,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="text"
                               value={row.satuan}
-                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Satuan"
                             />
@@ -1753,7 +2011,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                             <input
                               type="number"
                               value={row.margin}
-                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />

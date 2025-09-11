@@ -58,45 +58,69 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
   };
 
   // Dummy pegawai options and table rows
-  const pegawaiOptions: Array<{ nama: string; kualifikasi: string; gaji: string }> = [
-    { nama: 'Pegawai A', kualifikasi: 'Senior', gaji: 'Rp 10.000.000' },
-    { nama: 'Pegawai B', kualifikasi: 'Middle', gaji: 'Rp 7.500.000' },
-    { nama: 'Pegawai C', kualifikasi: 'Junior', gaji: 'Rp 5.000.000' },
+  const pegawaiOptions: Array<{
+    nama: string;
+    kualifikasi: string;
+    gaji: string;
+  }> = [
+    { nama: "Pegawai A", kualifikasi: "Senior", gaji: "Rp 10.000.000" },
+    { nama: "Pegawai B", kualifikasi: "Middle", gaji: "Rp 7.500.000" },
+    { nama: "Pegawai C", kualifikasi: "Junior", gaji: "Rp 5.000.000" },
   ];
-  const [pegawaiRows, setPegawaiRows] = useState<Array<{ namaPegawai: string; kualifikasi: string; gaji: string }>>([
-    { namaPegawai: pegawaiOptions[0]?.nama ?? '', kualifikasi: pegawaiOptions[0]?.kualifikasi ?? '', gaji: pegawaiOptions[0]?.gaji ?? '' },
-    { namaPegawai: pegawaiOptions[1]?.nama ?? '', kualifikasi: pegawaiOptions[1]?.kualifikasi ?? '', gaji: pegawaiOptions[1]?.gaji ?? '' },
-    { namaPegawai: pegawaiOptions[2]?.nama ?? '', kualifikasi: pegawaiOptions[2]?.kualifikasi ?? '', gaji: pegawaiOptions[2]?.gaji ?? '' },
+  const [pegawaiRows, setPegawaiRows] = useState<
+    Array<{ namaPegawai: string; kualifikasi: string; gaji: string }>
+  >([
+    {
+      namaPegawai: pegawaiOptions[0]?.nama ?? "",
+      kualifikasi: pegawaiOptions[0]?.kualifikasi ?? "",
+      gaji: pegawaiOptions[0]?.gaji ?? "",
+    },
+    {
+      namaPegawai: pegawaiOptions[1]?.nama ?? "",
+      kualifikasi: pegawaiOptions[1]?.kualifikasi ?? "",
+      gaji: pegawaiOptions[1]?.gaji ?? "",
+    },
+    {
+      namaPegawai: pegawaiOptions[2]?.nama ?? "",
+      kualifikasi: pegawaiOptions[2]?.kualifikasi ?? "",
+      gaji: pegawaiOptions[2]?.gaji ?? "",
+    },
   ]);
   const handlePegawaiChange = (idx: number, namaPegawai: string) => {
-    const found = pegawaiOptions.find(p => p.nama === namaPegawai);
-    setPegawaiRows(prev => {
+    const found = pegawaiOptions.find((p) => p.nama === namaPegawai);
+    setPegawaiRows((prev) => {
       const next = [...prev];
       next[idx] = {
         namaPegawai,
-        kualifikasi: found?.kualifikasi ?? '',
-        gaji: found?.gaji ?? '',
+        kualifikasi: found?.kualifikasi ?? "",
+        gaji: found?.gaji ?? "",
       };
       return next;
     });
   };
 
   const handleAddPegawaiRow = () => {
-    setPegawaiRows(prev => {
+    setPegawaiRows((prev) => {
       const nextIdx = prev.length;
       const opt = pegawaiOptions[nextIdx % pegawaiOptions.length];
       const preselected = opt
-        ? { namaPegawai: opt.nama, kualifikasi: opt.kualifikasi, gaji: opt.gaji }
-        : { namaPegawai: '', kualifikasi: '', gaji: '' };
-    return [...prev, preselected];
+        ? {
+            namaPegawai: opt.nama,
+            kualifikasi: opt.kualifikasi,
+            gaji: opt.gaji,
+          }
+        : { namaPegawai: "", kualifikasi: "", gaji: "" };
+      return [...prev, preselected];
     });
   };
 
   // Adjust pegawai rows count: 3 rows per selected jenis pekerjaan, minimum 3 rows
   useEffect(() => {
-    const selectedCount = pekerjaanRingkas.filter(r => r.jenisPekerjaan.trim() !== '').length;
+    const selectedCount = pekerjaanRingkas.filter(
+      (r) => r.jenisPekerjaan.trim() !== ""
+    ).length;
     const target = Math.max(3, selectedCount * 3);
-    setPegawaiRows(prev => {
+    setPegawaiRows((prev) => {
       let next = [...prev];
       if (next.length < target) {
         const toAdd = target - next.length;
@@ -104,8 +128,12 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
         const added = Array.from({ length: toAdd }, (_, i) => {
           const opt = pegawaiOptions[(startIdx + i) % pegawaiOptions.length];
           return opt
-            ? { namaPegawai: opt.nama, kualifikasi: opt.kualifikasi, gaji: opt.gaji }
-            : { namaPegawai: '', kualifikasi: '', gaji: '' };
+            ? {
+                namaPegawai: opt.nama,
+                kualifikasi: opt.kualifikasi,
+                gaji: opt.gaji,
+              }
+            : { namaPegawai: "", kualifikasi: "", gaji: "" };
         });
         next = next.concat(added);
       } else if (next.length > target) {
@@ -151,7 +179,9 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const showPegawaiTable = pekerjaanRingkas.some(r => r.jenisPekerjaan.trim() !== '');
+  const showPegawaiTable = pekerjaanRingkas.some(
+    (r) => r.jenisPekerjaan.trim() !== ""
+  );
 
   const validate = () => {
     const e: Partial<SOTurunanFormData> = {};
@@ -346,7 +376,7 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                        Jenis Pekerjaan
+                        Metode Pengerjaan
                       </th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                         Aksi
@@ -360,14 +390,24 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                           <select
                             value={row.jenisPekerjaan}
                             onChange={(e) =>
-                              updatePekerjaanRow(idx, 'jenisPekerjaan', e.target.value)
+                              updatePekerjaanRow(
+                                idx,
+                                "jenisPekerjaan",
+                                e.target.value
+                              )
                             }
                             className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                           >
-                            <option value="">Pilih jenis pekerjaan</option>
-                            <option value="jenispekerjaan1">jenispekerjaan1</option>
-                            <option value="jenispekerjaan2">jenispekerjaan2</option>
-                            <option value="jenispekerjaan3">jenispekerjaan3</option>
+                            <option value="">Pilih Metode Pengerjaan</option>
+                            <option value="jenispekerjaan1">
+                              jenispekerjaan1
+                            </option>
+                            <option value="jenispekerjaan2">
+                              jenispekerjaan2
+                            </option>
+                            <option value="jenispekerjaan3">
+                              jenispekerjaan3
+                            </option>
                           </select>
                         </td>
                         <td className="px-3 py-2">
@@ -391,15 +431,23 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
             {showPegawaiTable && (
               <div className="lg:col-span-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-semibold text-gray-900">Pegawai</h4>
+                  <h4 className="text-xs font-semibold text-gray-900">
+                    Pegawai
+                  </h4>
                 </div>
                 <div className="overflow-x-auto border border-gray-200 rounded-lg">
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Nama Pegawai</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Kualifikasi</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Gaji</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Nama Pegawai
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Kualifikasi
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Gaji
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -408,12 +456,16 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                           <td className="px-3 py-2">
                             <select
                               value={row.namaPegawai}
-                              onChange={(e) => handlePegawaiChange(idx, e.target.value)}
+                              onChange={(e) =>
+                                handlePegawaiChange(idx, e.target.value)
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                             >
                               <option value="">Pilih pegawai</option>
-                              {pegawaiOptions.map(p => (
-                                <option key={p.nama} value={p.nama}>{p.nama}</option>
+                              {pegawaiOptions.map((p) => (
+                                <option key={p.nama} value={p.nama}>
+                                  {p.nama}
+                                </option>
                               ))}
                             </select>
                           </td>

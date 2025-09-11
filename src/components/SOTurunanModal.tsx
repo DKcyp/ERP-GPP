@@ -30,7 +30,12 @@ export interface SOTurunanFormData {
   estimasiSO: string;
   keterangan: string;
   jumlahQty?: string;
-  pekerjaanRingkas?: Array<{ jenisPekerjaan: string; hargaSatuan: string; jumlah: string; total: string }>;
+  pekerjaanRingkas?: Array<{
+    jenisPekerjaan: string;
+    hargaSatuan: string;
+    jumlah: string;
+    total: string;
+  }>;
 }
 
 const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
@@ -53,7 +58,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
     estimasiSO: "",
     keterangan: "",
     jumlahQty: "",
-    pekerjaanRingkas: [{ jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" }],
+    pekerjaanRingkas: [
+      { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
+    ],
   });
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
@@ -82,7 +89,8 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
     "Tenaga Kerja",
     "Jasa",
     "Alat",
-    "Barang",
+    "Barang & Consumeble",
+    "PPE",
     "MobDemob",
     "Biaya Lain-lain",
   ];
@@ -97,6 +105,17 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
       unit: "Hari",
       margin: "10",
       hargaAkhir: "1375000",
+    },
+  ]);
+  const [ppe, setPpe] = useState<any[]>([
+    {
+      namaBarang: "Safety Helmet",
+      jumlah: "1",
+      hari: "1",
+      satuan: "Unit",
+      hargaSatuan: "",
+      margin: "10",
+      hargaAkhir: "",
     },
   ]);
   const [jasa, setJasa] = useState<any[]>([
@@ -168,11 +187,18 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
   const jasaOptions = ["Instalasi", "Maintenance", "Konsultasi"];
   const alatOptions = ["Crane", "Forklift", "Truck", "Komputer"];
   const barangOptions = ["Kabel NYA", "Panel", "Pipa", "Baut"];
+  const ppeOptions = [
+    "Safety Helmet",
+    "Safety Boots",
+    "Safety Gloves",
+    "Safety Goggles",
+    "Coverall",
+  ];
   const jenisPekerjaanUnitPrice: Record<string, number> = {
     "On Call": 1500000,
     "Project Based": 2500000,
-    "Maintenance": 1000000,
-    "Consulting": 2000000,
+    Maintenance: 1000000,
+    Consulting: 2000000,
   };
 
   const updateRow = (
@@ -300,23 +326,39 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
   // Ringkasan pekerjaan handlers
   const addPekerjaanRow = () => {
     if (readOnly) return;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      pekerjaanRingkas: [...(prev.pekerjaanRingkas || []), { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" }],
+      pekerjaanRingkas: [
+        ...(prev.pekerjaanRingkas || []),
+        { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
+      ],
     }));
   };
-  const updatePekerjaanRow = (idx: number, field: "jenisPekerjaan" | "jumlah", value: string) => {
-    setFormData(prev => {
+  const updatePekerjaanRow = (
+    idx: number,
+    field: "jenisPekerjaan" | "jumlah",
+    value: string
+  ) => {
+    setFormData((prev) => {
       const rows = [...(prev.pekerjaanRingkas || [])];
-      let row = { ...rows[idx], [field]: value } as { jenisPekerjaan: string; hargaSatuan: string; jumlah: string; total: string };
+      let row = { ...rows[idx], [field]: value } as {
+        jenisPekerjaan: string;
+        hargaSatuan: string;
+        jumlah: string;
+        total: string;
+      };
 
       if (field === "jenisPekerjaan") {
         const unit = jenisPekerjaanUnitPrice[value] || 0;
         row.hargaSatuan = unit ? String(unit) : "";
       }
-      const jumlahNum = parseFloat(field === "jumlah" ? value : row.jumlah || "0") || 0;
+      const jumlahNum =
+        parseFloat(field === "jumlah" ? value : row.jumlah || "0") || 0;
       const hargaNum = parseFloat(row.hargaSatuan || "0") || 0;
-      row.total = jumlahNum > 0 && hargaNum > 0 ? String(jumlahNum * hargaNum) : row.total || "";
+      row.total =
+        jumlahNum > 0 && hargaNum > 0
+          ? String(jumlahNum * hargaNum)
+          : row.total || "";
       rows[idx] = row;
 
       // Auto-fill ALL rows in Tenaga Kerja & Barang + append 2 rows each
@@ -331,9 +373,13 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
             const margin = 10;
             const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
             return {
-              pegawai: pegawaiOptions[i % pegawaiOptions.length] || r.pegawai || "",
+              pegawai:
+                pegawaiOptions[i % pegawaiOptions.length] || r.pegawai || "",
               tenaga: tenagaOptions[i % tenagaOptions.length] || r.tenaga || "",
-              tunjangan: tunjanganOptions[i % tunjanganOptions.length] || r.tunjangan || "",
+              tunjangan:
+                tunjanganOptions[i % tunjanganOptions.length] ||
+                r.tunjangan ||
+                "",
               projectRate: String(projectRate),
               hari: String(hari),
               unit: r.unit || "Hari",
@@ -342,21 +388,67 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
             };
           });
           const mkTK = (seed: number) => {
-            const projectRate = unit; const hari = 1; const hargaAwal = projectRate * hari; const margin = 10; const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
-            return { pegawai: pegawaiOptions[seed % pegawaiOptions.length] || "", tenaga: tenagaOptions[seed % tenagaOptions.length] || "", tunjangan: tunjanganOptions[seed % tunjanganOptions.length] || "", projectRate: String(projectRate), hari: String(hari), unit: "Hari", margin: String(margin), hargaAkhir: String(hargaAkhir) };
+            const projectRate = unit;
+            const hari = 1;
+            const hargaAwal = projectRate * hari;
+            const margin = 10;
+            const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
+            return {
+              pegawai: pegawaiOptions[seed % pegawaiOptions.length] || "",
+              tenaga: tenagaOptions[seed % tenagaOptions.length] || "",
+              tunjangan: tunjanganOptions[seed % tunjanganOptions.length] || "",
+              projectRate: String(projectRate),
+              hari: String(hari),
+              unit: "Hari",
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            };
           };
-          setTenagaKerja([...filledTK, mkTK(filledTK.length), mkTK(filledTK.length + 1)]);
+          setTenagaKerja([
+            ...filledTK,
+            mkTK(filledTK.length),
+            mkTK(filledTK.length + 1),
+          ]);
 
           // Barang: fill existing
           const filledBRG = barang.map((r, i) => {
-            const jumlah = 1; const harga = unit; const hargaSatuan = jumlah > 0 ? harga / jumlah : 0; const margin = 10; const hargaAkhir = harga + (harga * margin) / 100;
-            return { namaBarang: barangOptions[i % barangOptions.length] || r.namaBarang || "", jumlah: String(jumlah), hari: r.hari || "1", satuan: r.satuan || "Unit", hargaSatuan: String(hargaSatuan), margin: String(margin), hargaAkhir: String(hargaAkhir) };
+            const jumlah = 1;
+            const harga = unit;
+            const hargaSatuan = jumlah > 0 ? harga / jumlah : 0;
+            const margin = 10;
+            const hargaAkhir = harga + (harga * margin) / 100;
+            return {
+              namaBarang:
+                barangOptions[i % barangOptions.length] || r.namaBarang || "",
+              jumlah: String(jumlah),
+              hari: r.hari || "1",
+              satuan: r.satuan || "Unit",
+              hargaSatuan: String(hargaSatuan),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            };
           });
           const mkBRG = (seed: number) => {
-            const jumlah = 1; const harga = unit; const hargaSatuan = jumlah > 0 ? harga / jumlah : 0; const margin = 10; const hargaAkhir = harga + (harga * margin) / 100;
-            return { namaBarang: barangOptions[seed % barangOptions.length] || "", jumlah: String(jumlah), hari: "1", satuan: "Unit", hargaSatuan: String(hargaSatuan), margin: String(margin), hargaAkhir: String(hargaAkhir) };
+            const jumlah = 1;
+            const harga = unit;
+            const hargaSatuan = jumlah > 0 ? harga / jumlah : 0;
+            const margin = 10;
+            const hargaAkhir = harga + (harga * margin) / 100;
+            return {
+              namaBarang: barangOptions[seed % barangOptions.length] || "",
+              jumlah: String(jumlah),
+              hari: "1",
+              satuan: "Unit",
+              hargaSatuan: String(hargaSatuan),
+              margin: String(margin),
+              hargaAkhir: String(hargaAkhir),
+            };
           };
-          setBarang([...filledBRG, mkBRG(filledBRG.length), mkBRG(filledBRG.length + 1)]);
+          setBarang([
+            ...filledBRG,
+            mkBRG(filledBRG.length),
+            mkBRG(filledBRG.length + 1),
+          ]);
         }
       }
 
@@ -365,7 +457,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
   };
   const removePekerjaanRow = (idx: number) => {
     if (readOnly) return;
-    setFormData(prev => {
+    setFormData((prev) => {
       const rows = prev.pekerjaanRingkas || [];
       if (rows.length <= 1) return prev;
       return { ...prev, pekerjaanRingkas: rows.filter((_, i) => i !== idx) };
@@ -441,7 +533,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                   disabled={readOnly}
                   className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
-                  <option value="">Pilih Jenis Pekerjaan</option>
+                  <option value="">Pilih Metode Pengerjaan</option>
                   {jenisPekerjaanOptions.map((jenis) => (
                     <option key={jenis} value={jenis}>
                       {jenis}
@@ -636,7 +728,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
               {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
               <div className="lg:col-span-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-semibold text-gray-900">Ringkasan Pekerjaan</h4>
+                  <h4 className="text-xs font-semibold text-gray-900">
+                    Ringkasan Pekerjaan
+                  </h4>
                   {!readOnly && (
                     <button
                       type="button"
@@ -651,9 +745,15 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                   <table className="w-full text-xs">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jenis Pekerjaan</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Jenis Pekerjaan
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Jumlah
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -662,13 +762,21 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                           <td className="px-3 py-2">
                             <select
                               value={row.jenisPekerjaan}
-                              onChange={(e) => updatePekerjaanRow(idx, "jenisPekerjaan", e.target.value)}
+                              onChange={(e) =>
+                                updatePekerjaanRow(
+                                  idx,
+                                  "jenisPekerjaan",
+                                  e.target.value
+                                )
+                              }
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-200 rounded"
                             >
                               <option value="">Pilih Jenis Pekerjaan</option>
                               {jenisPekerjaanOptions.map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
                               ))}
                             </select>
                           </td>
@@ -677,7 +785,13 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                               type="number"
                               min={0}
                               value={row.jumlah}
-                              onChange={(e) => updatePekerjaanRow(idx, "jumlah", e.target.value)}
+                              onChange={(e) =>
+                                updatePekerjaanRow(
+                                  idx,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-200 rounded"
                               placeholder="0"
@@ -688,7 +802,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                               <button
                                 type="button"
                                 onClick={() => removePekerjaanRow(idx)}
-                                disabled={(formData.pekerjaanRingkas || []).length === 1}
+                                disabled={
+                                  (formData.pekerjaanRingkas || []).length === 1
+                                }
                                 className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 Hapus
@@ -701,7 +817,6 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                   </table>
                 </div>
               </div>
-
             </div>
 
             {/* Tabs Detail (mengikuti Sales Order) */}
@@ -891,6 +1006,133 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                           tunjangan: "",
                           projectRate: "",
                           hari: "",
+                          margin: "",
+                          hargaAkhir: "",
+                        })
+                      }
+                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Tambah Baris
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PPE */}
+              {activeTab === "PPE" && (
+                <div className="mt-3">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-2 py-2 text-left">
+                          Nama Barang (PPE)
+                        </th>
+                        <th className="px-2 py-2 text-left">Jumlah</th>
+                        <th className="px-2 py-2 text-left">Hari</th>
+                        <th className="px-2 py-2 text-left">Satuan</th>
+                        <th className="px-2 py-2 text-left">Harga Satuan</th>
+                        <th className="px-2 py-2 text-left">Margin</th>
+                        <th className="px-2 py-2 text-left">Harga Akhir</th>
+                        <th className="px-2 py-2 text-left">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ppe.map((row, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.namaBarang}
+                              onChange={(e) =>
+                                updateRow(
+                                  setPpe,
+                                  idx,
+                                  "namaBarang",
+                                  e.target.value
+                                )
+                              }
+                              list={`ppeOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`ppeOptions-${idx}`}>
+                              {ppeOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.jumlah}
+                              onChange={(e) =>
+                                updateRow(setPpe, idx, "jumlah", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hari}
+                              onChange={(e) =>
+                                updateRow(setPpe, idx, "hari", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.satuan}
+                              onChange={(e) =>
+                                updateRow(setPpe, idx, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaSatuan}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.margin}
+                              onChange={(e) =>
+                                updateRow(setPpe, idx, "margin", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(setPpe, ppe)}
+                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addRow(setPpe, {
+                          namaBarang: "",
+                          jumlah: "",
+                          hari: "",
+                          satuan: "",
+                          hargaSatuan: "",
                           margin: "",
                           hargaAkhir: "",
                         })
@@ -1171,8 +1413,8 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 </div>
               )}
 
-              {/* Barang */}
-              {activeTab === "Barang" && (
+              {/* Barang & Consumeble */}
+              {activeTab === "Barang & Consumeble" && (
                 <div className="mt-3">
                   <table className="w-full text-xs">
                     <thead className="bg-gray-50">

@@ -15,6 +15,7 @@ export interface HPPIndukFormData {
   namaProject: string;
   jenisPekerjaan: string;
   estimasiNilaiKontrak: string;
+  sertifikat: File | null;
   pekerjaanRingkas: Array<{
     jenisPekerjaan: string;
     hargaSatuan: string;
@@ -106,6 +107,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
     namaProject: "",
     jenisPekerjaan: "On Call",
     estimasiNilaiKontrak: "",
+    sertifikat: null,
     pekerjaanRingkas: [
       { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
     ],
@@ -447,6 +449,10 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
     }
   };
 
+  const handleFileChange = (file: File | null) => {
+    setFormData((prev) => ({ ...prev, sertifikat: file }));
+  };
+
   const getCurrentTabData = () => {
     switch (formData.activeTab) {
       case "Tenaga Kerja":
@@ -513,7 +519,9 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
 
     // Auto calculate harga satuan for Alat, Barang & Consumeble, and PPE tabs
     if (
-      (currentTab === "Alat" || currentTab === "Barang & Consumeble" || currentTab === "PPE") &&
+      (currentTab === "Alat" ||
+        currentTab === "Barang & Consumeble" ||
+        currentTab === "PPE") &&
       (field === "harga" || field === "jumlah")
     ) {
       const harga =
@@ -758,6 +766,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
       namaProject: "",
       jenisPekerjaan: "On Call",
       estimasiNilaiKontrak: "",
+      sertifikat: null,
       pekerjaanRingkas: [
         { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
       ],
@@ -1060,6 +1069,26 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                 />
               </div>
 
+              {/* Upload Sertifikat */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Upload Sertifikat
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) =>
+                    handleFileChange(e.target.files?.[0] || null)
+                  }
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {formData.sertifikat && (
+                  <p className="mt-1 text-xs text-gray-600 truncate">
+                    File terpilih: {formData.sertifikat.name}
+                  </p>
+                )}
+              </div>
+
               {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
               <div className="lg:col-span-2 mt-2">
                 <div className="flex items-center justify-between mb-2">
@@ -1079,7 +1108,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Jenis Pekerjaan
+                          Metode Pengerjaan
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Harga Satuan
@@ -1110,7 +1139,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                             >
-                              <option value="">Pilih Jenis Pekerjaan</option>
+                              <option value="">Pilih Metode Pengerjaan</option>
                               {jenisPekerjaanOptions.map((opt) => (
                                 <option key={opt} value={opt}>
                                   {opt}
@@ -1347,14 +1376,30 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Nama Barang (PPE)</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Nama Barang (PPE)
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Jumlah
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Hari
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Satuan
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Margin
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Akhir
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -1365,7 +1410,11 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                               type="text"
                               value={item.namaBarang}
                               onChange={(e) =>
-                                handleTabDataChange(index, "namaBarang", e.target.value)
+                                handleTabDataChange(
+                                  index,
+                                  "namaBarang",
+                                  e.target.value
+                                )
                               }
                               list={`ppeOptions-${index}`}
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
@@ -1381,7 +1430,13 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                             <input
                               type="number"
                               value={item.jumlah}
-                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "jumlah",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Jumlah"
                             />
@@ -1390,7 +1445,13 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                             <input
                               type="number"
                               value={item.hari}
-                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hari",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Hari"
                             />
@@ -1399,7 +1460,13 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                             <input
                               type="text"
                               value={item.satuan}
-                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Satuan"
                             />
@@ -1408,7 +1475,13 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                             <input
                               type="text"
                               value={item.hargaSatuan}
-                              onChange={(e) => handleTabDataChange(index, "hargaSatuan", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "hargaSatuan",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Harga Satuan"
                             />
@@ -1417,7 +1490,13 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                             <input
                               type="number"
                               value={item.margin}
-                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              onChange={(e) =>
+                                handleTabDataChange(
+                                  index,
+                                  "margin",
+                                  e.target.value
+                                )
+                              }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
                               placeholder="Margin %"
                             />
