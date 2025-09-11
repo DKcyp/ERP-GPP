@@ -13,6 +13,12 @@ interface SIBData {
   keterangan: string;
   fileName?: string;
   fileUrl?: string;
+  // tambahan
+  nik?: string;
+  alamat?: string;
+  telp?: string;
+  nominal?: string;
+  kualifikasi?: string;
 }
 
 interface SIBForm {
@@ -23,6 +29,12 @@ interface SIBForm {
   status: SIBData["status"] | "";
   keterangan: string;
   file?: File | null;
+  // tambahan form
+  nik: string;
+  alamat: string;
+  telp: string;
+  nominal: string;
+  kualifikasi: string;
 }
 
 const SuratIzinBekerjaDashboard: React.FC = () => {
@@ -47,7 +59,7 @@ const SuratIzinBekerjaDashboard: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingItem, setEditingItem] = useState<SIBData | null>(null);
-  const [form, setForm] = useState<SIBForm>({ namaPegawai: "", nomorSurat: "", tanggalTerbit: "", berlakuSampai: "", status: "", keterangan: "", file: null });
+  const [form, setForm] = useState<SIBForm>({ namaPegawai: "", nomorSurat: "", tanggalTerbit: "", berlakuSampai: "", status: "", keterangan: "", file: null, nik: "", alamat: "", telp: "", nominal: "", kualifikasi: "" });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SIBData | null>(null);
 
@@ -64,7 +76,7 @@ const SuratIzinBekerjaDashboard: React.FC = () => {
   const currentData = filtered.slice(startIndex, endIndex);
 
   const resetForm = () => {
-    setForm({ namaPegawai: "", nomorSurat: "", tanggalTerbit: "", berlakuSampai: "", status: "", keterangan: "", file: null });
+    setForm({ namaPegawai: "", nomorSurat: "", tanggalTerbit: "", berlakuSampai: "", status: "", keterangan: "", file: null, nik: "", alamat: "", telp: "", nominal: "", kualifikasi: "" });
     setEditingItem(null);
     setIsEditMode(false);
   };
@@ -72,7 +84,7 @@ const SuratIzinBekerjaDashboard: React.FC = () => {
   const openAddModal = () => { resetForm(); setIsFormOpen(true); };
   const openEditModal = (item: SIBData) => {
     setEditingItem(item);
-    setForm({ namaPegawai: item.namaPegawai, nomorSurat: item.nomorSurat, tanggalTerbit: item.tanggalTerbit, berlakuSampai: item.berlakuSampai, status: item.status, keterangan: item.keterangan, file: null });
+    setForm({ namaPegawai: item.namaPegawai, nomorSurat: item.nomorSurat, tanggalTerbit: item.tanggalTerbit, berlakuSampai: item.berlakuSampai, status: item.status, keterangan: item.keterangan, file: null, nik: item.nik || "", alamat: item.alamat || "", telp: item.telp || "", nominal: item.nominal || "", kualifikasi: item.kualifikasi || "" });
     setIsEditMode(true);
     setIsFormOpen(true);
   };
@@ -90,7 +102,7 @@ const SuratIzinBekerjaDashboard: React.FC = () => {
     } else {
       const nextNo = data.length > 0 ? Math.max(...data.map((x) => x.no)) + 1 : 1;
       setData((prev) => [
-        { id: Date.now().toString(), no: nextNo, namaPegawai: form.namaPegawai, nomorSurat: form.nomorSurat, tanggalTerbit: form.tanggalTerbit, berlakuSampai: form.berlakuSampai, status: form.status as SIBData["status"], keterangan: form.keterangan, fileName, fileUrl },
+        { id: Date.now().toString(), no: nextNo, namaPegawai: form.namaPegawai, nomorSurat: form.nomorSurat, tanggalTerbit: form.tanggalTerbit, berlakuSampai: form.berlakuSampai, status: form.status as SIBData["status"], keterangan: form.keterangan, fileName, fileUrl, nik: form.nik, alamat: form.alamat, telp: form.telp, nominal: form.nominal, kualifikasi: form.kualifikasi },
         ...prev,
       ]);
     }
@@ -209,18 +221,48 @@ const SuratIzinBekerjaDashboard: React.FC = () => {
                   <input value={form.namaPegawai} onChange={(e) => setForm((p) => ({ ...p, namaPegawai: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Surat</label>
-                  <input value={form.nomorSurat} onChange={(e) => setForm((p) => ({ ...p, nomorSurat: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" required />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                  <input value={form.nik} onChange={(e) => setForm((p) => ({ ...p, nik: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Terbit</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                  <input value={form.alamat} onChange={(e) => setForm((p) => ({ ...p, alamat: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">No. Telp</label>
+                  <input value={form.telp} onChange={(e) => setForm((p) => ({ ...p, telp: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">No. SIB</label>
+                  <input value={form.nomorSurat} onChange={(e) => setForm((p) => ({ ...p, nomorSurat: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nominal</label>
+                  <input value={form.nominal} onChange={(e) => setForm((p) => ({ ...p, nominal: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" placeholder="Rp 0" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Masa Berlaku - Tgl Awal</label>
                   <input type="date" value={form.tanggalTerbit} onChange={(e) => setForm((p) => ({ ...p, tanggalTerbit: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Berlaku Sampai</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Masa Berlaku - Tgl Akhir</label>
                   <input type="date" value={form.berlakuSampai} onChange={(e) => setForm((p) => ({ ...p, berlakuSampai: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" required />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Kualifikasi</label>
+                  <input value={form.kualifikasi} onChange={(e) => setForm((p) => ({ ...p, kualifikasi: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen</label>
+                  <input type="file" onChange={handleFileChange} className="w-full text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -234,13 +276,9 @@ const SuratIzinBekerjaDashboard: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen</label>
-                  <input type="file" onChange={handleFileChange} className="w-full text-sm" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                  <textarea rows={3} value={form.keterangan} onChange={(e) => setForm((p) => ({ ...p, keterangan: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-                <textarea rows={3} value={form.keterangan} onChange={(e) => setForm((p) => ({ ...p, keterangan: e.target.value }))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">
