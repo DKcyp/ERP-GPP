@@ -8,6 +8,7 @@ import {
   Trash2,
   Plus,
   ArrowUp,
+  Clock,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import ReqManPowerModal, { ReqManPowerFormData } from "./ReqManPowerModal";
@@ -34,6 +35,17 @@ const ReqManPowerDashboard: React.FC = () => {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ReqManPowerRow | null>(null);
+
+  // History/Edit modal state
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<ReqManPowerRow | null>(null);
+  const [editApprovals, setEditApprovals] = useState<{ approvalDireksi: string; approvalHead: string; catatan: string }>({ approvalDireksi: "Pending", approvalHead: "Pending", catatan: "" });
+  type HistoryEntry = { id: string; reqId: string; tanggal: string; perubahan: string; user: string };
+  const [history, setHistory] = useState<HistoryEntry[]>([
+    { id: "h1", reqId: "1", tanggal: "2025-03-06 09:15", perubahan: "Approval Head diset ke Approved", user: "Head HR" },
+    { id: "h2", reqId: "1", tanggal: "2025-03-06 10:00", perubahan: "Catatan diperbarui", user: "Head HR" },
+    { id: "h3", reqId: "2", tanggal: "2025-03-07 14:20", perubahan: "Approval Direksi diset ke Approved", user: "Direksi" },
+  ]);
 
   const [rows, setRows] = useState<ReqManPowerRow[]>([
     {
@@ -114,6 +126,12 @@ const ReqManPowerDashboard: React.FC = () => {
     setReadOnlyModal(true);
     setInitialModalData({ ...item });
     setIsModalOpen(true);
+  };
+
+  const openHistory = (item: ReqManPowerRow) => {
+    setSelectedRow(item);
+    setEditApprovals({ approvalDireksi: item.approvalDireksi, approvalHead: item.approvalHead, catatan: "" });
+    setIsHistoryOpen(true);
   };
 
   const handleSave = (data: ReqManPowerFormData) => {
@@ -204,13 +222,6 @@ const ReqManPowerDashboard: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
-              <button
-                onClick={openAdd}
-                className="inline-flex items-center px-3 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700"
-              >
-                <Plus className="h-4 w-4 mr-2" /> Tambah
-              </button>
-
               <div className="flex gap-2">
                 <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
                   <FileSpreadsheet className="h-4 w-4" />
@@ -355,6 +366,13 @@ const ReqManPowerDashboard: React.FC = () => {
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
+                          onClick={() => openHistory(item)}
+                          className="p-2 text-amber-600 hover:bg-amber-50 rounded transition-all duration-200 hover:scale-110"
+                          title="Riwayat / Update"
+                        >
+                          <Clock className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleDeleteClick(item)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
                           title="Delete"
@@ -432,6 +450,101 @@ const ReqManPowerDashboard: React.FC = () => {
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.posisi}
       />
+
+      {/* History / Edit Modal */}
+      {isHistoryOpen && selectedRow && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsHistoryOpen(false);
+          }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Riwayat & Update - {selectedRow.posisi}</h3>
+              <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-gray-400 hover:text-gray-600">×</button>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+              {/* History List */}
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="px-3 py-2 bg-gray-50 border-b text-sm font-medium text-gray-700">History Perubahan</div>
+                <div className="max-h-64 overflow-auto divide-y divide-gray-100">
+                  {history.filter(h => h.reqId === selectedRow.id).length === 0 ? (
+                    <div className="px-3 py-3 text-sm text-gray-500">Belum ada riwayat</div>
+                  ) : (
+                    history.filter(h => h.reqId === selectedRow.id).map((h) => (
+                      <div key={h.id} className="px-3 py-2 text-sm">
+                        <div className="text-gray-900">{h.perubahan}</div>
+                        <div className="text-xs text-gray-500">{h.tanggal} • {h.user}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Edit Approvals */}
+              <div className="border border-gray-200 rounded-lg p-3">
+                <div className="text-sm font-medium text-gray-700 mb-2">Update Persetujuan</div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Approval Direksi</label>
+                    <select
+                      value={editApprovals.approvalDireksi}
+                      onChange={(e) => setEditApprovals((prev) => ({ ...prev, approvalDireksi: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    >
+                      {['Approved','Rejected','Pending'].map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Approval Head Dept</label>
+                    <select
+                      value={editApprovals.approvalHead}
+                      onChange={(e) => setEditApprovals((prev) => ({ ...prev, approvalHead: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    >
+                      {['Approved','Rejected','Pending'].map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Catatan</label>
+                    <textarea
+                      rows={3}
+                      value={editApprovals.catatan}
+                      onChange={(e) => setEditApprovals((prev) => ({ ...prev, catatan: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      placeholder="Tambahkan catatan perubahan..."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-200 flex justify-end gap-2 bg-gray-50">
+              <button className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100" onClick={() => setIsHistoryOpen(false)}>Tutup</button>
+              <button
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={() => {
+                  if (!selectedRow) return;
+                  // update rows
+                  setRows(prev => prev.map(r => r.id === selectedRow.id ? { ...r, approvalDireksi: editApprovals.approvalDireksi as any, approvalHead: editApprovals.approvalHead as any } : r));
+                  // add history entry
+                  const stamp = new Date();
+                  const tanggal = `${stamp.toLocaleDateString('id-ID')} ${stamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+                  setHistory(prev => [
+                    { id: `h${prev.length + 1}`, reqId: selectedRow.id, tanggal, perubahan: `Direksi: ${editApprovals.approvalDireksi}, Head: ${editApprovals.approvalHead}. ${editApprovals.catatan ? 'Catatan: ' + editApprovals.catatan : ''}`.trim(), user: 'You' },
+                    ...prev,
+                  ]);
+                  setIsHistoryOpen(false);
+                }}
+              >Simpan Perubahan</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
