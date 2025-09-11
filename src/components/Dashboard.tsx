@@ -147,6 +147,7 @@ import MasterIzinDashboard from "./MasterIzinDashboard";
 import PengajuanPegawaiBaruDashboard from "./PengajuanPegawaiBaruDashboard";
 import PerjanjianIkatanDinasDashboard from "./PerjanjianIkatanDinasDashboard";
 import SuratIzinBekerjaDashboard from "./SuratIzinBekerjaDashboard";
+import NoSuratPerjanjianDashboard from "./NoSuratPerjanjianDashboard";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -735,6 +736,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/perjanjian/surat-izin-bekerja") {
       return <SuratIzinBekerjaDashboard />;
+    }
+    if (currentPage === "/hrd/perjanjian/no-surat") {
+      return <NoSuratPerjanjianDashboard />;
     }
     if (currentPage === "/hrd/penilaian/daftar") {
       return <DaftarPenilaianDashboard />;

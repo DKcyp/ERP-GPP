@@ -842,6 +842,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Target",
         path: "/hrd/penilaian/master-indikator-hrd",
       },
+      {
+        title: "SP",
+        icon: "FileText",
+        path: "/hrd/penilaian/sp",
+      },
     ],
   },
   {
@@ -858,6 +863,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "FileText",
         path: "/hrd/perjanjian/surat-izin-bekerja",
       },
+      {
+        title: "No. Surat",
+        icon: "FileText",
+        path: "/hrd/perjanjian/no-surat",
+      },
     ],
   },
   // {
@@ -867,17 +877,17 @@ export const hrdMenu: MenuSection[] = [
   //     { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
   //   ],
   // },
-  {
-    title: "Monitoring", // Moved SPK Section to HRD
-    icon: "Monitor",
-    items: [
-      {
-        title: "Monitoring",
-        icon: "Monitor",
-        path: "/qhse/monitoring/endorse-certificate",
-      },
-    ],
-  },
+  // {
+  //   title: "Monitoring", // Moved SPK Section to HRD
+  //   icon: "Monitor",
+  //   items: [
+  //     {
+  //       title: "Monitoring",
+  //       icon: "Monitor",
+  //       path: "/qhse/monitoring/endorse-certificate",
+  //     },
+  //   ],
+  // },
   createGeneralMenu("hrd"),
 ];
 
