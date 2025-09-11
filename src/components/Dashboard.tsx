@@ -138,6 +138,8 @@ import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD L
 import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
 import PendebetanDashboard from "./PendebetanDashboard";
 import PayslipDashboard from "./PayslipDashboard";
+import MasterIncomeDashboard from "./MasterIncomeDashboard";
+import MasterDeductDashboard from "./MasterDeductDashboard";
 import CalendarAbsensiDashboard from "./CalendarAbsensiDashboard";
 import PengajuanIzinDashboard from "./PengajuanIzinDashboard";
 import PengajuanPegawaiBaruDashboard from "./PengajuanPegawaiBaruDashboard";
@@ -684,11 +686,20 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/gaji/daftar") {
       return <DaftarGajiDashboard />;
     }
+    if (currentPage === "/hrd/gaji/master-income") {
+      return <MasterIncomeDashboard />;
+    }
+    if (currentPage === "/hrd/gaji/master-deduct") {
+      return <MasterDeductDashboard />;
+    }
     if (currentPage === "/hrd/gaji/pengajian") {
       return <PengajianActiveDashboard />;
     }
     if (currentPage === "/hrd/gaji/potongan") {
       return <PotonganGajiDashboard />;
+    }
+    if (currentPage === "/hrd/gaji/potongan-lain") {
+      return <PotonganLainDashboard />;
     }
     if (currentPage === "/hrd/gaji/pendebetan") {
       return <PendebetanDashboard />;

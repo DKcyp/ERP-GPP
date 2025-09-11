@@ -161,7 +161,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
         ]
       : []),
     {
-      title: "Cuti",
+      title: "Absensi",
       icon: "Calendar",
       items: [
         {
@@ -178,6 +178,11 @@ const createGeneralMenu = (role: string): MenuSection => ({
           title: "Lembur",
           icon: "Clock",
           path: "/hrd/lembur/dashboard",
+        },
+        {
+          title: "Pengajuan Izin",
+          icon: "FilePlus",
+          path: "/hrd/absensi/pengajuan-izin",
         },
       ],
     },
@@ -757,6 +762,11 @@ export const hrdMenu: MenuSection[] = [
         path: "/hrd/gaji/potongan",
       },
       {
+        title: "Potongan Lain-lain",
+        icon: "Scissors",
+        path: "/hrd/gaji/potongan-lain",
+      },
+      {
         title: "Pendebetan",
         icon: "MinusCircle",
         path: "/hrd/gaji/pendebetan",
@@ -775,6 +785,16 @@ export const hrdMenu: MenuSection[] = [
         title: "Pinjaman Karyawan",
         icon: "UsersRound",
         path: "/hrd/gaji/daftar-peminjam-karyawan",
+      },
+      {
+        title: "Master Income",
+        icon: "FileSignature",
+        path: "/hrd/gaji/master-income",
+      },
+      {
+        title: "Master Deduct",
+        icon: "FileSignature",
+        path: "/hrd/gaji/master-deduct",
       },
     ],
   },

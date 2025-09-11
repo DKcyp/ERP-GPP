@@ -8,6 +8,8 @@ import {
   Pencil,
   Trash2,
   X,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
@@ -89,6 +91,7 @@ const TrainingMatrixDashboard: React.FC = () => {
   });
   const [showDelete, setShowDelete] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<TrainingRecord | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const posisiOptions = useMemo(
     () => Array.from(new Set(data.map((d) => d.posisi))).sort(),
@@ -103,10 +106,37 @@ const TrainingMatrixDashboard: React.FC = () => {
     });
   }, [searchNama, filterPosisi, data]);
 
-  const displayedData = useMemo(() => {
+  // Group certificates per employee (by nama). If one person can have multiple posisi,
+  // we show the first found on the main row and list all certificates in detail.
+  const groupedData = useMemo(() => {
+    const map = new Map<
+      string,
+      { key: string; nama: string; posisi: string; details: TrainingRecord[] }
+    >();
+    for (const row of filteredData) {
+      const key = row.nama; // group by name
+      if (!map.has(key)) {
+        map.set(key, { key, nama: row.nama, posisi: row.posisi, details: [] });
+      }
+      map.get(key)!.details.push(row);
+    }
+    // Sort each group's details by expiry asc for readability
+    const arr = Array.from(map.values()).map((g) => ({
+      ...g,
+      details: [...g.details].sort(
+        (a, b) => new Date(a.expiry).getTime() - new Date(b.expiry).getTime()
+      ),
+    }));
+    return arr;
+  }, [filteredData]);
+
+  const displayedGroups = useMemo(() => {
     const limit = parseInt(showEntries, 10);
-    return filteredData.slice(0, isNaN(limit) ? filteredData.length : limit);
-  }, [filteredData, showEntries]);
+    return groupedData.slice(0, isNaN(limit) ? groupedData.length : limit);
+  }, [groupedData, showEntries]);
+
+  const toggleExpand = (key: string) =>
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleSearch = () => {
     // Placeholder to mirror MCU behavior
@@ -264,12 +294,6 @@ const TrainingMatrixDashboard: React.FC = () => {
 
           <div className="flex justify-end space-x-3">
             <button
-              onClick={openAdd}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-            >
-              <PlusCircle className="h-5 w-5 mr-2" /> Tambah Training
-            </button>
-            <button
               onClick={handleSearch}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
@@ -322,6 +346,7 @@ const TrainingMatrixDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="w-10 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -338,69 +363,79 @@ const TrainingMatrixDashboard: React.FC = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Certificate
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Aksi
+                    Certificate (count)
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {displayedData.map((row, idx) => {
-                  const expired = isExpired(row.expiry);
+                {displayedGroups.map((grp, idx) => {
+                  const first = grp.details[0];
+                  const anyExpired = grp.details.some((d) => isExpired(d.expiry));
+                  const isOpen = !!expanded[grp.key];
                   return (
-                    <tr
-                      key={idx}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {row.nama}
-                        {expired && (
-                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            <AlertTriangle className="h-3 w-3 mr-1" /> Expired
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {row.posisi}
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap text-sm ${
-                          expired ? "text-red-700 bg-red-50" : "text-gray-500"
-                        }`}
+                    <>
+                      <tr
+                        key={grp.key}
+                        className="hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => toggleExpand(grp.key)}
                       >
-                        <div className="flex flex-col">
-                          <span className="font-medium">{row.certificate}</span>
-                          <span className="text-xs">
-                            Expiry: {formatDate(row.expiry)}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                        <div className="inline-flex items-center space-x-2">
-                          <button
-                            onClick={() => openEdit(row)}
-                            className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
-                            title="Edit"
-                          >
-                            <Pencil className="h-4 w-4 mr-1" /> Edit
-                          </button>
-                          <button
-                            onClick={() => askDelete(row)}
-                            className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 border border-red-200"
-                            title="Hapus"
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" /> Hapus
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                        <td className="px-4 py-3 align-middle">
+                          {isOpen ? (
+                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-gray-500" />
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {grp.nama}
+                          {anyExpired && (
+                            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              <AlertTriangle className="h-3 w-3 mr-1" /> Ada Expired
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {first?.posisi || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                          {grp.details.length} item
+                        </td>
+                      </tr>
+                      {isOpen && (
+                        <tr>
+                          <td colSpan={4} className="bg-gray-50">
+                            <div className="px-6 py-4">
+                              <div className="text-xs text-gray-500 mb-2">
+                                Certificate {grp.nama}
+                              </div>
+                              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <table className="min-w-full">
+                                  <thead className="bg-gray-100">
+                                    <tr>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Certificate</th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white divide-y divide-gray-200">
+                                    {grp.details.map((d, i) => (
+                                      <tr key={`${grp.key}-${i}`} className="hover:bg-white">
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{d.certificate}</td>
+                                        <td className={`px-4 py-2 whitespace-nowrap text-sm ${isExpired(d.expiry) ? 'text-red-700' : 'text-gray-700'}`}>
+                                          {formatDate(d.expiry)}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
                   );
                 })}
-                {displayedData.length === 0 && (
+                {displayedGroups.length === 0 && (
                   <tr>
                     <td
                       colSpan={4}

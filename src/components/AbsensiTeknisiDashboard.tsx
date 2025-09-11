@@ -11,7 +11,9 @@ const AbsensiTeknisiDashboard: React.FC = () => {
   const [selectedNama, setSelectedNama] = useState<string | null>(null);
 
   // Sample data matching the first image
-  const [absensiTeknisiData, setAbsensiTeknisiData] = useState<AbsensiTeknisiData[]>([
+  const [absensiTeknisiData, setAbsensiTeknisiData] = useState<
+    AbsensiTeknisiData[]
+  >([
     {
       id: "1",
       no: 1,
@@ -93,16 +95,106 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       statusApprove: "Process",
     },
     // Recent dummy records for Ahmad (within last 16 days from 10-09-2025)
-    { id: "A1", no: 9, namaTeknisi: "Ahmad", tanggalAbsensi: "26-08-2025", zonaKerja: "Zona 1", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A2", no: 10, namaTeknisi: "Ahmad", tanggalAbsensi: "28-08-2025", zonaKerja: "Zona 1", statusAbsensi: "DL", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A3", no: 11, namaTeknisi: "Ahmad", tanggalAbsensi: "30-08-2025", zonaKerja: "Zona 2", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A4", no: 12, namaTeknisi: "Ahmad", tanggalAbsensi: "01-09-2025", zonaKerja: "Zona 2", statusAbsensi: "CP", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A5", no: 13, namaTeknisi: "Ahmad", tanggalAbsensi: "02-09-2025", zonaKerja: "Zona 1", statusAbsensi: "CT", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A6", no: 14, namaTeknisi: "Ahmad", tanggalAbsensi: "04-09-2025", zonaKerja: "Zona 3", statusAbsensi: "TM", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A7", no: 15, namaTeknisi: "Ahmad", tanggalAbsensi: "06-09-2025", zonaKerja: "Zona 1", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A8", no: 16, namaTeknisi: "Ahmad", tanggalAbsensi: "08-09-2025", zonaKerja: "Zona 1", statusAbsensi: "DL", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A9", no: 17, namaTeknisi: "Ahmad", tanggalAbsensi: "09-09-2025", zonaKerja: "Zona 2", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
-    { id: "A10", no: 18, namaTeknisi: "Ahmad", tanggalAbsensi: "10-09-2025", zonaKerja: "Zona 2", statusAbsensi: "H", lampiran: "Rp 1.500.000", statusApprove: "Approved" },
+    {
+      id: "A1",
+      no: 9,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "26-08-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "H",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A2",
+      no: 10,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "28-08-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "DL",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A3",
+      no: 11,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "30-08-2025",
+      zonaKerja: "Zona 2",
+      statusAbsensi: "H",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A4",
+      no: 12,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "01-09-2025",
+      zonaKerja: "Zona 2",
+      statusAbsensi: "CP",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A5",
+      no: 13,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "02-09-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "CT",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A6",
+      no: 14,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "04-09-2025",
+      zonaKerja: "Zona 3",
+      statusAbsensi: "TM",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A7",
+      no: 15,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "06-09-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "H",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A8",
+      no: 16,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "08-09-2025",
+      zonaKerja: "Zona 1",
+      statusAbsensi: "DL",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A9",
+      no: 17,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "09-09-2025",
+      zonaKerja: "Zona 2",
+      statusAbsensi: "H",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
+    {
+      id: "A10",
+      no: 18,
+      namaTeknisi: "Ahmad",
+      tanggalAbsensi: "10-09-2025",
+      zonaKerja: "Zona 2",
+      statusAbsensi: "H",
+      lampiran: "Rp 1.500.000",
+      statusApprove: "Approved",
+    },
   ]);
 
   useEffect(() => {
@@ -112,7 +204,9 @@ const AbsensiTeknisiDashboard: React.FC = () => {
   // No delete flow in this screen
 
   // Normalize raw code to label: Izin, Sakit, Libur, Cuti, Alpha, Hadir
-  const normalizeStatusLabel = (status: string): "Izin" | "Sakit" | "Libur" | "Cuti" | "Alpha" | "Hadir" => {
+  const normalizeStatusLabel = (
+    status: string
+  ): "Izin" | "Sakit" | "Libur" | "Cuti" | "Alpha" | "Hadir" => {
     const s = status.trim().toUpperCase();
     if (s === "DL" || s === "CP" || s === "IZIN") return "Izin";
     if (s === "S" || s === "SAKIT") return "Sakit";
@@ -171,13 +265,17 @@ const AbsensiTeknisiDashboard: React.FC = () => {
     if (!dd || !mm || !yyyy) return false;
     const d = new Date(yyyy, mm - 1, dd);
     d.setHours(0, 0, 0, 0);
-    const s = new Date(startDate); s.setHours(0, 0, 0, 0);
-    const t = new Date(today); t.setHours(0, 0, 0, 0);
+    const s = new Date(startDate);
+    s.setHours(0, 0, 0, 0);
+    const t = new Date(today);
+    t.setHours(0, 0, 0, 0);
     return d >= s && d <= t;
   };
 
   // Map raw status to categories requested by user
-  const mapStatusToCategory = (status: string): "izin" | "sakit" | "libur" | "cuti" | "alpha" | "hadir" | null => {
+  const mapStatusToCategory = (
+    status: string
+  ): "izin" | "sakit" | "libur" | "cuti" | "alpha" | "hadir" | null => {
     const label = normalizeStatusLabel(status);
     if (label === "Izin") return "izin";
     if (label === "Sakit") return "sakit";
@@ -192,6 +290,7 @@ const AbsensiTeknisiDashboard: React.FC = () => {
     no: number;
     nama: string;
     periode: string;
+    dl: number;
     izin: number;
     sakit: number;
     libur: number;
@@ -213,10 +312,18 @@ const AbsensiTeknisiDashboard: React.FC = () => {
     const results: EmployeeSummary[] = [];
     let counter = 1;
     byNama.forEach((rows, nama) => {
-      let izin = 0, sakit = 0, libur = 0, cuti = 0, alpha = 0, hadir = 0;
+      let dl = 0,
+        izin = 0,
+        sakit = 0,
+        libur = 0,
+        cuti = 0,
+        alpha = 0,
+        hadir = 0;
       // consider only within period
       const within = rows.filter((r) => isWithinPeriod(r.tanggalAbsensi));
       within.forEach((r) => {
+        // count DL separately
+        if (r.statusAbsensi.trim().toUpperCase() === "DL") dl += 1;
         const cat = mapStatusToCategory(r.statusAbsensi);
         if (cat === "izin") izin += 1;
         else if (cat === "sakit") sakit += 1;
@@ -233,6 +340,7 @@ const AbsensiTeknisiDashboard: React.FC = () => {
         no: counter++,
         nama,
         periode: `${formatDate(startDate)} s.d ${formatDate(today)}`,
+        dl,
         izin,
         sakit,
         libur,
@@ -299,17 +407,42 @@ const AbsensiTeknisiDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Pegawai</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Periode (16 hari sebelumnya)</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Izin</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sakit</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Libur</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cuti</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Alpha</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Hadir</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Gaji pokok</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Approve</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    No
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nama Pegawai
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Periode (16 hari sebelumnya)
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Dinas Luar (DL)
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Izin
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Sakit
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Libur
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Cuti
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Alpha
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Hadir
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Gaji pokok
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Status Approve
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -318,7 +451,11 @@ const AbsensiTeknisiDashboard: React.FC = () => {
                     key={row.nama}
                     className={`hover:bg-gray-50 transition-colors ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-25"
-                    } ${animateRows ? "animate-in fade-in slide-in-from-bottom-2" : "opacity-0"}`}
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
                     style={{
                       animationDelay: animateRows ? `${index * 100}ms` : "0ms",
                       animationFillMode: "forwards",
@@ -328,18 +465,45 @@ const AbsensiTeknisiDashboard: React.FC = () => {
                       setDetailOpen(true);
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{row.nama}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{row.periode}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.izin}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.sakit}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.libur}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.cuti}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.alpha}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{row.hadir}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{row.gajiPokok}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {row.nama}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {row.periode}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.dl}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.izin}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.sakit}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.libur}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.cuti}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.alpha}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.hadir}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {row.gajiPokok}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusApproveColor(row.statusApprove)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusApproveColor(
+                          row.statusApprove
+                        )}`}
+                      >
                         {row.statusApprove}
                       </span>
                     </td>
@@ -353,7 +517,9 @@ const AbsensiTeknisiDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, sortedSummaries.length)} of {sortedSummaries.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, sortedSummaries.length)} of{" "}
+                {sortedSummaries.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -378,50 +544,105 @@ const AbsensiTeknisiDashboard: React.FC = () => {
 
       {/* Detail Modal */}
       {detailOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setDetailOpen(false)}>
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+          onClick={() => setDetailOpen(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Detail Absensi {selectedNama}</h3>
-              <button onClick={() => setDetailOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Detail Absensi {selectedNama}
+              </h3>
+              <button
+                onClick={() => setDetailOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
             </div>
-            <p className="text-sm text-gray-600 mb-4">Periode: {`${formatDate(startDate)} s.d ${formatDate(today)}`}</p>
+            <p className="text-sm text-gray-600 mb-4">
+              Periode: {`${formatDate(startDate)} s.d ${formatDate(today)}`}
+            </p>
             <div className="max-h-96 overflow-auto border border-gray-200 rounded">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Tanggal</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Status</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Zona Kerja</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                      Tanggal
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                      Status
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                      Zona Kerja
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 text-sm">
                   {absensiTeknisiData
-                    .filter(r => r.namaTeknisi === selectedNama && isWithinPeriod(r.tanggalAbsensi))
-                    .sort((a,b) => {
+                    .filter(
+                      (r) =>
+                        r.namaTeknisi === selectedNama &&
+                        isWithinPeriod(r.tanggalAbsensi)
+                    )
+                    .sort((a, b) => {
                       // sort by date ascending
-                      const [da, ma, ya] = a.tanggalAbsensi.split('-').map(n=>parseInt(n,10));
-                      const [db, mb, yb] = b.tanggalAbsensi.split('-').map(n=>parseInt(n,10));
-                      const ta = new Date(ya, ma-1, da).getTime();
-                      const tb = new Date(yb, mb-1, db).getTime();
+                      const [da, ma, ya] = a.tanggalAbsensi
+                        .split("-")
+                        .map((n) => parseInt(n, 10));
+                      const [db, mb, yb] = b.tanggalAbsensi
+                        .split("-")
+                        .map((n) => parseInt(n, 10));
+                      const ta = new Date(ya, ma - 1, da).getTime();
+                      const tb = new Date(yb, mb - 1, db).getTime();
                       return ta - tb;
                     })
                     .map((r) => (
                       <tr key={r.id} className="hover:bg-gray-50">
-                        <td className="px-3 py-2 text-gray-900">{r.tanggalAbsensi}</td>
-                        <td className="px-3 py-2"><span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusAbsensiColor(r.statusAbsensi)}`}>{normalizeStatusLabel(r.statusAbsensi)}</span></td>
-                        <td className="px-3 py-2 text-gray-700">{r.zonaKerja}</td>
+                        <td className="px-3 py-2 text-gray-900">
+                          {r.tanggalAbsensi}
+                        </td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusAbsensiColor(
+                              r.statusAbsensi
+                            )}`}
+                          >
+                            {normalizeStatusLabel(r.statusAbsensi)}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-gray-700">
+                          {r.zonaKerja}
+                        </td>
                       </tr>
                     ))}
-                  {absensiTeknisiData.filter(r => r.namaTeknisi === selectedNama && isWithinPeriod(r.tanggalAbsensi)).length === 0 && (
+                  {absensiTeknisiData.filter(
+                    (r) =>
+                      r.namaTeknisi === selectedNama &&
+                      isWithinPeriod(r.tanggalAbsensi)
+                  ).length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-3 py-4 text-center text-gray-500">Tidak ada data absensi pada periode ini.</td>
+                      <td
+                        colSpan={3}
+                        className="px-3 py-4 text-center text-gray-500"
+                      >
+                        Tidak ada data absensi pada periode ini.
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
             <div className="mt-4 text-right">
-              <button onClick={() => setDetailOpen(false)} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Tutup</button>
+              <button
+                onClick={() => setDetailOpen(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Tutup
+              </button>
             </div>
           </div>
         </div>
