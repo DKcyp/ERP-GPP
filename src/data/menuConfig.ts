@@ -997,6 +997,12 @@ export const pengadaanMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "Tracking Dokumen",
+    icon: "ClipboardList",
+    items: [],
+    directPath: "/pengadaan/tracking/monitoring",
+  },
   createGeneralMenu("pengadaan"),
 ];
 
