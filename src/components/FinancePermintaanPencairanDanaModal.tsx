@@ -5,23 +5,25 @@ import { X, PlusCircle, Save, Trash2, Loader2 } from 'lucide-react';
 
 interface PPDDetailItem {
   id: number;
-  kodeBank: string;
-  namaBank: string; // display label: Nama Bank (norek - alamat)
-  norek: string;
-  alamat: string;
-  nominal: number;
+  noDokumen: string;
   keterangan: string;
+  nominalDPP: number;
+  nominalPPN: number;
 }
 
 export interface PermintaanPencairanDanaFormData {
   id?: number;
   noPPD: string;
-  tglPPD: Date | null;
+  tglPPDFrom: Date | null;
+  tglPPDTo: Date | null;
   divisi: string;
-  pemohon: string;
-  keperluanUmum: string;
+  kodeSupplier: string;
+  namaSupplier: string;
+  mataUang: string;
+  statusLunas: 'Lunas' | 'Belum';
+  jenisDokumen: string;
   detailItems: PPDDetailItem[];
-  total: number;
+  totalPembayaran: number;
 }
 
 interface FinancePermintaanPencairanDanaModalProps {
@@ -32,24 +34,8 @@ interface FinancePermintaanPencairanDanaModalProps {
   title: string;
 }
 
-const bankMeta: Record<string, { kode: string; norek: string; alamat: string }> = {
-  'Bank Muamalat': { kode: 'MUAMALAT', norek: '1234567890', alamat: 'Jl. Jend. Sudirman No. 1, Jakarta' },
-  'Bank Mandiri Gaji': { kode: 'MANDIRI-GAJI', norek: '1400012345678', alamat: 'KCP Mandiri Gaji, Jl. Gatot Subroto, Jakarta' },
-  'Bank Mandiri Operasional': { kode: 'MANDIRI-OPS', norek: '1400098765432', alamat: 'KCP Mandiri Operasional, Jl. MH Thamrin, Jakarta' },
-  'Bank Mandiri Tabungan': { kode: 'MANDIRI-TAB', norek: '1400076543210', alamat: 'KCP Mandiri Tabungan, Jl. Asia Afrika, Bandung' },
-  'Bank Mandiri PPN': { kode: 'MANDIRI-PPN', norek: '1400055512345', alamat: 'KCP Mandiri Pajak, Jl. Jend. Sudirman, Jakarta' },
-  'Bank Mandiri Vendor': { kode: 'MANDIRI-VENDOR', norek: '1400033345678', alamat: 'KCP Mandiri Vendor, Jl. Pemuda, Jakarta' },
-  'Bank Mandiri Kesejahteraan': { kode: 'MANDIRI-KES', norek: '1400022245678', alamat: 'KCP Mandiri Kesejahteraan, Jl. Diponegoro, Surabaya' },
-  'Bank Mandiri Zakat': { kode: 'MANDIRI-ZKT', norek: '1400099912345', alamat: 'KCP Mandiri Zakat, Jl. Asia Afrika, Bandung' },
-  'Bank BCA': { kode: 'BCA', norek: '8888888888', alamat: 'KCU BCA, Jl. Jend. Sudirman, Jakarta' },
-};
-
-const formatBankOption = (base: string) => {
-  const m = bankMeta[base];
-  return m ? `${base} (${m.norek} - ${m.alamat})` : base;
-};
-const parseBaseBankName = (label: string) => label.split(' (')[0];
-const namaBankOptions = Object.keys(bankMeta).map(formatBankOption);
+const currencyOptions = ['IDR','USD','EUR'];
+const jenisDokumenOptions = ['Invoice','Faktur Pajak','Kontrak','Lainnya'];
 
 const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDanaModalProps> = ({ isOpen, onClose, onSave, initialData, title }) => {
   const today = new Date();
@@ -57,12 +43,16 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
 
   const initialEmpty: PermintaanPencairanDanaFormData = {
     noPPD: `PPD-${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-001`,
-    tglPPD: today,
+    tglPPDFrom: today,
+    tglPPDTo: today,
     divisi: '',
-    pemohon: '',
-    keperluanUmum: '',
-    detailItems: [{ id: 1, kodeBank: '', namaBank: '', norek: '', alamat: '', nominal: 0, keterangan: '' }],
-    total: 0,
+    kodeSupplier: '',
+    namaSupplier: '',
+    mataUang: 'IDR',
+    statusLunas: 'Belum',
+    jenisDokumen: '',
+    detailItems: [{ id: 1, noDokumen: '', keterangan: '', nominalDPP: 0, nominalPPN: 0 }],
+    totalPembayaran: 0,
   };
 
   const [formData, setFormData] = useState<PermintaanPencairanDanaFormData>(initialEmpty);
@@ -74,7 +64,12 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
-      setFormData(initialData ? { ...initialData, tglPPD: initialData.tglPPD ? new Date(initialData.tglPPD) : today, total: calcTotal(initialData.detailItems) } : initialEmpty);
+      setFormData(initialData ? {
+        ...initialData,
+        tglPPDFrom: initialData.tglPPDFrom ? new Date(initialData.tglPPDFrom) : today,
+        tglPPDTo: initialData.tglPPDTo ? new Date(initialData.tglPPDTo) : today,
+        totalPembayaran: calcTotal(initialData.detailItems)
+      } : initialEmpty);
       setErrors({});
     }
     return () => {
@@ -85,35 +80,27 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
     };
   }, [isOpen, onClose, initialData]);
 
-  const calcTotal = (items: PPDDetailItem[]) => items.reduce((sum, it) => sum + (Number(it.nominal) || 0), 0);
+  const calcTotal = (items: PPDDetailItem[]) => items.reduce((sum, it) => sum + (Number(it.nominalDPP) || 0) + (Number(it.nominalPPN) || 0), 0);
 
-  const handleAddRow = () => setFormData(prev => ({ ...prev, detailItems: [...prev.detailItems, { id: prev.detailItems.length + 1, kodeBank: '', namaBank: '', norek: '', alamat: '', nominal: 0, keterangan: '' }] }));
-  const handleRemoveRow = (id: number) => setFormData(prev => { const updated = prev.detailItems.filter(it => it.id !== id); return { ...prev, detailItems: updated, total: calcTotal(updated) }; });
+  const handleAddRow = () => setFormData(prev => ({ ...prev, detailItems: [...prev.detailItems, { id: prev.detailItems.length + 1, noDokumen: '', keterangan: '', nominalDPP: 0, nominalPPN: 0 }], totalPembayaran: calcTotal(prev.detailItems) }));
+  const handleRemoveRow = (id: number) => setFormData(prev => { const updated = prev.detailItems.filter(it => it.id !== id); return { ...prev, detailItems: updated, totalPembayaran: calcTotal(updated) }; });
 
   const handleDetailChange = (id: number, field: keyof PPDDetailItem, value: any) => {
-    setFormData(prev => { const updated = prev.detailItems.map(it => (it.id === id ? { ...it, [field]: value } : it)); return { ...prev, detailItems: updated, total: calcTotal(updated) }; });
-  };
-  const handleNamaBankChange = (id: number, namaBankLabel: string) => {
-    setFormData(prev => {
-      const base = parseBaseBankName(namaBankLabel);
-      const meta = bankMeta[base] || { kode: '', norek: '', alamat: '' };
-      const display = formatBankOption(base);
-      const updated = prev.detailItems.map(it => it.id === id ? { ...it, namaBank: display, kodeBank: meta.kode, norek: meta.norek, alamat: meta.alamat } : it);
-      return { ...prev, detailItems: updated, total: calcTotal(updated) };
-    });
+    setFormData(prev => { const updated = prev.detailItems.map(it => (it.id === id ? { ...it, [field]: value } : it)); return { ...prev, detailItems: updated, totalPembayaran: calcTotal(updated) }; });
   };
 
   const validate = () => {
     const e: Record<string, string> = {};
     if (!formData.noPPD.trim()) e.noPPD = 'No PPD wajib diisi';
-    if (!formData.tglPPD) e.tglPPD = 'Tanggal wajib diisi';
+    if (!formData.tglPPDFrom || !formData.tglPPDTo) e.tglPPDFrom = 'Periode tanggal wajib diisi';
     if (!formData.divisi.trim()) e.divisi = 'Divisi wajib dipilih';
-    if (!formData.pemohon.trim()) e.pemohon = 'Pemohon wajib diisi';
+    if (!formData.kodeSupplier.trim()) e.kodeSupplier = 'Kode supplier wajib diisi';
+    if (!formData.namaSupplier.trim()) e.namaSupplier = 'Nama supplier wajib diisi';
     if (formData.detailItems.length === 0) e.detailItems = 'Minimal satu baris detail diperlukan';
     else formData.detailItems.forEach((it, idx) => {
-      if (!it.kodeBank.trim()) e[`detailItems[${idx}].kodeBank`] = 'Kode bank wajib diisi';
-      if (!it.namaBank.trim()) e[`detailItems[${idx}].namaBank`] = 'Nama bank wajib diisi';
-      if (!it.nominal || it.nominal <= 0) e[`detailItems[${idx}].nominal`] = 'Nominal harus > 0';
+      if (!it.noDokumen.trim()) e[`detailItems[${idx}].noDokumen`] = 'No. Dokumen wajib diisi';
+      const subtotal = (Number(it.nominalDPP) || 0) + (Number(it.nominalPPN) || 0);
+      if (!subtotal || subtotal <= 0) e[`detailItems[${idx}].subtotal`] = 'Subtotal harus > 0';
     });
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -124,7 +111,7 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
     if (!validate()) return;
     setIsLoading(true);
     await new Promise(r => setTimeout(r, 500));
-    onSave({ ...formData, total: calcTotal(formData.detailItems) });
+    onSave({ ...formData, totalPembayaran: calcTotal(formData.detailItems) });
     setIsLoading(false);
     onClose();
   };
@@ -144,17 +131,22 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">No PPD <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">No. PPD <span className="text-red-500">*</span></label>
                 <input type="text" value={formData.noPPD} onChange={e => setFormData(prev => ({ ...prev, noPPD: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.noPPD ? 'border-red-300' : 'border-gray-300'}`} />
                 {errors.noPPD && <p className="mt-1 text-sm text-red-600">{errors.noPPD}</p>}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal <span className="text-red-500">*</span></label>
-                <DatePicker selected={formData.tglPPD} onChange={(date: Date | null) => setFormData(prev => ({ ...prev, tglPPD: date }))} dateFormat="dd/MM/yyyy" className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.tglPPD ? 'border-red-300' : 'border-gray-300'}`} />
-                {errors.tglPPD && <p className="mt-1 text-sm text-red-600">{errors.tglPPD}</p>}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tgl PPD (Dari) <span className="text-red-500">*</span></label>
+                  <DatePicker selected={formData.tglPPDFrom} onChange={(date: Date | null) => setFormData(prev => ({ ...prev, tglPPDFrom: date }))} dateFormat="dd/MM/yyyy" className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.tglPPDFrom ? 'border-red-300' : 'border-gray-300'}`} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tgl PPD (Sampai) <span className="text-red-500">*</span></label>
+                  <DatePicker selected={formData.tglPPDTo} onChange={(date: Date | null) => setFormData(prev => ({ ...prev, tglPPDTo: date }))} dateFormat="dd/MM/yyyy" className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.tglPPDFrom ? 'border-red-300' : 'border-gray-300'}`} />
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Divisi <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nama Divisi <span className="text-red-500">*</span></label>
                 <select value={formData.divisi} onChange={e => setFormData(prev => ({ ...prev, divisi: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm appearance-none ${errors.divisi ? 'border-red-300' : 'border-gray-300'}`}>
                   <option value="">Pilih Divisi</option>
                   {divisiOptions.map(opt => (<option key={opt} value={opt}>{opt}</option>))}
@@ -162,25 +154,47 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
                 {errors.divisi && <p className="mt-1 text-sm text-red-600">{errors.divisi}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Pemohon <span className="text-red-500">*</span></label>
-                <input type="text" value={formData.pemohon} onChange={e => setFormData(prev => ({ ...prev, pemohon: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.pemohon ? 'border-red-300' : 'border-gray-300'}`} />
-                {errors.pemohon && <p className="mt-1 text-sm text-red-600">{errors.pemohon}</p>}
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kode Supplier <span className="text-red-500">*</span></label>
+                <input type="text" value={formData.kodeSupplier} onChange={e => setFormData(prev => ({ ...prev, kodeSupplier: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.kodeSupplier ? 'border-red-300' : 'border-gray-300'}`} />
+                {errors.kodeSupplier && <p className="mt-1 text-sm text-red-600">{errors.kodeSupplier}</p>}
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Keperluan</label>
-                <textarea rows={3} value={formData.keperluanUmum} onChange={e => setFormData(prev => ({ ...prev, keperluanUmum: e.target.value }))} className="block w-full border rounded-lg px-4 py-2 text-sm" placeholder="Tuliskan keperluan pencairan dana..."></textarea>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nama Supplier <span className="text-red-500">*</span></label>
+                <input type="text" value={formData.namaSupplier} onChange={e => setFormData(prev => ({ ...prev, namaSupplier: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.namaSupplier ? 'border-red-300' : 'border-gray-300'}`} />
+                {errors.namaSupplier && <p className="mt-1 text-sm text-red-600">{errors.namaSupplier}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Mata Uang</label>
+                <select value={formData.mataUang} onChange={e => setFormData(prev => ({ ...prev, mataUang: e.target.value }))} className="block w-full border rounded-lg px-4 py-2 text-sm appearance-none">
+                  {currencyOptions.map(opt => (<option key={opt} value={opt}>{opt}</option>))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Status Lunas</label>
+                <select value={formData.statusLunas} onChange={e => setFormData(prev => ({ ...prev, statusLunas: e.target.value as 'Lunas' | 'Belum' }))} className="block w-full border rounded-lg px-4 py-2 text-sm appearance-none">
+                  <option value="Belum">Belum</option>
+                  <option value="Lunas">Lunas</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Dokumen</label>
+                <select value={formData.jenisDokumen} onChange={e => setFormData(prev => ({ ...prev, jenisDokumen: e.target.value }))} className="block w-full border rounded-lg px-4 py-2 text-sm appearance-none">
+                  <option value="">Pilih Jenis Dokumen</option>
+                  {jenisDokumenOptions.map(opt => (<option key={opt} value={opt}>{opt}</option>))}
+                </select>
               </div>
             </div>
 
-            <h4 className="text-xl font-bold text-gray-800">Detail Pencairan</h4>
+            <h4 className="text-xl font-bold text-gray-800">Detail Dokumen</h4>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Kode Bank</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nama Bank (norek - alamat)</th>
-                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal DPP</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal PPN</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">SubTotal</th>
                     <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                   </tr>
                 </thead>
@@ -188,21 +202,20 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
                   {formData.detailItems.map((it, idx) => (
                     <tr key={it.id}>
                       <td className="px-4 py-2">
-                        <input type="text" value={it.kodeBank} readOnly className="block w-full border rounded-lg px-2 py-1.5 text-sm bg-gray-50" placeholder="Kode Bank" />
+                        <input type="text" value={it.noDokumen} onChange={e => handleDetailChange(it.id, 'noDokumen', e.target.value)} className={`block w-full border rounded-lg px-2 py-1.5 text-sm ${errors[`detailItems[${idx}].noDokumen`] ? 'border-red-300' : 'border-gray-300'}`} placeholder="No. Dokumen" />
+                        {errors[`detailItems[${idx}].noDokumen`] && <p className="mt-1 text-xs text-red-600">{errors[`detailItems[${idx}].noDokumen`]}</p>}
                       </td>
                       <td className="px-4 py-2">
-                        <select value={it.namaBank} onChange={e => handleNamaBankChange(it.id, e.target.value)} className={`block w-full border rounded-lg py-1.5 text-sm ${errors[`detailItems[${idx}].namaBank`] ? 'border-red-300' : 'border-gray-300'}`}>
-                          <option value="">Pilih Nama Bank</option>
-                          {namaBankOptions.map(opt => (<option key={opt} value={opt}>{opt}</option>))}
-                        </select>
-                        {errors[`detailItems[${idx}].namaBank`] && <p className="mt-1 text-xs text-red-600">{errors[`detailItems[${idx}].namaBank`]}</p>}
+                        <input type="text" value={it.keterangan} onChange={e => handleDetailChange(it.id, 'keterangan', e.target.value)} className="block w-full border rounded-lg px-2 py-1.5 text-sm border-gray-300" placeholder="Keterangan" />
                       </td>
                       <td className="px-4 py-2">
-                        <input type="number" value={it.nominal} onChange={e => handleDetailChange(it.id, 'nominal', parseFloat(e.target.value) || 0)} className={`block w-full border rounded-lg px-2 py-1.5 text-sm ${errors[`detailItems[${idx}].nominal`] ? 'border-red-300' : 'border-gray-300'}`} placeholder="0" />
-                        {errors[`detailItems[${idx}].nominal`] && <p className="mt-1 text-xs text-red-600">{errors[`detailItems[${idx}].nominal`]}</p>}
+                        <input type="number" value={it.nominalDPP} onChange={e => handleDetailChange(it.id, 'nominalDPP', parseFloat(e.target.value) || 0)} className={`block w-full border rounded-lg px-2 py-1.5 text-sm ${errors[`detailItems[${idx}].subtotal`] ? 'border-red-300' : 'border-gray-300'}`} placeholder="0" />
                       </td>
                       <td className="px-4 py-2">
-                        <input type="text" value={it.keterangan} onChange={e => handleDetailChange(it.id, 'keterangan', e.target.value)} className="block w-full border rounded-lg px-2 py-1.5 text-sm border-gray-300" placeholder="Keterangan detail" />
+                        <input type="number" value={it.nominalPPN} onChange={e => handleDetailChange(it.id, 'nominalPPN', parseFloat(e.target.value) || 0)} className={`block w-full border rounded-lg px-2 py-1.5 text-sm ${errors[`detailItems[${idx}].subtotal`] ? 'border-red-300' : 'border-gray-300'}`} placeholder="0" />
+                      </td>
+                      <td className="px-4 py-2 text-right font-medium">
+                        Rp {((it.nominalDPP || 0) + (it.nominalPPN || 0)).toLocaleString('id-ID')}
                       </td>
                       <td className="px-4 py-2 text-center">
                         <button type="button" onClick={() => handleRemoveRow(it.id)} className="inline-flex items-center px-2 py-1 text-xs text-white bg-red-600 rounded-md hover:bg-red-700">
@@ -219,7 +232,7 @@ const FinancePermintaanPencairanDanaModal: React.FC<FinancePermintaanPencairanDa
               <button type="button" onClick={handleAddRow} className="inline-flex items-center px-4 py-2 text-sm text-white bg-purple-600 rounded-md hover:bg-purple-700">
                 <PlusCircle className="h-5 w-5 mr-2" /> Tambah Baris
               </button>
-              <div className="text-lg font-bold text-gray-900">Total: Rp {formData.total.toLocaleString('id-ID')}</div>
+              <div className="text-lg font-bold text-gray-900">Total pembayaran: Rp {formData.totalPembayaran.toLocaleString('id-ID')}</div>
             </div>
           </form>
         </div>
