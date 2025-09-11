@@ -15,8 +15,16 @@ interface PPDRow {
   status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
 }
 
-const FinancePermintaanPencairanDanaDashboard: React.FC = () => {
+type FinancePPDDashboardProps = { view?: string };
+const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps> = ({ view: viewProp }) => {
   const today = new Date();
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const view = viewProp ?? searchParams?.get('view') ?? undefined;
+  const pageTitle = view === 'list-hutang'
+    ? 'LIST PENGAJUAN HUTANG USAHA'
+    : view === 'pengajuan-voucher'
+    ? 'PENGAJUAN DANA VOUCHER'
+    : 'PERMINTAAN PENCAIRAN DANA';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('Tambah Permintaan Pencairan Dana');
@@ -119,11 +127,11 @@ const FinancePermintaanPencairanDanaDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">PERMINTAAN PENCAIRAN DANA</h1>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">{pageTitle}</h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Permintaan Pencairan Dana</span>
+                <span className="text-blue-600 font-medium">{pageTitle}</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">

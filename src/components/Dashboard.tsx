@@ -1,3 +1,7 @@
+import FinanceAPTresuriDashboard from "./FinanceAPTresuriDashboard";
+import FinanceLaporanHutangDashboard from "./FinanceLaporanHutangDashboard";
+import FinancePengajuanDanaHutangDashboard from "./FinancePengajuanDanaHutangDashboard";
+import FinancePembayaranHutangDashboard from "./FinancePembayaranHutangDashboard";
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import SuspectDashboard from "./SuspectDashboard";
@@ -1281,8 +1285,14 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/bank/laporan-bank-harian-khusus") {
       return <FinanceLaporanBankHarianKhususDashboard />;
     }
-    if (currentPage === "/finance/permintaan-pencairan-dana") {
-      return <FinancePermintaanPencairanDanaDashboard />;
+    if (
+      currentPage === "/finance/permintaan-pencairan-dana" ||
+      currentPage.startsWith("/finance/permintaan-pencairan-dana?")
+    ) {
+      const query = currentPage.includes("?") ? currentPage.split("?")[1] : "";
+      const params = new URLSearchParams(query);
+      const view = params.get("view") || undefined;
+      return <FinancePermintaanPencairanDanaDashboard view={view} />;
     }
     if (currentPage === "/finance/collection/dashboard-so") {
       return <CollectionDashboardSO />;
@@ -1316,6 +1326,18 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/ap/laporan-pembayaran-hutang") {
       return <FinanceLaporanPembayaranHutangDashboard />;
+    }
+    if (currentPage === "/finance/ap/tresuri") {
+      return <FinanceAPTresuriDashboard />;
+    }
+    if (currentPage === "/finance/ap/laporan-hutang") {
+      return <FinanceLaporanHutangDashboard />;
+    }
+    if (currentPage === "/finance/ap/pengajuan-dana-hutang") {
+      return <FinancePengajuanDanaHutangDashboard />;
+    }
+    if (currentPage === "/finance/ap/pembayaran-hutang") {
+      return <FinancePembayaranHutangDashboard />;
     }
     if (currentPage === "/finance/reimburse-voucher") {
       return <ReimburseVoucherDashboard />;

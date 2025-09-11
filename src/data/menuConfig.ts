@@ -407,6 +407,7 @@ export const gaMenu: MenuSection[] = [
           },
         ],
       },
+      
     ],
   },
   {
@@ -1096,13 +1097,38 @@ export const financeMenu: MenuSection[] = [
           },
         ],
       },
+      {
+        title: "AP Transaksi",
+        icon: "Folder",
+        items: [
+          { title: "Tresuri", icon: "FolderUp", path: "/finance/ap/tresuri" },
+          { title: "Laporan Hutang", icon: "FileText", path: "/finance/ap/laporan-hutang" },
+          { title: "Pengajuan Dana Hutang", icon: "Send", path: "/finance/ap/pengajuan-dana-hutang" },
+          { title: "Pembayaran Hutang", icon: "Wallet", path: "/finance/ap/pembayaran-hutang" },
+        ],
+      },
     ],
   },
   {
     title: "Permintaan Pencairan Dana",
     icon: "Wallet",
-    items: [],
-    directPath: "/finance/permintaan-pencairan-dana",
+    items: [
+      // {
+      //   title: "Permintaan Pencairan Dana",
+      //   icon: "Wallet",
+      //   path: "/finance/permintaan-pencairan-dana",
+      // },
+      {
+        title: "List Pengajuan Hutang Usaha",
+        icon: "ClipboardList",
+        path: "/finance/permintaan-pencairan-dana?view=list-hutang",
+      },
+      {
+        title: "Pengajuan Dana Voucher",
+        icon: "Ticket",
+        path: "/finance/permintaan-pencairan-dana?view=pengajuan-voucher",
+      },
+    ],
   },
   {
     title: "AR",
