@@ -174,6 +174,11 @@ const createGeneralMenu = (role: string): MenuSection => ({
           icon: "CheckCircle",
           path: `/${role}/general/cuti/approve`,
         },
+        {
+          title: "Lembur",
+          icon: "Clock",
+          path: "/hrd/lembur/dashboard",
+        },
       ],
     },
     // Procon-only: PBG submenu replaces Purchase Request

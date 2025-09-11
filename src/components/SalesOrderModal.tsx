@@ -85,6 +85,7 @@ export interface SalesOrderFormData {
   jasa?: JasaRow[];
   alat?: AlatRow[];
   barang?: BarangRow[];
+  ppe?: BarangRow[];
   mobDemob?: MobDemobRow[];
   biayaLainLain?: BiayaLainRow[];
 }
@@ -116,7 +117,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     "Tenaga Kerja",
     "Jasa",
     "Alat",
-    "Barang",
+    "Barang & Consumeble",
+    "PPE",
     "MobDemob",
     "Biaya Lain-lain",
     "Sisa HPP",
@@ -128,6 +130,19 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
   type RingkasRow = { jenisPekerjaan: string; hargaSatuan: string; jumlah: string; total: string };
   const [pekerjaanRingkas, setPekerjaanRingkas] = useState<RingkasRow[]>([
     { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },
+  ]);
+  const [ppe, setPpe] = useState<BarangRow[]>([
+    {
+      namaBarang: "",
+      harga: "",
+      jumlah: "",
+      hari: "",
+      satuan: "",
+      hargaSatuan: "",
+      hargaAwal: "",
+      margin: "",
+      hargaAkhir: "",
+    },
   ]);
   const jenisPekerjaanUnitPrice: Record<string, number> = {
     "On Call": 1500000,
@@ -215,8 +230,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         return jasa;
       case "Alat":
         return alat;
-      case "Barang":
+      case "Barang & Consumeble":
         return barang;
+      case "PPE":
+        return ppe;
       case "MobDemob":
         return mobDemob;
       case "Biaya Lain-lain":
@@ -351,8 +368,11 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       case "Alat":
         setAlat(data as AlatRow[]);
         break;
-      case "Barang":
+      case "Barang & Consumeble":
         setBarang(data as BarangRow[]);
+        break;
+      case "PPE":
+        setPpe(data as BarangRow[]);
         break;
       case "MobDemob":
         setMobDemob(data as MobDemobRow[]);
@@ -377,9 +397,9 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       (data[index] as any).hargaAkhir = hargaAkhir.toString();
     }
 
-    // Auto-calc hargaSatuan for Alat/Barang when harga or jumlah changes
+    // Auto-calc hargaSatuan for Alat/Barang & Consumeble/PPE when harga or jumlah changes
     if (
-      (activeTab === "Alat" || activeTab === "Barang") &&
+      (activeTab === "Alat" || activeTab === "Barang & Consumeble" || activeTab === "PPE") &&
       (field === "harga" || field === "jumlah")
     ) {
       const harga =
@@ -442,8 +462,24 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
           },
         ]);
         break;
-      case "Barang":
+      case "Barang & Consumeble":
         setBarang((prev) => [
+          ...prev,
+          {
+            namaBarang: "",
+            harga: "",
+            jumlah: "",
+            hari: "",
+            satuan: "",
+            hargaSatuan: "",
+            hargaAwal: "",
+            margin: "",
+            hargaAkhir: "",
+          },
+        ]);
+        break;
+      case "PPE":
+        setPpe((prev) => [
           ...prev,
           {
             namaBarang: "",
@@ -503,9 +539,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         if (alat.length > 1)
           setAlat((prev) => prev.filter((_, i) => i !== index));
         break;
-      case "Barang":
+      case "Barang & Consumeble":
         if (barang.length > 1)
           setBarang((prev) => prev.filter((_, i) => i !== index));
+        break;
+      case "PPE":
+        if (ppe.length > 1)
+          setPpe((prev) => prev.filter((_, i) => i !== index));
         break;
       case "MobDemob":
         if (mobDemob.length > 1)
@@ -558,6 +598,13 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
   const tunjanganOptions = ["Uang Makan", "Transport", "Lembur"];
   const alatOptions = ["Forklift", "Crane", "Truck", "Compressor"];
   const barangOptions = ["Pipa 2 inch", "Valve 1 inch", "Kabel NYA", "Baut M8"];
+  const ppeOptions = [
+    "Safety Helmet",
+    "Safety Boots",
+    "Safety Gloves",
+    "Safety Goggles",
+    "Coverall",
+  ];
   const transportOptions = [
     "Truck Wingbox",
     "Truck Engkel",
@@ -728,6 +775,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       jasa,
       alat,
       barang,
+      ppe,
       mobDemob,
       biayaLainLain,
     });
@@ -787,6 +835,19 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       },
     ]);
     setBarang([
+      {
+        namaBarang: "",
+        harga: "",
+        jumlah: "",
+        hari: "",
+        satuan: "",
+        hargaSatuan: "",
+        hargaAwal: "",
+        margin: "",
+        hargaAkhir: "",
+      },
+    ]);
+    setPpe([
       {
         namaBarang: "",
         harga: "",
@@ -1268,6 +1329,109 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   </table>
                 )}
 
+                {/* PPE Table */}
+                {activeTab === "PPE" && (
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Nama Barang (PPE)</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Hari</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Satuan</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Satuan</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Margin</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Harga Akhir</th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ppe.map((row, index) => (
+                        <tr key={index}>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.namaBarang}
+                              onChange={(e) => handleTabDataChange(index, "namaBarang", e.target.value)}
+                              list={`ppeOptions-${index}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Pilih / cari PPE"
+                            />
+                            <datalist id={`ppeOptions-${index}`}>
+                              {ppeOptions.map((opt) => (
+                                <option key={opt} value={opt} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="number"
+                              value={row.jumlah}
+                              onChange={(e) => handleTabDataChange(index, "jumlah", e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Jumlah"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.hari}
+                              onChange={(e) => handleTabDataChange(index, "hari", e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Hari"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.satuan}
+                              onChange={(e) => handleTabDataChange(index, "satuan", e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Satuan"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.hargaSatuan}
+                              onChange={(e) => handleTabDataChange(index, "hargaSatuan", e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Harga Satuan"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="number"
+                              value={row.margin}
+                              onChange={(e) => handleTabDataChange(index, "margin", e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                              placeholder="Margin %"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="text"
+                              value={row.hargaAkhir}
+                              readOnly
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs bg-gray-50"
+                              placeholder="Harga Akhir"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => removeTabData(index)}
+                              className="px-2 py-1 bg-red-600 text-white text-[10px] rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={ppe.length === 1}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
                 {/* Jasa Table */}
                 {activeTab === "Jasa" && (
                   <table className="w-full">
@@ -1500,8 +1664,8 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                   </table>
                 )}
 
-                {/* Barang Table */}
-                {activeTab === "Barang" && (
+                {/* Barang & Consumeble Table */}
+                {activeTab === "Barang & Consumeble" && (
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
