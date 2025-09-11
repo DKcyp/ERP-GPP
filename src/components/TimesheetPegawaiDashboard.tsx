@@ -77,32 +77,49 @@ const TimesheetPegawaiDashboard: React.FC = () => {
   // Add Timesheet modal state and form
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [addForm, setAddForm] = useState({
-    nama: "",
-    kualifikasi: "",
-    tanggalTimesheet: "",
-    mob: "",
-    demob: "",
-    durasi: "",
-    overtime: "",
-    noSO: "",
+    pegawaiNama: "",
     noHPP: "",
-    lokasi: "",
-    zona: "",
-    jenisPekerjaan: "On Call",
-    rate: "",
-    pegawai: "Freelance" as "Freelance" | "Pegawai Tetap",
-    status: "Pending" as "Approved" | "Pending" | "Rejected",
-    namaProject: "",
-    namaClient: "",
-    jamAwalKerja: "08:00",
-    jamSelesaiKerja: "17:00",
+    uploadFile: null as File | null,
+    kualifikasiList: [] as string[],
+    harga: "",
+    total: "",
   });
+  // Options and state for Kualifikasi (searchable multi-select)
+  const kualifikasiOptions: string[] = [
+    "Welder",
+    "Rope Access",
+    "Engineer",
+    "Project Manager",
+    "Safety Officer",
+    "Electrical Technician",
+    "Mechanical Engineer",
+    "Sertifikasi K3",
+    "Operator Crane",
+  ];
+  const [kualifikasiQueryAdd, setKualifikasiQueryAdd] = useState("");
+  const filteredKualifikasiAdd = kualifikasiOptions.filter((opt) =>
+    opt.toLowerCase().includes(kualifikasiQueryAdd.toLowerCase())
+  );
+  const toggleKualifikasiAdd = (value: string) => {
+    setAddForm((prev) => ({
+      ...prev,
+      kualifikasiList: prev.kualifikasiList.includes(value)
+        ? prev.kualifikasiList.filter((v) => v !== value)
+        : [...prev.kualifikasiList, value],
+    }));
+  };
+  const removeKualifikasiAdd = (value: string) => {
+    setAddForm((prev) => ({
+      ...prev,
+      kualifikasiList: prev.kualifikasiList.filter((v) => v !== value),
+    }));
+  };
   const handleOpenAddModal = () => setIsAddModalOpen(true);
   const handleCloseAddModal = () => setIsAddModalOpen(false);
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!addForm.nama || !addForm.noSO) {
-      alert("Nama dan No SO wajib diisi");
+    if (!addForm.pegawaiNama || !addForm.noHPP) {
+      alert("Pegawai dan SO Turunan wajib diisi");
       return;
     }
     const nextNo =
@@ -110,31 +127,25 @@ const TimesheetPegawaiDashboard: React.FC = () => {
     const newItem: DashboardTimesheetItem = {
       id: `${Date.now()}`,
       no: nextNo,
-      nama: addForm.nama,
-      kualifikasi: addForm.kualifikasi
-        ? addForm.kualifikasi
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : [],
-      tanggalTimesheet:
-        addForm.tanggalTimesheet || new Date().toISOString().slice(0, 10),
-      mob: addForm.mob,
-      demob: addForm.demob,
-      durasi: addForm.durasi || "0 Hari",
-      overtime: addForm.overtime || "0 Jam",
-      noSO: addForm.noSO,
+      nama: addForm.pegawaiNama,
+      kualifikasi: addForm.kualifikasiList,
+      tanggalTimesheet: new Date().toISOString().slice(0, 10),
+      mob: "",
+      demob: "",
+      durasi: "0 Hari",
+      overtime: "0 Jam",
+      noSO: "",
       noHPP: addForm.noHPP,
-      lokasi: addForm.lokasi,
-      zona: addForm.zona,
-      jenisPekerjaan: addForm.jenisPekerjaan,
-      rate: addForm.rate,
-      pegawai: addForm.pegawai,
-      status: addForm.status,
-      namaProject: addForm.namaProject,
-      namaClient: addForm.namaClient,
-      jamAwalKerja: addForm.jamAwalKerja,
-      jamSelesaiKerja: addForm.jamSelesaiKerja,
+      lokasi: "",
+      zona: "",
+      jenisPekerjaan: "On Call",
+      rate: addForm.harga,
+      pegawai: "Freelance",
+      status: "Pending",
+      namaProject: "",
+      namaClient: "",
+      jamAwalKerja: "08:00",
+      jamSelesaiKerja: "17:00",
       tunjangan: [],
     };
     setTimesheetPegawaiData((prev) => [newItem, ...prev]);
@@ -959,272 +970,111 @@ const TimesheetPegawaiDashboard: React.FC = () => {
               onSubmit={handleAddSubmit}
               className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4"
             >
+              {/* SO Turunan (No SO Turunan) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nama
-                </label>
-                <input
-                  type="text"
-                  value={addForm.nama}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, nama: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kualifikasi (pisahkan dengan koma)
-                </label>
-                <input
-                  type="text"
-                  value={addForm.kualifikasi}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, kualifikasi: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tanggal Timesheet
-                </label>
-                <input
-                  type="date"
-                  value={addForm.tanggalTimesheet}
-                  onChange={(e) =>
-                    setAddForm((f) => ({
-                      ...f,
-                      tanggalTimesheet: e.target.value,
-                    }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  No SO
-                </label>
-                <input
-                  type="text"
-                  value={addForm.noSO}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, noSO: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  No SO Turunan
+                  SO Turunan
                 </label>
                 <input
                   type="text"
                   value={addForm.noHPP}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, noHPP: e.target.value }))
-                  }
+                  onChange={(e) => setAddForm((f) => ({ ...f, noHPP: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="SO-001.1"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Lokasi
-                </label>
-                <input
-                  type="text"
-                  value={addForm.lokasi}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, lokasi: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Zona
-                </label>
-                <input
-                  type="text"
-                  value={addForm.zona}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, zona: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Jenis Pekerjaan
-                </label>
-                <select
-                  value={addForm.jenisPekerjaan}
-                  onChange={(e) =>
-                    setAddForm((f) => ({
-                      ...f,
-                      jenisPekerjaan: e.target.value,
-                    }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                >
-                  <option>On Call</option>
-                  <option>Tender</option>
-                </select>
-              </div>
+              {/* Pegawai (Nama) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Pegawai
                 </label>
-                <select
-                  value={addForm.pegawai}
-                  onChange={(e) =>
-                    setAddForm((f) => ({
-                      ...f,
-                      pegawai: e.target.value as any,
-                    }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                >
-                  <option value="Freelance">Freelance</option>
-                  <option value="Pegawai Tetap">Pegawai Tetap</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rate
-                </label>
                 <input
                   type="text"
-                  value={addForm.rate}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, rate: e.target.value }))
-                  }
+                  value={addForm.pegawaiNama}
+                  onChange={(e) => setAddForm((f) => ({ ...f, pegawaiNama: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="Nama Pegawai"
                 />
               </div>
+              {/* Upload File */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={addForm.status}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, status: e.target.value as any }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  MOB
+                  Upload File
                 </label>
                 <input
-                  type="date"
-                  value={addForm.mob}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, mob: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  type="file"
+                  onChange={(e) => setAddForm((f) => ({ ...f, uploadFile: e.target.files?.[0] || null }))}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
+              {/* Kualifikasi (Searchable Multi-Select) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  DEMOB
+                  Pilih Kualifikasi
                 </label>
-                <input
-                  type="date"
-                  value={addForm.demob}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, demob: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Durasi
-                </label>
+                {addForm.kualifikasiList.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {addForm.kualifikasiList.map((k) => (
+                      <span key={k} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        {k}
+                        <button type="button" onClick={() => removeKualifikasiAdd(k)} className="ml-1 text-emerald-700 hover:text-emerald-900" aria-label={`Remove ${k}`}>
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <input
                   type="text"
-                  placeholder="5 Hari"
-                  value={addForm.durasi}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, durasi: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  value={kualifikasiQueryAdd}
+                  onChange={(e) => setKualifikasiQueryAdd(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-t-lg text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="Cari kualifikasi..."
                 />
+                <div className="max-h-40 overflow-y-auto border border-t-0 border-gray-300 rounded-b-lg">
+                  {filteredKualifikasiAdd.length === 0 ? (
+                    <div className="px-3 py-2 text-sm text-gray-500">Tidak ada opsi</div>
+                  ) : (
+                    <ul className="divide-y divide-gray-100">
+                      {filteredKualifikasiAdd.map((opt) => {
+                        const selected = addForm.kualifikasiList.includes(opt);
+                        return (
+                          <li key={opt}>
+                            <button
+                              type="button"
+                              onClick={() => toggleKualifikasiAdd(opt)}
+                              className={`w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-blue-50 ${selected ? "bg-blue-50" : "bg-white"}`}
+                            >
+                              <span className="text-gray-700">{opt}</span>
+                              <span className={`ml-2 inline-flex h-4 w-4 items-center justify-center rounded border ${selected ? "bg-blue-600 border-blue-600 text-white" : "border-gray-300"}`}>{selected ? "✓" : ""}</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
               </div>
+              {/* Harga */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Overtime
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Harga</label>
                 <input
                   type="text"
-                  placeholder="2 Jam"
-                  value={addForm.overtime}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, overtime: e.target.value }))
-                  }
+                  value={addForm.harga}
+                  onChange={(e) => setAddForm((f) => ({ ...f, harga: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="500,000"
                 />
               </div>
+              {/* Total */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nama Project
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
                 <input
                   type="text"
-                  value={addForm.namaProject}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, namaProject: e.target.value }))
-                  }
+                  value={addForm.total}
+                  onChange={(e) => setAddForm((f) => ({ ...f, total: e.target.value }))}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nama Client
-                </label>
-                <input
-                  type="text"
-                  value={addForm.namaClient}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, namaClient: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Jam Awal Kerja
-                </label>
-                <input
-                  type="time"
-                  value={addForm.jamAwalKerja}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, jamAwalKerja: e.target.value }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Jam Selesai Kerja
-                </label>
-                <input
-                  type="time"
-                  value={addForm.jamSelesaiKerja}
-                  onChange={(e) =>
-                    setAddForm((f) => ({
-                      ...f,
-                      jamSelesaiKerja: e.target.value,
-                    }))
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
+                  placeholder="1,000,000"
                 />
               </div>
               <div className="md:col-span-2 flex items-center justify-end gap-2 pt-2">
