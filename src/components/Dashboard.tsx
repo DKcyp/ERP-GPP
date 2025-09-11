@@ -221,6 +221,7 @@ import PPh29Dashboard from "./PPh29Dashboard";
 import PPh25Dashboard from "./PPh25Dashboard";
 import SKPKBDashboard from "./SKPKBDashboard";
 import SP2DKDashboard from "./SP2DKDashboard";
+import STPDashboard from "./STPDashboard";
 
 // Procon Dashboards
 import ProconMainDashboard from "./ProconMainDashboard";
@@ -1600,6 +1601,15 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/tax/tagihan/sp2dk") {
       return <SP2DKDashboard />;
+    }
+    if (currentPage === "/tax/tagihan/stp") {
+      return <STPDashboard />;
+    }
+    if (currentPage === "/tax/voucher-lainya/voucher") {
+      return <GeneralVoucherDashboard />;
+    }
+    if (currentPage === "/tax/voucher-lainya/monitoring") {
+      return <MonitoringVoucherDashboard />;
     }
 
     // Procon Routes

@@ -1873,6 +1873,15 @@ export const taxMenu: MenuSection[] = [
     items: [
       { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
       { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
+      { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
+    ],
+  },
+  {
+    title: "Voucher Lainya",
+    icon: "Ticket",
+    items: [
+      { title: "Voucher", icon: "FileText", path: "/tax/voucher-lainya/voucher" },
+      { title: "Monitoring Voucher", icon: "FileText", path: "/tax/voucher-lainya/monitoring" },
     ],
   },
 ];

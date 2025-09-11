@@ -182,6 +182,33 @@ export interface SP2DKData {
   sp2dk: number;
 }
 
+export interface STPData {
+  id: number;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  stp: number;
+}
+
+export interface VoucherData {
+  id: number;
+  nomorVoucher: string;
+  namaPihak: string;
+  npwp: string;
+  tanggal: string; // ISO date
+  nilai: number;
+  keterangan?: string;
+}
+
+export interface MonitoringVoucherData {
+  id: number;
+  nomorVoucher: string;
+  status: 'Draft' | 'Dikirim' | 'Disetujui' | 'Ditolak';
+  tanggal: string; // ISO date
+  nilai: number;
+  keterangan?: string;
+}
+
 // ================= Evaluasi Vendor =================
 export type YaTidak = 'Ya' | 'Tidak';
 export type MutuKategori = 'Baik' | 'Cukup' | 'Kurang';
