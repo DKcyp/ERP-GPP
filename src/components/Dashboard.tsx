@@ -158,6 +158,7 @@ import AuditDashboard from "./AuditDashboard";
 import MonitoringISOTOPDashboard from "./MonitoringISOTOPDashboard";
 import MonitoringPTIDashboard from "./MonitoringPTIDashboard";
 import MonitoringAlatSafetyDashboard from "./MonitoringAlatSafetyDashboard";
+import SPDashboard from "./SPDashboard";
 import JadwalRealisasiProgramDashboard from "./JadwalRealisasiProgramDashboard";
 import LegalitasPerusahaanDashboard from "./LegalitasPerusahaanDashboard";
 import QHSEPerformanceDashboard from "./QHSEPerformanceDashboard";
@@ -750,6 +751,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // NEW: Route for Master Indikator HRD
     if (currentPage === "/hrd/penilaian/master-indikator-hrd") {
       return <MasterIndikatorHRDDashboard />;
+    }
+    // NEW: Route for SP Penilaian HRD
+    if (currentPage === "/hrd/penilaian/sp") {
+      return <SPDashboard />;
     }
     // NEW: Route for Approve SPK
     if (currentPage === "/hrd/spk/approve") {
