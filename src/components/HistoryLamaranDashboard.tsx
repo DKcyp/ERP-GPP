@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  FileSpreadsheet, 
-  FileText, 
+import React, { useState, useEffect } from "react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  Search,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -14,8 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  ChevronDown
-} from 'lucide-react';
+  ChevronDown,
+} from "lucide-react";
 
 interface HistoryLamaranData {
   id: string;
@@ -25,78 +25,84 @@ interface HistoryLamaranData {
   kelurahan: string;
   minatPekerjaan: string;
   tanggalLamar: string;
-  status: 'Terima' | 'Tolak';
+  status: "Terima" | "Tolak";
 }
 
 const HistoryLamaranDashboard: React.FC = () => {
-  const [searchNamaPelamar, setSearchNamaPelamar] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [dateFrom, setDateFrom] = useState('03/03/2025');
-  const [dateTo, setDateTo] = useState('03/03/2025');
+  const [searchNamaPelamar, setSearchNamaPelamar] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [dateFrom, setDateFrom] = useState("03/03/2025");
+  const [dateTo, setDateTo] = useState("03/03/2025");
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<HistoryLamaranData | null>(null);
-  const [sortField, setSortField] = useState<keyof HistoryLamaranData | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [itemToDelete, setItemToDelete] = useState<HistoryLamaranData | null>(
+    null
+  );
+  const [sortField, setSortField] = useState<keyof HistoryLamaranData | null>(
+    null
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Sample data matching the image
-  const [historyLamaranData, setHistoryLamaranData] = useState<HistoryLamaranData[]>([
+  const [historyLamaranData, setHistoryLamaranData] = useState<
+    HistoryLamaranData[]
+  >([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      nik: '3313154213200001',
-      nama: 'Nafi',
-      kelurahan: 'Kaliboto',
-      minatPekerjaan: '-',
-      tanggalLamar: '01-01-2025',
-      status: 'Terima'
+      nik: "3313154213200001",
+      nama: "Nafi",
+      kelurahan: "p1",
+      minatPekerjaan: "-",
+      tanggalLamar: "01-01-2025",
+      status: "Terima",
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      nik: '3313154213200001',
-      nama: 'Alvian',
-      kelurahan: 'Kwagean',
-      minatPekerjaan: '-',
-      tanggalLamar: '02-01-2025',
-      status: 'Tolak'
+      nik: "3313154213200001",
+      nama: "Alvian",
+      kelurahan: "p1",
+      minatPekerjaan: "-",
+      tanggalLamar: "02-01-2025",
+      status: "Tolak",
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      nik: '3313154213200001',
-      nama: 'Dani',
-      kelurahan: 'Pereng',
-      minatPekerjaan: '-',
-      tanggalLamar: '03-01-2025',
-      status: 'Tolak'
+      nik: "3313154213200001",
+      nama: "Dani",
+      kelurahan: "p1",
+      minatPekerjaan: "-",
+      tanggalLamar: "03-01-2025",
+      status: "Tolak",
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      nik: '3313154213200001',
-      nama: 'Arva',
-      kelurahan: 'Mojogedang',
-      minatPekerjaan: '-',
-      tanggalLamar: '03-01-2025',
-      status: 'Tolak'
+      nik: "3313154213200001",
+      nama: "Arva",
+      kelurahan: "p1",
+      minatPekerjaan: "-",
+      tanggalLamar: "03-01-2025",
+      status: "Tolak",
     },
     {
-      id: '5',
+      id: "5",
       no: 5,
-      nik: '3313154213200001',
-      nama: 'Yohanes',
-      kelurahan: 'Jamus',
-      minatPekerjaan: '-',
-      tanggalLamar: '04-01-2025',
-      status: 'Terima'
-    }
+      nik: "3313154213200001",
+      nama: "Yohanes",
+      kelurahan: "p1",
+      minatPekerjaan: "-",
+      tanggalLamar: "04-01-2025",
+      status: "Terima",
+    },
   ]);
 
-  const statusOptions = ['Terima', 'Tolak'];
+  const statusOptions = ["Terima", "Tolak"];
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
@@ -104,10 +110,10 @@ const HistoryLamaranDashboard: React.FC = () => {
 
   const handleSort = (field: keyof HistoryLamaranData) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -118,35 +124,44 @@ const HistoryLamaranDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setHistoryLamaranData(prev => prev.filter(h => h.id !== itemToDelete.id));
+      setHistoryLamaranData((prev) =>
+        prev.filter((h) => h.id !== itemToDelete.id)
+      );
       setItemToDelete(null);
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Terima': return 'bg-green-600 text-white';
-      case 'Tolak': return 'bg-red-600 text-white';
-      default: return 'bg-gray-100 text-gray-800';
+      case "Terima":
+        return "bg-green-600 text-white";
+      case "Tolak":
+        return "bg-red-600 text-white";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = historyLamaranData.filter(item => {
-    const matchesNamaPelamar = item.nama.toLowerCase().includes(searchNamaPelamar.toLowerCase());
-    const matchesStatus = selectedStatus ? item.status === selectedStatus : true;
-    
+  const filteredData = historyLamaranData.filter((item) => {
+    const matchesNamaPelamar = item.nama
+      .toLowerCase()
+      .includes(searchNamaPelamar.toLowerCase());
+    const matchesStatus = selectedStatus
+      ? item.status === selectedStatus
+      : true;
+
     return matchesNamaPelamar && matchesStatus;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -193,7 +208,7 @@ const HistoryLamaranDashboard: React.FC = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Agus"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -212,17 +227,25 @@ const HistoryLamaranDashboard: React.FC = () => {
                     onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-sm"
                   >
-                    <span className={selectedStatus ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedStatus || '--Pilih Status--'}
+                    <span
+                      className={
+                        selectedStatus ? "text-gray-900" : "text-gray-500"
+                      }
+                    >
+                      {selectedStatus || "--Pilih Status--"}
                     </span>
-                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                        statusDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
-                  
+
                   {statusDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 overflow-hidden">
                       <button
                         onClick={() => {
-                          setSelectedStatus('');
+                          setSelectedStatus("");
                           setStatusDropdownOpen(false);
                         }}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-sm"
@@ -278,7 +301,7 @@ const HistoryLamaranDashboard: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 opacity-0">
                   Search
                 </label>
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
@@ -329,80 +352,108 @@ const HistoryLamaranDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('nik')}
+                    onClick={() => handleSort("nik")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>NIK</span>
-                      {sortField === 'nik' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "nik" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('nama')}
+                    onClick={() => handleSort("nama")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama</span>
-                      {sortField === 'nama' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "nama" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('kelurahan')}
+                    onClick={() => handleSort("kelurahan")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Kelurahan</span>
-                      {sortField === 'kelurahan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      <span>Posisi</span>
+                      {sortField === "kelurahan" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('minatPekerjaan')}
+                    onClick={() => handleSort("minatPekerjaan")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Minat Pekerjaan</span>
-                      {sortField === 'minatPekerjaan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "minatPekerjaan" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggalLamar')}
+                    onClick={() => handleSort("tanggalLamar")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Tanggal Lamar</span>
-                      {sortField === 'tanggalLamar' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "tanggalLamar" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('status')}
+                    onClick={() => handleSort("status")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Status</span>
-                      {sortField === 'status' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "status" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
@@ -410,24 +461,44 @@ const HistoryLamaranDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nik}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.nama}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.kelurahan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.minatPekerjaan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalLamar}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.nik}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.nama}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.kelurahan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.minatPekerjaan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.tanggalLamar}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(item.status)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
+                          item.status
+                        )}`}
+                      >
                         {item.status}
                       </span>
                     </td>
@@ -441,7 +512,9 @@ const HistoryLamaranDashboard: React.FC = () => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -451,18 +524,18 @@ const HistoryLamaranDashboard: React.FC = () => {
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                     currentPage === 1
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

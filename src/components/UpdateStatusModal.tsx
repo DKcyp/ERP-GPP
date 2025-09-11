@@ -3,13 +3,11 @@ import { X, Save, Loader2 } from "lucide-react";
 
 export interface UpdateStatusFormData {
   status:
-    | "Minat"
-    | "Register"
-    | "Pra-kualifikasi"
-    | "Evaluasi"
-    | "Tender"
-    | "Deal"
-    | "Cancel"
+    | "Pending"
+    | "Accepted"
+    | "Rejected"
+    | "Move To Talent Pool"
+    | "Aktif"
     | "";
   keterangan: string;
 }
@@ -22,24 +20,20 @@ interface UpdateStatusModalProps {
     id: string;
     namaClient: string;
     statusPenawaran:
-      | "Minat"
-      | "Register"
-      | "Pra-kualifikasi"
-      | "Evaluasi"
-      | "Tender"
-      | "Deal"
-      | "Cancel";
+      | "Pending"
+      | "Accepted"
+      | "Rejected"
+      | "Move To Talent Pool"
+      | "Aktif";
   } | null;
 }
 
 const statusOptions: Array<NonNullable<UpdateStatusFormData["status"]>> = [
-  "Minat",
-  "Register",
-  "Pra-kualifikasi",
-  "Evaluasi",
-  "Tender",
-  "Deal",
-  "Cancel",
+  "Pending",
+  "Accepted",
+  "Rejected",
+  "Move To Talent Pool",
+  "Aktif",
 ];
 
 const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({

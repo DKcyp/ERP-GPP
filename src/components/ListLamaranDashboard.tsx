@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Search, FileSpreadsheet, FileText, File, ThumbsUp, ChevronDown, ArrowUp, Download, Plus } from "lucide-react";
+import {
+  Search,
+  FileSpreadsheet,
+  FileText,
+  File,
+  ThumbsUp,
+  ChevronDown,
+  ArrowUp,
+  Download,
+  Plus,
+} from "lucide-react";
 import TambahTalentPoolModal from "./TambahTalentPoolModal";
 
 interface TalentPoolData {
@@ -25,6 +35,9 @@ const ListLamaranDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof TalentPoolData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [isTambahOpen, setIsTambahOpen] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [selectedForStatus, setSelectedForStatus] = useState<TalentPoolData | null>(null);
+  const [statusForm, setStatusForm] = useState<{ status: TalentPoolData['status'] | ''; keterangan: string }>({ status: '', keterangan: '' });
 
   // Sample data matching the image, now with status and keterangan
   const [lamaranData, setLamaranData] = useState<TalentPoolData[]>([
@@ -112,14 +125,19 @@ const ListLamaranDashboard: React.FC = () => {
     const bValue = b[sortField] as any;
 
     if (sortField === "no") {
-      const aNum = typeof aValue === "number" ? aValue : parseFloat(aValue ?? 0);
-      const bNum = typeof bValue === "number" ? bValue : parseFloat(bValue ?? 0);
+      const aNum =
+        typeof aValue === "number" ? aValue : parseFloat(aValue ?? 0);
+      const bNum =
+        typeof bValue === "number" ? bValue : parseFloat(bValue ?? 0);
       return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
     }
 
     const aStr = (aValue ?? "").toString().toLowerCase();
     const bStr = (bValue ?? "").toString().toLowerCase();
-    const cmp = aStr.localeCompare(bStr, undefined, { numeric: true, sensitivity: "base" });
+    const cmp = aStr.localeCompare(bStr, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
     return sortDirection === "asc" ? cmp : -cmp;
   });
 
@@ -138,9 +156,9 @@ const ListLamaranDashboard: React.FC = () => {
   };
 
   const handleThumbUpClick = (item: TalentPoolData) => {
-    console.log(`Thumb up clicked for ${item.namaPelamar}`);
-    // Implement your logic for the thumb up button here
-    alert(`Approving application for ${item.namaPelamar}`);
+    setSelectedForStatus(item);
+    setStatusForm({ status: item.status, keterangan: item.keterangan || '' });
+    setIsStatusModalOpen(true);
   };
 
   const getStatusColor = (status: TalentPoolData["status"]) => {
@@ -249,56 +267,56 @@ const ListLamaranDashboard: React.FC = () => {
                       ))}
                     </div>
                   )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Tambah & Export Buttons */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <button
-              onClick={() => setIsTambahOpen(true)}
-              className="inline-flex items-center space-x-2 rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-cyan-700"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah</span>
-            </button>
-          </div>
-          <div className="flex justify-end space-x-2">
-            <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export Excel</span>
-            </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <File className="h-4 w-4" />
-              <span>Export CSV</span>
-            </button>
-            <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-              <FileText className="h-4 w-4" />
-              <span>Export PDF</span>
-            </button>
+          {/* Tambah & Export Buttons */}
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <button
+                onClick={() => setIsTambahOpen(true)}
+                className="inline-flex items-center space-x-2 rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-cyan-700"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Export Excel</span>
+              </button>
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <File className="h-4 w-4" />
+                <span>Export CSV</span>
+              </button>
+              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
+                <FileText className="h-4 w-4" />
+                <span>Export PDF</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-      {/* Show entries control */}
-      <div className="flex items-center space-x-4">
-        <span className="text-sm text-gray-700">Show</span>
-        <select
-          value={itemsPerPage}
-          onChange={(e) => setItemsPerPage(Number(e.target.value))}
-          className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-        >
-          <option value={10}>10</option>
-          <option value={25}>25</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
-        <span className="text-sm text-gray-700">entries</span>
-      </div>
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        {/* Show entries control */}
+        <div className="flex items-center space-x-4">
+          <span className="text-sm text-gray-700">Show</span>
+          <select
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="text-sm text-gray-700">entries</span>
+        </div>
 
         {/* Data Table */}
         <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
@@ -536,7 +554,8 @@ const ListLamaranDashboard: React.FC = () => {
         onClose={() => setIsTambahOpen(false)}
         onSave={(data) => {
           setLamaranData((prev: TalentPoolData[]) => {
-            const nextNo = prev.length > 0 ? Math.max(...prev.map((p) => p.no || 0)) + 1 : 1;
+            const nextNo =
+              prev.length > 0 ? Math.max(...prev.map((p) => p.no || 0)) + 1 : 1;
             const newItem: TalentPoolData = {
               id: Date.now().toString(),
               no: nextNo,
@@ -549,13 +568,15 @@ const ListLamaranDashboard: React.FC = () => {
               status: "Pending",
               keterangan: "-",
             };
-            return [newItem, ...prev];
-          });
-          setIsTambahOpen(false);
-        }}
-      />
     </div>
-  );
-};
+  </div>
+)}
 
-export default ListLamaranDashboard;
+// ...
+
+const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+const [selectedForStatus, setSelectedForStatus] = useState<TalentPoolData | null>(null);
+const [statusForm, setStatusForm] = useState<{ status: TalentPoolData['status']; keterangan: string }>({
+  status: 'Pending',
+  keterangan: '',
+});
