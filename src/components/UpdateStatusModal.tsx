@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, Save, Loader2 } from "lucide-react";
 
 export interface UpdateStatusFormData {
-  status: 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel' | '';
+  status:
+    | "Minat"
+    | "Register"
+    | "Pra-kualifikasi"
+    | "Evaluasi"
+    | "Tender"
+    | "Deal"
+    | "Cancel"
+    | "";
   keterangan: string;
 }
 
@@ -13,18 +21,25 @@ interface UpdateStatusModalProps {
   currentItem: {
     id: string;
     namaClient: string;
-    statusPenawaran: 'Minat' | 'Register' | 'Pra-kualifikasi' | 'Evaluasi' | 'Tender' | 'Deal' | 'Cancel';
+    statusPenawaran:
+      | "Minat"
+      | "Register"
+      | "Pra-kualifikasi"
+      | "Evaluasi"
+      | "Tender"
+      | "Deal"
+      | "Cancel";
   } | null;
 }
 
-const statusOptions: Array<NonNullable<UpdateStatusFormData['status']>> = [
-  'Minat',
-  'Register',
-  'Pra-kualifikasi',
-  'Evaluasi',
-  'Tender',
-  'Deal',
-  'Cancel',
+const statusOptions: Array<NonNullable<UpdateStatusFormData["status"]>> = [
+  "Minat",
+  "Register",
+  "Pra-kualifikasi",
+  "Evaluasi",
+  "Tender",
+  "Deal",
+  "Cancel",
 ];
 
 const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
@@ -34,8 +49,8 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
   currentItem,
 }) => {
   const [formData, setFormData] = useState<UpdateStatusFormData>({
-    status: '',
-    keterangan: '',
+    status: "",
+    keterangan: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,35 +58,35 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
     if (isOpen && currentItem) {
       setFormData({
         status: currentItem.statusPenawaran,
-        keterangan: '',
+        keterangan: "",
       });
     } else if (!isOpen) {
       // Reset form when modal closes
       setFormData({
-        status: '',
-        keterangan: '',
+        status: "",
+        keterangan: "",
       });
     }
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose, currentItem]);
 
   const handleInputChange = (field: keyof UpdateStatusFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,7 +94,7 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
     if (!currentItem) return;
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
 
     onSave(formData);
 
@@ -122,12 +137,19 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => handleInputChange('status', e.target.value as UpdateStatusFormData['status'])}
+                onChange={(e) =>
+                  handleInputChange(
+                    "status",
+                    e.target.value as UpdateStatusFormData["status"]
+                  )
+                }
                 className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
                 <option value="">Pilih Status</option>
                 {statusOptions.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
                 ))}
               </select>
             </div>
@@ -139,7 +161,9 @@ const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({
               </label>
               <textarea
                 value={formData.keterangan}
-                onChange={(e) => handleInputChange('keterangan', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("keterangan", e.target.value)
+                }
                 rows={3}
                 className={`w-full px-4 py-3 border rounded-xl transition-all duration-200 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 placeholder="Tambahkan keterangan..."

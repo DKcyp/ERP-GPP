@@ -13,6 +13,8 @@ export interface TunjanganUnitFormData {
   zonaKerja: string;
   proyek: string;
   progress: string;
+  metodePengerjaan?: string;
+  tunjangan?: string;
 }
 
 const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose, onSave }) => {
@@ -21,7 +23,9 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
     tanggal: '',
     zonaKerja: '',
     proyek: '',
-    progress: ''
+    progress: '',
+    metodePengerjaan: '',
+    tunjangan: ''
   });
 
   const [errors, setErrors] = useState<Partial<TunjanganUnitFormData>>({});
@@ -42,6 +46,80 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
     'Proyek Perluasan Jaringan',
     'Proyek Data Center'
   ];
+
+  const metodePengerjaanOptions = [
+    'On Call',
+    'Project Based',
+    'Maintenance',
+    'Consulting',
+    'Tender',
+  ];
+
+  // Lightweight searchable select component
+  const SearchSelect: React.FC<{
+    value: string;
+    onChange: (v: string) => void;
+    options: string[];
+    placeholder?: string;
+  }> = ({ value, onChange, options, placeholder }) => {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState<string>(value || '');
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const handler = (e: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+          setOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handler);
+      return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    useEffect(() => {
+      setQuery(value || '');
+    }, [value]);
+
+    const filtered = options.filter(o => o.toLowerCase().includes((query || '').toLowerCase()));
+
+    return (
+      <div className="relative" ref={containerRef}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          placeholder={placeholder}
+        />
+        {open && (
+          <div className="absolute z-50 mt-1 w-full max-h-48 overflow-auto bg-white border border-gray-200 rounded shadow-lg">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-gray-500">Tidak ada hasil</div>
+            ) : (
+              filtered.map((opt) => (
+                <button
+                  type="button"
+                  key={opt}
+                  onClick={() => {
+                    onChange(opt);
+                    setQuery(opt);
+                    setOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${opt === value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                >
+                  {opt}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -78,6 +156,10 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
 
     if (!formData.proyek) {
       newErrors.proyek = 'Proyek wajib dipilih';
+    }
+
+    if (!formData.tunjangan || String(formData.tunjangan).trim() === '') {
+      newErrors.tunjangan = 'Jumlah tunjangan wajib diisi';
     }
 
     if (!formData.progress.trim()) {
@@ -117,7 +199,9 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
       tanggal: '',
       zonaKerja: '',
       proyek: '',
-      progress: ''
+      progress: '',
+      metodePengerjaan: '',
+      tunjangan: ''
     });
     setErrors({});
     onClose();
@@ -233,6 +317,40 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
                 </select>
                 {errors.proyek && (
                   <p className="mt-1 text-sm text-red-600">{errors.proyek}</p>
+                )}
+              </div>
+
+              {/* Metode Pengerjaan (Searchable) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Metode Pengerjaan
+                </label>
+                <SearchSelect
+                  value={formData.metodePengerjaan || ''}
+                  onChange={(v) => handleInputChange('metodePengerjaan', v)}
+                  options={metodePengerjaanOptions}
+                  placeholder="Cari / pilih Metode Pengerjaan"
+                />
+                <p className="mt-1 text-xs text-gray-500">Opsional</p>
+              </div>
+
+              {/* Jumlah Tunjangan */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Jumlah Tunjangan <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={formData.tunjangan || ''}
+                  onChange={(e) => handleInputChange('tunjangan', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    errors.tunjangan ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                  }`}
+                  placeholder="0"
+                  min={0}
+                />
+                {errors.tunjangan && (
+                  <p className="mt-1 text-sm text-red-600">{errors.tunjangan}</p>
                 )}
               </div>
 

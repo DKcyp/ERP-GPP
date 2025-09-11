@@ -59,6 +59,7 @@ const ReqrutmenDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof ReqrutmenData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [isTambahOpen, setIsTambahOpen] = useState(false);
+  const [searchPosisi, setSearchPosisi] = useState("");
 
   // State for Update Status Modal
   const [isUpdateStatusModalOpen, setIsUpdateStatusModalOpen] = useState(false);
@@ -242,6 +243,9 @@ const ReqrutmenDashboard: React.FC = () => {
     const matchesNamaPelamar = item.namaPelamar
       .toLowerCase()
       .includes(searchNamaPelamar.toLowerCase());
+    const matchesPosisi = (item.posisi || "")
+      .toLowerCase()
+      .includes(searchPosisi.toLowerCase());
     const matchesStatus = selectedStatus
       ? item.status === selectedStatus
       : true;
@@ -260,6 +264,7 @@ const ReqrutmenDashboard: React.FC = () => {
 
     return (
       matchesNamaPelamar &&
+      matchesPosisi &&
       matchesStatus &&
       matchesNamaDropdown &&
       matchesHasilInterview

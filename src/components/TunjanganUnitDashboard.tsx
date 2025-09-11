@@ -26,6 +26,7 @@ interface TunjanganUnitData {
   progressHarian: string;
   zonaKerja: string;
   proyek: string;
+  tunjangan: string;
 }
 
 const TunjanganUnitDashboard: React.FC = () => {
@@ -43,6 +44,11 @@ const TunjanganUnitDashboard: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const formatRupiah = (val: string | number) => {
+    const n = typeof val === 'number' ? val : Number(String(val).replace(/[^0-9]/g, '')) || 0;
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+  };
+
   // Sample data matching the image
   const [tunjanganUnitData, setTunjanganUnitData] = useState<TunjanganUnitData[]>([
     {
@@ -52,7 +58,8 @@ const TunjanganUnitDashboard: React.FC = () => {
       tanggal: '01-01-2025',
       progressHarian: '80%',
       zonaKerja: 'Zona Utara',
-      proyek: 'Proyek Jaringan Fiber Optik'
+      proyek: 'Proyek Jaringan Fiber Optik',
+      tunjangan: 'Rp 250.000'
     },
     {
       id: '2',
@@ -61,7 +68,8 @@ const TunjanganUnitDashboard: React.FC = () => {
       tanggal: '01-01-2025',
       progressHarian: '60%',
       zonaKerja: 'Zona Timur',
-      proyek: 'Proyek Internet Sekolah'
+      proyek: 'Proyek Internet Sekolah',
+      tunjangan: 'Rp 150.000'
     },
     {
       id: '3',
@@ -70,7 +78,8 @@ const TunjanganUnitDashboard: React.FC = () => {
       tanggal: '01-01-2025',
       progressHarian: '90%',
       zonaKerja: 'Zona Selatan',
-      proyek: 'Proyek Smart City'
+      proyek: 'Proyek Smart City',
+      tunjangan: 'Rp 300.000'
     },
     {
       id: '4',
@@ -79,7 +88,8 @@ const TunjanganUnitDashboard: React.FC = () => {
       tanggal: '01-01-2025',
       progressHarian: '50%',
       zonaKerja: 'Zona Barat',
-      proyek: 'Proyek Perluasan Jaringan'
+      proyek: 'Proyek Perluasan Jaringan',
+      tunjangan: 'Rp 200.000'
     },
     {
       id: '5',
@@ -88,7 +98,8 @@ const TunjanganUnitDashboard: React.FC = () => {
       tanggal: '01-01-2025',
       progressHarian: '70%',
       zonaKerja: 'Zona Pusat',
-      proyek: 'Proyek Data Center'
+      proyek: 'Proyek Data Center',
+      tunjangan: 'Rp 225.000'
     }
   ]);
 
@@ -129,15 +140,17 @@ const TunjanganUnitDashboard: React.FC = () => {
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
-    }
+    const getComparable = (item: TunjanganUnitData) => {
+      if (sortField === 'tunjangan') {
+        const n = Number(String(item.tunjangan).replace(/[^0-9]/g, '')) || 0;
+        return n;
+      }
+      return item[sortField] as any;
+    };
+    const aValue = getComparable(a);
+    const bValue = getComparable(b);
+    if (sortDirection === 'asc') return aValue > bValue ? 1 : -1;
+    return aValue < bValue ? 1 : -1;
   });
 
   // Pagination logic
@@ -166,7 +179,8 @@ const TunjanganUnitDashboard: React.FC = () => {
       }),
       progressHarian: formData.progress,
       zonaKerja: formData.zonaKerja,
-      proyek: formData.proyek
+      proyek: formData.proyek,
+      tunjangan: formatRupiah(formData.tunjangan || 0)
     };
 
     setTunjanganUnitData(prev => [newTunjanganUnit, ...prev.map(t => ({ ...t, no: t.no + 1 }))]);
@@ -389,6 +403,17 @@ const TunjanganUnitDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('tunjangan')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Tunjangan</span>
+                      {sortField === 'tunjangan' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('zonaKerja')}
                   >
                     <div className="flex items-center space-x-1">
@@ -427,6 +452,7 @@ const TunjanganUnitDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">{item.namaTeknisi}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.tanggal}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.progressHarian}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.tunjangan}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.zonaKerja}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{item.proyek}</td>
                   </tr>
