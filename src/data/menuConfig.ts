@@ -1096,7 +1096,7 @@ export const financeMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Permintaan Pencairan Dana",
+    title: "Pencairan Dana",
     icon: "Wallet",
     items: [
       // {
@@ -1242,23 +1242,39 @@ export const financeMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Tanda Terima",
+    icon: "Wallet",
+    items: [
+      {
+        title: "Tanda Terima Dokumen Penagihan",
+        icon: "FileText",
+        path: "/finance/tanda-terima-dokumeni",
+      },
+      {
+        title: "Tanda Terima Dokumen Pembelian",
+        icon: "FileText",
+        path: "/finance/tanda-terima-dokumen-pembelian",
+      },
+    ],
+  },
+  {
     title: "Reimburse / Voucher",
     icon: "Wallet", // Icon for Reimburse / Voucher
     items: [],
     directPath: "/finance/reimburse-voucher",
   },
-  {
-    title: "Tanda Terima Dokumeni",
-    icon: "FileText",
-    items: [],
-    directPath: "/finance/tanda-terima-dokumeni",
-  },
-  {
-    title: "Tandaterima Dokumen Pembelian",
-    icon: "FileText",
-    items: [],
-    directPath: "/finance/tanda-terima-dokumen-pembelian",
-  },
+  // {
+  //   title: "Tanda Terima Dokumen Penagihan",
+  //   icon: "FileText",
+  //   items: [],
+  //   directPath: "/finance/tanda-terima-dokumeni",
+  // },
+  // {
+  //   title: "Tandaterima Dokumen Pembelian",
+  //   icon: "FileText",
+  //   items: [],
+  //   directPath: "/finance/tanda-terima-dokumen-pembelian",
+  // },
   createGeneralMenu("operational"),
 ];
 
@@ -1285,11 +1301,11 @@ export const gudangMenu: MenuSection[] = [
         icon: "AlertTriangle",
         path: "/gudang/barang/expired",
       },
-      {
-        title: "Restock Expired Barang",
-        icon: "RotateCw",
-        path: "/gudang/barang/restock-expired",
-      },
+      // {
+      //   title: "Restock Expired Barang",
+      //   icon: "RotateCw",
+      //   path: "/gudang/barang/restock-expired",
+      // },
       { title: "Stock Barang", icon: "Layers", path: "/gudang/barang/stock" },
     ],
   },

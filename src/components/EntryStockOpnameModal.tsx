@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, CalendarDays, Clock, Save, FileUp } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  X,
+  Plus,
+  Trash2,
+  CalendarDays,
+  Clock,
+  Save,
+  FileUp,
+} from "lucide-react";
 
 interface EntryStockOpnameModalProps {
   isOpen: boolean;
@@ -10,19 +18,22 @@ interface BarangItem {
   id: number;
   kodeBarang: string;
   namaBarang: string;
-  stokTercatat: number | '';
-  stokSebenarnya: number | '';
-  selisih: number | '';
+  stokTercatat: number | "";
+  stokSebenarnya: number | "";
+  selisih: number | "";
   keterangan: string;
 }
 
-const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, onClose }) => {
-  const [periodeTahun, setPeriodeTahun] = useState('2025');
-  const [periodeBulan, setPeriodeBulan] = useState('Januari');
-  const [tanggalOpname, setTanggalOpname] = useState('');
-  const [waktuOpname, setWaktuOpname] = useState('');
-  const [gudang, setGudang] = useState('Gudang Proyek A');
-  const [keterangan, setKeterangan] = useState('');
+const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
+  const [periodeTahun, setPeriodeTahun] = useState("2025");
+  const [periodeBulan, setPeriodeBulan] = useState("Januari");
+  const [tanggalOpname, setTanggalOpname] = useState("");
+  const [waktuOpname, setWaktuOpname] = useState("");
+  const [gudang, setGudang] = useState("Gudang Proyek A");
+  const [keterangan, setKeterangan] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [barangItems, setBarangItems] = useState<BarangItem[]>([]);
   const [nextItemId, setNextItemId] = useState(1);
@@ -31,7 +42,13 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
     if (isOpen) {
       // Set current time when modal opens
       const now = new Date();
-      setWaktuOpname(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setWaktuOpname(
+        now.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+      );
       // Reset other fields if needed, or load existing data
       setBarangItems([]); // Start with an empty list of items
       setNextItemId(1);
@@ -39,39 +56,57 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
   }, [isOpen]);
 
   const handleAddBarang = () => {
-    setBarangItems([...barangItems, {
-      id: nextItemId,
-      kodeBarang: '',
-      namaBarang: '',
-      stokTercatat: '',
-      stokSebenarnya: '',
-      selisih: '',
-      keterangan: ''
-    }]);
+    setBarangItems([
+      ...barangItems,
+      {
+        id: nextItemId,
+        kodeBarang: "",
+        namaBarang: "",
+        stokTercatat: "",
+        stokSebenarnya: "",
+        selisih: "",
+        keterangan: "",
+      },
+    ]);
     setNextItemId(nextItemId + 1);
   };
 
   const handleRemoveBarang = (id: number) => {
-    setBarangItems(barangItems.filter(item => item.id !== id));
+    setBarangItems(barangItems.filter((item) => item.id !== id));
   };
 
-  const handleBarangChange = (id: number, field: keyof BarangItem, value: any) => {
-    setBarangItems(prevItems =>
-      prevItems.map(item => {
+  const handleBarangChange = (
+    id: number,
+    field: keyof BarangItem,
+    value: any
+  ) => {
+    setBarangItems((prevItems) =>
+      prevItems.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
-          if (field === 'stokTercatat' || field === 'stokSebenarnya') {
-            const tercatat = typeof updatedItem.stokTercatat === 'number' ? updatedItem.stokTercatat : parseFloat(String(updatedItem.stokTercatat));
-            const sebenarnya = typeof updatedItem.stokSebenarnya === 'number' ? updatedItem.stokSebenarnya : parseFloat(String(updatedItem.stokSebenarnya));
+          if (field === "stokTercatat" || field === "stokSebenarnya") {
+            const tercatat =
+              typeof updatedItem.stokTercatat === "number"
+                ? updatedItem.stokTercatat
+                : parseFloat(String(updatedItem.stokTercatat));
+            const sebenarnya =
+              typeof updatedItem.stokSebenarnya === "number"
+                ? updatedItem.stokSebenarnya
+                : parseFloat(String(updatedItem.stokSebenarnya));
             if (!isNaN(tercatat) && !isNaN(sebenarnya)) {
               updatedItem.selisih = sebenarnya - tercatat;
             } else {
-              updatedItem.selisih = '';
+              updatedItem.selisih = "";
             }
           }
           // Dummy logic for namaBarang based on kodeBarang
-          if (field === 'kodeBarang') {
-            updatedItem.namaBarang = value === 'KB001' ? 'Barang A' : value === 'KB002' ? 'Barang B' : '';
+          if (field === "kodeBarang") {
+            updatedItem.namaBarang =
+              value === "KB001"
+                ? "Barang A"
+                : value === "KB002"
+                ? "Barang B"
+                : "";
           }
           return updatedItem;
         }
@@ -106,8 +141,13 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 animate-fade-in">
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Stock Opname</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Entry Stock Opname
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+          >
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -115,7 +155,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
           {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label htmlFor="periodeTahun" className="block text-sm font-medium text-gray-700 mb-1">Periode Tahun</label>
+              <label
+                htmlFor="periodeTahun"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Periode Tahun
+              </label>
               <select
                 id="periodeTahun"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -128,7 +173,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
               </select>
             </div>
             <div>
-              <label htmlFor="periodeBulan" className="block text-sm font-medium text-gray-700 mb-1">Periode Bulan</label>
+              <label
+                htmlFor="periodeBulan"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Periode Bulan
+              </label>
               <select
                 id="periodeBulan"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -150,7 +200,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
               </select>
             </div>
             <div className="relative">
-              <label htmlFor="tanggalOpname" className="block text-sm font-medium text-gray-700 mb-1">Tanggal Opname</label>
+              <label
+                htmlFor="tanggalOpname"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Tanggal Opname
+              </label>
               <input
                 type="date"
                 id="tanggalOpname"
@@ -161,7 +216,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
               <CalendarDays className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="waktuOpname" className="block text-sm font-medium text-gray-700 mb-1">Waktu Opname</label>
+              <label
+                htmlFor="waktuOpname"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Waktu Opname
+              </label>
               <input
                 type="text"
                 id="waktuOpname"
@@ -172,7 +232,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
               <Clock className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div>
-              <label htmlFor="gudang" className="block text-sm font-medium text-gray-700 mb-1">Gudang</label>
+              <label
+                htmlFor="gudang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Gudang
+              </label>
               <select
                 id="gudang"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -185,7 +250,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
               </select>
             </div>
             <div className="col-span-1 md:col-span-1">
-              <label htmlFor="keterangan" className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+              <label
+                htmlFor="keterangan"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Keterangan
+              </label>
               <textarea
                 id="keterangan"
                 rows={3}
@@ -198,9 +268,17 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
 
           {/* Import Section */}
           <div className="mt-6">
-            <label htmlFor="importFile" className="block text-sm font-medium text-gray-700 mb-2">Import Data Stok Opname</label>
+            <label
+              htmlFor="importFile"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Import Data Stok Opname
+            </label>
             <div className="flex items-center space-x-3">
-              <label htmlFor="importFile" className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm flex items-center space-x-2 shadow-md">
+              <label
+                htmlFor="importFile"
+                className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm flex items-center space-x-2 shadow-md"
+              >
                 <FileUp className="h-4 w-4" />
                 <span>Choose File</span>
               </label>
@@ -210,34 +288,61 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
                 className="hidden"
                 onChange={handleFileChange}
               />
-              <span className="text-gray-600 text-sm">{file ? file.name : 'No file chosen'}</span>
+              <span className="text-gray-600 text-sm">
+                {file ? file.name : "No file chosen"}
+              </span>
             </div>
           </div>
 
           {/* Barang Items Table */}
           <div className="mt-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Detail Barang</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Detail Barang
+            </h3>
             <div className="overflow-x-auto border border-gray-200 rounded-xl shadow-sm">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Barang</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Tercatat</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Sebenarnya</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selisih</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Kode Barang
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nama Barang
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Stok Tercatat
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Stok Sebenarnya
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Selisih
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Keterangan
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Attachment
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Aksi
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {barangItems.map(item => (
+                  {barangItems.map((item) => (
                     <tr key={item.id}>
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         <select
                           className="border border-gray-300 rounded-lg px-2 py-1 w-full"
                           value={item.kodeBarang}
-                          onChange={(e) => handleBarangChange(item.id, 'kodeBarang', e.target.value)}
+                          onChange={(e) =>
+                            handleBarangChange(
+                              item.id,
+                              "kodeBarang",
+                              e.target.value
+                            )
+                          }
                         >
                           <option value="">Pilih Kode Barang</option>
                           <option value="KB001">KB001</option>
@@ -257,7 +362,13 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
                           type="number"
                           className="border border-gray-300 rounded-lg px-2 py-1 w-full"
                           value={item.stokTercatat}
-                          onChange={(e) => handleBarangChange(item.id, 'stokTercatat', parseFloat(e.target.value) || '')}
+                          onChange={(e) =>
+                            handleBarangChange(
+                              item.id,
+                              "stokTercatat",
+                              parseFloat(e.target.value) || ""
+                            )
+                          }
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
@@ -266,7 +377,13 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
                             type="number"
                             className="border border-gray-300 rounded-lg px-2 py-1 w-2/3"
                             value={item.stokSebenarnya}
-                            onChange={(e) => handleBarangChange(item.id, 'stokSebenarnya', parseFloat(e.target.value) || '')}
+                            onChange={(e) =>
+                              handleBarangChange(
+                                item.id,
+                                "stokSebenarnya",
+                                parseFloat(e.target.value) || ""
+                              )
+                            }
                           />
                           <select className="border border-gray-300 rounded-lg px-1 py-1 w-1/3">
                             <option>Pcs</option>
@@ -287,7 +404,19 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({ isOpen, o
                           type="text"
                           className="border border-gray-300 rounded-lg px-2 py-1 w-full"
                           value={item.keterangan}
-                          onChange={(e) => handleBarangChange(item.id, 'keterangan', e.target.value)}
+                          onChange={(e) =>
+                            handleBarangChange(
+                              item.id,
+                              "keterangan",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <input
+                          type="file"
+                          className="border border-gray-300 rounded-lg px-2 py-1 w-full"
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm font-medium">

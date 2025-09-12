@@ -986,17 +986,19 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                               className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
                             />
                           </td>
-                          <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeRow(setTenagaKerja, tenagaKerja)
-                              }
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
-                          </td>
+                          {!readOnly && !isProcess && (
+                            <td className="px-2 py-2">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeRow(setTenagaKerja, tenagaKerja)
+                                }
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -1042,7 +1044,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                         <th className="px-2 py-2 text-left">Harga Satuan</th>
                         <th className="px-2 py-2 text-left">Margin</th>
                         <th className="px-2 py-2 text-left">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left">Aksi</th>
+                        {!readOnly && !isProcess && (
+                          <th className="px-2 py-2 text-left">Aksi</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -1174,7 +1178,9 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                         <th className="px-2 py-2 text-left">Satuan</th>
                         <th className="px-2 py-2 text-left">Margin</th>
                         <th className="px-2 py-2 text-left">Harga Akhir</th>
-                        <th className="px-2 py-2 text-left">Aksi</th>
+                        {!readOnly && !isProcess && (
+                          <th className="px-2 py-2 text-left">Aksi</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>

@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
-import { Clock, Plus, Search, FileSpreadsheet, FileText, Eye, ArrowUpDown } from 'lucide-react';
-import TambahBarangModal from './TambahBarangModal'; // Import the new modal component
+import React, { useState } from "react";
+import {
+  Clock,
+  Plus,
+  Search,
+  FileSpreadsheet,
+  FileText,
+  Eye,
+  ArrowUpDown,
+} from "lucide-react";
+import TambahBarangModal from "./TambahBarangModal"; // Import the new modal component
 
 const MasterBarangDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,101 +17,114 @@ const MasterBarangDashboard: React.FC = () => {
   const [barangData, setBarangData] = useState([
     {
       no: 1,
-      kodeBarang: 'BRG001',
-      namaBarang: 'Helm Safety',
-      kategori: 'Alat',
-      satuan: 'Buah',
-      hargaBeli: 'Rp 50.000',
-      hargaJual: 'Rp 75.000',
-      masaExpired: '28-03-2025',
-      statusBarang: 'Aktif',
-      statusIzin: 'Disetujui',
+      kodeBarang: "BRG001",
+      namaBarang: "Helm Safety",
+      kategori: "Alat",
+      satuan: "Buah",
+      hargaBeli: "Rp 50.000",
+      hargaJual: "Rp 75.000",
+      masaExpired: "28-03-2025",
+      statusBarang: "Aktif",
+      statusIzin: "Disetujui",
     },
     {
       no: 2,
-      kodeBarang: 'BRG002',
-      namaBarang: 'Sepatu Safety',
-      kategori: 'Alat',
-      satuan: 'Pasang',
-      hargaBeli: 'Rp 250.000',
-      hargaJual: 'Rp 350.000',
-      masaExpired: '05-05-2025',
-      statusBarang: 'Aktif',
-      statusIzin: 'Menunggu Persetujuan',
+      kodeBarang: "BRG002",
+      namaBarang: "Sepatu Safety",
+      kategori: "Alat",
+      satuan: "Pasang",
+      hargaBeli: "Rp 250.000",
+      hargaJual: "Rp 350.000",
+      masaExpired: "05-05-2025",
+      statusBarang: "Aktif",
+      statusIzin: "Menunggu Persetujuan",
     },
     {
       no: 3,
-      kodeBarang: 'BRG003',
-      namaBarang: 'Sealant',
-      kategori: 'Material',
-      satuan: 'Pcs',
-      hargaBeli: 'Rp 100.000',
-      hargaJual: 'Rp 150.000',
-      masaExpired: '04-04-2025',
-      statusBarang: 'Non Aktif',
-      statusIzin: '-',
+      kodeBarang: "BRG003",
+      namaBarang: "Sealant",
+      kategori: "Material",
+      satuan: "Pcs",
+      hargaBeli: "Rp 100.000",
+      hargaJual: "Rp 150.000",
+      masaExpired: "04-04-2025",
+      statusBarang: "Non Aktif",
+      statusIzin: "-",
     },
     {
       no: 4,
-      kodeBarang: 'BRG004',
-      namaBarang: 'Sarung Tangan',
-      kategori: 'Alat',
-      satuan: 'Pasang',
-      hargaBeli: 'Rp 15.000',
-      hargaJual: 'Rp 25.000',
-      masaExpired: '10-04-2025',
-      statusBarang: 'Aktif',
-      statusIzin: 'Sudah Memiliki Izin',
+      kodeBarang: "BRG004",
+      namaBarang: "Sarung Tangan",
+      kategori: "Alat",
+      satuan: "Pasang",
+      hargaBeli: "Rp 15.000",
+      hargaJual: "Rp 25.000",
+      masaExpired: "10-04-2025",
+      statusBarang: "Aktif",
+      statusIzin: "Sudah Memiliki Izin",
     },
   ]);
 
   const [filters, setFilters] = useState({
-    namaBarang: '',
-    kodeBarang: '',
-    kategori: '',
-    statusBarang: '',
-    statusIzin: '',
+    namaBarang: "",
+    kodeBarang: "",
+    kategori: "",
+    statusBarang: "",
+    statusIzin: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFilterChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const filteredData = barangData.filter(item => {
+  const filteredData = barangData.filter((item) => {
     return (
-      item.namaBarang.toLowerCase().includes(filters.namaBarang.toLowerCase()) &&
-      item.kodeBarang.toLowerCase().includes(filters.kodeBarang.toLowerCase()) &&
-      (filters.kategori === '' || item.kategori.toLowerCase() === filters.kategori.toLowerCase()) &&
-      (filters.statusBarang === '' || item.statusBarang.toLowerCase() === filters.statusBarang.toLowerCase()) &&
-      (filters.statusIzin === '' || item.statusIzin.toLowerCase() === filters.statusIzin.toLowerCase())
+      item.namaBarang
+        .toLowerCase()
+        .includes(filters.namaBarang.toLowerCase()) &&
+      item.kodeBarang
+        .toLowerCase()
+        .includes(filters.kodeBarang.toLowerCase()) &&
+      (filters.kategori === "" ||
+        item.kategori.toLowerCase() === filters.kategori.toLowerCase()) &&
+      (filters.statusBarang === "" ||
+        item.statusBarang.toLowerCase() ===
+          filters.statusBarang.toLowerCase()) &&
+      (filters.statusIzin === "" ||
+        item.statusIzin.toLowerCase() === filters.statusIzin.toLowerCase())
     );
   });
 
   // Pagination logic
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-  const currentEntries = filteredData.slice(indexOfFirstEntry, indexOfLastEntry);
+  const currentEntries = filteredData.slice(
+    indexOfFirstEntry,
+    indexOfLastEntry
+  );
   const totalPages = Math.ceil(filteredData.length / entriesPerPage);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   const getStatusBadgeClass = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'aktif':
-        return 'bg-green-100 text-green-800';
-      case 'non aktif':
-        return 'bg-red-100 text-red-800';
-      case 'disetujui':
-        return 'bg-blue-100 text-blue-800';
-      case 'menunggu persetujuan':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'sudah memiliki izin':
-        return 'bg-purple-100 text-purple-800';
+      case "aktif":
+        return "bg-green-100 text-green-800";
+      case "non aktif":
+        return "bg-red-100 text-red-800";
+      case "disetujui":
+        return "bg-blue-100 text-blue-800";
+      case "menunggu persetujuan":
+        return "bg-yellow-100 text-yellow-800";
+      case "sudah memiliki izin":
+        return "bg-purple-100 text-purple-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -117,16 +138,20 @@ const MasterBarangDashboard: React.FC = () => {
                 MASTER BARANG
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Barang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Barang
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Master Barang</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -136,7 +161,9 @@ const MasterBarangDashboard: React.FC = () => {
           {/* Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div className="relative">
-              <label htmlFor="namaBarang" className="sr-only">Cari Nama Barang</label>
+              <label htmlFor="namaBarang" className="sr-only">
+                Cari Nama Barang
+              </label>
               <input
                 type="text"
                 id="namaBarang"
@@ -149,7 +176,9 @@ const MasterBarangDashboard: React.FC = () => {
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="kodeBarang" className="sr-only">Cari Kode Barang</label>
+              <label htmlFor="kodeBarang" className="sr-only">
+                Cari Kode Barang
+              </label>
               <input
                 type="text"
                 id="kodeBarang"
@@ -162,7 +191,9 @@ const MasterBarangDashboard: React.FC = () => {
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
             </div>
             <div>
-              <label htmlFor="statusBarang" className="sr-only">Status Barang</label>
+              <label htmlFor="statusBarang" className="sr-only">
+                Status Barang
+              </label>
               <select
                 id="statusBarang"
                 name="statusBarang"
@@ -176,7 +207,9 @@ const MasterBarangDashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="kategori" className="sr-only">Kategori Barang</label>
+              <label htmlFor="kategori" className="sr-only">
+                Kategori Barang
+              </label>
               <select
                 id="kategori"
                 name="kategori"
@@ -191,7 +224,9 @@ const MasterBarangDashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="statusIzin" className="sr-only">Status Izin</label>
+              <label htmlFor="statusIzin" className="sr-only">
+                Status Izin
+              </label>
               <select
                 id="statusIzin"
                 name="statusIzin"
@@ -201,7 +236,9 @@ const MasterBarangDashboard: React.FC = () => {
               >
                 <option value="">--Pilih Status Izin--</option>
                 <option value="disetujui">Disetujui</option>
-                <option value="menunggu persetujuan">Menunggu Persetujuan</option>
+                <option value="menunggu persetujuan">
+                  Menunggu Persetujuan
+                </option>
                 <option value="sudah memiliki izin">Sudah Memiliki Izin</option>
                 <option value="-">-</option>
               </select>
@@ -239,47 +276,50 @@ const MasterBarangDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Kode Barang <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Kode Barang{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Nama Barang <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Nama Barang{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Kategori <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Kategori{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Satuan <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Satuan{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Harga Beli <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Harga Beli{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Harga Jual <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Masa Expired{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Masa Expired <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Status Barang{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
-                      Status Barang <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">
-                      Status Izin <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
+                      Status Izin{" "}
+                      <ArrowUpDown className="ml-1 h-3 w-3 text-gray-400" />
                     </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -289,22 +329,46 @@ const MasterBarangDashboard: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentEntries.map((item, index) => (
-                  <tr key={item.no} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeBarang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaBarang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kategori}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.satuan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.hargaBeli}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.hargaJual}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.masaExpired}</td>
+                  <tr
+                    key={item.no}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.kodeBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.namaBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.kategori}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.satuan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.hargaBeli}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.masaExpired}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(item.statusBarang)}`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(
+                          item.statusBarang
+                        )}`}
+                      >
                         {item.statusBarang}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(item.statusIzin)}`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(
+                          item.statusIzin
+                        )}`}
+                      >
                         {item.statusIzin}
                       </span>
                     </td>
@@ -335,9 +399,14 @@ const MasterBarangDashboard: React.FC = () => {
               <span>entries</span>
             </div>
             <div className="text-sm text-gray-700">
-              Showing {indexOfFirstEntry + 1} to {Math.min(indexOfLastEntry, filteredData.length)} of {filteredData.length} entries
+              Showing {indexOfFirstEntry + 1} to{" "}
+              {Math.min(indexOfLastEntry, filteredData.length)} of{" "}
+              {filteredData.length} entries
             </div>
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <nav
+              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -350,7 +419,9 @@ const MasterBarangDashboard: React.FC = () => {
                   key={i + 1}
                   onClick={() => paginate(i + 1)}
                   className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium ${
-                    currentPage === i + 1 ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-white text-gray-700 hover:bg-gray-50'
+                    currentPage === i + 1
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-white text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   {i + 1}
@@ -369,7 +440,10 @@ const MasterBarangDashboard: React.FC = () => {
       </div>
 
       {/* Tambah Barang Modal */}
-      <TambahBarangModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <TambahBarangModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

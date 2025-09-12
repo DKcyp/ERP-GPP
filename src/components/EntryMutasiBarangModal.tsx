@@ -98,6 +98,8 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan Barang</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Mutasi</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hapus</th>
                 </tr>
               </thead>
@@ -109,6 +111,20 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{item.satuan}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                       <input type="number" defaultValue={item.jumlah} className="w-20 border border-gray-300 rounded-md px-2 py-1 text-sm" />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <input
+                        type="text"
+                        placeholder="SO-xxxx"
+                        className="w-28 border border-gray-300 rounded-md px-2 py-1 text-sm"
+                      />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <input
+                        type="text"
+                        placeholder="Keterangan"
+                        className="w-40 border border-gray-300 rounded-md px-2 py-1 text-sm"
+                      />
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
