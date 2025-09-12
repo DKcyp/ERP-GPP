@@ -239,7 +239,8 @@ const TimesheetBarangPegawaiModal: React.FC<
                       <th className="px-3 py-2 text-left">Nama</th>
                       <th className="px-3 py-2 text-left">Kualifikasi</th>
                       <th className="px-3 py-2 text-left">Zona</th>
-                      <th className="px-3 py-2 text-left">Harga Akhir</th>
+                      <th className="px-3 py-2 text-left">Actual</th>
+                      <th className="px-3 py-2 text-left">Durasi</th>
                       <th className="px-3 py-2 text-left">Upload</th>
                       <th className="px-3 py-2 text-center">Aksi</th>
                     </tr>
@@ -261,7 +262,11 @@ const TimesheetBarangPegawaiModal: React.FC<
                             className="w-full px-2 py-1 border rounded-lg"
                             value={row.kualifikasi}
                             onChange={(e) =>
-                              updatePegawai(row.id, "kualifikasi", e.target.value)
+                              updatePegawai(
+                                row.id,
+                                "kualifikasi",
+                                e.target.value
+                              )
                             }
                           />
                         </td>
@@ -279,9 +284,16 @@ const TimesheetBarangPegawaiModal: React.FC<
                             className="w-full px-2 py-1 border rounded-lg"
                             value={row.hargaAkhir}
                             onChange={(e) =>
-                              updatePegawai(row.id, "hargaAkhir", e.target.value)
+                              updatePegawai(
+                                row.id,
+                                "hargaAkhir",
+                                e.target.value
+                              )
                             }
                           />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input className="w-full px-2 py-1 border rounded-lg" />
                         </td>
                         <td className="px-3 py-2">
                           <input
