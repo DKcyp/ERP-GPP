@@ -13,7 +13,8 @@ import {
   ChevronDown,
   Calendar,
   Clock,
-  Info
+  Info,
+  History
 } from 'lucide-react';
 
 interface HPPInduk {
@@ -48,6 +49,8 @@ const HPPIndukDashboard: React.FC = () => {
   const [selectedHPPForDetail, setSelectedHPPForDetail] = useState<HPPIndukDetailData | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<HPPInduk | null>(null);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string | null>(null);
   // Note: editing functionality disabled for now to match HPPIndukModal props
 
   // Sample data
@@ -104,6 +107,9 @@ const HPPIndukDashboard: React.FC = () => {
     }
   ]);
 
+  type HistoryEntry = { timestamp: string; formData: HPPIndukFormData };
+  const [histories, setHistories] = useState<Record<string, HistoryEntry[]>>({});
+
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
@@ -126,6 +132,16 @@ const HPPIndukDashboard: React.FC = () => {
     };
     setHppIndukData(prev => [newHPPInduk, ...prev.map(h => ({ ...h, no: h.no + 1 }))]);
     setIsModalOpen(false);
+
+    // Save to history using new id
+    const historyId = newHPPInduk.id;
+    setHistories(prev => ({
+      ...prev,
+      [historyId]: [
+        { timestamp: new Date().toLocaleString('id-ID'), formData },
+        ...(prev[historyId] || [])
+      ]
+    }));
   };
 
   const handleAddClick = () => {
@@ -150,6 +166,11 @@ const HPPIndukDashboard: React.FC = () => {
 
     setSelectedHPPForDetail(detailData);
     setIsDetailModalOpen(true);
+  };
+
+  const handleViewHistory = (hpp: HPPInduk) => {
+    setSelectedHistoryId(hpp.id);
+    setIsHistoryModalOpen(true);
   };
 
   const handleDeleteClick = (hpp: HPPInduk) => {
@@ -499,6 +520,13 @@ const HPPIndukDashboard: React.FC = () => {
                         >
                           <Eye className="h-3 w-3" />
                         </button>
+                        <button
+                          onClick={() => handleViewHistory(hpp)}
+                          className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-md transition-all duration-200"
+                          title="History"
+                        >
+                          <History className="h-3 w-3" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -530,6 +558,379 @@ const HPPIndukDashboard: React.FC = () => {
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.id} // Changed to itemToDelete?.id
       />
+
+      {/* History Modal */}
+      {isHistoryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setIsHistoryModalOpen(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-3xl mx-4 overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-white flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-gray-900">History Entry HPP Induk</h3>
+                <p className="text-xs text-gray-500">No HPP: {selectedHistoryId}</p>
+              </div>
+              <button
+                onClick={() => setIsHistoryModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 px-2 py-1 rounded-md hover:bg-gray-100"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4 max-h-[70vh] overflow-y-auto">
+              {selectedHistoryId && (histories[selectedHistoryId]?.length ?? 0) > 0 ? (
+                <div className="space-y-4">
+                  {histories[selectedHistoryId]!.map((entry, idx) => (
+                    <div key={idx} className="border border-gray-100 rounded-lg overflow-hidden">
+                      <div className="px-3 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-xs text-gray-600">
+                          <Clock className="h-3 w-3" />
+                          <span>{entry.timestamp}</span>
+                        </div>
+                        <span className="text-[10px] text-gray-400">Entry #{histories[selectedHistoryId]!.length - idx}</span>
+                      </div>
+                      <div className="p-3 text-xs space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold text-gray-900 mb-2">Input 1</h4>
+                            <div className="space-y-1">
+                              {[
+                                { label: 'No Kontrak', key: 'noKontrak' },
+                                { label: 'Durasi Kontrak', key: 'durasiKontrak' },
+                                { label: 'Nama Client', key: 'namaClient' },
+                                { label: 'Lokasi Pekerjaan', key: 'lokasiPekerjaan' },
+                                { label: 'Nama Project', key: 'namaProject' },
+                                { label: 'Jenis Pekerjaan', key: 'jenisPekerjaan' },
+                                { label: 'Estimasi Nilai Kontrak', key: 'estimasiNilaiKontrak' },
+                                { label: 'Sertifikat', key: 'sertifikat' },
+                              ].map(f => (
+                                <div key={f.key} className="flex items-center justify-between">
+                                  <span className="text-gray-500">{f.label}</span>
+                                  <span className="text-gray-900 font-medium ml-4">
+                                    {f.key === 'sertifikat'
+                                      ? ((entry.formData as any).sertifikat ? 'Terunggah' : '-')
+                                      : (entry.formData as any)[f.key] || '-'}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-900 mb-2">Input 2</h4>
+                            {/* Pekerjaan Ringkas */}
+                            <div className="mb-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-gray-600">Pekerjaan Ringkas</span>
+                                <span className="text-gray-400 text-[10px]">{entry.formData.pekerjaanRingkas?.length || 0} item</span>
+                              </div>
+                              {(entry.formData.pekerjaanRingkas?.length || 0) > 0 ? (
+                                <div className="overflow-x-auto">
+                                  <table className="min-w-full border border-gray-100 rounded">
+                                    <thead className="bg-gray-50">
+                                      <tr>
+                                        <th className="px-2 py-1 text-left">Jenis</th>
+                                        <th className="px-2 py-1 text-right">Harga</th>
+                                        <th className="px-2 py-1 text-right">Jumlah</th>
+                                        <th className="px-2 py-1 text-right">Total</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {entry.formData.pekerjaanRingkas.map((r, i) => (
+                                        <tr key={i} className="border-t">
+                                          <td className="px-2 py-1">{r.jenisPekerjaan || '-'}</td>
+                                          <td className="px-2 py-1 text-right">{r.hargaSatuan || '-'}</td>
+                                          <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                          <td className="px-2 py-1 text-right">{r.total || '-'}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ) : (
+                                <div className="text-gray-400">-</div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Detail Tabs */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Tenaga Kerja */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">Tenaga Kerja</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.tenagaKerja?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.tenagaKerja?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Tenaga</th>
+                                      <th className="px-2 py-1 text-right">Tunjangan</th>
+                                      <th className="px-2 py-1 text-right">Project Rate</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.tenagaKerja.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.tenaga || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.tunjangan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.projectRate || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+
+                          {/* Jasa */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">Jasa</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.jasa?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.jasa?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Jasa</th>
+                                      <th className="px-2 py-1 text-right">Tunjangan</th>
+                                      <th className="px-2 py-1 text-right">Project Rate</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.jasa.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.jasa || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.tunjangan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.projectRate || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+
+                          {/* Alat */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">Alat</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.alat?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.alat?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Alat</th>
+                                      <th className="px-2 py-1 text-right">Harga</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-right">Hari</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                      <th className="px-2 py-1 text-right">Harga Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.alat.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.alat || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.harga || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.hari || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.hargaSatuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+
+                          {/* Barang & Consumeble */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">Barang & Consumeble</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.barang?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.barang?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Nama Barang</th>
+                                      <th className="px-2 py-1 text-right">Harga</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-right">Hari</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                      <th className="px-2 py-1 text-right">Harga Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.barang.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.namaBarang || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.harga || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.hari || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.hargaSatuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+
+                          {/* PPE */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">PPE</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.ppe?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.ppe?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Nama Barang</th>
+                                      <th className="px-2 py-1 text-right">Harga</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-right">Hari</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                      <th className="px-2 py-1 text-right">Harga Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.ppe.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.namaBarang || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.harga || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.hari || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.hargaSatuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+
+                          {/* MobDemob */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">MobDemob</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.mobDemob?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.mobDemob?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Transportasi</th>
+                                      <th className="px-2 py-1 text-right">Tunjangan</th>
+                                      <th className="px-2 py-1 text-right">Project Rate</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.mobDemob.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.namaTransportasi || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.tunjangan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.projectRate || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+
+                          {/* Biaya Lain-lain */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <h5 className="font-semibold text-gray-900">Biaya Lain-lain</h5>
+                              <span className="text-gray-400 text-[10px]">{entry.formData.biayaLainLain?.length || 0} item</span>
+                            </div>
+                            {(entry.formData.biayaLainLain?.length || 0) > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="min-w-full border border-gray-100 rounded">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th className="px-2 py-1 text-left">Nama Biaya</th>
+                                      <th className="px-2 py-1 text-right">Tunjangan</th>
+                                      <th className="px-2 py-1 text-right">Project Rate</th>
+                                      <th className="px-2 py-1 text-right">Jumlah</th>
+                                      <th className="px-2 py-1 text-left">Satuan</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {entry.formData.biayaLainLain.map((r, i) => (
+                                      <tr key={i} className="border-t">
+                                        <td className="px-2 py-1">{r.namaBiaya || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.tunjangan || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.projectRate || '-'}</td>
+                                        <td className="px-2 py-1 text-right">{r.jumlah || '-'}</td>
+                                        <td className="px-2 py-1">{r.satuan || '-'}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-500 text-xs py-8">Belum ada history untuk No HPP ini.</div>
+              )}
+            </div>
+            <div className="px-4 py-3 border-t border-gray-100 bg-gray-50 flex justify-end">
+              <button
+                onClick={() => setIsHistoryModalOpen(false)}
+                className="px-3 py-1.5 rounded-md text-xs bg-purple-600 text-white hover:bg-purple-700 transition"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

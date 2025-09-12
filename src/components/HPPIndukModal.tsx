@@ -27,7 +27,8 @@ export interface HPPIndukFormData {
     tenaga: string;
     tunjangan: string;
     projectRate: string;
-    hari: string;
+    jumlah: string;
+    satuan: string;
     hargaAwal: string;
     margin: string;
     hargaAkhir: string;
@@ -36,7 +37,8 @@ export interface HPPIndukFormData {
     jasa: string;
     tunjangan: string;
     projectRate: string;
-    hari: string;
+    jumlah: string;
+    satuan: string;
     hargaAwal: string;
     margin: string;
     hargaAkhir: string;
@@ -78,7 +80,8 @@ export interface HPPIndukFormData {
     namaTransportasi: string;
     tunjangan: string;
     projectRate: string;
-    hari: string;
+    jumlah: string;
+    satuan: string;
     hargaAwal: string;
     margin: string;
     hargaAkhir: string;
@@ -87,7 +90,8 @@ export interface HPPIndukFormData {
     namaBiaya: string;
     tunjangan: string;
     projectRate: string;
-    hari: string;
+    jumlah: string;
+    satuan: string;
     hargaAwal: string;
     margin: string;
     hargaAkhir: string;
@@ -117,7 +121,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
         tenaga: "",
         tunjangan: "",
         projectRate: "",
-        hari: "",
+        jumlah: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -128,7 +133,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
         jasa: "",
         tunjangan: "",
         projectRate: "",
-        hari: "",
+        jumlah: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -178,7 +184,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
         namaTransportasi: "",
         tunjangan: "",
         projectRate: "",
-        hari: "",
+        jumlah: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -189,7 +196,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
         namaBiaya: "",
         tunjangan: "",
         projectRate: "",
-        hari: "",
+        jumlah: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -222,6 +230,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
     Consulting: 2000000,
   };
   const tenagaOptions = ["Teknisi", "Supervisor", "Engineer", "Admin"];
+  const satuanOptions = ["Hari", "Unit"];
   const tunjanganOptions = ["Uang Makan", "Transport", "Lembur"];
   const jasaOptions = ["Instalasi", "Maintenance", "Konsultasi", "Pelatihan"];
   const alatOptions = ["Excavator", "Crane", "Forklift", "Generator"];
@@ -306,8 +315,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
         if (unit > 0) {
           const filledTenagaKerja = prev.tenagaKerja.map((rowTK, idx) => {
             const projectRate = unit;
-            const hari = 1;
-            const hargaAwal = projectRate * hari;
+            const jumlah = 1;
+            const hargaAwal = projectRate * jumlah;
             const margin = 10; // default margin 10%
             const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
             return {
@@ -318,7 +327,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                 rowTK.tunjangan ||
                 "",
               projectRate: String(projectRate),
-              hari: String(hari),
+              jumlah: String(jumlah),
+              satuan: rowTK.satuan || "Hari",
               hargaAwal: String(hargaAwal),
               margin: String(margin),
               hargaAkhir: String(hargaAkhir),
@@ -351,8 +361,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
           // Also append 2 new prefilled rows
           const mkRow = (seedIdx: number) => {
             const projectRate = unit;
-            const hari = 1;
-            const hargaAwal = projectRate * hari;
+            const jumlah = 1;
+            const hargaAwal = projectRate * jumlah;
             const margin = 10;
             const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
             return {
@@ -360,7 +370,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
               tunjangan:
                 tunjanganOptions[seedIdx % tunjanganOptions.length] || "",
               projectRate: String(projectRate),
-              hari: String(hari),
+              jumlah: String(jumlah),
+              satuan: "Hari",
               hargaAwal: String(hargaAwal),
               margin: String(margin),
               hargaAkhir: String(hargaAkhir),
@@ -571,7 +582,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
               tenaga: "",
               tunjangan: "",
               projectRate: "",
-              hari: "",
+              jumlah: "",
+              satuan: "Hari",
               hargaAwal: "",
               margin: "",
               hargaAkhir: "",
@@ -588,7 +600,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
               jasa: "",
               tunjangan: "",
               projectRate: "",
-              hari: "",
+              jumlah: "",
+              satuan: "Hari",
               hargaAwal: "",
               margin: "",
               hargaAkhir: "",
@@ -662,7 +675,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
               namaTransportasi: "",
               tunjangan: "",
               projectRate: "",
-              hari: "",
+              jumlah: "",
+              satuan: "Hari",
               hargaAwal: "",
               margin: "",
               hargaAkhir: "",
@@ -679,7 +693,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
               namaBiaya: "",
               tunjangan: "",
               projectRate: "",
-              hari: "",
+              jumlah: "",
+              satuan: "Hari",
               hargaAwal: "",
               margin: "",
               hargaAkhir: "",
@@ -776,7 +791,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
           tenaga: "",
           tunjangan: "",
           projectRate: "",
-          hari: "",
+          jumlah: "",
+          satuan: "Hari",
           hargaAwal: "",
           margin: "",
           hargaAkhir: "",
@@ -787,7 +803,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
           jasa: "",
           tunjangan: "",
           projectRate: "",
-          hari: "",
+          jumlah: "",
+          satuan: "Hari",
           hargaAwal: "",
           margin: "",
           hargaAkhir: "",
@@ -837,7 +854,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
           namaTransportasi: "",
           tunjangan: "",
           projectRate: "",
-          hari: "",
+          jumlah: "",
+          satuan: "Hari",
           hargaAwal: "",
           margin: "",
           hargaAkhir: "",
@@ -848,7 +866,8 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
           namaBiaya: "",
           tunjangan: "",
           projectRate: "",
-          hari: "",
+          jumlah: "",
+          satuan: "Hari",
           hargaAwal: "",
           margin: "",
           hargaAkhir: "",
@@ -1243,7 +1262,10 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
@@ -1319,17 +1341,32 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           <td className="px-3 py-2">
                             <input
                               type="number"
-                              value={item.hari}
+                              value={item.jumlah}
                               onChange={(e) =>
                                 handleTabDataChange(
                                   index,
-                                  "hari",
+                                  "jumlah",
                                   e.target.value
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-3 py-2">
+                            <select
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              {satuanOptions.map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -1382,9 +1419,7 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Jumlah
                         </th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
-                        </th>
+                        {/* Removed Hari column for PPE */}
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Satuan
                         </th>
@@ -1441,35 +1476,21 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                               placeholder="Jumlah"
                             />
                           </td>
+                          {/* Removed Hari input cell for PPE */}
                           <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.hari}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hari",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="text"
+                            <select
                               value={item.satuan}
                               onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
+                                handleTabDataChange(index, "satuan", e.target.value)
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Satuan"
-                            />
+                            >
+                              {satuanOptions.map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -1541,7 +1562,10 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
@@ -1617,17 +1641,32 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           <td className="px-3 py-2">
                             <input
                               type="number"
-                              value={item.hari}
+                              value={item.jumlah}
                               onChange={(e) =>
                                 handleTabDataChange(
                                   index,
-                                  "hari",
+                                  "jumlah",
                                   e.target.value
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-3 py-2">
+                            <select
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              {satuanOptions.map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -1679,9 +1718,6 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Jumlah
-                        </th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Satuan
@@ -1740,34 +1776,19 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                             />
                           </td>
                           <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              value={item.hari}
-                              onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "hari",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="text"
+                            <select
                               value={item.satuan}
                               onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
+                                handleTabDataChange(index, "satuan", e.target.value)
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Satuan"
-                            />
+                            >
+                              {satuanOptions.map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -1836,9 +1857,6 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           Jumlah
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
-                        </th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Satuan
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
@@ -1897,17 +1915,32 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           <td className="px-3 py-2">
                             <input
                               type="number"
-                              value={item.hari}
+                              value={item.jumlah}
                               onChange={(e) =>
                                 handleTabDataChange(
                                   index,
-                                  "hari",
+                                  "jumlah",
                                   e.target.value
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-3 py-2">
+                            <select
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              {satuanOptions.map((opt) => (
+                                <option key={opt} value={opt}>
+                                  {opt}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-3 py-2">
                             <input
@@ -1994,7 +2027,10 @@ const HPPIndukModal: React.FC<HPPIndukModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Harga Awal

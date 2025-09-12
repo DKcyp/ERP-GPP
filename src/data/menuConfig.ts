@@ -1880,8 +1880,16 @@ export const taxMenu: MenuSection[] = [
     title: "Voucher Lainya",
     icon: "Ticket",
     items: [
-      { title: "Voucher", icon: "FileText", path: "/tax/voucher-lainya/voucher" },
-      { title: "Monitoring Voucher", icon: "FileText", path: "/tax/voucher-lainya/monitoring" },
+      {
+        title: "Voucher",
+        icon: "FileText",
+        path: "/tax/voucher-lainya/voucher",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "FileText",
+        path: "/tax/voucher-lainya/monitoring",
+      },
     ],
   },
 ];
@@ -1893,6 +1901,12 @@ export const proconMenu: MenuSection[] = [
     icon: "Home",
     items: [],
     directPath: "/procon/dashboard",
+  },
+  {
+    title: "Sales Order",
+    icon: "ShoppingCart",
+    items: [],
+    directPath: "/marketing/sales-order/dashboard",
   },
   {
     title: "Proforma Invoice",
@@ -1909,12 +1923,6 @@ export const proconMenu: MenuSection[] = [
         path: "/procon/proforma-invoice/pembuatan",
       },
     ],
-  },
-  {
-    title: "Sales Order",
-    icon: "ShoppingCart",
-    items: [],
-    directPath: "/marketing/sales-order/dashboard",
   },
   {
     title: "Laba Rugi Project",
