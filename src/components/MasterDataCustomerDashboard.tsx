@@ -11,12 +11,8 @@ interface Customer {
   email: string;
   noTelp: string;
   keterangan?: string;
-  npwp?: string;
-  nik?: string;
-  passport?: string;
-  npwpFileName?: string; // stored as file name for preview/logging
-  nikFileName?: string;
-  passportFileName?: string;
+  identitas?: string; // NPWP / NIK / Passport (digabung)
+  identitasFileNames?: string[]; // list file upload (multiple)
 }
 
 const mockData: Customer[] = [
@@ -62,12 +58,8 @@ const MasterDataCustomerDashboard: React.FC = () => {
     email: "",
     noTelp: "",
     keterangan: "",
-    npwp: "",
-    nik: "",
-    passport: "",
-    npwpFileName: "",
-    nikFileName: "",
-    passportFileName: "",
+    identitas: "",
+    identitasFileNames: [],
   });
   const [errors, setErrors] = useState<Partial<Record<keyof Omit<Customer, "id">, string>>>({});
 
@@ -123,7 +115,7 @@ const MasterDataCustomerDashboard: React.FC = () => {
   // Add/Edit/Delete Handlers
   const openAddModal = () => {
     setEditing(null);
-    setForm({ namaPerusahaan: "", alamat: "", pic: "", email: "", noTelp: "", keterangan: "", npwp: "", nik: "", passport: "", npwpFileName: "", nikFileName: "", passportFileName: "" });
+    setForm({ namaPerusahaan: "", alamat: "", pic: "", email: "", noTelp: "", keterangan: "", identitas: "", identitasFileNames: [] });
     setErrors({});
     setShowFormModal(true);
   };
@@ -137,12 +129,8 @@ const MasterDataCustomerDashboard: React.FC = () => {
       email: c.email,
       noTelp: c.noTelp,
       keterangan: c.keterangan || "",
-      npwp: c.npwp || "",
-      nik: c.nik || "",
-      passport: c.passport || "",
-      npwpFileName: c.npwpFileName || "",
-      nikFileName: c.nikFileName || "",
-      passportFileName: c.passportFileName || "",
+      identitas: c.identitas || "",
+      identitasFileNames: c.identitasFileNames || [],
     });
     setErrors({});
     setShowFormModal(true);
@@ -446,34 +434,36 @@ const MasterDataCustomerDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* NPWP / NIK / Passport */}
+              {/* NPWP / NIK / Passport (digabung) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-700 mb-1">NPWP</label>
-                  <input value={form.npwp || ""} onChange={(e)=> setForm(f=>({...f,npwp:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Masukkan NPWP" />
+                  <label className="block text-xs text-gray-700 mb-1">NPWP / NIK / Passport</label>
+                  <input
+                    value={form.identitas || ""}
+                    onChange={(e)=> setForm(f=>({...f, identitas: e.target.value}))}
+                    className="w-full px-3 py-2 border rounded-lg border-gray-200"
+                    placeholder="Masukkan nomor NPWP / NIK / Passport"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-700 mb-1">Upload NPWP</label>
-                  <input type="file" accept="image/*,.pdf" onChange={(e)=> setForm(f=>({...f, npwpFileName: e.target.files && e.target.files[0] ? e.target.files[0].name : ""}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
-                  {form.npwpFileName && <p className="text-[11px] text-gray-500 mt-1">File: {form.npwpFileName}</p>}
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-700 mb-1">NIK</label>
-                  <input value={form.nik || ""} onChange={(e)=> setForm(f=>({...f,nik:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Masukkan NIK" />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-700 mb-1">Upload NIK</label>
-                  <input type="file" accept="image/*,.pdf" onChange={(e)=> setForm(f=>({...f, nikFileName: e.target.files && e.target.files[0] ? e.target.files[0].name : ""}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
-                  {form.nikFileName && <p className="text-[11px] text-gray-500 mt-1">File: {form.nikFileName}</p>}
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-700 mb-1">Passport</label>
-                  <input value={form.passport || ""} onChange={(e)=> setForm(f=>({...f,passport:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Masukkan Passport" />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-700 mb-1">Upload Passport</label>
-                  <input type="file" accept="image/*,.pdf" onChange={(e)=> setForm(f=>({...f, passportFileName: e.target.files && e.target.files[0] ? e.target.files[0].name : ""}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
-                  {form.passportFileName && <p className="text-[11px] text-gray-500 mt-1">File: {form.passportFileName}</p>}
+                  <label className="block text-xs text-gray-700 mb-1">Upload Dokumen Identitas (bisa multiple)</label>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    multiple
+                    onChange={(e)=> {
+                      const files = e.target.files ? Array.from(e.target.files).map(f=>f.name) : [];
+                      setForm(f=>({...f, identitasFileNames: files}));
+                    }}
+                    className="w-full px-3 py-2 border rounded-lg border-gray-200"
+                  />
+                  {form.identitasFileNames && form.identitasFileNames.length > 0 && (
+                    <ul className="mt-1 space-y-1">
+                      {form.identitasFileNames.map((fn, idx) => (
+                        <li key={idx} className="text-[11px] text-gray-500">• {fn}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
