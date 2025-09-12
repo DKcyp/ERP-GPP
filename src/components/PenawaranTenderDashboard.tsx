@@ -441,7 +441,7 @@ const PenawaranTenderDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                DAFTAR PENAWARAN TENDER
+                Monitoring Tender
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
@@ -453,7 +453,7 @@ const PenawaranTenderDashboard: React.FC = () => {
                 </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">
-                  Penawaran Tender
+                  Monitoring Tender
                 </span>
               </nav>
             </div>
@@ -680,7 +680,7 @@ const PenawaranTenderDashboard: React.FC = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
             >
               <Plus className="h-4 w-4" />
-              <span>Tambah Penawaran Tender</span>
+              <span>Tambah Monitoring Tender</span>
             </button>
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs">
               <FileSpreadsheet className="h-4 w-4" />
