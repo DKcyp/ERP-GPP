@@ -49,14 +49,18 @@ const CSIMasterDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // Detail modal state
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [detailTemplate, setDetailTemplate] = useState<CSITemplate | null>(null);
+  const [detailTemplate, setDetailTemplate] = useState<CSITemplate | null>(
+    null
+  );
   const [detailIdentity, setDetailIdentity] = useState({
     customer: "",
     proyek: "",
     tanggal: "",
     penilai: "",
   });
-  const [detailAnswers, setDetailAnswers] = useState<Record<string, string | number>>({});
+  const [detailAnswers, setDetailAnswers] = useState<
+    Record<string, string | number>
+  >({});
 
   const [data] = useState<CSIRecord[]>([
     {
@@ -95,11 +99,41 @@ const CSIMasterDashboard: React.FC = () => {
       namaForm: "Form Penilaian A",
       deskripsi: "Template contoh penilaian kepuasan pelanggan",
       pertanyaan: [
-        { id: crypto.randomUUID(), pertanyaan: "Kualitas Pekerjaan", tipe: "scale", bobot: 20, required: true },
-        { id: crypto.randomUUID(), pertanyaan: "Ketepatan Waktu", tipe: "scale", bobot: 20, required: true },
-        { id: crypto.randomUUID(), pertanyaan: "Komunikasi & Respons", tipe: "scale", bobot: 20, required: true },
-        { id: crypto.randomUUID(), pertanyaan: "Kepatuhan K3/QHSE", tipe: "scale", bobot: 20, required: false },
-        { id: crypto.randomUUID(), pertanyaan: "Harga & Nilai", tipe: "scale", bobot: 20, required: false },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Kualitas Pekerjaan",
+          tipe: "scale",
+          bobot: 20,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Ketepatan Waktu",
+          tipe: "scale",
+          bobot: 20,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Komunikasi & Respons",
+          tipe: "scale",
+          bobot: 20,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Kepatuhan K3/QHSE",
+          tipe: "scale",
+          bobot: 20,
+          required: false,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Harga & Nilai",
+          tipe: "scale",
+          bobot: 20,
+          required: false,
+        },
       ],
       createdAt: new Date().toISOString(),
     },
@@ -416,120 +450,172 @@ const CSIMasterDashboard: React.FC = () => {
                   </tr>
                 )}
 
-        {/* Modal: Detail/Preview & Jawaban */}
-        {isDetailOpen && detailTemplate && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-              className="absolute inset-0 bg-black/40"
-              onClick={() => setIsDetailOpen(false)}
-            />
-            <div className="relative bg-white w-full max-w-5xl rounded-lg shadow-lg border border-gray-200">
-              <div className="px-6 py-4 border-b flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Detail Form: {detailTemplate.namaForm}
-                </h3>
-                <button
-                  onClick={() => setIsDetailOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-                {detailTemplate.deskripsi && (
-                  <p className="text-sm text-gray-600">{detailTemplate.deskripsi}</p>
-                )}
-
-                {/* Identitas */}
-                <div className="bg-gray-50 rounded-md border p-4">
-                  <h4 className="font-medium text-gray-800 mb-3">Identitas</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Customer</label>
-                      <input
-                        type="text"
-                        value={detailIdentity.customer}
-                        onChange={(e) => setDetailIdentity((prev) => ({ ...prev, customer: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                        placeholder="Nama Customer"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Proyek</label>
-                      <input
-                        type="text"
-                        value={detailIdentity.proyek}
-                        onChange={(e) => setDetailIdentity((prev) => ({ ...prev, proyek: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                        placeholder="Nama Proyek"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Tanggal</label>
-                      <input
-                        type="date"
-                        value={detailIdentity.tanggal}
-                        onChange={(e) => setDetailIdentity((prev) => ({ ...prev, tanggal: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Nama Penilai</label>
-                      <input
-                        type="text"
-                        value={detailIdentity.penilai}
-                        onChange={(e) => setDetailIdentity((prev) => ({ ...prev, penilai: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                        placeholder="Nama Penilai"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pertanyaan & Jawaban */}
-                <div className="bg-white rounded-lg border p-4">
-                  <h4 className="font-medium text-gray-800 mb-3">Pertanyaan</h4>
-                  <div className="space-y-4">
-                    {detailTemplate.pertanyaan.map((q, idx) => (
-                      <div key={q.id} className="grid grid-cols-1 md:grid-cols-2 items-start gap-4">
-                        <label className="text-sm text-gray-800">
-                          {idx + 1}. {q.pertanyaan}
-                        </label>
-                        {q.tipe === "scale" ? (
-                          <select
-                            value={(detailAnswers[q.id] as number) ?? 3}
-                            onChange={(e) =>
-                              setDetailAnswers((prev) => ({ ...prev, [q.id]: Number(e.target.value) }))
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                          >
-                            <option value={1}>1 - Sangat Tidak Puas</option>
-                            <option value={2}>2 - Tidak Puas</option>
-                            <option value={3}>3 - Cukup</option>
-                            <option value={4}>4 - Puas</option>
-                            <option value={5}>5 - Sangat Puas</option>
-                          </select>
-                        ) : (
-                          <textarea
-                            value={(detailAnswers[q.id] as string) ?? ""}
-                            onChange={(e) => setDetailAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
-                            className="w-full min-h-[80px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                            placeholder="Jawaban"
-                          />
-                        )}
+                {/* Modal: Detail/Preview & Jawaban */}
+                {isDetailOpen && detailTemplate && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div
+                      className="absolute inset-0 bg-black/40"
+                      onClick={() => setIsDetailOpen(false)}
+                    />
+                    <div className="relative bg-white w-full max-w-5xl rounded-lg shadow-lg border border-gray-200">
+                      <div className="px-6 py-4 border-b flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Detail Form: {detailTemplate.namaForm}
+                        </h3>
+                        <button
+                          onClick={() => setIsDetailOpen(false)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          ✕
+                        </button>
                       </div>
-                    ))}
+                      <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+                        {detailTemplate.deskripsi && (
+                          <p className="text-sm text-gray-600">
+                            {detailTemplate.deskripsi}
+                          </p>
+                        )}
+
+                        {/* Identitas */}
+                        <div className="bg-gray-50 rounded-md border p-4">
+                          <h4 className="font-medium text-gray-800 mb-3">
+                            Identitas
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Customer
+                              </label>
+                              <input
+                                type="text"
+                                value={detailIdentity.customer}
+                                onChange={(e) =>
+                                  setDetailIdentity((prev) => ({
+                                    ...prev,
+                                    customer: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                placeholder="Nama Customer"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Proyek
+                              </label>
+                              <input
+                                type="text"
+                                value={detailIdentity.proyek}
+                                onChange={(e) =>
+                                  setDetailIdentity((prev) => ({
+                                    ...prev,
+                                    proyek: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                placeholder="Nama Proyek"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Tanggal
+                              </label>
+                              <input
+                                type="date"
+                                value={detailIdentity.tanggal}
+                                onChange={(e) =>
+                                  setDetailIdentity((prev) => ({
+                                    ...prev,
+                                    tanggal: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Nama Penilai
+                              </label>
+                              <input
+                                type="text"
+                                value={detailIdentity.penilai}
+                                onChange={(e) =>
+                                  setDetailIdentity((prev) => ({
+                                    ...prev,
+                                    penilai: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                placeholder="Nama Penilai"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Pertanyaan & Jawaban */}
+                        <div className="bg-white rounded-lg border p-4">
+                          <h4 className="font-medium text-gray-800 mb-3">
+                            Pertanyaan
+                          </h4>
+                          <div className="space-y-4">
+                            {detailTemplate.pertanyaan.map((q, idx) => (
+                              <div
+                                key={q.id}
+                                className="grid grid-cols-1 md:grid-cols-2 items-start gap-4"
+                              >
+                                <label className="text-sm text-gray-800">
+                                  {idx + 1}. {q.pertanyaan}
+                                </label>
+                                {q.tipe === "scale" ? (
+                                  <select
+                                    value={(detailAnswers[q.id] as number) ?? 3}
+                                    onChange={(e) =>
+                                      setDetailAnswers((prev) => ({
+                                        ...prev,
+                                        [q.id]: Number(e.target.value),
+                                      }))
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                  >
+                                    <option value={1}>
+                                      1 - Sangat Tidak Puas
+                                    </option>
+                                    <option value={2}>2 - Tidak Puas</option>
+                                    <option value={3}>3 - Cukup</option>
+                                    <option value={4}>4 - Puas</option>
+                                    <option value={5}>5 - Sangat Puas</option>
+                                  </select>
+                                ) : (
+                                  <textarea
+                                    value={
+                                      (detailAnswers[q.id] as string) ?? ""
+                                    }
+                                    onChange={(e) =>
+                                      setDetailAnswers((prev) => ({
+                                        ...prev,
+                                        [q.id]: e.target.value,
+                                      }))
+                                    }
+                                    className="w-full min-h-[80px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                    placeholder="Jawaban"
+                                  />
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setIsDetailOpen(false)}
+                          className="px-4 py-2 rounded-md text-sm border"
+                        >
+                          Tutup
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-end gap-2">
-                <button onClick={() => setIsDetailOpen(false)} className="px-4 py-2 rounded-md text-sm border">
-                  Tutup
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+                )}
                 {templates.map((tpl, i) => (
                   <tr
                     key={tpl.id}
@@ -677,7 +763,7 @@ const CSIMasterDashboard: React.FC = () => {
                               }
                               className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                             >
-                              <option value="scale">Skala 1-5</option>
+                              <option value="scale">Skala 1-4</option>
                               <option value="text">Isian Teks</option>
                             </select>
                           </td>
