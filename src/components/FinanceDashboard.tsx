@@ -48,6 +48,21 @@ const FinanceDashboard: React.FC = () => {
     </span>
   );
 
+  // Cash Out status uses Paid/Unpaid
+  type StatusOut = "Paid" | "Unpaid";
+  const statusBadgeOut = (s: StatusOut) => (
+    <span
+      className={
+        "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium " +
+        (s === "Paid"
+          ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200"
+          : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200")
+      }
+    >
+      {s}
+    </span>
+  );
+
   const paymentIn: Array<{
     namaCustomer: string;
     nominal: number;
@@ -93,20 +108,20 @@ const FinanceDashboard: React.FC = () => {
     namaPembiayaan: string;
     nominal: number;
     jadwal: string;
-    status: Status;
+    status: StatusOut;
   }>[] = [
     [
       {
         namaPembiayaan: "Gaji Karyawan",
         nominal: 400_000_000,
         jadwal: "2025-09-12",
-        status: "Received",
+        status: "Paid",
       },
       {
         namaPembiayaan: "Vendor A",
         nominal: 210_000_000,
         jadwal: "2025-09-12",
-        status: "Waiting",
+        status: "Unpaid",
       },
     ],
     [
@@ -114,13 +129,13 @@ const FinanceDashboard: React.FC = () => {
         namaPembiayaan: "Sewa Kantor",
         nominal: 150_000_000,
         jadwal: "2025-09-13",
-        status: "Received",
+        status: "Paid",
       },
       {
         namaPembiayaan: "BBM Operasional",
         nominal: 60_000_000,
         jadwal: "2025-09-13",
-        status: "-",
+        status: "Unpaid",
       },
     ],
   ];
@@ -182,9 +197,9 @@ const FinanceDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Cashflow Chart (6 bulan) */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+        {/* Cashflow Chart (6 bulan) */}
+        <div className="mb-8">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">
               Cashflow (6 Bulan)
             </h3>
@@ -215,13 +230,13 @@ const FinanceDashboard: React.FC = () => {
                   </div>
                 )
               )}
-              <div className="absolute bottom-0 left-0 right-0 flex justify-around items-end h-full pt-8">
+              <div className="absolute bottom-0 left-0 right-0 flex justify-between items-end h-full pt-8">
                 {cashflowMonthly.map((data, index) => (
                   <div
                     key={index}
-                    className="flex flex-col items-center h-full justify-end px-2"
+                    className="flex flex-col items-center h-full justify-end"
                   >
-                    <div className="flex h-full items-end space-x-1">
+                    <div className="flex h-full items-end space-x-1 px-2">
                       <div
                         className="w-6 bg-blue-400 rounded-t-md transition-all duration-700 ease-out hover:opacity-80"
                         style={{ height: `${data.in}%` }}
@@ -293,7 +308,7 @@ const FinanceDashboard: React.FC = () => {
                               {new Date(r.jadwal).toLocaleDateString("id-ID")}
                             </td>
                             <td className="px-3 py-2">
-                              {statusBadge(r.status)}
+                              {statusBadgeOut(r.status)}
                             </td>
                           </tr>
                         ))}
