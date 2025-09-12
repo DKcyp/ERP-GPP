@@ -239,8 +239,8 @@ const TimesheetBarangPegawaiModal: React.FC<
                       <th className="px-3 py-2 text-left">Nama</th>
                       <th className="px-3 py-2 text-left">Kualifikasi</th>
                       <th className="px-3 py-2 text-left">Zona</th>
-                      <th className="px-3 py-2 text-left">Actual</th>
                       <th className="px-3 py-2 text-left">Durasi</th>
+                      <th className="px-3 py-2 text-left">Actual</th>
                       <th className="px-3 py-2 text-left">Upload</th>
                       <th className="px-3 py-2 text-center">Aksi</th>
                     </tr>
@@ -342,7 +342,6 @@ const TimesheetBarangPegawaiModal: React.FC<
                     <th className="px-3 py-2 text-left">Nama Barang</th>
                     <th className="px-3 py-2 text-left">QTY</th>
                     <th className="px-3 py-2 text-left">Ditagihkan</th>
-                    <th className="px-3 py-2 text-left">Dikembalikan</th>
                     <th className="px-3 py-2 text-left">Selisih</th>
                     <th className="px-3 py-2 text-left">Upload</th>
                     <th className="px-3 py-2 text-center">Aksi</th>
@@ -376,16 +375,7 @@ const TimesheetBarangPegawaiModal: React.FC<
                           }
                         />
                       </td>
-                      <td className="px-3 py-2">
-                        <input
-                          type="number"
-                          className="w-full px-2 py-1 border rounded-lg"
-                          value={row.dikembalikan}
-                          onChange={(e) =>
-                            updateBarang(row.id, "dikembalikan", e.target.value)
-                          }
-                        />
-                      </td>
+
                       <td className="px-3 py-2">
                         <input
                           type="number"
