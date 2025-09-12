@@ -426,16 +426,19 @@ const CSIMasterDashboard: React.FC = () => {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    No
+                    Bulan
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Nama Form
+                    Tahun
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Jumlah Pertanyaan
+                    Jumlah Koresponden
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Dibuat
+                    Total Nilai
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Rata-rata
                   </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Aksi
@@ -446,7 +449,7 @@ const CSIMasterDashboard: React.FC = () => {
                 {templates.length === 0 && (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="px-4 py-6 text-center text-gray-500"
                     >
                       Belum ada template. Silakan klik "Tambah Template" di
@@ -609,22 +612,38 @@ const CSIMasterDashboard: React.FC = () => {
 
                         {/* Kritik & Saran */}
                         <div className="bg-gray-50 rounded-md border p-4">
-                          <h4 className="font-medium text-gray-800 mb-3">Kritik & Saran</h4>
+                          <h4 className="font-medium text-gray-800 mb-3">
+                            Kritik & Saran
+                          </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700">Kritik</label>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Kritik
+                              </label>
                               <textarea
                                 value={detailFeedback.kritik}
-                                onChange={(e) => setDetailFeedback((prev) => ({ ...prev, kritik: e.target.value }))}
+                                onChange={(e) =>
+                                  setDetailFeedback((prev) => ({
+                                    ...prev,
+                                    kritik: e.target.value,
+                                  }))
+                                }
                                 className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                                 placeholder="Tuliskan kritik Anda di sini"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700">Saran</label>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Saran
+                              </label>
                               <textarea
                                 value={detailFeedback.saran}
-                                onChange={(e) => setDetailFeedback((prev) => ({ ...prev, saran: e.target.value }))}
+                                onChange={(e) =>
+                                  setDetailFeedback((prev) => ({
+                                    ...prev,
+                                    saran: e.target.value,
+                                  }))
+                                }
                                 className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                                 placeholder="Tuliskan saran Anda di sini"
                               />
@@ -648,16 +667,17 @@ const CSIMasterDashboard: React.FC = () => {
                     key={tpl.id}
                     className={`${i % 2 === 0 ? "bg-white" : "bg-gray-25"}`}
                   >
-                    <td className="px-4 py-3 text-gray-900">{i + 1}</td>
                     <td className="px-4 py-3 text-gray-900 font-medium">
-                      {tpl.namaForm}
+                      {new Date(tpl.createdAt).toLocaleString("id-ID", {
+                        month: "long",
+                      })}
                     </td>
                     <td className="px-4 py-3 text-gray-900">
-                      {tpl.pertanyaan.length}
+                      {new Date(tpl.createdAt).getFullYear()}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {new Date(tpl.createdAt).toLocaleString("id-ID")}
-                    </td>
+                    <td className="px-4 py-3 text-gray-900">0</td>
+                    <td className="px-4 py-3 text-gray-900">0</td>
+                    <td className="px-4 py-3 text-gray-900">0</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1">
                         <button
@@ -665,18 +685,6 @@ const CSIMasterDashboard: React.FC = () => {
                           className="px-2 py-1 text-gray-700 hover:bg-gray-50 rounded text-xs"
                         >
                           Detail
-                        </button>
-                        <button
-                          onClick={() => openEditModal(tpl)}
-                          className="px-2 py-1 text-blue-600 hover:bg-blue-50 rounded text-xs"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteTemplate(tpl.id)}
-                          className="px-2 py-1 text-red-600 hover:bg-red-50 rounded text-xs"
-                        >
-                          Hapus
                         </button>
                       </div>
                     </td>
