@@ -157,6 +157,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
       tunjangan: "-",
       projectRate: "200000",
       hari: "1",
+      satuan: "Unit",
       margin: "5",
       hargaAkhir: "210000",
     },
@@ -167,6 +168,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
       tunjangan: "-",
       projectRate: "300000",
       hari: "1",
+      satuan: "Unit",
       margin: "5",
       hargaAkhir: "315000",
     },
@@ -520,10 +522,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 )}
               </div>
 
-              {/* Jenis Pekerjaan */}
+              {/* Metode Pengerjaan */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-2">
-                  Jenis Pekerjaan
+                  Metode Pengerjaan
                 </label>
                 <select
                   value={formData.jenisPekerjaan}
@@ -725,13 +727,13 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                 />
               </div>
 
-              {/* Ringkasan Jenis Pekerjaan vs Jumlah */}
+              {/* Ringkasan Metode Pengerjaan vs Jumlah */}
               <div className="lg:col-span-2">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-xs font-semibold text-gray-900">
-                    Ringkasan Pekerjaan
+                    Metode Pengerjaan
                   </h4>
-                  {!readOnly && (
+                  {!readOnly && !isProcess && (
                     <button
                       type="button"
                       onClick={addPekerjaanRow}
@@ -746,7 +748,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Jenis Pekerjaan
+                          Metode Pengerjaan
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
                           Jumlah
@@ -772,7 +774,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-200 rounded"
                             >
-                              <option value="">Pilih Jenis Pekerjaan</option>
+                              <option value="">Pilih Metode Pengerjaan</option>
                               {jenisPekerjaanOptions.map((opt) => (
                                 <option key={opt} value={opt}>
                                   {opt}
@@ -798,7 +800,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-3 py-2">
-                            {!readOnly && (
+                            {!readOnly && !isProcess && (
                               <button
                                 type="button"
                                 onClick={() => removePekerjaanRow(idx)}
@@ -848,7 +850,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                         <th className="px-2 py-2 text-left">Tenaga</th>
                         <th className="px-2 py-2 text-left">Tunjangan</th>
                         <th className="px-2 py-2 text-left">Project Rate</th>
-                        <th className="px-2 py-2 text-left">Unit/Hari</th>
+                        <th className="px-2 py-2 text-left">Jumlah</th>
                         <th className="px-2 py-2 text-left">Satuan</th>
                         <th className="px-2 py-2 text-left">Margin</th>
                         <th className="px-2 py-2 text-left">Harga Akhir</th>
@@ -947,7 +949,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <input
+                            <select
                               value={row.unit}
                               onChange={(e) =>
                                 updateRow(
@@ -958,7 +960,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -996,26 +1001,29 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setTenagaKerja, {
-                          pegawai: "",
-                          tenaga: "",
-                          tunjangan: "",
-                          projectRate: "",
-                          hari: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setTenagaKerja, {
+                            pegawai: "",
+                            tenaga: "",
+                            tunjangan: "",
+                            projectRate: "",
+                            hari: "",
+                            unit: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1029,7 +1037,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                           Nama Barang (PPE)
                         </th>
                         <th className="px-2 py-2 text-left">Jumlah</th>
-                        <th className="px-2 py-2 text-left">Hari</th>
+                        <th className="px-2 py-2 text-left">Jumlah</th>
                         <th className="px-2 py-2 text-left">Satuan</th>
                         <th className="px-2 py-2 text-left">Harga Satuan</th>
                         <th className="px-2 py-2 text-left">Margin</th>
@@ -1079,13 +1087,16 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <input
+                            <select
                               value={row.satuan}
                               onChange={(e) =>
                                 updateRow(setPpe, idx, "satuan", e.target.value)
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1111,38 +1122,42 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() => removeRow(setPpe, ppe)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {!isProcess && !readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => removeRow(setPpe, ppe)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setPpe, {
-                          namaBarang: "",
-                          jumlah: "",
-                          hari: "",
-                          satuan: "",
-                          hargaSatuan: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setPpe, {
+                            namaBarang: "",
+                            jumlah: "",
+                            hari: "",
+                            satuan: "",
+                            hargaSatuan: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1155,7 +1170,8 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                         <th className="px-2 py-2 text-left">Jasa</th>
                         <th className="px-2 py-2 text-left">Tunjangan</th>
                         <th className="px-2 py-2 text-left">Project Rate</th>
-                        <th className="px-2 py-2 text-left">Hari</th>
+                        <th className="px-2 py-2 text-left">Jumlah</th>
+                        <th className="px-2 py-2 text-left">Satuan</th>
                         <th className="px-2 py-2 text-left">Margin</th>
                         <th className="px-2 py-2 text-left">Harga Akhir</th>
                         <th className="px-2 py-2 text-left">Aksi</th>
@@ -1223,6 +1239,18 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
+                            <select
+                              value={row.unit}
+                              onChange={(e) =>
+                                updateRow(setJasa, idx, "unit", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
+                          </td>
+                          <td className="px-2 py-2">
                             <input
                               value={row.margin}
                               onChange={(e) =>
@@ -1244,37 +1272,42 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() => removeRow(setJasa, jasa)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {!isProcess && !readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => removeRow(setJasa, jasa)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setJasa, {
-                          jasa: "",
-                          tunjangan: "",
-                          projectRate: "",
-                          hari: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setJasa, {
+                            jasa: "",
+                            tunjangan: "",
+                            projectRate: "",
+                            hari: "",
+                            unit: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1336,7 +1369,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <input
+                            <select
                               value={row.satuan}
                               onChange={(e) =>
                                 updateRow(
@@ -1347,7 +1380,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1378,38 +1414,42 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() => removeRow(setAlat, alat)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {!isProcess && !readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => removeRow(setAlat, alat)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setAlat, {
-                          alat: "",
-                          jumlah: "",
-                          hari: "",
-                          satuan: "",
-                          hargaSatuan: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setAlat, {
+                            alat: "",
+                            jumlah: "",
+                            hari: "",
+                            satuan: "",
+                            hargaSatuan: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1481,7 +1521,7 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <input
+                            <select
                               value={row.satuan}
                               onChange={(e) =>
                                 updateRow(
@@ -1492,7 +1532,10 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1523,38 +1566,42 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() => removeRow(setBarang, barang)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {!isProcess && !readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => removeRow(setBarang, barang)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setBarang, {
-                          namaBarang: "",
-                          jumlah: "",
-                          hari: "",
-                          satuan: "",
-                          hargaSatuan: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setBarang, {
+                            namaBarang: "",
+                            jumlah: "",
+                            hari: "",
+                            satuan: "",
+                            hargaSatuan: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1635,6 +1682,23 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
+                            <select
+                              value={row.satuan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setMobDemob,
+                                  idx,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
+                          </td>
+                          <td className="px-2 py-2">
                             <input
                               value={row.margin}
                               onChange={(e) =>
@@ -1656,37 +1720,42 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() => removeRow(setMobDemob, mobDemob)}
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {!isProcess && !readOnly && (
+                              <button
+                                type="button"
+                                onClick={() => removeRow(setMobDemob, mobDemob)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setMobDemob, {
-                          namaTransportasi: "",
-                          tunjangan: "",
-                          projectRate: "",
-                          hari: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setMobDemob, {
+                            namaTransportasi: "",
+                            tunjangan: "",
+                            projectRate: "",
+                            hari: "",
+                            satuan: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1765,6 +1834,23 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
+                            <select
+                              value={row.satuan}
+                              onChange={(e) =>
+                                updateRow(
+                                  setBiayaLainLain,
+                                  idx,
+                                  "satuan",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
+                          </td>
+                          <td className="px-2 py-2">
                             <input
                               value={row.margin}
                               onChange={(e) =>
@@ -1786,39 +1872,44 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeRow(setBiayaLainLain, biayaLainLain)
-                              }
-                              className="px-2 py-1 bg-red-600 text-white rounded text-xs"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                            {!isProcess && !readOnly && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeRow(setBiayaLainLain, biayaLainLain)
+                                }
+                                className="px-2 py-1 bg-red-600 text-white rounded text-xs"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        addRow(setBiayaLainLain, {
-                          namaBiaya: "",
-                          tunjangan: "",
-                          projectRate: "",
-                          hari: "",
-                          margin: "",
-                          hargaAkhir: "",
-                        })
-                      }
-                      className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Tambah Baris
-                    </button>
-                  </div>
+                  {!isProcess && !readOnly && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addRow(setBiayaLainLain, {
+                            namaBiaya: "",
+                            tunjangan: "",
+                            projectRate: "",
+                            hari: "",
+                            satuan: "",
+                            margin: "",
+                            hargaAkhir: "",
+                          })
+                        }
+                        className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Tambah Baris
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

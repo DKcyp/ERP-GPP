@@ -21,20 +21,15 @@ import {
 interface TunjanganUnitData {
   id: string;
   no: number;
-  namaTeknisi: string;
-  tanggal: string;
-  progressHarian: string;
-  zonaKerja: string;
-  proyek: string;
-  tunjangan: string;
+  namaTunjangan: string;
+  kualifikasi: string;
+  nominalTunjangan: number;
+  satuan: 'Unit';
 }
 
 const TunjanganUnitDashboard: React.FC = () => {
-  const [searchNamaProyek, setSearchNamaProyek] = useState('');
-  const [searchNamaTeknisi, setSearchNamaTeknisi] = useState('');
-  const [searchZonaKerja, setSearchZonaKerja] = useState('');
-  const [dateFrom, setDateFrom] = useState('03/03/2025');
-  const [dateTo, setDateTo] = useState('03/03/2025');
+  const [searchNamaTunjangan, setSearchNamaTunjangan] = useState('');
+  const [searchKualifikasi, setSearchKualifikasi] = useState('');
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -49,58 +44,13 @@ const TunjanganUnitDashboard: React.FC = () => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
   };
 
-  // Sample data matching the image
+  // Sample data
   const [tunjanganUnitData, setTunjanganUnitData] = useState<TunjanganUnitData[]>([
-    {
-      id: '1',
-      no: 1,
-      namaTeknisi: 'Ahmad Fauzi',
-      tanggal: '01-01-2025',
-      progressHarian: '80%',
-      zonaKerja: 'Zona Utara',
-      proyek: 'Proyek Jaringan Fiber Optik',
-      tunjangan: 'Rp 250.000'
-    },
-    {
-      id: '2',
-      no: 2,
-      namaTeknisi: 'Budi Santoso',
-      tanggal: '01-01-2025',
-      progressHarian: '60%',
-      zonaKerja: 'Zona Timur',
-      proyek: 'Proyek Internet Sekolah',
-      tunjangan: 'Rp 150.000'
-    },
-    {
-      id: '3',
-      no: 3,
-      namaTeknisi: 'Citra Dewi',
-      tanggal: '01-01-2025',
-      progressHarian: '90%',
-      zonaKerja: 'Zona Selatan',
-      proyek: 'Proyek Smart City',
-      tunjangan: 'Rp 300.000'
-    },
-    {
-      id: '4',
-      no: 4,
-      namaTeknisi: 'Dedi Kurniawan',
-      tanggal: '01-01-2025',
-      progressHarian: '50%',
-      zonaKerja: 'Zona Barat',
-      proyek: 'Proyek Perluasan Jaringan',
-      tunjangan: 'Rp 200.000'
-    },
-    {
-      id: '5',
-      no: 5,
-      namaTeknisi: 'Eka Prasetya',
-      tanggal: '01-01-2025',
-      progressHarian: '70%',
-      zonaKerja: 'Zona Pusat',
-      proyek: 'Proyek Data Center',
-      tunjangan: 'Rp 225.000'
-    }
+    { id: '1', no: 1, namaTunjangan: 'Tunjangan Unit A', kualifikasi: 'Teknisi A', nominalTunjangan: 250000, satuan: 'Unit' },
+    { id: '2', no: 2, namaTunjangan: 'Tunjangan Unit B', kualifikasi: 'Teknisi B', nominalTunjangan: 150000, satuan: 'Unit' },
+    { id: '3', no: 3, namaTunjangan: 'Tunjangan Unit C', kualifikasi: 'Teknisi C', nominalTunjangan: 300000, satuan: 'Unit' },
+    { id: '4', no: 4, namaTunjangan: 'Tunjangan Unit D', kualifikasi: 'Teknisi D', nominalTunjangan: 200000, satuan: 'Unit' },
+    { id: '5', no: 5, namaTunjangan: 'Tunjangan Unit E', kualifikasi: 'Teknisi E', nominalTunjangan: 225000, satuan: 'Unit' },
   ]);
 
   useEffect(() => {
@@ -130,20 +80,17 @@ const TunjanganUnitDashboard: React.FC = () => {
 
   // Filter data based on search criteria
   const filteredData = tunjanganUnitData.filter(item => {
-    const matchesNamaProyek = item.proyek.toLowerCase().includes(searchNamaProyek.toLowerCase());
-    const matchesNamaTeknisi = item.namaTeknisi.toLowerCase().includes(searchNamaTeknisi.toLowerCase());
-    const matchesZonaKerja = item.zonaKerja.toLowerCase().includes(searchZonaKerja.toLowerCase());
-    
-    return matchesNamaProyek && matchesNamaTeknisi && matchesZonaKerja;
+    const matchesNamaTunjangan = item.namaTunjangan.toLowerCase().includes(searchNamaTunjangan.toLowerCase());
+    const matchesKualifikasi = item.kualifikasi.toLowerCase().includes(searchKualifikasi.toLowerCase());
+    return matchesNamaTunjangan && matchesKualifikasi;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
     const getComparable = (item: TunjanganUnitData) => {
-      if (sortField === 'tunjangan') {
-        const n = Number(String(item.tunjangan).replace(/[^0-9]/g, '')) || 0;
-        return n;
+      if (sortField === 'nominalTunjangan') {
+        return item.nominalTunjangan;
       }
       return item[sortField] as any;
     };
@@ -171,16 +118,10 @@ const TunjanganUnitDashboard: React.FC = () => {
     const newTunjanganUnit: TunjanganUnitData = {
       id: (tunjanganUnitData.length + 1).toString(),
       no: tunjanganUnitData.length + 1,
-      namaTeknisi: formData.namaTeknisi,
-      tanggal: new Date(formData.tanggal).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      progressHarian: formData.progress,
-      zonaKerja: formData.zonaKerja,
-      proyek: formData.proyek,
-      tunjangan: formatRupiah(formData.tunjangan || 0)
+      namaTunjangan: formData.namaTunjangan,
+      kualifikasi: formData.kualifikasi,
+      nominalTunjangan: Number(String(formData.nominalTunjangan).replace(/[^0-9]/g, '')) || 0,
+      satuan: 'Unit',
     };
 
     setTunjanganUnitData(prev => [newTunjanganUnit, ...prev.map(t => ({ ...t, no: t.no + 1 }))]);
@@ -208,18 +149,18 @@ const TunjanganUnitDashboard: React.FC = () => {
           <div className="space-y-4 mb-6">
             {/* Search Inputs Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Search Nama Proyek */}
+              {/* Search Nama Tunjangan */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Nama Proyek
+                  Cari Nama Tunjangan
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={searchNamaProyek}
-                    onChange={(e) => setSearchNamaProyek(e.target.value)}
+                    value={searchNamaTunjangan}
+                    onChange={(e) => setSearchNamaTunjangan(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="Proyek A"
+                    placeholder="Contoh: Tunjangan Unit"
                   />
                   <button 
                     onClick={handleSearch}
@@ -230,18 +171,18 @@ const TunjanganUnitDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Search Nama Teknisi */}
+              {/* Search Kualifikasi */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Nama Teknisi
+                  Cari Kualifikasi
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={searchNamaTeknisi}
-                    onChange={(e) => setSearchNamaTeknisi(e.target.value)}
+                    value={searchKualifikasi}
+                    onChange={(e) => setSearchKualifikasi(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="Budi Santoso"
+                    placeholder="Contoh: Teknisi"
                   />
                   <button 
                     onClick={handleSearch}
@@ -252,67 +193,8 @@ const TunjanganUnitDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Search Zona Kerja */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Cari Zona Kerja
-                </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={searchZonaKerja}
-                    onChange={(e) => setSearchZonaKerja(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="Zona Timur"
-                  />
-                  <button 
-                    onClick={handleSearch}
-                    className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Date Range and Search Button Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              {/* Periode */}
-              <div className="space-y-2 lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Periode
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="03/03/2025"
-                  />
-                  <span className="text-sm text-gray-500">s.d</span>
-                  <input
-                    type="text"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="03/03/2025"
-                  />
-                </div>
-              </div>
-
-              {/* Search Button */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 opacity-0">
-                  Search
-                </label>
-                <button 
-                  onClick={handleSearch}
-                  className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
-                >
-                  Search
-                </button>
-              </div>
+              {/* Spacer */}
+              <div className="space-y-2" />
             </div>
           </div>
 
@@ -370,66 +252,44 @@ const TunjanganUnitDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaTeknisi')}
+                    onClick={() => handleSort('namaTunjangan')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Nama Teknisi</span>
-                      {sortField === 'namaTeknisi' && (
+                      <span>Nama Tunjangan</span>
+                      {sortField === 'namaTunjangan' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggal')}
+                    onClick={() => handleSort('kualifikasi')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Tanggal</span>
-                      {sortField === 'tanggal' && (
+                      <span>Kualifikasi</span>
+                      {sortField === 'kualifikasi' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('progressHarian')}
+                    onClick={() => handleSort('nominalTunjangan')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Progress Harian</span>
-                      {sortField === 'progressHarian' && (
+                      <span>Nominal Tunjangan</span>
+                      {sortField === 'nominalTunjangan' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tunjangan')}
+                    onClick={() => handleSort('satuan')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Tunjangan</span>
-                      {sortField === 'tunjangan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('zonaKerja')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Zona Kerja</span>
-                      {sortField === 'zonaKerja' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('proyek')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Proyek</span>
-                      {sortField === 'proyek' && (
+                      <span>Satuan</span>
+                      {sortField === 'satuan' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
@@ -449,12 +309,10 @@ const TunjanganUnitDashboard: React.FC = () => {
                     }}
                   >
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaTeknisi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.tanggal}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.progressHarian}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.tunjangan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.zonaKerja}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.proyek}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaTunjangan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.kualifikasi}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{formatRupiah(item.nominalTunjangan)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.satuan}</td>
                   </tr>
                 ))}
               </tbody>
@@ -512,7 +370,7 @@ const TunjanganUnitDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaTeknisi}
+        itemName={itemToDelete?.namaTunjangan}
       />
     </div>
   );

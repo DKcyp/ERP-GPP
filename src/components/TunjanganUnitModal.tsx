@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Save, Loader2 } from 'lucide-react';
+import { X, Save, Loader2 } from 'lucide-react';
 
 interface TunjanganUnitModalProps {
   isOpen: boolean;
@@ -8,118 +8,24 @@ interface TunjanganUnitModalProps {
 }
 
 export interface TunjanganUnitFormData {
-  namaTeknisi: string;
-  tanggal: string;
-  zonaKerja: string;
-  proyek: string;
-  progress: string;
-  metodePengerjaan?: string;
-  tunjangan?: string;
+  namaTunjangan: string;
+  kualifikasi: string;
+  nominalTunjangan: string;
+  satuan: 'Unit';
 }
 
 const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState<TunjanganUnitFormData>({
-    namaTeknisi: '',
-    tanggal: '',
-    zonaKerja: '',
-    proyek: '',
-    progress: '',
-    metodePengerjaan: '',
-    tunjangan: ''
+    namaTunjangan: '',
+    kualifikasi: '',
+    nominalTunjangan: '',
+    satuan: 'Unit',
   });
 
   const [errors, setErrors] = useState<Partial<TunjanganUnitFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const zonaKerjaOptions = [
-    'Zona Utara',
-    'Zona Selatan', 
-    'Zona Timur',
-    'Zona Barat',
-    'Zona Pusat'
-  ];
-
-  const proyekOptions = [
-    'Proyek Jaringan Fiber Optik',
-    'Proyek Internet Sekolah',
-    'Proyek Smart City',
-    'Proyek Perluasan Jaringan',
-    'Proyek Data Center'
-  ];
-
-  const metodePengerjaanOptions = [
-    'On Call',
-    'Project Based',
-    'Maintenance',
-    'Consulting',
-    'Tender',
-  ];
-
-  // Lightweight searchable select component
-  const SearchSelect: React.FC<{
-    value: string;
-    onChange: (v: string) => void;
-    options: string[];
-    placeholder?: string;
-  }> = ({ value, onChange, options, placeholder }) => {
-    const [open, setOpen] = useState(false);
-    const [query, setQuery] = useState<string>(value || '');
-    const containerRef = React.useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const handler = (e: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-          setOpen(false);
-        }
-      };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
-    }, []);
-
-    useEffect(() => {
-      setQuery(value || '');
-    }, [value]);
-
-    const filtered = options.filter(o => o.toLowerCase().includes((query || '').toLowerCase()));
-
-    return (
-      <div className="relative" ref={containerRef}>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          placeholder={placeholder}
-        />
-        {open && (
-          <div className="absolute z-50 mt-1 w-full max-h-48 overflow-auto bg-white border border-gray-200 rounded shadow-lg">
-            {filtered.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-gray-500">Tidak ada hasil</div>
-            ) : (
-              filtered.map((opt) => (
-                <button
-                  type="button"
-                  key={opt}
-                  onClick={() => {
-                    onChange(opt);
-                    setQuery(opt);
-                    setOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${opt === value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
-                >
-                  {opt}
-                </button>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
+  // no external options required in this simplified modal
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -141,31 +47,9 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
 
   const validateForm = (): boolean => {
     const newErrors: Partial<TunjanganUnitFormData> = {};
-
-    if (!formData.namaTeknisi.trim()) {
-      newErrors.namaTeknisi = 'Nama Teknisi wajib diisi';
-    }
-
-    if (!formData.tanggal) {
-      newErrors.tanggal = 'Tanggal wajib diisi';
-    }
-
-    if (!formData.zonaKerja) {
-      newErrors.zonaKerja = 'Zona Kerja wajib dipilih';
-    }
-
-    if (!formData.proyek) {
-      newErrors.proyek = 'Proyek wajib dipilih';
-    }
-
-    if (!formData.tunjangan || String(formData.tunjangan).trim() === '') {
-      newErrors.tunjangan = 'Jumlah tunjangan wajib diisi';
-    }
-
-    if (!formData.progress.trim()) {
-      newErrors.progress = 'Progress wajib diisi';
-    }
-
+    if (!formData.namaTunjangan.trim()) newErrors.namaTunjangan = 'Nama Tunjangan wajib diisi';
+    if (!formData.kualifikasi.trim()) newErrors.kualifikasi = 'Kualifikasi wajib diisi';
+    if (!formData.nominalTunjangan.trim()) newErrors.nominalTunjangan = 'Nominal Tunjangan wajib diisi';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -195,13 +79,10 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
     
     // Reset form
     setFormData({
-      namaTeknisi: '',
-      tanggal: '',
-      zonaKerja: '',
-      proyek: '',
-      progress: '',
-      metodePengerjaan: '',
-      tunjangan: ''
+      namaTunjangan: '',
+      kualifikasi: '',
+      nominalTunjangan: '',
+      satuan: 'Unit',
     });
     setErrors({});
     onClose();
@@ -235,142 +116,47 @@ const TunjanganUnitModal: React.FC<TunjanganUnitModalProps> = ({ isOpen, onClose
         {/* Form Content */}
         <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="space-y-6">
-              {/* Nama Teknisi */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Nama Tunjangan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Teknisi <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nama Tunjangan <span className="text-red-500">*</span></label>
                 <input
                   type="text"
-                  value={formData.namaTeknisi}
-                  onChange={(e) => handleInputChange('namaTeknisi', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.namaTeknisi ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="Masukkan nama teknisi"
+                  value={formData.namaTunjangan}
+                  onChange={(e) => handleInputChange('namaTunjangan', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${errors.namaTunjangan ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                  placeholder="Contoh: Tunjangan Unit"
                 />
-                {errors.namaTeknisi && (
-                  <p className="mt-1 text-sm text-red-600">{errors.namaTeknisi}</p>
-                )}
               </div>
 
-              {/* Tanggal */}
+              {/* Kualifikasi */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tanggal <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={formData.tanggal}
-                    onChange={(e) => handleInputChange('tanggal', e.target.value)}
-                    className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                      errors.tanggal ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}
-                  />
-                  <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-                {errors.tanggal && (
-                  <p className="mt-1 text-sm text-red-600">{errors.tanggal}</p>
-                )}
-              </div>
-
-              {/* Zona Kerja */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Zona Kerja <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={formData.zonaKerja}
-                  onChange={(e) => handleInputChange('zonaKerja', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.zonaKerja ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                >
-                  <option value="">Pilih Zona Kerja</option>
-                  {zonaKerjaOptions.map((zona) => (
-                    <option key={zona} value={zona}>{zona}</option>
-                  ))}
-                </select>
-                {errors.zonaKerja && (
-                  <p className="mt-1 text-sm text-red-600">{errors.zonaKerja}</p>
-                )}
-              </div>
-
-              {/* Proyek */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Proyek <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={formData.proyek}
-                  onChange={(e) => handleInputChange('proyek', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.proyek ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                >
-                  <option value="">Pilih Proyek</option>
-                  {proyekOptions.map((proyek) => (
-                    <option key={proyek} value={proyek}>{proyek}</option>
-                  ))}
-                </select>
-                {errors.proyek && (
-                  <p className="mt-1 text-sm text-red-600">{errors.proyek}</p>
-                )}
-              </div>
-
-              {/* Metode Pengerjaan (Searchable) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Metode Pengerjaan
-                </label>
-                <SearchSelect
-                  value={formData.metodePengerjaan || ''}
-                  onChange={(v) => handleInputChange('metodePengerjaan', v)}
-                  options={metodePengerjaanOptions}
-                  placeholder="Cari / pilih Metode Pengerjaan"
-                />
-                <p className="mt-1 text-xs text-gray-500">Opsional</p>
-              </div>
-
-              {/* Jumlah Tunjangan */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Jumlah Tunjangan <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kualifikasi <span className="text-red-500">*</span></label>
                 <input
-                  type="number"
-                  value={formData.tunjangan || ''}
-                  onChange={(e) => handleInputChange('tunjangan', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.tunjangan ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="0"
-                  min={0}
+                  type="text"
+                  value={formData.kualifikasi}
+                  onChange={(e) => handleInputChange('kualifikasi', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${errors.kualifikasi ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                  placeholder="Contoh: Teknisi Unit"
                 />
-                {errors.tunjangan && (
-                  <p className="mt-1 text-sm text-red-600">{errors.tunjangan}</p>
-                )}
               </div>
 
-              {/* Progress */}
+              {/* Nominal Tunjangan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Progress <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  value={formData.progress}
-                  onChange={(e) => handleInputChange('progress', e.target.value)}
-                  rows={4}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${
-                    errors.progress ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="Masukkan progress pekerjaan..."
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nominal Tunjangan <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={formData.nominalTunjangan}
+                  onChange={(e) => handleInputChange('nominalTunjangan', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${errors.nominalTunjangan ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
+                  placeholder="Contoh: Rp 150.000"
                 />
-                {errors.progress && (
-                  <p className="mt-1 text-sm text-red-600">{errors.progress}</p>
-                )}
+              </div>
+
+              {/* Satuan (fixed Unit) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Satuan</label>
+                <input type="text" value={formData.satuan} readOnly className="w-full px-4 py-3 border rounded-xl bg-gray-100 text-gray-700" />
               </div>
             </div>
           </form>

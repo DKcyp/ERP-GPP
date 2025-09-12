@@ -55,6 +55,55 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     'Proyek E'
   ];
 
+  // Dummy data autofill based on No SO Turunan selection
+  const dummyBySo: Record<string, Partial<ProsesProduksiFormData>> = {
+    'SO101.12': {
+      namaProyek: 'Proyek A',
+      mob: '2025-09-01',
+      demob: '2025-09-10',
+      tglPenerimaanReportTeknisi: '2025-09-11',
+      tglPenerimaanFinalReport: '2025-09-12',
+      nilaiProduksi: 'Rp 50.000.000',
+      statusReport: 'Approved',
+    },
+    'SO102.33': {
+      namaProyek: 'Proyek B',
+      mob: '2025-09-03',
+      demob: '2025-09-14',
+      tglPenerimaanReportTeknisi: '2025-09-15',
+      tglPenerimaanFinalReport: '2025-09-17',
+      nilaiProduksi: 'Rp 65.000.000',
+      statusReport: 'Approved',
+    },
+    'SO103.12': {
+      namaProyek: 'Proyek C',
+      mob: '2025-09-05',
+      demob: '2025-09-16',
+      tglPenerimaanReportTeknisi: '2025-09-17',
+      tglPenerimaanFinalReport: '2025-09-20',
+      nilaiProduksi: 'Rp 42.500.000',
+      statusReport: 'Revisi',
+    },
+    'SO104.87': {
+      namaProyek: 'Proyek D',
+      mob: '2025-09-07',
+      demob: '2025-09-18',
+      tglPenerimaanReportTeknisi: '2025-09-19',
+      tglPenerimaanFinalReport: '2025-09-22',
+      nilaiProduksi: 'Rp 80.000.000',
+      statusReport: 'Approved',
+    },
+    'SO105.21': {
+      namaProyek: 'Proyek E',
+      mob: '2025-09-09',
+      demob: '2025-09-20',
+      tglPenerimaanReportTeknisi: '2025-09-21',
+      tglPenerimaanFinalReport: '2025-09-24',
+      nilaiProduksi: 'Rp 55.000.000',
+      statusReport: 'Approved',
+    },
+  };
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -115,6 +164,31 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
   };
 
   const handleInputChange = (field: keyof ProsesProduksiFormData, value: string) => {
+    if (field === 'noSOTurunan') {
+      // Merge selected SO Turunan and its dummy payload
+      setFormData(prev => ({
+        ...prev,
+        noSOTurunan: value,
+        ...dummyBySo[value],
+      }));
+
+      // Clear related field errors
+      const fieldsToClear: (keyof ProsesProduksiFormData)[] = [
+        'noSOTurunan',
+        'namaProyek',
+        'mob',
+        'demob',
+        'tglPenerimaanReportTeknisi',
+        'nilaiProduksi',
+      ];
+      setErrors(prev => {
+        const clone = { ...prev };
+        fieldsToClear.forEach(f => (clone[f] = undefined));
+        return clone;
+      });
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // Clear error when user starts typing

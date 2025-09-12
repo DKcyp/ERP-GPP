@@ -50,6 +50,23 @@ const produksiInvoiceData = [
 ];
 
 const OperationalMainDashboard: React.FC = () => {
+  // Mock standby data & helpers
+  const standbyRatePerHour = 75000; // Rp per hour
+  const today = new Date();
+  const todayStr = today.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  // Static examples; hook these to API later
+  const todayStandbyHours = 42;
+  const monthStandbyHours = 920;
+  const formatRupiah = (num: number) =>
+    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(
+      num
+    );
+  const todayCost = todayStandbyHours * standbyRatePerHour;
+  const monthCost = monthStandbyHours * standbyRatePerHour;
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
@@ -147,7 +164,7 @@ const OperationalMainDashboard: React.FC = () => {
         </div>
 
         {/* Man Power Summary (below Active Projects) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Current Man Power & Total Gaji */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-start justify-between">
@@ -188,6 +205,50 @@ const OperationalMainDashboard: React.FC = () => {
                 <p className="text-sm text-gray-500 font-medium">
                   YTD (Jan – Sep)
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Man Power Standby per Jam */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-medium">
+                  Man Power Standby per Jam
+                </p>
+                <p className="text-xs text-gray-500 mt-1">{todayStr}</p>
+
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-gray-800">
+                      <Clock className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm">Hari ini</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-gray-900">
+                        {todayStandbyHours} jam
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatRupiah(todayCost)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-gray-800">
+                      <DollarSign className="h-4 w-4 text-emerald-600" />
+                      <span className="text-sm">Akumulasi 1 Bulan</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-gray-900">
+                        {monthStandbyHours} jam
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatRupiah(monthCost)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

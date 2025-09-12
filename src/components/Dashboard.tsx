@@ -22,6 +22,7 @@ import ProsesProduksiDashboard from "./ProsesProduksiDashboard";
 import TimesheetDashboard from "./TimesheetDashboard";
 import TimesheetPegawaiDashboard from "./TimesheetPegawaiDashboard";
 import TimesheetBarangDashboard from "./TimesheetBarangDashboard";
+import TimesheetBarangPegawaiDashboard from "./TimesheetBarangPegawaiDashboard";
 import TrainingDashboard from "./TrainingDashboard";
 import ProsesPengajuanTrainingDashboard from "./ProsesPengajuanTrainingDashboard";
 import PBGDashboard from "./PBGDashboard";
@@ -1218,6 +1219,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/operational/timesheet/barang") {
       return <TimesheetBarangDashboard />;
+    }
+    if (currentPage === "/operational/timesheet/barang-pegawai") {
+      return <TimesheetBarangPegawaiDashboard />;
     }
     if (currentPage === "/operational/training/dashboard") {
       return <TrainingDashboard />;

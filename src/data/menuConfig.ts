@@ -550,48 +550,23 @@ export const operationalMenu: MenuSection[] = [
   //     },
   //   ],
   // },
-  {
-    title: "HPP",
-    icon: "Calculator",
-    items: [],
-    directPath: "/operational/hpp-turunan/dashboard",
-  },
+  // {
+  //   title: "HPP",
+  //   icon: "Calculator",
+  //   items: [],
+  //   directPath: "/operational/hpp-turunan/dashboard",
+  // },
   {
     title: "TimeSheet",
     icon: "Clock",
-    items: [
-      {
-        title: "Dashboard",
-        icon: "BarChart3",
-        path: "/operational/timesheet/dashboard",
-      },
-      {
-        title: "Timesheet Pegawai",
-        icon: "UserCheck",
-        path: "/operational/timesheet/pegawai",
-      },
-      {
-        title: "Timesheet Barang",
-        icon: "Package",
-        path: "/operational/timesheet/barang",
-      },
-    ],
+    items: [],
+    directPath: "/operational/timesheet/barang-pegawai",
   },
   {
     title: "Produksi",
     icon: "Factory",
-    items: [
-      {
-        title: "Dashboard",
-        icon: "BarChart3",
-        path: "/operational/produksi/dashboard",
-      },
-      {
-        title: "Proses Produksi",
-        icon: "Cog",
-        path: "/operational/produksi/proses",
-      },
-    ],
+    items: [],
+    directPath: "/operational/produksi/proses",
   },
   // {
   //   title: "PBG",

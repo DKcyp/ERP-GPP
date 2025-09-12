@@ -434,7 +434,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     <td className="px-2 py-2 text-xs text-gray-900">{item.delayPenagihan}</td>
                     <td className="px-2 py-2 text-xs"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(item.status)}`}>{item.status}</span></td>
                     <td className="px-2 py-2 text-center">
-                      {role === "operational" && (
+                      {role === "operational" && item.status !== 'Approve' && (
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => openProcess(item)}

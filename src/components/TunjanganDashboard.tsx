@@ -20,17 +20,15 @@ import {
 
 interface TunjanganData {
   id: string;
-  no: number;
-  namaProyek: string;
-  zona: string;
-  jumlahKaryawan: number;
-  totalTunjangan: string;
-  status: 'Open' | 'Pending' | 'Closed';
+  namaTunjangan: string;
+  kualifikasi: string;
+  nominalTunjangan: string;
+  satuan: 'Hari';
 }
 
 const TunjanganDashboard: React.FC = () => {
-  const [searchNamaProyek, setSearchNamaProyek] = useState('');
-  const [searchZonaKerja, setSearchZonaKerja] = useState('');
+  const [searchNamaTunjangan, setSearchNamaTunjangan] = useState('');
+  const [searchKualifikasi, setSearchKualifikasi] = useState('');
   const [dateFrom, setDateFrom] = useState('03/03/2025');
   const [dateTo, setDateTo] = useState('03/03/2025');
   const [animateRows, setAnimateRows] = useState(false);
@@ -44,51 +42,9 @@ const TunjanganDashboard: React.FC = () => {
 
   // Sample data matching the image
   const [tunjanganData, setTunjanganData] = useState<TunjanganData[]>([
-    {
-      id: '1',
-      no: 1,
-      namaProyek: 'Proyek Jaringan Fiber Optik',
-      zona: 'Zona 1',
-      jumlahKaryawan: 15,
-      totalTunjangan: 'Rp 45.000.000',
-      status: 'Open'
-    },
-    {
-      id: '2',
-      no: 2,
-      namaProyek: 'Proyek Internet Sekolah',
-      zona: 'Zona 2',
-      jumlahKaryawan: 10,
-      totalTunjangan: 'Rp 30.000.000',
-      status: 'Pending'
-    },
-    {
-      id: '3',
-      no: 3,
-      namaProyek: 'Proyek Smart City',
-      zona: 'Zona 3',
-      jumlahKaryawan: 20,
-      totalTunjangan: 'Rp 60.000.000',
-      status: 'Closed'
-    },
-    {
-      id: '4',
-      no: 4,
-      namaProyek: 'Proyek Perluasan Jaringan',
-      zona: 'Zona 4',
-      jumlahKaryawan: 12,
-      totalTunjangan: 'Rp 36.000.000',
-      status: 'Open'
-    },
-    {
-      id: '5',
-      no: 5,
-      namaProyek: 'Proyek Data Center',
-      zona: 'Zona 5',
-      jumlahKaryawan: 18,
-      totalTunjangan: 'Rp 54.000.000',
-      status: 'Closed'
-    }
+    { id: '1', namaTunjangan: 'Tunjangan Makan', kualifikasi: 'Teknisi Junior', nominalTunjangan: 'Rp 50.000', satuan: 'Hari' },
+    { id: '2', namaTunjangan: 'Tunjangan Transport', kualifikasi: 'Teknisi Senior', nominalTunjangan: 'Rp 75.000', satuan: 'Hari' },
+    { id: '3', namaTunjangan: 'Tunjangan Lembur', kualifikasi: 'Supervisor', nominalTunjangan: 'Rp 100.000', satuan: 'Hari' },
   ]);
 
   useEffect(() => {
@@ -116,21 +72,13 @@ const TunjanganDashboard: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Open': return 'bg-green-600 text-white';
-      case 'Pending': return 'bg-yellow-500 text-white';
-      case 'Closed': return 'bg-red-600 text-white';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  // Removed status badge, not applicable to new structure
 
   // Filter data based on search criteria
   const filteredData = tunjanganData.filter(item => {
-    const matchesNamaProyek = item.namaProyek.toLowerCase().includes(searchNamaProyek.toLowerCase());
-    const matchesZonaKerja = item.zona.toLowerCase().includes(searchZonaKerja.toLowerCase());
-    
-    return matchesNamaProyek && matchesZonaKerja;
+    const m1 = item.namaTunjangan.toLowerCase().includes(searchNamaTunjangan.toLowerCase());
+    const m2 = item.kualifikasi.toLowerCase().includes(searchKualifikasi.toLowerCase());
+    return m1 && m2;
   });
 
   // Sort data
@@ -162,9 +110,16 @@ const TunjanganDashboard: React.FC = () => {
   };
 
   const handleAddTunjanganPegawai = (formData: TunjanganPegawaiFormData) => {
-    console.log('Tunjangan Pegawai data saved:', formData);
-    // Here you would typically add the new data to your state or send it to an API
-    // For now, we'll just log it to demonstrate the integration
+    setTunjanganData(prev => [
+      {
+        id: (prev.length + 1).toString(),
+        namaTunjangan: formData.namaTunjangan,
+        kualifikasi: formData.kualifikasi,
+        nominalTunjangan: formData.nominalTunjangan,
+        satuan: 'Hari',
+      },
+      ...prev,
+    ]);
   };
 
   return (
@@ -189,18 +144,18 @@ const TunjanganDashboard: React.FC = () => {
           <div className="space-y-4 mb-6">
             {/* Search Inputs Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Search Nama Proyek */}
+              {/* Search Nama Tunjangan */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Nama Proyek
+                  Cari Nama Tunjangan
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={searchNamaProyek}
-                    onChange={(e) => setSearchNamaProyek(e.target.value)}
+                    value={searchNamaTunjangan}
+                    onChange={(e) => setSearchNamaTunjangan(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="Proyek A"
+                    placeholder="Tunjangan Makan"
                   />
                   <button 
                     onClick={handleSearch}
@@ -211,18 +166,18 @@ const TunjanganDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Search Zona Kerja */}
+              {/* Search Kualifikasi */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Zona Kerja
+                  Cari Kualifikasi
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={searchZonaKerja}
-                    onChange={(e) => setSearchZonaKerja(e.target.value)}
+                    value={searchKualifikasi}
+                    onChange={(e) => setSearchKualifikasi(e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                    placeholder="Zona Timur"
+                    placeholder="Teknisi Senior"
                   />
                   <button 
                     onClick={handleSearch}
@@ -316,72 +271,10 @@ const TunjanganDashboard: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaProyek')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Nama Proyek</span>
-                      {sortField === 'namaProyek' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('zona')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Zona</span>
-                      {sortField === 'zona' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('jumlahKaryawan')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Jumlah Karyawan</span>
-                      {sortField === 'jumlahKaryawan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('totalTunjangan')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Total Tunjangan</span>
-                      {sortField === 'totalTunjangan' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('status')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Status</span>
-                      {sortField === 'status' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Tunjangan</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Kualifikasi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nominal Tunjangan</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Satuan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -396,16 +289,10 @@ const TunjanganDashboard: React.FC = () => {
                       animationFillMode: 'forwards'
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaProyek}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.zona}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 text-center">{item.jumlahKaryawan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.totalTunjangan}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(item.status)}`}>
-                        {item.status}
-                      </span>
-                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaTunjangan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.kualifikasi}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nominalTunjangan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.satuan}</td>
                   </tr>
                 ))}
               </tbody>
@@ -463,7 +350,7 @@ const TunjanganDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaProyek}
+        itemName={itemToDelete?.namaTunjangan}
       />
     </div>
   );
