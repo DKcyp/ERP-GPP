@@ -928,17 +928,17 @@ export const pengadaanMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Daftar PO",
+    title: "PR",
     icon: "FileBox",
     items: [
-      {
-        title: "Dashboard PO",
-        icon: "LayoutDashboard",
-        path: "/pengadaan/po/dashboard",
-      },
+      // {
+      //   title: "Dashboard PO",
+      //   icon: "LayoutDashboard",
+      //   path: "/pengadaan/po/dashboard",
+      // },
       { title: "PO Barang", icon: "Package", path: "/pengadaan/po/barang" },
       { title: "PO Jasa", icon: "Wrench", path: "/pengadaan/po/jasa" },
-      { title: "Laporan", icon: "FileBarChart", path: "/pengadaan/po/laporan" },
+      { title: "List PR", icon: "FileBarChart", path: "/pengadaan/po/laporan" },
     ],
   },
   {

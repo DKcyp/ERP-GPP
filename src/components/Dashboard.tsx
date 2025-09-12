@@ -93,7 +93,8 @@ import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboa
 import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
 import FinancePermintaanPencairanDanaDashboard from "./FinancePermintaanPencairanDanaDashboard";
 import FinanceVoucherDashboard from "./FinanceVoucherDashboard";
-import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumenPembelianDashboard";
+import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumeniDashboard";
+import FinanceARInvoiceDashboard from "./FinanceARInvoiceDashboard";
 import CollectionDashboardSO from "./CollectionDashboardSO";
 import CollectionDashboardProformaInvoice from "./CollectionDashboardProformaInvoice";
 import CollectionDashboardInvoice from "./CollectionDashboardInvoice";
@@ -1367,6 +1368,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/ar/dashboard") {
       return <ARDashboard />;
+    }
+    if (currentPage === "/finance/ar/invoice") {
+      return <FinanceARInvoiceDashboard />;
     }
     if (currentPage === "/finance/ar/proses-pembayaran") {
       return <ProsesPembayaranARDashboard />;
