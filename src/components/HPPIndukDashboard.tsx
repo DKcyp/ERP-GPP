@@ -14,7 +14,8 @@ import {
   Calendar,
   Clock,
   Info,
-  History
+  History,
+  FilePlus2
 } from 'lucide-react';
 
 interface HPPInduk {
@@ -51,6 +52,9 @@ const HPPIndukDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<HPPInduk | null>(null);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [selectedHistoryId, setSelectedHistoryId] = useState<string | null>(null);
+  // Adendum modal states
+  const [isAdendumOpen, setIsAdendumOpen] = useState(false);
+  const [adendumData, setAdendumData] = useState<HPPIndukFormData | null>(null);
   // Note: editing functionality disabled for now to match HPPIndukModal props
 
   // Sample data
@@ -144,6 +148,31 @@ const HPPIndukDashboard: React.FC = () => {
     }));
   };
 
+  const handleAdendumClick = (hpp: HPPInduk) => {
+    // Prefill a minimal HPPIndukFormData mapped from row data
+    const prefill: HPPIndukFormData = {
+      noKontrak: hpp.id,
+      durasiKontrak: '',
+      namaClient: hpp.pic,
+      lokasiPekerjaan: hpp.lokasi,
+      namaProject: '',
+      jenisPekerjaan: hpp.jenisPekerjaan,
+      estimasiNilaiKontrak: hpp.estimasiHPP,
+      sertifikat: null,
+      pekerjaanRingkas: [],
+      activeTab: 'Tenaga Kerja',
+      tenagaKerja: [],
+      jasa: [],
+      alat: [],
+      barang: [],
+      ppe: [],
+      mobDemob: [],
+      biayaLainLain: []
+    };
+    setAdendumData(prefill);
+    setIsAdendumOpen(true);
+  };
+
   const handleAddClick = () => {
     setIsModalOpen(true);
   };
@@ -214,6 +243,7 @@ const HPPIndukDashboard: React.FC = () => {
   });
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 text-sm">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
@@ -507,6 +537,13 @@ const HPPIndukDashboard: React.FC = () => {
                           onClick={() => handleEditClick(hpp)} // Use handleEditClick
                           className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200">
                           <Edit className="h-3 w-3" />
+                        </button>
+                        <button
+                          onClick={() => handleAdendumClick(hpp)}
+                          className="p-1.5 text-teal-600 hover:bg-teal-50 rounded-md transition-all duration-200"
+                          title="Adendum (Prefill Readonly)"
+                        >
+                          <FilePlus2 className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => handleDeleteClick(hpp)}
@@ -932,7 +969,60 @@ const HPPIndukDashboard: React.FC = () => {
         </div>
       )}
     </div>
-  );
+
+    {/* Adendum Readonly Modal */}
+    {isAdendumOpen && adendumData && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/30" onClick={() => setIsAdendumOpen(false)}></div>
+        <div className="relative bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-4xl mx-4 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-teal-50 to-white flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">Adendum - Tinjau Data</h3>
+              <p className="text-xs text-gray-500">Semua field bersifat readonly</p>
+            </div>
+            <button onClick={() => setIsAdendumOpen(false)} className="text-gray-500 hover:text-gray-700 px-2 py-1 rounded-md hover:bg-gray-100">✕</button>
+          </div>
+          <div className="p-4 max-h-[75vh] overflow-y-auto text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">No Kontrak</label>
+                <input disabled value={adendumData.noKontrak} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">Durasi Kontrak</label>
+                <input disabled value={adendumData.durasiKontrak} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">Nama Client</label>
+                <input disabled value={adendumData.namaClient} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">Lokasi Pekerjaan</label>
+                <input disabled value={adendumData.lokasiPekerjaan} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">Nama Project</label>
+                <input disabled value={adendumData.namaProject} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">Jenis Pekerjaan</label>
+                <input disabled value={adendumData.jenisPekerjaan} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-600 mb-1">Estimasi Nilai Kontrak</label>
+                <input disabled value={adendumData.estimasiNilaiKontrak} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-900" />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button onClick={() => setIsAdendumOpen(false)} className="px-3 py-1.5 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50">Tutup</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
+);
 };
 
 export default HPPIndukDashboard;
+

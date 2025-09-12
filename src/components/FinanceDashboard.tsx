@@ -1,10 +1,16 @@
-import React from 'react';
-import { Clock, ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import React from "react";
+import { Clock, ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 const FinanceDashboard: React.FC = () => {
   // Helper function to format currency
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).replace('Rp', '');
+    return amount
+      .toLocaleString("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+      })
+      .replace("Rp", "");
   };
 
   // KPI sample totals (mock)
@@ -17,50 +23,105 @@ const FinanceDashboard: React.FC = () => {
 
   // Cashflow 6 months mock data (percent scales visually in chart)
   const cashflowMonthly = [
-    { month: 'Mar', in: 68, out: 40 },
-    { month: 'Apr', in: 72, out: 55 },
-    { month: 'Mei', in: 80, out: 63 },
-    { month: 'Jun', in: 65, out: 49 },
-    { month: 'Jul', in: 78, out: 66 },
-    { month: 'Agu', in: 86, out: 71 },
+    { month: "Mar", in: 68, out: 40 },
+    { month: "Apr", in: 72, out: 55 },
+    { month: "Mei", in: 80, out: 63 },
+    { month: "Jun", in: 65, out: 49 },
+    { month: "Jul", in: 78, out: 66 },
+    { month: "Agu", in: 86, out: 71 },
   ];
 
   // Mapping Pembayaran (mock per hari)
-  type Status = 'Selesai' | 'Pending' | 'Gagal';
+  type Status = "Received" | "Waiting" | "-";
   const statusBadge = (s: Status) => (
     <span
       className={
-        'inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ' +
-        (s === 'Selesai'
-          ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-200'
-          : s === 'Pending'
-          ? 'bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-200'
-          : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-200')
+        "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium " +
+        (s === "Received"
+          ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-200"
+          : s === "Waiting"
+          ? "bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-200"
+          : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200")
       }
     >
       {s}
     </span>
   );
 
-  const paymentIn: Array<{ namaCustomer: string; nominal: number; jadwal: string; status: Status }>[] = [
+  const paymentIn: Array<{
+    namaCustomer: string;
+    nominal: number;
+    jadwal: string;
+    status: Status;
+  }>[] = [
     [
-      { namaCustomer: 'PT Sinar Jaya', nominal: 250_000_000, jadwal: '2025-09-12', status: 'Selesai' },
-      { namaCustomer: 'PT Panca Abadi', nominal: 175_000_000, jadwal: '2025-09-12', status: 'Pending' },
-      { namaCustomer: 'CV Maju Sejahtera', nominal: 95_000_000, jadwal: '2025-09-12', status: 'Selesai' },
+      {
+        namaCustomer: "PT Sinar Jaya",
+        nominal: 250_000_000,
+        jadwal: "2025-09-12",
+        status: "Received",
+      },
+      {
+        namaCustomer: "PT Panca Abadi",
+        nominal: 175_000_000,
+        jadwal: "2025-09-12",
+        status: "Waiting",
+      },
+      {
+        namaCustomer: "CV Maju Sejahtera",
+        nominal: 95_000_000,
+        jadwal: "2025-09-12",
+        status: "Received",
+      },
     ],
     [
-      { namaCustomer: 'PT Mitra Karya', nominal: 300_000_000, jadwal: '2025-09-13', status: 'Pending' },
-      { namaCustomer: 'PT Nusantara', nominal: 120_000_000, jadwal: '2025-09-13', status: 'Selesai' },
+      {
+        namaCustomer: "PT Mitra Karya",
+        nominal: 300_000_000,
+        jadwal: "2025-09-13",
+        status: "Waiting",
+      },
+      {
+        namaCustomer: "PT Nusantara",
+        nominal: 120_000_000,
+        jadwal: "2025-09-13",
+        status: "Received",
+      },
     ],
   ];
-  const paymentOut: Array<{ namaPembiayaan: string; nominal: number; jadwal: string; status: Status }>[] = [
+  const paymentOut: Array<{
+    namaPembiayaan: string;
+    nominal: number;
+    jadwal: string;
+    status: Status;
+  }>[] = [
     [
-      { namaPembiayaan: 'Gaji Karyawan', nominal: 400_000_000, jadwal: '2025-09-12', status: 'Selesai' },
-      { namaPembiayaan: 'Vendor A', nominal: 210_000_000, jadwal: '2025-09-12', status: 'Pending' },
+      {
+        namaPembiayaan: "Gaji Karyawan",
+        nominal: 400_000_000,
+        jadwal: "2025-09-12",
+        status: "Received",
+      },
+      {
+        namaPembiayaan: "Vendor A",
+        nominal: 210_000_000,
+        jadwal: "2025-09-12",
+        status: "Waiting",
+      },
     ],
     [
-      { namaPembiayaan: 'Sewa Kantor', nominal: 150_000_000, jadwal: '2025-09-13', status: 'Selesai' },
-      { namaPembiayaan: 'BBM Operasional', nominal: 60_000_000, jadwal: '2025-09-13', status: 'Gagal' },
+      {
+        namaPembiayaan: "Sewa Kantor",
+        nominal: 150_000_000,
+        jadwal: "2025-09-13",
+        status: "Received",
+      },
+      {
+        namaPembiayaan: "BBM Operasional",
+        nominal: 60_000_000,
+        jadwal: "2025-09-13",
+        status: "-",
+      },
     ],
   ];
 
@@ -75,14 +136,16 @@ const FinanceDashboard: React.FC = () => {
                 FINANCE DASHBOARD
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Finance
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Dashboard</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -92,27 +155,39 @@ const FinanceDashboard: React.FC = () => {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
-            <p className="text-sm text-gray-500 mb-1">Total Saldo Bank Dapat Digunakan</p>
-            <p className="text-3xl font-bold text-gray-900">Rp {formatCurrency(totals.bankAvailable)}</p>
+            <p className="text-sm text-gray-500 mb-1">
+              Total Saldo Bank Dapat Digunakan
+            </p>
+            <p className="text-3xl font-bold text-gray-900">
+              Rp {formatCurrency(totals.bankAvailable)}
+            </p>
           </div>
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <p className="text-sm text-gray-500 mb-1">Total Saldo Kas</p>
-            <p className="text-3xl font-bold text-gray-900">Rp {formatCurrency(totals.cash)}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              Rp {formatCurrency(totals.cash)}
+            </p>
           </div>
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <p className="text-sm text-gray-500 mb-1">Total Piutang</p>
-            <p className="text-3xl font-bold text-gray-900">Rp {formatCurrency(totals.receivables)}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              Rp {formatCurrency(totals.receivables)}
+            </p>
           </div>
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <p className="text-sm text-gray-500 mb-1">Total Hutang</p>
-            <p className="text-3xl font-bold text-gray-900">Rp {formatCurrency(totals.payables)}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              Rp {formatCurrency(totals.payables)}
+            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Cashflow Chart (6 bulan) */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Cashflow (6 Bulan)</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              Cashflow (6 Bulan)
+            </h3>
             <div className="flex justify-end space-x-4 text-sm mb-4">
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 bg-blue-400 rounded-sm"></div>
@@ -125,18 +200,27 @@ const FinanceDashboard: React.FC = () => {
             </div>
             <div className="relative h-80">
               {/* Y-axis grid lines */}
-              {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value, index) => (
-                <div
-                  key={index}
-                  className={`absolute left-0 right-0 border-t border-gray-200 ${index === 0 ? 'bottom-0' : ''}`}
-                  style={{ bottom: `${value}%`, height: '1px' }}
-                >
-                  <span className="absolute -left-8 text-xs text-gray-500 -translate-y-1/2">{value}</span>
-                </div>
-              ))}
+              {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(
+                (value, index) => (
+                  <div
+                    key={index}
+                    className={`absolute left-0 right-0 border-t border-gray-200 ${
+                      index === 0 ? "bottom-0" : ""
+                    }`}
+                    style={{ bottom: `${value}%`, height: "1px" }}
+                  >
+                    <span className="absolute -left-8 text-xs text-gray-500 -translate-y-1/2">
+                      {value}
+                    </span>
+                  </div>
+                )
+              )}
               <div className="absolute bottom-0 left-0 right-0 flex justify-around items-end h-full pt-8">
                 {cashflowMonthly.map((data, index) => (
-                  <div key={index} className="flex flex-col items-center h-full justify-end px-2">
+                  <div
+                    key={index}
+                    className="flex flex-col items-center h-full justify-end px-2"
+                  >
                     <div className="flex h-full items-end space-x-1">
                       <div
                         className="w-6 bg-blue-400 rounded-t-md transition-all duration-700 ease-out hover:opacity-80"
@@ -147,29 +231,11 @@ const FinanceDashboard: React.FC = () => {
                         style={{ height: `${data.out}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-600 mt-2">{data.month}</span>
+                    <span className="text-xs text-gray-600 mt-2">
+                      {data.month}
+                    </span>
                   </div>
                 ))}
-              </div>
-            </div>
-          </div>
-          {/* Ringkasan Cash In/Out hari ini */}
-          <div className="lg:col-span-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Ringkasan Hari Ini</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-100">
-                <div className="flex items-center space-x-2 text-green-700 font-medium">
-                  <ArrowDownRight className="h-4 w-4" />
-                  <span>Cash In</span>
-                </div>
-                <div className="text-green-700 font-bold">Rp {formatCurrency(paymentIn[0].reduce((a, b) => a + b.nominal, 0))}</div>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-rose-50 border border-rose-100">
-                <div className="flex items-center space-x-2 text-rose-700 font-medium">
-                  <ArrowUpRight className="h-4 w-4" />
-                  <span>Cash Out</span>
-                </div>
-                <div className="text-rose-700 font-bold">Rp {formatCurrency(paymentOut[0].reduce((a, b) => a + b.nominal, 0))}</div>
               </div>
             </div>
           </div>
@@ -177,34 +243,58 @@ const FinanceDashboard: React.FC = () => {
 
         {/* Mapping Pembayaran (detail per hari) */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Mapping Pembayaran</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            Mapping Pembayaran
+          </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Cash In */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-lg font-semibold text-gray-900">Cash In (per Hari)</h4>
-                <span className="text-xs text-gray-500">{new Date().toLocaleDateString('id-ID')}</span>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Cash In (per Hari)
+                </h4>
+                <span className="text-xs text-gray-500">
+                  {new Date().toLocaleDateString("id-ID")}
+                </span>
               </div>
               {paymentIn.map((rows, idx) => (
                 <div key={idx} className="mb-4">
-                  <div className="text-xs text-gray-500 mb-1">Hari ke-{idx + 1}</div>
+                  <div className="text-xs text-gray-500 mb-1">
+                    Hari ke-{idx + 1}
+                  </div>
                   <div className="overflow-x-auto border border-gray-100 rounded-lg">
                     <table className="min-w-full divide-y divide-gray-100 text-sm">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-3 py-2 text-left text-gray-600">Nama Customer</th>
-                          <th className="px-3 py-2 text-right text-gray-600">Nominal</th>
-                          <th className="px-3 py-2 text-left text-gray-600">Jadwal Penerimaan</th>
-                          <th className="px-3 py-2 text-left text-gray-600">Status</th>
+                          <th className="px-3 py-2 text-left text-gray-600">
+                            Nama Customer
+                          </th>
+                          <th className="px-3 py-2 text-right text-gray-600">
+                            Nominal
+                          </th>
+                          <th className="px-3 py-2 text-left text-gray-600">
+                            Jadwal Penerimaan
+                          </th>
+                          <th className="px-3 py-2 text-left text-gray-600">
+                            Status
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {rows.map((r, i) => (
                           <tr key={i} className="hover:bg-gray-50">
-                            <td className="px-3 py-2 text-gray-900">{r.namaCustomer}</td>
-                            <td className="px-3 py-2 text-right text-gray-900">Rp {formatCurrency(r.nominal)}</td>
-                            <td className="px-3 py-2 text-gray-700">{new Date(r.jadwal).toLocaleDateString('id-ID')}</td>
-                            <td className="px-3 py-2">{statusBadge(r.status)}</td>
+                            <td className="px-3 py-2 text-gray-900">
+                              {r.namaCustomer}
+                            </td>
+                            <td className="px-3 py-2 text-right text-gray-900">
+                              Rp {formatCurrency(r.nominal)}
+                            </td>
+                            <td className="px-3 py-2 text-gray-700">
+                              {new Date(r.jadwal).toLocaleDateString("id-ID")}
+                            </td>
+                            <td className="px-3 py-2">
+                              {statusBadge(r.status)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -217,29 +307,51 @@ const FinanceDashboard: React.FC = () => {
             {/* Cash Out */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-lg font-semibold text-gray-900">Cash Out (per Hari)</h4>
-                <span className="text-xs text-gray-500">{new Date().toLocaleDateString('id-ID')}</span>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Cash Out (per Hari)
+                </h4>
+                <span className="text-xs text-gray-500">
+                  {new Date().toLocaleDateString("id-ID")}
+                </span>
               </div>
               {paymentOut.map((rows, idx) => (
                 <div key={idx} className="mb-4">
-                  <div className="text-xs text-gray-500 mb-1">Hari ke-{idx + 1}</div>
+                  <div className="text-xs text-gray-500 mb-1">
+                    Hari ke-{idx + 1}
+                  </div>
                   <div className="overflow-x-auto border border-gray-100 rounded-lg">
                     <table className="min-w-full divide-y divide-gray-100 text-sm">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-3 py-2 text-left text-gray-600">Nama Pembiayaan</th>
-                          <th className="px-3 py-2 text-right text-gray-600">Nominal</th>
-                          <th className="px-3 py-2 text-left text-gray-600">Jadwal Pembayaran</th>
-                          <th className="px-3 py-2 text-left text-gray-600">Status</th>
+                          <th className="px-3 py-2 text-left text-gray-600">
+                            Nama Pembiayaan
+                          </th>
+                          <th className="px-3 py-2 text-right text-gray-600">
+                            Nominal
+                          </th>
+                          <th className="px-3 py-2 text-left text-gray-600">
+                            Jadwal Pembayaran
+                          </th>
+                          <th className="px-3 py-2 text-left text-gray-600">
+                            Status
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {rows.map((r, i) => (
                           <tr key={i} className="hover:bg-gray-50">
-                            <td className="px-3 py-2 text-gray-900">{r.namaPembiayaan}</td>
-                            <td className="px-3 py-2 text-right text-gray-900">Rp {formatCurrency(r.nominal)}</td>
-                            <td className="px-3 py-2 text-gray-700">{new Date(r.jadwal).toLocaleDateString('id-ID')}</td>
-                            <td className="px-3 py-2">{statusBadge(r.status)}</td>
+                            <td className="px-3 py-2 text-gray-900">
+                              {r.namaPembiayaan}
+                            </td>
+                            <td className="px-3 py-2 text-right text-gray-900">
+                              Rp {formatCurrency(r.nominal)}
+                            </td>
+                            <td className="px-3 py-2 text-gray-700">
+                              {new Date(r.jadwal).toLocaleDateString("id-ID")}
+                            </td>
+                            <td className="px-3 py-2">
+                              {statusBadge(r.status)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
