@@ -43,6 +43,12 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
     ppn: 'Rp 145.000',
     ongkosKirim: '',
     grandTotal: 'Rp 1.595.000',
+    // new fields
+    grossUp: false,
+    pphSummary: '',
+    biayaLainLain: '',
+    biayaMaterai: '',
+    estimasiKedatangan: '',
   });
 
   const metodePembayaranOptions = [
@@ -54,6 +60,12 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
   const pajakOptions = [
     { value: 'PPN', label: 'PPN' },
     { value: 'Non PPN', label: 'Non PPN' },
+  ];
+
+  const pphSummaryOptions = [
+    { value: 'Tidak', label: 'Tidak' },
+    { value: 'PPh 21', label: 'PPh 21' },
+    { value: 'PPh 23', label: 'PPh 23' },
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -145,6 +157,11 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
       ppn: 'Rp 145.000',
       ongkosKirim: '',
       grandTotal: 'Rp 1.595.000',
+      grossUp: false,
+      pphSummary: '',
+      biayaLainLain: '',
+      biayaMaterai: '',
+      estimasiKedatangan: '',
     });
     onClose();
   };
@@ -301,6 +318,23 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
                   </div>
                 </div>
               </div>
+              <div>
+                <label htmlFor="estimasiKedatangan" className="block text-sm font-medium text-gray-700 mb-1">Estimasi Kedatangan</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="estimasiKedatangan"
+                    name="estimasiKedatangan"
+                    value={formData.estimasiKedatangan || ''}
+                    onChange={handleChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="dd/mm/yyyy"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <CalendarDays className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
               <div className="col-span-2">
                 <label htmlFor="tandaBukti" className="block text-sm font-medium text-gray-700 mb-1">Tanda Bukti</label>
                 <div className="flex items-center space-x-2">
@@ -373,13 +407,14 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
                           <input type="text" name="kodeBarang" value={item.kodeBarang} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
                         </td>
                         <td className="p-2">
-                          <input
-                            type="checkbox"
-                            name="sertifikat"
-                            checked={!!item.sertifikat}
-                            onChange={(e) => handleItemCheckboxChange(index, 'sertifikat', e.target.checked)}
-                            className="h-4 w-4 text-blue-600"
-                          />
+                          <select
+                            value={item.sertifikat ? 'Yes' : 'No'}
+                            onChange={(e) => handleItemCheckboxChange(index, 'sertifikat', e.target.value === 'Yes')}
+                            className="w-full border-0 focus:ring-0 text-sm"
+                          >
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
                         </td>
                         <td className="p-2">
                           <input type="number" name="qty" value={item.qty} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
@@ -421,6 +456,54 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
 
             {/* Summary Totals */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 self-end w-full md:w-1/2 ml-auto">
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Gross Up:</span>
+                <select
+                  name="grossUp"
+                  value={formData.grossUp ? 'Yes' : 'No'}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, grossUp: e.target.value === 'Yes' }))}
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>PPh:</span>
+                <select
+                  name="pphSummary"
+                  value={formData.pphSummary || ''}
+                  onChange={handleChange}
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="">Pilih</option>
+                  {pphSummaryOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Biaya Lain-lain:</span>
+                <input
+                  type="text"
+                  name="biayaLainLain"
+                  value={formData.biayaLainLain || ''}
+                  onChange={handleChange}
+                  placeholder="Rp 0"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Biaya Materai:</span>
+                <input
+                  type="text"
+                  name="biayaMaterai"
+                  value={formData.biayaMaterai || ''}
+                  onChange={handleChange}
+                  placeholder="Rp 0"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
               <div className="flex justify-between items-center text-sm font-medium text-gray-700">
                 <span>Total:</span>
                 <input type="text" value={formData.total} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import KontrakKerjaModal, { KontrakKerjaFormData } from './KontrakKerjaModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { KontrakKerjaData } from '../types';
-import { 
-  Search, 
-  Plus, 
-  FileSpreadsheet, 
-  FileText, 
+import React, { useState, useEffect } from "react";
+import KontrakKerjaModal, { KontrakKerjaFormData } from "./KontrakKerjaModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { KontrakKerjaData } from "../types";
+import {
+  Search,
+  Plus,
+  FileSpreadsheet,
+  FileText,
   File,
   Edit,
   Trash2,
@@ -17,53 +17,59 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUp,
-  CheckCircle // New icon for Approve
-} from 'lucide-react';
+  CheckCircle, // New icon for Approve
+} from "lucide-react";
 
 interface KontrakKerjaDashboardProps {
   role?: string; // Add role prop
 }
 
-const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) => {
-  const [searchNoKontrak, setSearchNoKontrak] = useState('');
-  const [searchPenerimaKontrak, setSearchPenerimaKontrak] = useState('');
-  const [dateFrom, setDateFrom] = useState('03/03/2025');
-  const [dateTo, setDateTo] = useState('03/03/2025');
+const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
+  role,
+}) => {
+  const [searchNoKontrak, setSearchNoKontrak] = useState("");
+  const [searchPenerimaKontrak, setSearchPenerimaKontrak] = useState("");
+  const [dateFrom, setDateFrom] = useState("03/03/2025");
+  const [dateTo, setDateTo] = useState("03/03/2025");
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<KontrakKerjaData | null>(null);
-  const [sortField, setSortField] = useState<keyof KontrakKerjaData | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [itemToDelete, setItemToDelete] = useState<KontrakKerjaData | null>(
+    null
+  );
+  const [sortField, setSortField] = useState<keyof KontrakKerjaData | null>(
+    null
+  );
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Sample data matching the image
   const [kontrakKerjaData, setKontrakKerjaData] = useState<KontrakKerjaData[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      noKontrak: 'KO-001',
-      penerimaKontrak: 'Michael Scott',
-      periodeKontrak: '01-01-2000 s.d 01-01-2030',
-      tunjangan: ['Transport', 'Makan', 'Bonus', 'Kesehatan', 'Asuransi']
+      noKontrak: "KO-001",
+      penerimaKontrak: "Michael Scott",
+      periodeKontrak: "01-01-2000 s.d 01-01-2030",
+      tunjangan: ["Transport", "Makan", "Bonus", "Kesehatan", "Asuransi"],
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      noKontrak: 'KO-002',
-      penerimaKontrak: 'Pam Beesly',
-      periodeKontrak: '15-06-2005 s.d 15-06-2035',
-      tunjangan: ['Makan', 'Transport', 'Bonus']
+      noKontrak: "KO-002",
+      penerimaKontrak: "Pam Beesly",
+      periodeKontrak: "15-06-2005 s.d 15-06-2035",
+      tunjangan: ["Makan", "Transport", "Bonus"],
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      noKontrak: 'KO-003',
-      penerimaKontrak: 'Jim Halpert',
-      periodeKontrak: '10-09-2010 s.d 10-09-2040',
-      tunjangan: ['Kesehatan', 'Asuransi', 'Transport']
-    }
+      noKontrak: "KO-003",
+      penerimaKontrak: "Jim Halpert",
+      periodeKontrak: "10-09-2010 s.d 10-09-2040",
+      tunjangan: ["Kesehatan", "Asuransi", "Transport"],
+    },
   ]);
 
   useEffect(() => {
@@ -72,7 +78,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
 
   // Add this useEffect to log the role
   useEffect(() => {
-    console.log('Current role in KontrakKerjaDashboard:', role);
+    console.log("Current role in KontrakKerjaDashboard:", role);
   }, [role]); // Re-run when role changes
 
   const handleAddKontrakKerja = (formData: KontrakKerjaFormData) => {
@@ -81,27 +87,37 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
       no: kontrakKerjaData.length + 1,
       noKontrak: formData.nomorKontrak,
       penerimaKontrak: formData.penerimaKontrak,
-      periodeKontrak: `${new Date(formData.periodeKontrakStart).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })} s.d ${new Date(formData.periodeKontrakEnd).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })}`,
-      tunjangan: formData.tunjangan.map(t => t.namaTunjangan).filter(name => name.trim() !== '')
+      periodeKontrak: `${new Date(
+        formData.periodeKontrakStart
+      ).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })} s.d ${new Date(formData.periodeKontrakEnd).toLocaleDateString(
+        "id-ID",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }
+      )}`,
+      tunjangan: formData.tunjangan
+        .map((t) => t.namaTunjangan)
+        .filter((name) => name.trim() !== ""),
     };
 
-    setKontrakKerjaData(prev => [newKontrakKerja, ...prev.map(k => ({ ...k, no: k.no + 1 }))]);
+    setKontrakKerjaData((prev) => [
+      newKontrakKerja,
+      ...prev.map((k) => ({ ...k, no: k.no + 1 })),
+    ]);
   };
 
   const handleSort = (field: keyof KontrakKerjaData) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -112,27 +128,33 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setKontrakKerjaData(prev => prev.filter(k => k.id !== itemToDelete.id));
+      setKontrakKerjaData((prev) =>
+        prev.filter((k) => k.id !== itemToDelete.id)
+      );
       setItemToDelete(null);
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = kontrakKerjaData.filter(item => {
-    const matchesNoKontrak = item.noKontrak.toLowerCase().includes(searchNoKontrak.toLowerCase());
-    const matchesPenerimaKontrak = item.penerimaKontrak.toLowerCase().includes(searchPenerimaKontrak.toLowerCase());
-    
+  const filteredData = kontrakKerjaData.filter((item) => {
+    const matchesNoKontrak = item.noKontrak
+      .toLowerCase()
+      .includes(searchNoKontrak.toLowerCase());
+    const matchesPenerimaKontrak = item.penerimaKontrak
+      .toLowerCase()
+      .includes(searchPenerimaKontrak.toLowerCase());
+
     return matchesNoKontrak && matchesPenerimaKontrak;
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -159,18 +181,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              KONTRAK KERJA
-            </h1>
-            {role !== 'management' && ( // Only show Add button if not management role
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-sm"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Tambah</span>
-              </button>
-            )}
+            <h1 className="text-2xl font-bold text-gray-900">KONTRAK KERJA</h1>
           </div>
 
           {/* Search and Filter Section */}
@@ -190,7 +201,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="KO-001"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -212,7 +223,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                     placeholder="Muhammad Kasim"
                   />
-                  <button 
+                  <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors flex items-center space-x-1"
                   >
@@ -253,7 +264,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                 <label className="block text-sm font-medium text-gray-700 opacity-0">
                   Search
                 </label>
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
@@ -304,74 +315,106 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('noKontrak')}
+                    onClick={() => handleSort("noKontrak")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No Kontrak</span>
-                      {sortField === 'noKontrak' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "noKontrak" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('penerimaKontrak')}
+                    onClick={() => handleSort("penerimaKontrak")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Penerima Kontrak</span>
-                      {sortField === 'penerimaKontrak' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "penerimaKontrak" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('periodeKontrak')}
+                    onClick={() => handleSort("periodeKontrak")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Periode Kontrak</span>
-                      {sortField === 'periodeKontrak' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "periodeKontrak" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tunjangan</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Tunjangan
+                  </th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noKontrak}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.penerimaKontrak}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.periodeKontrak}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.noKontrak}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.penerimaKontrak}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.periodeKontrak}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="flex flex-wrap gap-1">
                         {item.tunjangan.map((tunjangan, idx) => (
-                          <span 
+                          <span
                             key={idx}
                             className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200"
                           >
@@ -382,9 +425,9 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        {role === 'management' ? (
-                          <button 
-														onClick={() => setIsModalOpen(true)}
+                        {role === "management" ? (
+                          <button
+                            onClick={() => setIsModalOpen(true)}
                             className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
                             title="Approve"
                           >
@@ -392,14 +435,14 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                           </button>
                         ) : (
                           <>
-                            <button 
-															onClick={() => setIsModalOpen(true)}
+                            <button
+                              onClick={() => setIsModalOpen(true)}
                               className="p-2 text-cyan-600 hover:bg-cyan-50 rounded transition-all duration-200 hover:scale-110"
                               title="View"
                             >
                               <Eye className="h-4 w-4" />
                             </button>
-                            <button 
+                            <button
                               onClick={() => setIsModalOpen(true)}
                               className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
                               title="Edit"
@@ -420,7 +463,9 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -430,18 +475,18 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({ role }) =
                 >
                   Previous
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                     currentPage === 1
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   1
                 </button>
-                
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

@@ -26,6 +26,8 @@ interface ResignData {
   status: "Pending" | "Approved" | "Rejected";
   attachmentSuratResignName?: string;
   attachmentBAName?: string;
+  attachmentECName?: string;
+  divisionApproval?: string;
 }
 
 const ResignDashboard: React.FC = () => {
@@ -195,6 +197,8 @@ const ResignDashboard: React.FC = () => {
       alasanResign: string;
       lampiranSurat: File[];
       lampiranBA?: File[];
+      lampiranEC?: File[];
+      divisionApproval: string;
     }
   ) => {
     setResignData((prev) =>
@@ -212,6 +216,11 @@ const ResignDashboard: React.FC = () => {
                 approvalDetails.lampiranBA && approvalDetails.lampiranBA[0]
                   ? approvalDetails.lampiranBA[0].name
                   : item.attachmentBAName,
+              attachmentECName:
+                approvalDetails.lampiranEC && approvalDetails.lampiranEC[0]
+                  ? approvalDetails.lampiranEC[0].name
+                  : item.attachmentECName,
+              divisionApproval: approvalDetails.divisionApproval || item.divisionApproval,
             }
           : item
       )
@@ -496,12 +505,14 @@ const ResignDashboard: React.FC = () => {
                       )}
                     </div>
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Divisi Approval</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Surat Resign
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     BA
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">EC</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Aksi
                   </th>
@@ -547,6 +558,7 @@ const ResignDashboard: React.FC = () => {
                         {item.status}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.divisionApproval || '-'}</td>
                     <td className="px-4 py-3 text-sm text-blue-600">
                       {item.attachmentSuratResignName ? (
                         <span
@@ -571,6 +583,15 @@ const ResignDashboard: React.FC = () => {
                         "-"
                       )}
                     </td>
+                    <td className="px-4 py-3 text-sm text-blue-600">
+                      {item.attachmentECName ? (
+                        <span className="underline cursor-pointer" title={item.attachmentECName}>
+                          {item.attachmentECName}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-2">
                         <button
@@ -588,6 +609,22 @@ const ResignDashboard: React.FC = () => {
                           disabled={item.status === "Rejected"}
                         >
                           <ThumbsDown className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            // Placeholder print logic; integrate actual print/export as needed
+                            window.alert(`Mencetak paklaring untuk ${item.namaPegawai}`);
+                          }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Cetak Paklaring"
+                          disabled={!(() => {
+                            const today = new Date();
+                            const d = new Date(item.tanggalResign);
+                            const diff = Math.floor((today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+                            return item.status === 'Approved' && diff >= 30;
+                          })()}
+                        >
+                          <FileText className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

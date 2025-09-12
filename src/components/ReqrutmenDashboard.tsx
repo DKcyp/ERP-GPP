@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import UpdateStatusModal from "./UpdateStatusModal"; // Import the new modal
+import UpdateStatusModal, { UpdateStatusFormData } from "./UpdateStatusModal"; // Import the new modal and its form type
 import TambahRekrutmenModal from "./TambahRekrutmenModal";
 import {
   Search,
@@ -36,11 +36,8 @@ interface ReqrutmenData {
   status:
     | "Pending"
     | "Accepted"
-    | "Rejected"
-    | "Interview"
-    | "Hired"
-    | "Negotiation"
-    | "Move to Bank Data"; // Extended per filter needs
+    | "Reject"
+    | "Move to talent poll";
   keterangan: string; // Added for modal compatibility
 }
 
@@ -69,7 +66,43 @@ const ReqrutmenDashboard: React.FC = () => {
   ] = useState<ReqrutmenData | null>(null);
   const [isEditableMode, setIsEditableMode] = useState(false); // To control editable/disabled inputs
 
-  // Sample data matching the image, now with updated status and keterangan
+  // Mapping between Dashboard status and Modal status
+  type ModalStatusStrict = Exclude<UpdateStatusFormData["status"], "">;
+  const mapDashToModalStatus = (
+    s: ReqrutmenData["status"]
+  ): ModalStatusStrict => {
+    switch (s) {
+      case "Pending":
+        return "Pending";
+      case "Accepted":
+        return "Accepted";
+      case "Reject":
+        return "Rejected";
+      case "Move to talent poll":
+        return "Move To Talent Pool";
+      default:
+        return "Pending";
+    }
+  };
+
+  const mapModalToDashStatus = (
+    s: UpdateStatusFormData["status"]
+  ): ReqrutmenData["status"] => {
+    switch (s) {
+      case "Pending":
+        return "Pending";
+      case "Accepted":
+        return "Accepted";
+      case "Rejected":
+        return "Reject";
+      case "Move To Talent Pool":
+        return "Move to talent poll";
+      default:
+        return "Pending";
+    }
+  };
+
+  // Sample data
   const [reqrutmenData, setReqrutmenData] = useState<ReqrutmenData[]>([
     {
       id: "1",
@@ -95,7 +128,7 @@ const ReqrutmenDashboard: React.FC = () => {
       namaPelamar: "Fauzan Alfarizi",
       email: "fauzan.alfarizi@email.com",
       posisi: "Operator",
-      status: "Rejected",
+      status: "Reject",
       keterangan: "Kualifikasi tidak sesuai.",
     },
     {
@@ -104,7 +137,7 @@ const ReqrutmenDashboard: React.FC = () => {
       namaPelamar: "Andini Pratiwi",
       email: "andini.pratiwi@email.com",
       posisi: "Admin",
-      status: "Interview",
+      status: "Pending",
       keterangan: "Jadwal interview tanggal 10 April 2025.",
     },
     {
@@ -113,7 +146,7 @@ const ReqrutmenDashboard: React.FC = () => {
       namaPelamar: "Joko Santoso",
       email: "joko.santoso@email.com",
       posisi: "Supervisor",
-      status: "Hired",
+      status: "Accepted",
       keterangan: "Telah diterima dan mulai bekerja.",
     },
     {
@@ -122,20 +155,17 @@ const ReqrutmenDashboard: React.FC = () => {
       namaPelamar: "Siti Aisyah",
       email: "siti.aisyah@email.com",
       posisi: "QC",
-      status: "Accepted",
+      status: "Move to talent poll",
       keterangan: "Lolos seleksi administrasi, menunggu jadwal interview.",
     },
   ]);
 
-  // Updated status options (includes Negotiation & Move to Bank Data as requested)
+  // Status options (restricted to 4)
   const statusOptions: Array<ReqrutmenData["status"]> = [
     "Pending",
     "Accepted",
-    "Rejected",
-    "Interview",
-    "Hired",
-    "Negotiation",
-    "Move to Bank Data",
+    "Reject",
+    "Move to talent poll",
   ];
 
   // Nama options from current dataset
@@ -164,16 +194,10 @@ const ReqrutmenDashboard: React.FC = () => {
     switch (status) {
       case "Accepted":
         return { label: "Lolos", cls: "bg-green-100 text-green-800" };
-      case "Rejected":
+      case "Reject":
         return { label: "Tidak Lolos", cls: "bg-red-100 text-red-800" };
-      case "Interview":
-        return { label: "Proses Interview", cls: "bg-blue-100 text-blue-800" };
-      case "Hired":
-        return { label: "Diterima", cls: "bg-purple-100 text-purple-800" };
-      case "Negotiation":
-        return { label: "Negosiasi", cls: "bg-orange-100 text-orange-800" };
-      case "Move to Bank Data":
-        return { label: "Bank Data", cls: "bg-gray-100 text-gray-800" };
+      case "Move to talent poll":
+        return { label: "Talent Pool", cls: "bg-gray-100 text-gray-800" };
       case "Pending":
       default:
         return { label: "Pending", cls: "bg-yellow-100 text-yellow-800" };
@@ -223,15 +247,9 @@ const ReqrutmenDashboard: React.FC = () => {
         return "bg-yellow-500 text-white";
       case "Accepted":
         return "bg-green-600 text-white";
-      case "Rejected":
+      case "Reject":
         return "bg-red-600 text-white";
-      case "Interview":
-        return "bg-blue-500 text-white";
-      case "Hired":
-        return "bg-purple-500 text-white";
-      case "Negotiation":
-        return "bg-orange-500 text-white";
-      case "Move to Bank Data":
+      case "Move to talent poll":
         return "bg-gray-600 text-white";
       default:
         return "bg-gray-100 text-gray-800";
@@ -351,16 +369,22 @@ const ReqrutmenDashboard: React.FC = () => {
     setIsEditableMode(false);
   };
 
-  const handleSaveStatus = (id: string, data: any) => {
+  const handleSaveStatus = (id: string, data: UpdateStatusFormData) => {
     setReqrutmenData((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, status: data.status, keterangan: data.keterangan }
+          ? {
+              ...item,
+              status: mapModalToDashStatus(data.status),
+              keterangan: data.keterangan,
+            }
           : item
       )
     );
     console.log(
-      `Reqrutmen ID ${id} updated to status: ${data.status}, keterangan: ${data.keterangan}`
+      `Reqrutmen ID ${id} updated to status: ${mapModalToDashStatus(
+        data.status
+      )}, keterangan: ${data.keterangan}`
     );
     handleCloseUpdateStatusModal();
   };
@@ -779,14 +803,16 @@ const ReqrutmenDashboard: React.FC = () => {
         onClose={handleCloseUpdateStatusModal}
         onSave={(data) => {
           if (selectedReqrutmenForStatusUpdate) {
-            handleSaveStatus(selectedReqrutmenForStatusUpdate.id, data as any);
+            handleSaveStatus(selectedReqrutmenForStatusUpdate.id, data);
           }
         }}
         currentItem={{
           id: selectedReqrutmenForStatusUpdate?.id || "",
           namaClient: selectedReqrutmenForStatusUpdate?.namaPelamar || "",
           // Map current status to the modal's expected field name
-          statusPenawaran: "Minat",
+          statusPenawaran: selectedReqrutmenForStatusUpdate
+            ? mapDashToModalStatus(selectedReqrutmenForStatusUpdate.status)
+            : ("Pending" as ModalStatusStrict),
         }}
       />
     </div>

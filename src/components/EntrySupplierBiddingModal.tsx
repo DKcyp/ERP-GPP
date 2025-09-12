@@ -38,20 +38,66 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
     { value: 'PR003', label: 'PR003' },
   ];
 
+  // Mock: daftar barang berdasarkan PR terpilih (auto-populate items)
+  const prItemsMap: Record<string, Array<Partial<BiddingItemEntry>>> = {
+    PR001: [
+      { namaBarang: 'Kabel NYA 1.5mm', qty: '10' },
+      { namaBarang: 'MCB 2A', qty: '5' },
+    ],
+    PR002: [
+      { namaBarang: 'Pipa PVC 1"', qty: '20' },
+    ],
+    PR003: [
+      { namaBarang: 'Panel Listrik', qty: '2' },
+      { namaBarang: 'Breaker 10A', qty: '6' },
+      { namaBarang: 'Stop Kontak', qty: '12' },
+    ],
+  };
+
+  const vendorOptions = [
+    { value: '', label: 'Pilih Vendor' },
+    { value: 'Vendor A', label: 'Vendor A' },
+    { value: 'Vendor B', label: 'Vendor B' },
+    { value: 'Vendor C', label: 'Vendor C' },
+    { value: 'CUSTOM', label: 'Vendor masih Bidding (ketik manual)' },
+  ];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Auto-populate items ketika No PR dipilih
+    if (name === 'noPR') {
+      const preset = prItemsMap[value] || [];
+      const newItems = preset.length
+        ? preset.map((p, idx) => ({
+            id: String(idx + 1),
+            namaBarang: p.namaBarang || '',
+            qty: p.qty || '',
+            namaVendor: '',
+            harga: '',
+            diskon: '',
+            jumlah: '',
+            ppnNonPpn: '',
+            pengiriman: '',
+            garansi: '',
+            metodeBayar: '',
+            keterangan: '',
+          }))
+        : formData.items;
+      setFormData((prev: any) => ({ ...prev, [name]: value, items: newItems }));
+    } else {
+      setFormData((prev: any) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleItemChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     const newItems = [...formData.items];
     newItems[index] = { ...newItems[index], [name]: value };
-    setFormData((prev) => ({ ...prev, items: newItems }));
+    setFormData((prev: any) => ({ ...prev, items: newItems }));
   };
 
   const handleAddItem = () => {
-    setFormData((prev) => ({
+    setFormData((prev: any) => ({
       ...prev,
       items: [
         ...prev.items,
@@ -71,6 +117,17 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
         },
       ],
     }));
+  };
+
+  const handleVendorModeChange = (index: number, mode: 'SELECT' | 'CUSTOM') => {
+    const newItems = [...formData.items];
+    newItems[index] = { ...newItems[index], vendorMode: mode };
+    setFormData((prev: EntrySupplierBiddingFormData) => ({ ...prev, items: newItems }));
+  };
+
+  const handleRowPenilaian = (index: number) => {
+    const item = formData.items[index] as any;
+    window.alert(`Penilaian untuk barang: ${item?.namaBarang || ''}`);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -196,6 +253,8 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Vendor</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PIC</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Telp</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diskon (%)</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
@@ -204,6 +263,9 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Garansi</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode Bayar</th> {/* NEW COLUMN */}
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Penilaian</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Kunjungan</th>
+                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -228,11 +290,60 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                           />
                         </td>
                         <td className="p-2">
+                          <div className="flex flex-col gap-1">
+                            <select
+                              value={(item as any).vendorMode === 'CUSTOM' ? 'CUSTOM' : (item.namaVendor || '')}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                if (v === 'CUSTOM') {
+                                  handleVendorModeChange(index, 'CUSTOM');
+                                } else {
+                                  handleVendorModeChange(index, 'SELECT');
+                                  const fakeEvt = { target: { name: 'namaVendor', value: v } } as any;
+                                  handleItemChange(index, fakeEvt);
+                                }
+                              }}
+                              className="w-full border-0 focus:ring-0 text-sm"
+                            >
+                              {vendorOptions.map(o => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                              ))}
+                            </select>
+                            {(item as any).vendorMode === 'CUSTOM' && (
+                              <input
+                                type="text"
+                                placeholder="Ketik nama vendor"
+                                value={item.namaVendor}
+                                onChange={(e) => handleItemChange(index, e as any)}
+                                name="namaVendor"
+                                className="w-full border border-gray-200 rounded px-2 py-1 text-sm"
+                              />
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-2">
                           <input
                             type="text"
-                            name="namaVendor"
-                            value={item.namaVendor}
-                            onChange={(e) => handleItemChange(index, e)}
+                            name="pic"
+                            value={(item as any).pic || ''}
+                            onChange={(e) => {
+                              const newItems: any[] = [...(formData.items as any[])];
+                              newItems[index] = { ...newItems[index], pic: e.target.value };
+                              setFormData((prev: any) => ({ ...prev, items: newItems as any }));
+                            }}
+                            className="w-full border-0 focus:ring-0 text-sm"
+                          />
+                        </td>
+                        <td className="p-2">
+                          <input
+                            type="text"
+                            name="noTelp"
+                            value={(item as any).noTelp || ''}
+                            onChange={(e) => {
+                              const newItems: any[] = [...(formData.items as any[])];
+                              newItems[index] = { ...newItems[index], noTelp: e.target.value };
+                              setFormData((prev) => ({ ...prev, items: newItems as any }));
+                            }}
                             className="w-full border-0 focus:ring-0 text-sm"
                           />
                         </td>
@@ -307,6 +418,39 @@ const EntrySupplierBiddingModal: React.FC<EntrySupplierBiddingModalProps> = ({ i
                             onChange={(e) => handleItemChange(index, e)}
                             className="w-full border-0 focus:ring-0 text-sm"
                           />
+                        </td>
+                        <td className="p-2">
+                          <input
+                            type="datetime-local"
+                            value={(item as any).waktuPenilaian || ''}
+                            onChange={(e) => {
+                              const newItems: any[] = [...(formData.items as any[])];
+                              newItems[index] = { ...newItems[index], waktuPenilaian: e.target.value };
+                              setFormData((prev) => ({ ...prev, items: newItems as any }));
+                            }}
+                            className="w-full border-0 focus:ring-0 text-sm"
+                          />
+                        </td>
+                        <td className="p-2">
+                          <input
+                            type="datetime-local"
+                            value={(item as any).waktuKunjungan || ''}
+                            onChange={(e) => {
+                              const newItems: any[] = [...(formData.items as any[])];
+                              newItems[index] = { ...newItems[index], waktuKunjungan: e.target.value };
+                              setFormData((prev) => ({ ...prev, items: newItems as any }));
+                            }}
+                            className="w-full border-0 focus:ring-0 text-sm"
+                          />
+                        </td>
+                        <td className="p-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleRowPenilaian(index)}
+                            className="px-3 py-1 rounded bg-emerald-600 text-white text-xs hover:bg-emerald-700"
+                          >
+                            Penilaian
+                          </button>
                         </td>
                       </tr>
                     ))}

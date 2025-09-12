@@ -302,6 +302,12 @@ export interface EntryPOBarangFormData {
   ppn: string;
   ongkosKirim: string;
   grandTotal: string;
+  // New fields for dashboard requirements
+  grossUp?: boolean; // pilihan gross up atau tidak
+  pphSummary?: string; // pilihan PPh ringkas (misal: 'Tidak', 'PPh 21', 'PPh 23')
+  biayaLainLain?: string;
+  biayaMaterai?: string;
+  estimasiKedatangan?: string; // optional manual entry if needed
 }
 
 export interface POBarangData {
@@ -330,6 +336,11 @@ export interface POBarangData {
   ppn?: string;
   ongkosKirim?: string;
   grandTotal?: string;
+  // New summary fields
+  grossUp?: boolean; // pilihan gross up atau tidak
+  pph?: string; // pilihan pph (misal: 'PPh 21', 'PPh 23', 'Tidak')
+  biayaLainLain?: string; // biaya lain-lain
+  biayaMaterai?: string; // biaya materai
 }
 
 export interface ApprovalPOBarangFormData {

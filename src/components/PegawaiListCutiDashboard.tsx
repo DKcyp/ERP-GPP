@@ -112,6 +112,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
 
   // Group filtered data per employee (by name). If there might be duplicate names,
   // we could key by `${nama}|${departemen}` to be safer.
+  const CUTI_TAHUNAN_QUOTA = 12; // kuota tahunan (unit: pengajuan/bulan/hari tergantung kebijakan)
+
   const grouped = useMemo(() => {
     const map = new Map<
       string,
@@ -121,11 +123,12 @@ const PegawaiListCutiDashboard: React.FC = () => {
         departemen: string;
         jabatan?: string;
         tahunan: number;
-        zona: number;
+        proyek: number;
         total: number;
         pending: number;
         disetujui: number;
         ditolak: number;
+        sisa: number;
         details: CutiListRecord[];
       }
     >();
@@ -139,25 +142,32 @@ const PegawaiListCutiDashboard: React.FC = () => {
           departemen: r.departemen,
           jabatan: r.jabatan,
           tahunan: 0,
-          zona: 0,
+          proyek: 0,
           total: 0,
           pending: 0,
           disetujui: 0,
           ditolak: 0,
+          sisa: CUTI_TAHUNAN_QUOTA,
           details: [],
         });
       }
       const g = map.get(key)!;
       if (r.jenisCuti === "Tahunan") g.tahunan += 1;
-      // Heuristik: deteksi 'zona' di alasan untuk menghitung Cuti Zona
-      if (/zona/i.test(r.alasan)) g.zona += 1;
+      // Heuristik: deteksi 'proyek' di alasan untuk menghitung Cuti Proyek
+      if (/proyek/i.test(r.alasan)) g.proyek += 1;
       g.total += 1;
       if (r.status === "Pending") g.pending += 1;
       else if (r.status === "Disetujui") g.disetujui += 1;
       else g.ditolak += 1;
       g.details.push(r);
     }
-    return Array.from(map.values());
+    // Hitung sisa cuti (berdasarkan tahunan + proyek yang disetujui)
+    const arr = Array.from(map.values());
+    for (const g of arr) {
+      const used = g.tahunan + g.proyek;
+      g.sisa = Math.max(0, CUTI_TAHUNAN_QUOTA - used);
+    }
+    return arr;
   }, [filtered]);
 
   const LIMIT_PER_EMPLOYEE = 1;
@@ -566,7 +576,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
                     Cuti Tahunan
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cuti Zona
+                    Cuti Proyek
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total Cuti
@@ -579,6 +589,9 @@ const PegawaiListCutiDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Ditolak
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Sisa Cuti
                   </th>
                 </tr>
               </thead>
@@ -619,7 +632,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                           <span className="px-2 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold">
-                            {g.zona}
+                            {g.proyek}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -642,10 +655,15 @@ const PegawaiListCutiDashboard: React.FC = () => {
                             {g.ditolak}
                           </span>
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                            {g.sisa}
+                          </span>
+                        </td>
                       </tr>
                       {isOpen && (
                         <tr>
-                          <td colSpan={9} className="bg-gray-50">
+                          <td colSpan={10} className="bg-gray-50">
                             <div className="px-6 py-4">
                               <div className="text-xs text-gray-500 mb-2">
                                 Detail Cuti {g.nama}

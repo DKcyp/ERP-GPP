@@ -30,7 +30,7 @@ const initialPoData: POBarangData[] = [
     tandaBuktiUrl: 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     daftarFileUrls: ['https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', 'https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'],
     items: [
-      { id: '1', namaBarang: 'Laptop', kodeBarang: 'LT001', qty: '2', satuan: 'Unit', hargaSatuan: '7500000', pajakItem: '10%', discRp: '0', jumlah: '15000000', keterangan: 'For IT Dept' },
+      { id: '1', namaBarang: 'Laptop', kodeBarang: 'LT001', qty: '2', satuan: 'Unit', hargaSatuan: '7500000', pajakItem: '10%', discRp: '0', jumlah: '15000000', keterangan: 'For IT Dept', sertifikat: true },
       { id: '2', namaBarang: 'Monitor', kodeBarang: 'MN001', qty: '4', satuan: 'Unit', hargaSatuan: '2000000', pajakItem: '10%', discRp: '0', jumlah: '8000000', keterangan: 'For IT Dept' },
     ],
     total: 'Rp 23.000.000',
@@ -39,6 +39,11 @@ const initialPoData: POBarangData[] = [
     ppn: 'Rp 2.300.000',
     ongkosKirim: 'Rp 100.000',
     grandTotal: 'Rp 25.400.000',
+    // new summary fields
+    grossUp: true,
+    pph: 'PPh 23',
+    biayaLainLain: 'Rp 50.000',
+    biayaMaterai: 'Rp 10.000',
   },
   {
     id: 2,
@@ -68,6 +73,10 @@ const initialPoData: POBarangData[] = [
     ppn: 'Rp 0',
     ongkosKirim: 'Rp 50.000',
     grandTotal: 'Rp 3.050.000',
+    grossUp: false,
+    pph: 'Tidak',
+    biayaLainLain: 'Rp 0',
+    biayaMaterai: 'Rp 0',
   },
   {
     id: 3,
@@ -97,6 +106,10 @@ const initialPoData: POBarangData[] = [
     ppn: 'Rp 145.000',
     ongkosKirim: 'Rp 0',
     grandTotal: 'Rp 1.595.000',
+    grossUp: false,
+    pph: 'PPh 21',
+    biayaLainLain: 'Rp 25.000',
+    biayaMaterai: 'Rp 10.000',
   },
   {
     id: 4,
@@ -111,6 +124,10 @@ const initialPoData: POBarangData[] = [
     status: 'Paid',
     items: [], // Simplified for brevity
     daftarFileUrls: [],
+    grossUp: false,
+    pph: 'Tidak',
+    biayaLainLain: 'Rp 0',
+    biayaMaterai: 'Rp 0',
   },
   {
     id: 5,
@@ -125,6 +142,10 @@ const initialPoData: POBarangData[] = [
     status: 'Unpaid', // Still unpaid, not necessarily pending approval by management
     items: [], // Simplified for brevity
     daftarFileUrls: [],
+    grossUp: false,
+    pph: 'Tidak',
+    biayaLainLain: 'Rp 0',
+    biayaMaterai: 'Rp 0',
   },
 ];
 
@@ -182,6 +203,11 @@ const POBarangDashboard: React.FC = () => {
       ppn: formData.ppn,
       ongkosKirim: formData.ongkosKirim,
       grandTotal: formData.grandTotal,
+      // defaults for new fields if modal not yet collecting them
+      grossUp: false,
+      pph: formData.pajak || 'Tidak',
+      biayaLainLain: 'Rp 0',
+      biayaMaterai: 'Rp 0',
     };
     setPoList((prev) => [...prev, newPo]);
   };
@@ -360,6 +386,11 @@ const POBarangDashboard: React.FC = () => {
                     <th scope="col" className="px-6 py-3">Tanggal PO</th>
                     <th scope="col" className="px-6 py-3">Tanggal Pengiriman</th>
                     <th scope="col" className="px-6 py-3">Tanggal Estimasi Kedatangan</th>
+                    <th scope="col" className="px-6 py-3">Sertifikat</th>
+                    <th scope="col" className="px-6 py-3">Gross Up</th>
+                    <th scope="col" className="px-6 py-3">PPh</th>
+                    <th scope="col" className="px-6 py-3">Biaya Lain-lain</th>
+                    <th scope="col" className="px-6 py-3">Biaya Materai</th>
                     <th scope="col" className="px-6 py-3">Status</th>
                     <th scope="col" className="px-6 py-3">Aksi</th>
                   </tr>
@@ -377,6 +408,11 @@ const POBarangDashboard: React.FC = () => {
                       <td className="px-6 py-4">{item.tanggalPo}</td>
                       <td className="px-6 py-4">{item.tanggalPengiriman}</td>
                       <td className="px-6 py-4">{addDaysDdMmYyyy(item.tanggalPengiriman, 3)}</td>
+                      <td className="px-6 py-4">{item.items?.some((it) => (it as any).sertifikat) ? 'Yes' : 'No'}</td>
+                      <td className="px-6 py-4">{item.grossUp ? 'Yes' : 'No'}</td>
+                      <td className="px-6 py-4">{item.pph || '-'}</td>
+                      <td className="px-6 py-4">{item.biayaLainLain || '-'}</td>
+                      <td className="px-6 py-4">{item.biayaMaterai || '-'}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                           item.status === 'Paid' ? 'bg-green-100 text-green-800' :

@@ -20,6 +20,8 @@ export interface KontrakKerjaFormData {
   uploadSertifikasi: File | null;
   tunjangan: TunjanganItem[];
   kualifikasi: string[];
+  jenisKontrak?: string;
+  gajiPokok?: string;
 }
 
 const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
@@ -39,6 +41,8 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     uploadSertifikasi: null,
     tunjangan: [{ namaTunjangan: "Transport", nominal: "Rp. 2.000.000" }],
     kualifikasi: [],
+    jenisKontrak: "",
+    gajiPokok: "",
   });
 
   const [errors, setErrors] = useState<Partial<KontrakKerjaFormData>>({});
@@ -192,6 +196,8 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
       uploadSertifikasi: null,
       tunjangan: [{ namaTunjangan: "Transport", nominal: "Rp. 2.000.000" }],
       kualifikasi: [],
+      jenisKontrak: "",
+      gajiPokok: "",
     });
     setErrors({});
     onClose();
@@ -278,6 +284,43 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                       {errors.penerimaKontrak}
                     </p>
                   )}
+                </div>
+              </div>
+
+              {/* Jenis Kontrak & Gaji Pokok */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Jenis Kontrak */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Jenis Kontrak
+                  </label>
+                  <select
+                    value={formData.jenisKontrak || ""}
+                    onChange={(e) => handleInputChange("jenisKontrak", e.target.value)}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
+                  >
+                    <option value="">-- Pilih Jenis Kontrak --</option>
+                    <option value="Intern">Intern</option>
+                    <option value="Staff PKWT">Staff PKWT</option>
+                    <option value="Staff PKWTT">Staff PKWTT</option>
+                    <option value="Teknisi PKWT">Teknisi PKWT</option>
+                    <option value="Teknisi PKWTT">Teknisi PKWTT</option>
+                    <option value="Freelance">Freelance</option>
+                  </select>
+                </div>
+
+                {/* Gaji Pokok */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gaji Pokok
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.gajiPokok || ""}
+                    onChange={(e) => handleInputChange("gajiPokok", e.target.value)}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
+                    placeholder="Rp. 5.000.000"
+                  />
                 </div>
               </div>
 

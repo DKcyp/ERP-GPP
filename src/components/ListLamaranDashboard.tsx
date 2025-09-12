@@ -5,12 +5,13 @@ import {
   FileText,
   File,
   ThumbsUp,
+  ThumbsDown,
   ChevronDown,
   ArrowUp,
   Download,
-  Plus,
 } from "lucide-react";
-import TambahTalentPoolModal from "./TambahTalentPoolModal";
+
+// Removed TambahTalentPoolModal as 'Tambah' feature is disabled
 
 interface TalentPoolData {
   id: string;
@@ -34,10 +35,14 @@ const ListLamaranDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState<keyof TalentPoolData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [isTambahOpen, setIsTambahOpen] = useState(false);
+  // Removed: const [isTambahOpen, setIsTambahOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedForStatus, setSelectedForStatus] = useState<TalentPoolData | null>(null);
-  const [statusForm, setStatusForm] = useState<{ status: TalentPoolData['status'] | ''; keterangan: string }>({ status: '', keterangan: '' });
+  const [selectedForStatus, setSelectedForStatus] =
+    useState<TalentPoolData | null>(null);
+  const [statusForm, setStatusForm] = useState<{
+    status: TalentPoolData["status"] | "";
+    keterangan: string;
+  }>({ status: "", keterangan: "" });
 
   // Sample data matching the image, now with status and keterangan
   const [lamaranData, setLamaranData] = useState<TalentPoolData[]>([
@@ -157,7 +162,14 @@ const ListLamaranDashboard: React.FC = () => {
 
   const handleThumbUpClick = (item: TalentPoolData) => {
     setSelectedForStatus(item);
-    setStatusForm({ status: item.status, keterangan: item.keterangan || '' });
+    setStatusForm({ status: item.status, keterangan: item.keterangan || "" });
+    setIsStatusModalOpen(true);
+  };
+
+  const handleThumbDownClick = (item: TalentPoolData) => {
+    // Preselect status to Rejected but still allow editing via modal
+    setSelectedForStatus(item);
+    setStatusForm({ status: "Rejected", keterangan: item.keterangan || "" });
     setIsStatusModalOpen(true);
   };
 
@@ -272,17 +284,9 @@ const ListLamaranDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Tambah & Export Buttons */}
+          {/* Navigasi & Export Buttons */}
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <button
-                onClick={() => setIsTambahOpen(true)}
-                className="inline-flex items-center space-x-2 rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-cyan-700"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Tambah</span>
-              </button>
-            </div>
+            <div></div>
             <div className="flex justify-end space-x-2">
               <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
                 <FileSpreadsheet className="h-4 w-4" />
@@ -500,6 +504,13 @@ const ListLamaranDashboard: React.FC = () => {
                         >
                           <ThumbsUp className="h-4 w-4" />
                         </button>
+                        <button
+                          onClick={() => handleThumbDownClick(item)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
+                          title="Reject Application"
+                        >
+                          <ThumbsDown className="h-4 w-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -548,30 +559,7 @@ const ListLamaranDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Tambah Talent Pool Modal */}
-      <TambahTalentPoolModal
-        isOpen={isTambahOpen}
-        onClose={() => setIsTambahOpen(false)}
-        onSave={(data) => {
-          setLamaranData((prev: TalentPoolData[]) => {
-            const nextNo = prev.length > 0 ? Math.max(...prev.map((p) => p.no || 0)) + 1 : 1;
-            const newItem: TalentPoolData = {
-              id: Date.now().toString(),
-              no: nextNo,
-              namaPelamar: data.namaPelamar,
-              noTelp: data.noTelp,
-              email: data.email,
-              kualifikasi: data.kualifikasi,
-              fileName: data.fileName,
-              fileUrl: data.fileUrl,
-              status: "Pending",
-              keterangan: "-",
-            };
-            return [newItem, ...prev];
-          });
-          setIsTambahOpen(false);
-        }}
-      />
+      {/* Removed Tambah Talent Pool Modal */}
 
       {/* Ganti Status Modal */}
       {isStatusModalOpen && selectedForStatus && (
@@ -583,34 +571,67 @@ const ListLamaranDashboard: React.FC = () => {
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Ganti Status</h3>
-              <button onClick={() => setIsStatusModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Ganti Status
+              </h3>
+              <button
+                onClick={() => setIsStatusModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
                 ×
               </button>
             </div>
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pelamar</label>
-                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50">{selectedForStatus.namaPelamar}</div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Pelamar
+                </label>
+                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50">
+                  {selectedForStatus.namaPelamar}
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
                 <select
                   value={statusForm.status}
-                  onChange={(e) => setStatusForm((prev) => ({ ...prev, status: e.target.value as TalentPoolData['status'] }))}
+                  onChange={(e) =>
+                    setStatusForm((prev) => ({
+                      ...prev,
+                      status: e.target.value as TalentPoolData["status"],
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 >
-                  {(["Pending","Accepted","Rejected","Interview","Hired"] as TalentPoolData['status'][]).map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                  {(
+                    [
+                      "Pending",
+                      "Accepted",
+                      "Rejected",
+                      "Interview",
+                      "Hired",
+                    ] as TalentPoolData["status"][]
+                  ).map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Keterangan
+                </label>
                 <textarea
                   rows={3}
                   value={statusForm.keterangan}
-                  onChange={(e) => setStatusForm((prev) => ({ ...prev, keterangan: e.target.value }))}
+                  onChange={(e) =>
+                    setStatusForm((prev) => ({
+                      ...prev,
+                      keterangan: e.target.value,
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   placeholder="Tambahkan keterangan..."
                 />
@@ -627,9 +648,18 @@ const ListLamaranDashboard: React.FC = () => {
                 className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 onClick={() => {
                   if (!selectedForStatus) return;
-                  setLamaranData((prev) => prev.map((it) =>
-                    it.id === selectedForStatus.id ? { ...it, status: (statusForm.status || it.status) as TalentPoolData['status'], keterangan: statusForm.keterangan } : it
-                  ));
+                  setLamaranData((prev) =>
+                    prev.map((it) =>
+                      it.id === selectedForStatus.id
+                        ? {
+                            ...it,
+                            status: (statusForm.status ||
+                              it.status) as TalentPoolData["status"],
+                            keterangan: statusForm.keterangan,
+                          }
+                        : it
+                    )
+                  );
                   setIsStatusModalOpen(false);
                 }}
               >

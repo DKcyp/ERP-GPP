@@ -4,11 +4,9 @@ import {
   FileSpreadsheet,
   FileText,
   File,
-  Edit,
-  Trash2,
-  Plus,
+  CheckCircle,
+  XCircle,
   ArrowUp,
-  Clock,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import ReqManPowerModal, { ReqManPowerFormData } from "./ReqManPowerModal";
@@ -38,7 +36,7 @@ const ReqManPowerDashboard: React.FC = () => {
 
   // History/Edit modal state
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<ReqManPowerRow | null>(null);
+  const [selectedRow, _setSelectedRow] = useState<ReqManPowerRow | null>(null);
   const [editApprovals, setEditApprovals] = useState<{ approvalDireksi: string; approvalHead: string; catatan: string }>({ approvalDireksi: "Pending", approvalHead: "Pending", catatan: "" });
   type HistoryEntry = { id: string; reqId: string; tanggal: string; perubahan: string; user: string };
   const [history, setHistory] = useState<HistoryEntry[]>([
@@ -116,22 +114,10 @@ const ReqManPowerDashboard: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const openEdit = (item: ReqManPowerRow) => {
-    setReadOnlyModal(false);
-    setInitialModalData({ ...item });
-    setIsModalOpen(true);
-  };
-
   const openView = (item: ReqManPowerRow) => {
     setReadOnlyModal(true);
     setInitialModalData({ ...item });
     setIsModalOpen(true);
-  };
-
-  const openHistory = (item: ReqManPowerRow) => {
-    setSelectedRow(item);
-    setEditApprovals({ approvalDireksi: item.approvalDireksi, approvalHead: item.approvalHead, catatan: "" });
-    setIsHistoryOpen(true);
   };
 
   const handleSave = (data: ReqManPowerFormData) => {
@@ -157,10 +143,7 @@ const ReqManPowerDashboard: React.FC = () => {
     setInitialModalData(null);
   };
 
-  const handleDeleteClick = (item: ReqManPowerRow) => {
-    setItemToDelete(item);
-    setDeleteModalOpen(true);
-  };
+  
 
   const handleConfirmDelete = () => {
     if (!itemToDelete) return;
@@ -171,6 +154,27 @@ const ReqManPowerDashboard: React.FC = () => {
     );
     setItemToDelete(null);
     setDeleteModalOpen(false);
+  };
+
+  // Approve / Reject actions
+  const handleApprove = (item: ReqManPowerRow) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === item.id
+          ? { ...r, approvalDireksi: "Approved", approvalHead: "Approved" }
+          : r
+      )
+    );
+  };
+
+  const handleReject = (item: ReqManPowerRow) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === item.id
+          ? { ...r, approvalDireksi: "Rejected", approvalHead: "Rejected" }
+          : r
+      )
+    );
   };
 
   return (
@@ -359,25 +363,18 @@ const ReqManPowerDashboard: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-2">
                         <button
-                          onClick={() => openEdit(item)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Edit"
+                          onClick={() => handleApprove(item)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
+                          title="Approve"
                         >
-                          <Edit className="h-4 w-4" />
+                          <CheckCircle className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => openHistory(item)}
-                          className="p-2 text-amber-600 hover:bg-amber-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Riwayat / Update"
-                        >
-                          <Clock className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item)}
+                          onClick={() => handleReject(item)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Delete"
+                          title="Reject"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <XCircle className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

@@ -39,6 +39,11 @@ const DaftarPegawaiDashboard: React.FC = () => {
       jenisKontrak: "Tetap",
       status: "Aktif",
       gajiPokok: "Rp 7.500.000",
+      // contoh tanggal kontrak
+      // @ts-ignore
+      tanggalKontrakAwal: "2025-01-01",
+      // @ts-ignore
+      tanggalKontrakAkhir: "2025-09-30",
     },
     {
       id: "2",
@@ -50,6 +55,10 @@ const DaftarPegawaiDashboard: React.FC = () => {
       jenisKontrak: "Freelancer",
       status: "Aktif",
       gajiPokok: "Rp 300.000",
+      // @ts-ignore
+      tanggalKontrakAwal: "2025-07-01",
+      // @ts-ignore
+      tanggalKontrakAkhir: "2025-12-31",
     },
     {
       id: "3",
@@ -61,6 +70,10 @@ const DaftarPegawaiDashboard: React.FC = () => {
       jenisKontrak: "Tetap",
       status: "Aktif",
       gajiPokok: "Rp 6.800.000",
+      // @ts-ignore
+      tanggalKontrakAwal: "2024-09-01",
+      // @ts-ignore
+      tanggalKontrakAkhir: "2025-09-10",
     },
     {
       id: "4",
@@ -180,6 +193,36 @@ const DaftarPegawaiDashboard: React.FC = () => {
 
   const handleSearch = () => {
     setCurrentPage(1);
+  };
+
+  // Helpers: kontrak hampir habis
+  const daysUntil = (dateStr?: string) => {
+    if (!dateStr) return undefined;
+    const today = new Date();
+    const target = new Date(dateStr);
+    // normalize to ignore time
+    const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const t1 = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime();
+    const diff = Math.ceil((t1 - t0) / (1000 * 60 * 60 * 24));
+    return diff;
+  };
+
+  const kontrakBadge = (dateStr?: string) => {
+    const d = daysUntil(dateStr);
+    if (d === undefined) return null;
+    if (d < 0)
+      return (
+        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">
+          Expired {Math.abs(d)} hari
+        </span>
+      );
+    if (d <= 30)
+      return (
+        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+          {d} hari lagi
+        </span>
+      );
+    return null;
   };
 
   return (
@@ -400,6 +443,7 @@ const DaftarPegawaiDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {((item as any).tanggalKontrakAkhir && new Date((item as any).tanggalKontrakAkhir).toLocaleDateString('id-ID')) || '-'}
+                      {kontrakBadge((item as any).tanggalKontrakAkhir)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
                       {item.status}

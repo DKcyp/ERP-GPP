@@ -9,6 +9,8 @@ export interface ApprovalResignFormData {
   alasanResign: string;
   lampiranSurat: File[];
   jangkaWaktuApproval: string;
+  divisionApproval: string;
+  lampiranEC: File[];
 }
 
 interface ResignDataForModal {
@@ -22,7 +24,7 @@ interface ApprovalResignModalProps {
   onClose: () => void;
   onApprove: (
     id: string,
-    approvalDetails: { alasanResign: string; lampiranSurat: File[] }
+    approvalDetails: { alasanResign: string; lampiranSurat: File[]; lampiranBA?: File[]; lampiranEC?: File[]; divisionApproval: string }
   ) => void;
   initialData: ResignDataForModal | null;
 }
@@ -40,10 +42,13 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
     alasanResign: "-", // Default value as per image
     lampiranSurat: [],
     jangkaWaktuApproval: "1 Minggu", // Default value as per image
+    divisionApproval: "",
+    lampiranEC: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileBAInputRef = useRef<HTMLInputElement>(null);
+  const fileECInputRef = useRef<HTMLInputElement>(null);
   const [lampiranBA, setLampiranBA] = useState<File[]>([]);
 
   useEffect(() => {
@@ -55,6 +60,8 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
         alasanResign: "-",
         lampiranSurat: [],
         jangkaWaktuApproval: "1 Minggu",
+        divisionApproval: "",
+        lampiranEC: [],
       });
     } else if (!isOpen) {
       // Reset form when modal closes
@@ -65,6 +72,8 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
         alasanResign: "-",
         lampiranSurat: [],
         jangkaWaktuApproval: "1 Minggu",
+        divisionApproval: "",
+        lampiranEC: [],
       });
       setLampiranBA([]);
     }
@@ -138,6 +147,25 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
     }));
   };
 
+  // EC handlers
+  const handleECFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    setFormData((prev) => ({ ...prev, lampiranEC: [...prev.lampiranEC, ...files] }));
+  };
+
+  const handleECFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setFormData((prev) => ({ ...prev, lampiranEC: [...prev.lampiranEC, ...files] }));
+  };
+
+  const handleRemoveECFile = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      lampiranEC: prev.lampiranEC.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!initialData) return;
@@ -149,6 +177,8 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
       alasanResign: formData.alasanResign,
       lampiranSurat: formData.lampiranSurat,
       lampiranBA,
+      lampiranEC: formData.lampiranEC,
+      divisionApproval: formData.divisionApproval,
     });
 
     setIsLoading(false);
@@ -194,6 +224,26 @@ const ApprovalResignModal: React.FC<ApprovalResignModalProps> = ({
                 readOnly
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-700 cursor-not-allowed"
               />
+            </div>
+
+            {/* Approval Divisi Terkait */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Approval Divisi Terkait
+              </label>
+              <select
+                value={formData.divisionApproval}
+                onChange={(e) => handleInputChange("divisionApproval", e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">-- Pilih Divisi --</option>
+                <option value="HRD">HRD</option>
+                <option value="Pengadaan">Pengadaan</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Operational">Operational</option>
+                <option value="Gudang">Gudang</option>
+                <option value="QHSE">QHSE</option>
+              </select>
             </div>
 
             {/* Jabatan */}
