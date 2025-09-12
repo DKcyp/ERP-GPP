@@ -346,15 +346,18 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     Nama Sales
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.namaSales}
-                    onChange={(e) =>
-                      handleInputChange("namaSales", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("namaSales", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    placeholder="Masukkan Nama Sales"
-                  />
+                  >
+                    <option value="">Pilih Nama Sales</option>
+                    {salesOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Kategori Pajak */}

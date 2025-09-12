@@ -159,7 +159,7 @@ const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({
                       Catatan
                     </th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border border-gray-200">
-                      Update Duration
+                      SLH
                     </th>
                   </tr>
                 </thead>
@@ -214,12 +214,10 @@ const HistoryProspectModal: React.FC<HistoryProspectModalProps> = ({
                           return (
                             <div className="space-y-1">
                               <div>
-                                <span className="text-gray-500">
-                                  Durasi update sebelumnya:
-                                </span>{" "}
+                                <span className="text-gray-500"></span>{" "}
                                 <span className="font-medium text-gray-900">
                                   {sincePrev !== null
-                                    ? `${sincePrev} hari`
+                                    ? `${sincePrev}hari`
                                     : "-"}
                                 </span>
                               </div>

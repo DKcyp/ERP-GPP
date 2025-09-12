@@ -208,7 +208,17 @@ const MarketingMainDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium">Total Prospect</p>
-              <p className="text-2xl font-bold">100</p>
+              {(() => {
+                const prospectActual = 100; // actual count
+                const prospectTarget = 120; // target count
+                const prospectPct = prospectTarget > 0 ? Math.round((prospectActual / prospectTarget) * 100) : 0;
+                return (
+                  <>
+                    <p className="text-2xl font-bold">{prospectPct}%</p>
+                    <p className="text-xs font-bold">{prospectActual} / {prospectTarget}</p>
+                  </>
+                );
+              })()}
             </div>
           </div>
           {/* Penawaran On Call */}
@@ -245,7 +255,17 @@ const MarketingMainDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium">Penawaran On Call</p>
-              <p className="text-2xl font-bold">48</p>
+              {(() => {
+                const onCallActual = 48; // actual count
+                const onCallTarget = 60; // target count
+                const onCallPct = onCallTarget > 0 ? Math.round((onCallActual / onCallTarget) * 100) : 0;
+                return (
+                  <>
+                    <p className="text-2xl font-bold">{onCallPct}%</p>
+                    <p className="text-xs font-bold">{onCallActual} / {onCallTarget}</p>
+                  </>
+                );
+              })()}
             </div>
           </div>
           {/* Penawaran Tender */}
@@ -282,7 +302,17 @@ const MarketingMainDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium">Penawaran Tender</p>
-              <p className="text-2xl font-bold">22</p>
+              {(() => {
+                const tenderActual = 22; // actual count
+                const tenderTarget = 30; // target count
+                const tenderPct = tenderTarget > 0 ? Math.round((tenderActual / tenderTarget) * 100) : 0;
+                return (
+                  <>
+                    <p className="text-2xl font-bold">{tenderPct}%</p>
+                    <p className="text-xs font-bold">{tenderActual} / {tenderTarget}</p>
+                  </>
+                );
+              })()}
             </div>
           </div>
           {/* Monitoring Actual VS Target */}
