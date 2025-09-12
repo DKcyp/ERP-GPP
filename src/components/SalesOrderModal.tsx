@@ -14,6 +14,7 @@ export type TenagaKerjaRow = {
   tunjangan: string;
   projectRate: string;
   hari: string;
+  satuan: string;
   hargaAwal: string;
   margin: string;
   hargaAkhir: string;
@@ -23,6 +24,7 @@ export type JasaRow = {
   tunjangan: string;
   projectRate: string;
   hari: string;
+  satuan: string;
   hargaAwal: string;
   margin: string;
   hargaAkhir: string;
@@ -54,6 +56,7 @@ export type MobDemobRow = {
   tunjangan: string;
   projectRate: string;
   hari: string;
+  satuan: string;
   hargaAwal: string;
   margin: string;
   hargaAkhir: string;
@@ -63,6 +66,7 @@ export type BiayaLainRow = {
   tunjangan: string;
   projectRate: string;
   hari: string;
+  satuan: string;
   hargaAwal: string;
   margin: string;
   hargaAkhir: string;
@@ -125,7 +129,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
   ];
 
   const [activeTab, setActiveTab] = useState<string>("Tenaga Kerja");
-  // Ringkasan pekerjaan (kopi dari HPP Induk)
+  // Metode Pekerjaan (kopi dari HPP Induk)
   type RingkasRow = {
     jenisPekerjaan: string;
     hargaSatuan: string;
@@ -159,6 +163,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       tunjangan: "",
       projectRate: "",
       hari: "",
+      satuan: "Hari",
       hargaAwal: "",
       margin: "",
       hargaAkhir: "",
@@ -170,6 +175,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       tunjangan: "",
       projectRate: "",
       hari: "",
+      satuan: "Hari",
       hargaAwal: "",
       margin: "",
       hargaAkhir: "",
@@ -207,6 +213,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       tunjangan: "",
       projectRate: "",
       hari: "",
+      satuan: "Hari",
       hargaAwal: "",
       margin: "",
       hargaAkhir: "",
@@ -218,6 +225,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
       tunjangan: "",
       projectRate: "",
       hari: "",
+      satuan: "Hari",
       hargaAwal: "",
       margin: "",
       hargaAkhir: "",
@@ -247,7 +255,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     }
   };
 
-  // Handlers Ringkasan Pekerjaan
+  // Handlers Metode Pekerjaan
   const addPekerjaanRow = () => {
     setPekerjaanRingkas((prev) => [
       ...prev,
@@ -267,7 +275,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
     setPekerjaanRingkas((prev) => {
       const next = [...prev];
       let row = { ...next[idx], [field]: value } as RingkasRow;
-      // isi hargaSatuan dari mapping saat pilih jenis pekerjaan
+      // isi hargaSatuan dari mapping saat pilih Metode Pekerjaan
       if (field === "jenisPekerjaan") {
         const unit = jenisPekerjaanUnitPrice[value] || 0;
         row.hargaSatuan = unit ? String(unit) : "";
@@ -302,6 +310,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 "",
               projectRate: String(projectRate),
               hari: String(hari),
+              satuan: r.satuan || "Hari",
               hargaAwal: String(hargaAwal),
               margin: String(margin),
               hargaAkhir: String(hargaAkhir),
@@ -319,6 +328,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
               tunjangan: tunjanganOptions[seed % tunjanganOptions.length] || "",
               projectRate: String(projectRate),
               hari: String(hari),
+              satuan: "Hari",
               hargaAwal: String(hargaAwal),
               margin: String(margin),
               hargaAkhir: String(hargaAkhir),
@@ -451,6 +461,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
             tunjangan: "",
             projectRate: "",
             hari: "",
+            satuan: "Hari",
             hargaAwal: "",
             margin: "",
             hargaAkhir: "",
@@ -465,6 +476,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
             tunjangan: "",
             projectRate: "",
             hari: "",
+            satuan: "Hari",
             hargaAwal: "",
             margin: "",
             hargaAkhir: "",
@@ -527,6 +539,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
             tunjangan: "",
             projectRate: "",
             hari: "",
+            satuan: "Hari",
             hargaAwal: "",
             margin: "",
             hargaAkhir: "",
@@ -541,6 +554,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
             tunjangan: "",
             projectRate: "",
             hari: "",
+            satuan: "Hari",
             hargaAwal: "",
             margin: "",
             hargaAkhir: "",
@@ -832,6 +846,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         tunjangan: "",
         projectRate: "",
         hari: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -843,6 +858,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         tunjangan: "",
         projectRate: "",
         hari: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -893,6 +909,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         tunjangan: "",
         projectRate: "",
         hari: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -904,6 +921,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
         tunjangan: "",
         projectRate: "",
         hari: "",
+        satuan: "Hari",
         hargaAwal: "",
         margin: "",
         hargaAkhir: "",
@@ -1014,7 +1032,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 )}
               </div>
 
-              {/* Jenis Pekerjaan */}
+              {/* Metode Pekerjaan */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Metode Pengerjaan
@@ -1144,11 +1162,11 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                 )}
               </div>
 
-              {/* Ringkasan Pekerjaan (kopi HPP Induk) */}
+              {/* Metode Pekerjaan (kopi HPP Induk) */}
               <div className="lg:col-span-2 mt-2">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-xs font-semibold text-gray-900">
-                    Ringkasan Pekerjaan
+                    Metode Pekerjaan
                   </h4>
                   <button
                     type="button"
@@ -1163,7 +1181,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium text-gray-700">
-                          Jenis Pekerjaan
+                          Metode Pekerjaan
                         </th>
                         <th className="px-3 py-2 text-left font-medium text-gray-700">
                           Harga Satuan
@@ -1194,7 +1212,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded"
                             >
-                              <option value="">Pilih Jenis Pekerjaan</option>
+                              <option value="">Pilih Metode Pekerjaan</option>
                               <option value="On Call">On Call</option>
                               <option value="Tender">Tender</option>
                             </select>
@@ -1298,7 +1316,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
@@ -1406,8 +1427,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-2 py-2">
+                            <select
+                              value={row.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1461,7 +1494,7 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Jumlah
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Satuan
@@ -1531,23 +1564,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <input
-                              type="text"
+                            <select
                               value={row.satuan}
                               onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
+                                handleTabDataChange(index, "satuan", e.target.value)
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Satuan"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1619,7 +1649,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Margin
@@ -1706,8 +1739,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-2 py-2">
+                            <select
+                              value={row.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1831,23 +1876,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
                           </td>
                           <td className="px-2 py-2">
-                            <input
-                              type="text"
+                            <select
                               value={row.satuan}
                               onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
+                                handleTabDataChange(index, "satuan", e.target.value)
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Satuan"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-2">
                             <input
@@ -1980,23 +2022,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
                           </td>
                           <td className="px-2 py-1">
-                            <input
-                              type="text"
+                            <select
                               value={row.satuan}
                               onChange={(e) =>
-                                handleTabDataChange(
-                                  index,
-                                  "satuan",
-                                  e.target.value
-                                )
+                                handleTabDataChange(index, "satuan", e.target.value)
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Satuan"
-                            />
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-1">
                             <input
@@ -2062,7 +2101,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">
                           Harga Awal
@@ -2137,8 +2179,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-2 py-1">
+                            <select
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-1">
                             <input
@@ -2210,7 +2264,10 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                           Project Rate
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
-                          Hari
+                          Jumlah
+                        </th>
+                        <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
+                          Satuan
                         </th>
                         <th className="px-2 py-2 text-left text-xs font-medium text-gray-700">
                           Harga Awal
@@ -2281,8 +2338,20 @@ const SalesOrderModal: React.FC<SalesOrderModalProps> = ({
                                 )
                               }
                               className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
-                              placeholder="Hari"
+                              placeholder="Jumlah"
                             />
+                          </td>
+                          <td className="px-2 py-1">
+                            <select
+                              value={item.satuan}
+                              onChange={(e) =>
+                                handleTabDataChange(index, "satuan", e.target.value)
+                              }
+                              className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                            >
+                              <option value="Hari">Hari</option>
+                              <option value="Unit">Unit</option>
+                            </select>
                           </td>
                           <td className="px-2 py-1">
                             <input
