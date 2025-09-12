@@ -47,6 +47,19 @@ export interface PenawaranTwoStepFormData {
     unitPrice: string;
     totalPrice: string;
   }>;
+
+  // Tender-specific fields (when type === 'tender')
+  judulTender?: string;
+  noTender?: string;
+  namaPerusahaanTender?: string;
+  oeHps?: string;
+  durasiKontrak?: string;
+  masaBerlakuPenawaran?: string;
+  tanggalSubmit?: string;
+  sow?: string;
+  technicalRequirement?: string;
+  statusTender?: string;
+  keteranganTender?: string;
 }
 
 const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
@@ -78,6 +91,19 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
     supplies: [
       { item: "", description: "", qty: "", unitPrice: "", totalPrice: "" },
     ],
+
+    // Tender-specific defaults
+    judulTender: "",
+    noTender: "",
+    namaPerusahaanTender: "",
+    oeHps: "",
+    durasiKontrak: "",
+    masaBerlakuPenawaran: "",
+    tanggalSubmit: "",
+    sow: "",
+    technicalRequirement: "",
+    statusTender: "",
+    keteranganTender: "",
   });
 
   const [errors, setErrors] = useState<Partial<PenawaranTwoStepFormData>>({});
@@ -94,6 +120,20 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
   ];
   const jenisPekerjaanOptions = ["On Call", "Project Based", "Maintenance"];
   const jenisPenawaranOptions = ["Lumpsum", "Unit Price", "Time & Material"];
+  const statusTenderOptions = [
+    "Minat/Registrasi",
+    "PQ",
+    "Tidak lulus",
+    "Lulus PQ",
+    "Tender",
+    "Withdraw",
+    "Tidak lulus",
+    "Lulus Sampul 1",
+    "Openbid sampul 2",
+    "Negoisasi",
+    "Awarding",
+    "Kalah Harga",
+  ];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -225,6 +265,19 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
       supplies: [
         { item: "", description: "", qty: "", unitPrice: "", totalPrice: "" },
       ],
+
+      // Tender-specific defaults
+      judulTender: "",
+      noTender: "",
+      namaPerusahaanTender: "",
+      oeHps: "",
+      durasiKontrak: "",
+      masaBerlakuPenawaran: "",
+      tanggalSubmit: "",
+      sow: "",
+      technicalRequirement: "",
+      statusTender: "",
+      keteranganTender: "",
     });
     setCurrentStep(1);
     setErrors({});
@@ -319,22 +372,6 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
             <X className="h-5 w-5" />
           </button>
         </div>
-
-        {/* Form Content */}
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
-          <form onSubmit={handleSubmit} className="p-6">
-            {currentStep === 1 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* No Penawaran */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    No Penawaran
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.noPenawaran}
-                    onChange={(e) =>
-                      handleInputChange("noPenawaran", e.target.value)
                     }
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
                     placeholder="Masukkan no penawaran"
@@ -348,7 +385,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                   </label>
                   <select
                     value={formData.namaSales}
-                    onChange={(e) => handleInputChange("namaSales", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("namaSales", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                   >
                     <option value="">Pilih Nama Sales</option>
@@ -504,7 +543,10 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
-                          attachmentFile: e.target.files && e.target.files[0] ? e.target.files[0] : null,
+                          attachmentFile:
+                            e.target.files && e.target.files[0]
+                              ? e.target.files[0]
+                              : null,
                         }))
                       }
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200"
@@ -621,7 +663,8 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
                     <ReactQuill
                       theme="snow"
                       value={
-                        formData.termCondition || `
+                        formData.termCondition ||
+                        `
 <ol>
   <li>Price above excluded VAT 11%.</li>
   <li>Term of payment must be pay DP Rp. 35.000.000,- (for 250 Sheet) before the work is carried out.</li>
@@ -644,7 +687,9 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
   <li>This quotation is valid for one (1) week from the date of quotation.</li>
 </ol>`
                       }
-                      onChange={(content) => handleInputChange("termCondition", content)}
+                      onChange={(content) =>
+                        handleInputChange("termCondition", content)
+                      }
                       modules={{
                         toolbar: [
                           [{ header: [1, 2, false] }],
