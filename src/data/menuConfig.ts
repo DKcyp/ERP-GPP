@@ -1289,13 +1289,6 @@ export const gudangMenu: MenuSection[] = [
     title: "Barang",
     icon: "Box",
     items: [
-      { title: "Master Barang", icon: "List", path: "/gudang/barang/master" },
-      {
-        title: "Kategori Barang",
-        icon: "Tag",
-        path: "/gudang/barang/kategori",
-      },
-      { title: "Satuan Barang", icon: "Grid", path: "/gudang/barang/satuan" },
       {
         title: "Expired Barang",
         icon: "AlertTriangle",
@@ -1705,6 +1698,19 @@ export const accountingMenu: MenuSection[] = [
     icon: "Home",
     items: [],
     directPath: "/accounting/dashboard",
+  },
+  {
+    title: "Barang",
+    icon: "Boxes",
+    items: [
+      { title: "Master Barang", icon: "List", path: "/gudang/barang/master" },
+      {
+        title: "Kategori Barang",
+        icon: "Tag",
+        path: "/gudang/barang/kategori",
+      },
+      { title: "Satuan Barang", icon: "Grid", path: "/gudang/barang/satuan" },
+    ],
   },
   {
     title: "Master COA",
