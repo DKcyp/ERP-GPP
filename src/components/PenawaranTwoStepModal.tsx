@@ -372,32 +372,51 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
             <X className="h-5 w-5" />
           </button>
         </div>
-                    }
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
-                    placeholder="Masukkan no penawaran"
-                  />
-                </div>
+        <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
+          <form onSubmit={handleSubmit} className="p-6">
+            {currentStep === 1 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Nama Sales */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Nama Sales
+            </label>
+            <select
+              value={formData.namaSales}
+              onChange={(e) =>
+                handleInputChange("namaSales", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+            >
+              <option value="">Pilih Nama Sales</option>
+              {salesOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                {/* Nama Sales */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Nama Sales
-                  </label>
-                  <select
-                    value={formData.namaSales}
-                    onChange={(e) =>
-                      handleInputChange("namaSales", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                  >
-                    <option value="">Pilih Nama Sales</option>
-                    {salesOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          {/* Kategori Pajak */}
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Kategori Pajak
+            </label>
+            <select
+              value={formData.kategoriPajak}
+              onChange={(e) =>
+                handleInputChange("kategoriPajak", e.target.value)
+              }
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
+            >
+              <option value="">Pilih Kategori Pajak</option>
+              {kategoriPajakOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
 
                 {/* Kategori Pajak */}
                 <div>
