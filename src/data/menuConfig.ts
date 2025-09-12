@@ -1851,11 +1851,41 @@ export const taxMenu: MenuSection[] = [
   {
     title: "PPH UNIFIKASI",
     icon: "Layers",
-    items: [
-      { title: "PPh 21", icon: "FileText", path: "/tax/pph-21" },
-      { title: "PPh 23", icon: "FileText", path: "/tax/pph-23" },
-      { title: "PPh 4 Ayat 2", icon: "FileText", path: "/tax/pph-4-ayat-2" },
-      { title: "PPh 22", icon: "FileText", path: "/tax/pph-22" },
+
+    subSections: [
+      {
+        title: "PPH 21",
+        icon: "FileText",
+        items: [
+          { title: "Karyawan", icon: "User", path: "/tax/pph-21/karyawan" },
+          {
+            title: "Non Karyawan",
+            icon: "Users",
+            path: "/tax/pph-21/non-karyawan",
+          },
+        ],
+      },
+      {
+        title: "PPH 23",
+        icon: "FileText",
+        items: [{ title: "PPh 23", icon: "FileText", path: "/tax/pph-23" }],
+      },
+      {
+        title: "PPH 22",
+        icon: "FileText",
+        items: [{ title: "PPh 22", icon: "FileText", path: "/tax/pph-22" }],
+      },
+      {
+        title: "PPH 4 Ayat 2",
+        icon: "FileText",
+        items: [
+          {
+            title: "PPh 4 Ayat 2",
+            icon: "FileText",
+            path: "/tax/pph-4-ayat-2",
+          },
+        ],
+      },
     ],
   },
   {
