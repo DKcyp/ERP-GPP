@@ -11,6 +11,12 @@ interface Customer {
   email: string;
   noTelp: string;
   keterangan?: string;
+  npwp?: string;
+  nik?: string;
+  passport?: string;
+  npwpFileName?: string; // stored as file name for preview/logging
+  nikFileName?: string;
+  passportFileName?: string;
 }
 
 const mockData: Customer[] = [
@@ -56,6 +62,12 @@ const MasterDataCustomerDashboard: React.FC = () => {
     email: "",
     noTelp: "",
     keterangan: "",
+    npwp: "",
+    nik: "",
+    passport: "",
+    npwpFileName: "",
+    nikFileName: "",
+    passportFileName: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof Omit<Customer, "id">, string>>>({});
 
@@ -111,7 +123,7 @@ const MasterDataCustomerDashboard: React.FC = () => {
   // Add/Edit/Delete Handlers
   const openAddModal = () => {
     setEditing(null);
-    setForm({ namaPerusahaan: "", alamat: "", pic: "", email: "", noTelp: "", keterangan: "" });
+    setForm({ namaPerusahaan: "", alamat: "", pic: "", email: "", noTelp: "", keterangan: "", npwp: "", nik: "", passport: "", npwpFileName: "", nikFileName: "", passportFileName: "" });
     setErrors({});
     setShowFormModal(true);
   };
@@ -125,6 +137,12 @@ const MasterDataCustomerDashboard: React.FC = () => {
       email: c.email,
       noTelp: c.noTelp,
       keterangan: c.keterangan || "",
+      npwp: c.npwp || "",
+      nik: c.nik || "",
+      passport: c.passport || "",
+      npwpFileName: c.npwpFileName || "",
+      nikFileName: c.nikFileName || "",
+      passportFileName: c.passportFileName || "",
     });
     setErrors({});
     setShowFormModal(true);
@@ -425,6 +443,37 @@ const MasterDataCustomerDashboard: React.FC = () => {
                 <div>
                   <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
                   <input value={form.keterangan || ""} onChange={(e)=> setForm(f=>({...f,keterangan:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Opsional" />
+                </div>
+              </div>
+
+              {/* NPWP / NIK / Passport */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">NPWP</label>
+                  <input value={form.npwp || ""} onChange={(e)=> setForm(f=>({...f,npwp:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Masukkan NPWP" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Upload NPWP</label>
+                  <input type="file" accept="image/*,.pdf" onChange={(e)=> setForm(f=>({...f, npwpFileName: e.target.files && e.target.files[0] ? e.target.files[0].name : ""}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
+                  {form.npwpFileName && <p className="text-[11px] text-gray-500 mt-1">File: {form.npwpFileName}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">NIK</label>
+                  <input value={form.nik || ""} onChange={(e)=> setForm(f=>({...f,nik:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Masukkan NIK" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Upload NIK</label>
+                  <input type="file" accept="image/*,.pdf" onChange={(e)=> setForm(f=>({...f, nikFileName: e.target.files && e.target.files[0] ? e.target.files[0].name : ""}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
+                  {form.nikFileName && <p className="text-[11px] text-gray-500 mt-1">File: {form.nikFileName}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Passport</label>
+                  <input value={form.passport || ""} onChange={(e)=> setForm(f=>({...f,passport:e.target.value}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" placeholder="Masukkan Passport" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Upload Passport</label>
+                  <input type="file" accept="image/*,.pdf" onChange={(e)=> setForm(f=>({...f, passportFileName: e.target.files && e.target.files[0] ? e.target.files[0].name : ""}))} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
+                  {form.passportFileName && <p className="text-[11px] text-gray-500 mt-1">File: {form.passportFileName}</p>}
                 </div>
               </div>
             </div>
