@@ -375,207 +375,134 @@ const PenawaranTwoStepModal: React.FC<PenawaranTwoStepModalProps> = ({
         <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
           <form onSubmit={handleSubmit} className="p-6">
             {currentStep === 1 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Nama Sales */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Nama Sales
-            </label>
-            <select
-              value={formData.namaSales}
-              onChange={(e) =>
-                handleInputChange("namaSales", e.target.value)
-              }
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-            >
-              <option value="">Pilih Nama Sales</option>
-              {salesOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Kategori Pajak */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Kategori Pajak
-            </label>
-            <select
-              value={formData.kategoriPajak}
-              onChange={(e) =>
-                handleInputChange("kategoriPajak", e.target.value)
-              }
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
-            >
-              <option value="">Pilih Kategori Pajak</option>
-              {kategoriPajakOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-                {/* Kategori Pajak */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Kategori Pajak
-                  </label>
-                  <select
-                    value={formData.kategoriPajak}
-                    onChange={(e) =>
-                      handleInputChange("kategoriPajak", e.target.value)
-                    }
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
-                  >
-                    <option value="">Pilih Kategori Pajak</option>
-                    {kategoriPajakOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* No. Ref Req - removed per request */}
-
-                {/* Kode Customer - removed per request */}
-
-                {/* Nama Customer */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Nama Customer
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.namaCustomer}
-                    onChange={(e) =>
-                      handleInputChange("namaCustomer", e.target.value)
-                    }
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
-                    placeholder="Masukkan nama customer"
-                  />
-                </div>
-
-                {/* Pajak */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Pajak
-                  </label>
-                  <select
-                    value={formData.pajak}
-                    onChange={(e) => handleInputChange("pajak", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                  >
-                    <option value="">Pilih Pajak</option>
-                    {pajakOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Tanggal Kirim */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Tanggal Kirim
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      value={formData.tanggalKirim}
-                      onChange={(e) =>
-                        handleInputChange("tanggalKirim", e.target.value)
-                      }
-                      className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Tanggal Penawaran */}
-                <div className="lg:col-span-2">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Tanggal Penawaran
-                  </label>
-                  <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
-                    <div className="relative">
-                      <input
-                        type="date"
-                        value={formData.tanggalPenawaran}
-                        onChange={(e) =>
-                          handleInputChange("tanggalPenawaran", e.target.value)
-                        }
-                        className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}
-                      />
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <>
+                {type === "tender" ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="lg:col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Judul Tender</label>
+                      <input type="text" value={formData.judulTender || ""} onChange={(e)=>handleInputChange("judulTender", e.target.value as any)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" placeholder="Masukkan judul tender" />
                     </div>
-                    <div className="text-center text-gray-500 font-medium text-xs">
-                      <span>S/d</span>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">No Tender</label>
+                      <input type="text" value={formData.noTender || ""} onChange={(e)=>handleInputChange("noTender", e.target.value as any)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" placeholder="Masukkan no tender" />
                     </div>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        value={formData.tanggalPenawaranEnd}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "tanggalPenawaranEnd",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                      />
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Nama Perusahaan</label>
+                      <input type="text" value={formData.namaPerusahaanTender || ""} onChange={(e)=>handleInputChange("namaPerusahaanTender", e.target.value as any)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" placeholder="Masukkan nama perusahaan" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">OE/HPS</label>
+                      <input type="text" value={formData.oeHps || ""} onChange={(e)=>handleInputChange("oeHps", e.target.value as any)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" placeholder="Masukkan OE/HPS" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Durasi Kontrak</label>
+                      <input type="text" value={formData.durasiKontrak || ""} onChange={(e)=>handleInputChange("durasiKontrak", e.target.value as any)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" placeholder="Contoh: 6 bulan" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Masa berlaku penawaran</label>
+                      <input type="text" value={formData.masaBerlakuPenawaran || ""} onChange={(e)=>handleInputChange("masaBerlakuPenawaran", e.target.value as any)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" placeholder="Contoh: 30 hari" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Submit</label>
+                      <div className="relative">
+                        <input type="date" value={formData.tanggalSubmit || ""} onChange={(e)=>handleInputChange("tanggalSubmit", e.target.value as any)} className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs" />
+                        <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                      <select value={formData.statusTender || ""} onChange={(e)=>handleInputChange("statusTender", e.target.value as any)} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs">
+                        <option value="">Pilih Status</option>
+                        {statusTenderOptions.map((opt)=> (<option key={opt} value={opt}>{opt}</option>))}
+                      </select>
+                    </div>
+                    <div className="lg:col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">SOW</label>
+                      <textarea value={formData.sow || ""} onChange={(e)=>handleInputChange("sow", e.target.value as any)} rows={3} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-xs border-gray-200" placeholder="Masukkan scope of work" />
+                    </div>
+                    <div className="lg:col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Technical Requirement</label>
+                      <textarea value={formData.technicalRequirement || ""} onChange={(e)=>handleInputChange("technicalRequirement", e.target.value as any)} rows={3} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-xs border-gray-200" placeholder="Masukkan technical requirement" />
+                    </div>
+                    <div className="lg:col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Keterangan</label>
+                      <textarea value={formData.keteranganTender || ""} onChange={(e)=>handleInputChange("keteranganTender", e.target.value as any)} rows={3} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-xs border-gray-200" placeholder="Tambahkan keterangan tambahan" />
                     </div>
                   </div>
-                </div>
-
-                {/* Tanggal Follow up */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Tanggal Follow up
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      value={formData.tanggalFollowUp}
-                      onChange={(e) =>
-                        handleInputChange("tanggalFollowUp", e.target.value)
-                      }
-                      className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Upload File (only for non on-call) */}
-                {type !== "on-call" && (
-                  <div className="lg:col-span-2">
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Upload Dokumen Penawaran
-                    </label>
-                    <input
-                      type="file"
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          attachmentFile:
-                            e.target.files && e.target.files[0]
-                              ? e.target.files[0]
-                              : null,
-                        }))
-                      }
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200"
-                    />
-                    <p className="mt-1 text-[10px] text-gray-500">
-                      Format yang didukung: PDF, DOCX, XLSX, gambar. Maks 10MB.
-                    </p>
+                ) : (
+                  /* default/on-call UI (existing fields) */
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* Nama Sales */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Nama Sales</label>
+                      <select value={formData.namaSales} onChange={(e)=>handleInputChange("namaSales", e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs">
+                        <option value="">Pilih Nama Sales</option>
+                        {salesOptions.map((option)=>(<option key={option} value={option}>{option}</option>))}
+                      </select>
+                    </div>
+                    {/* Kategori Pajak */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Kategori Pajak</label>
+                      <select value={formData.kategoriPajak} onChange={(e)=>handleInputChange("kategoriPajak", e.target.value)} className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`}>
+                        <option value="">Pilih Kategori Pajak</option>
+                        {kategoriPajakOptions.map((option)=>(<option key={option} value={option}>{option}</option>))}
+                      </select>
+                    </div>
+                    {/* Nama Customer */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Nama Customer</label>
+                      <input type="text" value={formData.namaCustomer} onChange={(e)=>handleInputChange("namaCustomer", e.target.value)} className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`} placeholder="Masukkan nama customer" />
+                    </div>
+                    {/* Pajak */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Pajak</label>
+                      <select value={formData.pajak} onChange={(e)=>handleInputChange("pajak", e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs">
+                        <option value="">Pilih Pajak</option>
+                        {pajakOptions.map((option)=>(<option key={option} value={option}>{option}</option>))}
+                      </select>
+                    </div>
+                    {/* Tanggal Kirim */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Kirim</label>
+                      <div className="relative">
+                        <input type="date" value={formData.tanggalKirim} onChange={(e)=>handleInputChange("tanggalKirim", e.target.value)} className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs" />
+                        <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+                    {/* Tanggal Penawaran */}
+                    <div className="lg:col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Penawaran</label>
+                      <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
+                        <div className="relative">
+                          <input type="date" value={formData.tanggalPenawaran} onChange={(e)=>handleInputChange("tanggalPenawaran", e.target.value)} className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200`} />
+                          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        </div>
+                        <div className="text-center text-gray-500 font-medium text-xs"><span>S/d</span></div>
+                        <div className="relative">
+                          <input type="date" value={formData.tanggalPenawaranEnd} onChange={(e)=>handleInputChange("tanggalPenawaranEnd", e.target.value)} className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs" />
+                          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Tanggal Follow up */}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Follow up</label>
+                      <div className="relative">
+                        <input type="date" value={formData.tanggalFollowUp} onChange={(e)=>handleInputChange("tanggalFollowUp", e.target.value)} className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs" />
+                        <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+                    {/* Upload File (only for non on-call) */}
+                    {type !== "on-call" && (
+                      <div className="lg:col-span-2">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Upload Dokumen Penawaran</label>
+                        <input type="file" onChange={(e)=> setFormData((prev)=>({...prev, attachmentFile: e.target.files && e.target.files[0] ? e.target.files[0] : null }))} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs border-gray-200" />
+                        <p className="mt-1 text-[10px] text-gray-500">Format yang didukung: PDF, DOCX, XLSX, gambar. Maks 10MB.</p>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </>
             )}
 
             {type === "on-call" && currentStep === 2 && (
