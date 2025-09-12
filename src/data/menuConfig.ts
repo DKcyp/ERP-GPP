@@ -1259,6 +1259,7 @@ export const financeMenu: MenuSection[] = [
     items: [],
     directPath: "/finance/tanda-terima-dokumen-pembelian",
   },
+  createGeneralMenu("operational"),
 ];
 
 export const gudangMenu: MenuSection[] = [
