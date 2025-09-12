@@ -289,6 +289,9 @@ import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarket
 import CSIMasterDashboard from "./CSIMasterDashboard";
 import CSIPenilaianFormDashboard from "./CSIPenilaianFormDashboard";
 import PerjalananDinasDashboard from "./PerjalananDinasDashboard";
+import MonitoringBidbond from "./MonitoringBidbond";
+import MonitoringPerformanceBond from "./MonitoringPerformanceBond";
+import MonitoringLegalitasPerusahaan from "./MonitoringLegalitasPerusahaan";
 
 import {
   BarChart3,
@@ -381,6 +384,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/csi/form") {
       return <CSIPenilaianFormDashboard />;
+    }
+
+    // Marketing > Monitoring > Dokumen
+    if (currentPage === "/marketing/monitoring/dokumen/bidbond") {
+      return <MonitoringBidbond />;
+    }
+    if (currentPage === "/marketing/monitoring/dokumen/performance-bond") {
+      return <MonitoringPerformanceBond />;
+    }
+    if (currentPage === "/marketing/monitoring/dokumen/legalitas-perusahaan") {
+      return <MonitoringLegalitasPerusahaan />;
     }
 
     // Gudang Routes

@@ -301,6 +301,19 @@ const CSIMasterDashboard: React.FC = () => {
   const handlePageChange = (page: number) => setCurrentPage(page);
   const handleSearch = () => setCurrentPage(1);
 
+  // Generate deterministic dummy stats per template for display
+  const getDummyStats = (id: string) => {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) {
+      h = (h * 31 + id.charCodeAt(i)) >>> 0;
+    }
+    const respondents = 30 + (h % 71); // 30 - 100
+    const avgRaw = 70 + ((h >> 3) % 260) / 10; // 70.0 - 95.9
+    const avg = Number(avgRaw.toFixed(1));
+    const total = Math.round(respondents * avg);
+    return { respondents, total, avg };
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200">
@@ -675,9 +688,13 @@ const CSIMasterDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-gray-900">
                       {new Date(tpl.createdAt).getFullYear()}
                     </td>
-                    <td className="px-4 py-3 text-gray-900">0</td>
-                    <td className="px-4 py-3 text-gray-900">0</td>
-                    <td className="px-4 py-3 text-gray-900">0</td>
+                    {(() => { const s = getDummyStats(tpl.id); return (
+                      <>
+                        <td className="px-4 py-3 text-gray-900">{s.respondents}</td>
+                        <td className="px-4 py-3 text-gray-900">{s.total}</td>
+                        <td className="px-4 py-3 text-gray-900">{s.avg}</td>
+                      </>
+                    ); })()}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1">
                         <button

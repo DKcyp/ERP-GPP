@@ -352,6 +352,21 @@ export const marketingMenu: MenuSection[] = [
         icon: "BarChart3",
         path: "/marketing/monitoring/marketing",
       },
+      {
+        title: "Monitoring Dokumen - Bidbond",
+        icon: "FileSignature",
+        path: "/marketing/monitoring/dokumen/bidbond",
+      },
+      {
+        title: "Monitoring Dokumen - Performance Bond",
+        icon: "Shield",
+        path: "/marketing/monitoring/dokumen/performance-bond",
+      },
+      {
+        title: "Monitoring Dokumen - Legalitas Perusahaan",
+        icon: "BadgeCheck",
+        path: "/marketing/monitoring/dokumen/legalitas-perusahaan",
+      },
     ],
   },
   {
