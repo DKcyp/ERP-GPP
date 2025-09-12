@@ -34,11 +34,12 @@ interface TimesheetBarangPegawaiModalProps {
   onClose: () => void;
   onSave: (data: TimesheetFormData) => void;
   initialData?: Partial<TimesheetFormData> | null;
+  showOnlyBarang?: boolean;
 }
 
 const TimesheetBarangPegawaiModal: React.FC<
   TimesheetBarangPegawaiModalProps
-> = ({ isOpen, onClose, onSave, initialData }) => {
+> = ({ isOpen, onClose, onSave, initialData, showOnlyBarang }) => {
   const [form, setForm] = useState<TimesheetFormData>({
     noSO: initialData?.noSO || "",
     noSOTurunan: initialData?.noSOTurunan || "",
@@ -218,95 +219,97 @@ const TimesheetBarangPegawaiModal: React.FC<
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-gray-900">
-                List Pegawai
-              </h4>
-              <button
-                onClick={addPegawai}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700"
-              >
-                Tambah Pegawai
-              </button>
-            </div>
-            <div className="overflow-x-auto border rounded-xl">
-              <table className="w-full text-xs">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 py-2 text-left">Nama</th>
-                    <th className="px-3 py-2 text-left">Kualifikasi</th>
-                    <th className="px-3 py-2 text-left">Zona</th>
-                    <th className="px-3 py-2 text-left">Harga Akhir</th>
-                    <th className="px-3 py-2 text-left">Upload</th>
-                    <th className="px-3 py-2 text-center">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {form.pegawai.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2">
-                        <input
-                          className="w-full px-2 py-1 border rounded-lg"
-                          value={row.nama}
-                          onChange={(e) =>
-                            updatePegawai(row.id, "nama", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <input
-                          className="w-full px-2 py-1 border rounded-lg"
-                          value={row.kualifikasi}
-                          onChange={(e) =>
-                            updatePegawai(row.id, "kualifikasi", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <input
-                          className="w-full px-2 py-1 border rounded-lg"
-                          value={row.zona}
-                          onChange={(e) =>
-                            updatePegawai(row.id, "zona", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <input
-                          className="w-full px-2 py-1 border rounded-lg"
-                          value={row.hargaAkhir}
-                          onChange={(e) =>
-                            updatePegawai(row.id, "hargaAkhir", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <input
-                          type="file"
-                          onChange={(e) =>
-                            updatePegawai(
-                              row.id,
-                              "file",
-                              e.target.files?.[0] || null
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-3 py-2 text-center">
-                        <button
-                          onClick={() => removePegawai(row.id)}
-                          className="px-2 py-1 bg-rose-600 text-white rounded-lg"
-                        >
-                          Hapus
-                        </button>
-                      </td>
+          {!showOnlyBarang && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-gray-900">
+                  List Pegawai
+                </h4>
+                <button
+                  onClick={addPegawai}
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700"
+                >
+                  Tambah Pegawai
+                </button>
+              </div>
+              <div className="overflow-x-auto border rounded-xl">
+                <table className="w-full text-xs">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Nama</th>
+                      <th className="px-3 py-2 text-left">Kualifikasi</th>
+                      <th className="px-3 py-2 text-left">Zona</th>
+                      <th className="px-3 py-2 text-left">Harga Akhir</th>
+                      <th className="px-3 py-2 text-left">Upload</th>
+                      <th className="px-3 py-2 text-center">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {form.pegawai.map((row) => (
+                      <tr key={row.id} className="hover:bg-gray-50">
+                        <td className="px-3 py-2">
+                          <input
+                            className="w-full px-2 py-1 border rounded-lg"
+                            value={row.nama}
+                            onChange={(e) =>
+                              updatePegawai(row.id, "nama", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            className="w-full px-2 py-1 border rounded-lg"
+                            value={row.kualifikasi}
+                            onChange={(e) =>
+                              updatePegawai(row.id, "kualifikasi", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            className="w-full px-2 py-1 border rounded-lg"
+                            value={row.zona}
+                            onChange={(e) =>
+                              updatePegawai(row.id, "zona", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            className="w-full px-2 py-1 border rounded-lg"
+                            value={row.hargaAkhir}
+                            onChange={(e) =>
+                              updatePegawai(row.id, "hargaAkhir", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="file"
+                            onChange={(e) =>
+                              updatePegawai(
+                                row.id,
+                                "file",
+                                e.target.files?.[0] || null
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2 text-center">
+                          <button
+                            onClick={() => removePegawai(row.id)}
+                            className="px-2 py-1 bg-rose-600 text-white rounded-lg"
+                          >
+                            Hapus
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">

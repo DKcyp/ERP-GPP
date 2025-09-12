@@ -1346,12 +1346,13 @@ export const gudangMenu: MenuSection[] = [
         icon: "Trash",
         path: "/gudang/pengembalian-barang/dibuang",
       },
-      {
-        title: "Timesheet Barang",
-        icon: "Clock",
-        path: "/gudang/pengembalian-barang/timesheet",
-      },
     ],
+  },
+  {
+    title: "Timesheet Barang",
+    icon: "Clock",
+    items: [],
+    directPath: "/gudang/pengembalian-barang/timesheet",
   },
   {
     title: "Stock Opname",

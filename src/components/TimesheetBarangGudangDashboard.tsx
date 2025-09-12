@@ -1,61 +1,134 @@
-import React from 'react';
-import { Clock, Search, FileText, FileBarChart, FileSpreadsheet, CheckCircle, Edit, Package, Eye, CalendarDays } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Clock,
+  Search,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  Eye,
+  CalendarDays,
+  Plus,
+} from "lucide-react";
+import TimesheetBarangPegawaiModal, {
+  TimesheetFormData,
+} from "./TimesheetBarangPegawaiModal";
+
+type Row = {
+  no: number;
+  noSO: string;
+  noSOTurunan: string;
+  namaProyek: string;
+  tanggalPenyerahan: string;
+  status: string;
+  nilaiTimesheet?: string;
+  mob?: string;
+  demob?: string;
+};
 
 const TimesheetBarangGudangDashboard: React.FC = () => {
-  const timesheetBarangItems = [
-    { no: 1, noSO: 'SO001', noSOTurunan: 'SO001.12', namaProyek: 'Pembangunan Gedung A', tanggalPenyerahan: '10-03-2025', status: 'Pending', action: 'Barang Diterima' },
-    { no: 2, noSO: 'SO002', noSOTurunan: 'SO002.05', namaProyek: 'Renovasi Kantor B', tanggalPenyerahan: '15-03-2025', status: 'Belum Diproses', action: 'Ubah Status' },
-    { no: 3, noSO: 'SO003', noSOTurunan: 'SO003.07', namaProyek: 'Pengadaan Infrastruktur', tanggalPenyerahan: '20-03-2025', status: 'Barang Diterima', action: 'Kontrol Barang' },
-    { no: 4, noSO: 'SO004', noSOTurunan: 'SO004.07', namaProyek: 'Pengadaan Infrastruktur', tanggalPenyerahan: '20-02-2025', status: '-', action: 'Detail' },
-    { no: 5, noSO: 'SO005', noSOTurunan: 'SO005.57', namaProyek: 'Pengadaan Infrastruktur', tanggalPenyerahan: '20-02-2025', status: '-', action: 'Detail' },
-  ];
+  const [rows] = useState<Row[]>([
+    {
+      no: 1,
+      noSO: "SO001",
+      noSOTurunan: "SO001.12",
+      namaProyek: "Pembangunan Gedung A",
+      tanggalPenyerahan: "10-03-2025",
+      status: "Pending",
+      nilaiTimesheet: "Rp 12.000.000",
+      mob: "01-03-2025",
+      demob: "10-03-2025",
+    },
+    {
+      no: 2,
+      noSO: "SO002",
+      noSOTurunan: "SO002.05",
+      namaProyek: "Renovasi Kantor B",
+      tanggalPenyerahan: "15-03-2025",
+      status: "Belum Diproses",
+      nilaiTimesheet: "Rp 8.500.000",
+      mob: "03-03-2025",
+      demob: "15-03-2025",
+    },
+    {
+      no: 3,
+      noSO: "SO003",
+      noSOTurunan: "SO003.07",
+      namaProyek: "Pengadaan Infrastruktur",
+      tanggalPenyerahan: "20-03-2025",
+      status: "Barang Diterima",
+      nilaiTimesheet: "Rp 5.000.000",
+      mob: "05-03-2025",
+      demob: "20-03-2025",
+    },
+    {
+      no: 4,
+      noSO: "SO004",
+      noSOTurunan: "SO004.07",
+      namaProyek: "Pengadaan Infrastruktur",
+      tanggalPenyerahan: "20-02-2025",
+      status: "-",
+      nilaiTimesheet: "Rp 0",
+      mob: "",
+      demob: "",
+    },
+    {
+      no: 5,
+      noSO: "SO005",
+      noSOTurunan: "SO005.57",
+      namaProyek: "Pengadaan Infrastruktur",
+      tanggalPenyerahan: "20-02-2025",
+      status: "-",
+      nilaiTimesheet: "Rp 0",
+      mob: "",
+      demob: "",
+    },
+  ]);
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Pending':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>;
-      case 'Belum Diproses':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Belum Diproses</span>;
-      case 'Barang Diterima':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Barang Diterima</span>;
-      default:
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">-</span>;
-    }
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialData, setInitialData] =
+    useState<Partial<TimesheetFormData> | null>(null);
+
+  const openCreate = () => {
+    setInitialData({
+      noSO: "",
+      noSOTurunan: "",
+      namaProyek: "",
+      nilaiTimesheet: "",
+      mob: "",
+      demob: "",
+      pegawai: [],
+      barang: [],
+    });
+    setIsModalOpen(true);
   };
 
-  const getActionButton = (action: string) => {
-    switch (action) {
-      case 'Barang Diterima':
-        return (
-          <button className="flex items-center space-x-1 px-3 py-1 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-xs shadow-md">
-            <CheckCircle className="h-4 w-4" />
-            <span>Barang Diterima</span>
-          </button>
-        );
-      case 'Ubah Status':
-        return (
-          <button className="flex items-center space-x-1 px-3 py-1 bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 transition-colors duration-200 text-xs shadow-md">
-            <Edit className="h-4 w-4" />
-            <span>Ubah Status</span>
-          </button>
-        );
-      case 'Kontrol Barang':
-        return (
-          <button className="flex items-center space-x-1 px-3 py-1 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200 text-xs shadow-md">
-            <Package className="h-4 w-4" />
-            <span>Kontrol Barang</span>
-          </button>
-        );
-      case 'Detail':
-        return (
-          <button className="flex items-center space-x-1 px-3 py-1 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-xs shadow-md">
-            <Eye className="h-4 w-4" />
-            <span>Detail</span>
-          </button>
-        );
-      default:
-        return null;
-    }
+  const openDetail = (r: Row) => {
+    setInitialData({
+      noSO: r.noSO,
+      noSOTurunan: r.noSOTurunan,
+      namaProyek: r.namaProyek,
+      nilaiTimesheet: r.nilaiTimesheet || "",
+      mob: r.mob || "",
+      demob: r.demob || "",
+      pegawai: [],
+      barang: [],
+    });
+    setIsModalOpen(true);
+  };
+
+  // (status badge not used in this view)
+
+  const getActionButton = (r: Row) => {
+    return (
+      <button
+        onClick={() => openDetail(r)}
+        className="flex items-center space-x-1 px-3 py-1 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-xs shadow-md"
+      >
+        <Eye className="h-4 w-4" />
+        <span>Detail</span>
+      </button>
+    );
   };
 
   return (
@@ -68,16 +141,22 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
                 TIMESHEET BARANG
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Pengembalian Barang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Pengembalian Barang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Timesheet Barang</span>
+                <span className="text-blue-600 font-medium">
+                  Timesheet Barang
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -87,7 +166,12 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
           {/* Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div className="relative">
-              <label htmlFor="noSO" className="block text-sm font-medium text-gray-700 mb-1">Cari No SO</label>
+              <label
+                htmlFor="noSO"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari No SO
+              </label>
               <input
                 type="text"
                 id="noSO"
@@ -97,7 +181,12 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="noSOTurunan" className="block text-sm font-medium text-gray-700 mb-1">Cari No SO Turunan</label>
+              <label
+                htmlFor="noSOTurunan"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari No SO Turunan
+              </label>
               <input
                 type="text"
                 id="noSOTurunan"
@@ -107,7 +196,12 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="namaProyek" className="block text-sm font-medium text-gray-700 mb-1">Cari Nama Proyek</label>
+              <label
+                htmlFor="namaProyek"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Nama Proyek
+              </label>
               <input
                 type="text"
                 id="namaProyek"
@@ -117,7 +211,12 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Status
+              </label>
               <select
                 id="status"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -133,7 +232,12 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
           {/* Periode and Search Button */}
           <div className="flex items-end space-x-4 mb-6">
             <div className="relative flex-1">
-              <label htmlFor="periodeStart" className="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+              <label
+                htmlFor="periodeStart"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Periode
+              </label>
               <div className="flex items-center space-x-2">
                 <div className="relative w-1/2">
                   <input
@@ -161,20 +265,22 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Export Buttons */}
-          <div className="flex justify-end items-center mb-6 space-x-3">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-200 text-sm shadow-md">
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Export Excel</span>
-            </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm shadow-md">
-              <FileText className="h-4 w-4" />
-              <span>Export CSV</span>
-            </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-200 text-sm shadow-md">
-              <FileBarChart className="h-4 w-4" />
-              <span>Export PDF</span>
-            </button>
+          {/* Tools */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center space-x-3">
+              <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-200 text-sm shadow-md">
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Export Excel</span>
+              </button>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm shadow-md">
+                <FileText className="h-4 w-4" />
+                <span>Export CSV</span>
+              </button>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-200 text-sm shadow-md">
+                <FileBarChart className="h-4 w-4" />
+                <span>Export PDF</span>
+              </button>
+            </div>
           </div>
 
           {/* Data Table */}
@@ -201,28 +307,55 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO Turunan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Proyek</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Penyerahan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No SO
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No SO Turunan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Proyek
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nilai Timesheet
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    MOB
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    DEMOB
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {timesheetBarangItems.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noSO}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noSOTurunan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaProyek}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalPenyerahan}</td>
+                {rows.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {getStatusBadge(item.status)}
+                      {item.noSO}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.noSOTurunan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.namaProyek}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.nilaiTimesheet}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.mob}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.demob}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {getActionButton(item.action)}
+                      {getActionButton(item)}
                     </td>
                   </tr>
                 ))}
@@ -233,7 +366,7 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {timesheetBarangItems.length} of {timesheetBarangItems.length} entries
+              Showing 1 to {rows.length} of {rows.length} entries
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">
@@ -256,6 +389,19 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
           Crafted with <span className="text-red-500">❤️</span> by Saugi
         </span>
       </footer>
+      {/* Modal */}
+      {isModalOpen && (
+        <TimesheetBarangPegawaiModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={(_data: TimesheetFormData) => {
+            // Integrate save to list if needed later
+            setIsModalOpen(false);
+          }}
+          initialData={initialData}
+          showOnlyBarang
+        />
+      )}
     </div>
   );
 };
