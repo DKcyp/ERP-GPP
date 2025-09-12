@@ -61,6 +61,10 @@ const CSIMasterDashboard: React.FC = () => {
   const [detailAnswers, setDetailAnswers] = useState<
     Record<string, string | number>
   >({});
+  const [detailFeedback, setDetailFeedback] = useState({
+    kritik: "",
+    saran: "",
+  });
 
   const [data] = useState<CSIRecord[]>([
     {
@@ -259,6 +263,7 @@ const CSIMasterDashboard: React.FC = () => {
     });
     setDetailAnswers(init);
     setDetailIdentity({ customer: "", proyek: "", tanggal: "", penilai: "" });
+    setDetailFeedback({ kritik: "", saran: "" });
     setIsDetailOpen(true);
   };
 
@@ -577,13 +582,10 @@ const CSIMasterDashboard: React.FC = () => {
                                     }
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                                   >
-                                    <option value={1}>
-                                      1 - Sangat Tidak Puas
-                                    </option>
-                                    <option value={2}>2 - Tidak Puas</option>
-                                    <option value={3}>3 - Cukup</option>
-                                    <option value={4}>4 - Puas</option>
-                                    <option value={5}>5 - Sangat Puas</option>
+                                    <option value={1}>1 - Tidak Puas</option>
+                                    <option value={2}>2 - Cukup</option>
+                                    <option value={3}>3 - Puas</option>
+                                    <option value={4}>4 - Sangat Puas</option>
                                   </select>
                                 ) : (
                                   <textarea
@@ -602,6 +604,31 @@ const CSIMasterDashboard: React.FC = () => {
                                 )}
                               </div>
                             ))}
+                          </div>
+                        </div>
+
+                        {/* Kritik & Saran */}
+                        <div className="bg-gray-50 rounded-md border p-4">
+                          <h4 className="font-medium text-gray-800 mb-3">Kritik & Saran</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">Kritik</label>
+                              <textarea
+                                value={detailFeedback.kritik}
+                                onChange={(e) => setDetailFeedback((prev) => ({ ...prev, kritik: e.target.value }))}
+                                className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                placeholder="Tuliskan kritik Anda di sini"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">Saran</label>
+                              <textarea
+                                value={detailFeedback.saran}
+                                onChange={(e) => setDetailFeedback((prev) => ({ ...prev, saran: e.target.value }))}
+                                className="w-full min-h-[100px] px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                                placeholder="Tuliskan saran Anda di sini"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>

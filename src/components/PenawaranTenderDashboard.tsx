@@ -50,6 +50,13 @@ interface PenawaranTender {
     | "Deal"
     | "Cancel";
   statusDokumen: "Open" | "Close";
+  // Fields for new table columns
+  judulTender?: string;
+  oeHps?: string;
+  durasiKontrak?: string;
+  masaBerlakuPenawaran?: string;
+  tanggalSubmit?: string;
+  sow?: string;
 }
 
 const PenawaranTenderDashboard: React.FC = () => {
@@ -102,6 +109,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "15-01-2025",
       statusPenawaran: "Minat",
       statusDokumen: "Close",
+      judulTender: "Pengadaan Jasa Konstruksi A",
+      oeHps: "Rp 1.200.000.000",
+      durasiKontrak: "12 bulan",
+      masaBerlakuPenawaran: "60 hari",
+      tanggalSubmit: "20-01-2025",
+      sow: "Pekerjaan konstruksi sipil",
     },
     {
       id: "2",
@@ -115,6 +128,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "14-01-2025",
       statusPenawaran: "Register",
       statusDokumen: "Open",
+      judulTender: "Pemeliharaan Jalan Utama",
+      oeHps: "Rp 850.000.000",
+      durasiKontrak: "6 bulan",
+      masaBerlakuPenawaran: "45 hari",
+      tanggalSubmit: "18-01-2025",
+      sow: "Perbaikan dan pemeliharaan jalan",
     },
     {
       id: "3",
@@ -128,6 +147,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "13-01-2025",
       statusPenawaran: "Pra-kualifikasi",
       statusDokumen: "Close",
+      judulTender: "Jasa Maintenance Pabrik",
+      oeHps: "Rp 2.500.000.000",
+      durasiKontrak: "24 bulan",
+      masaBerlakuPenawaran: "90 hari",
+      tanggalSubmit: "25-01-2025",
+      sow: "Maintenance mechanical & electrical",
     },
     {
       id: "4",
@@ -141,6 +166,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "12-01-2025",
       statusPenawaran: "Evaluasi",
       statusDokumen: "Open",
+      judulTender: "Pembangunan Gudang Bahan Baku",
+      oeHps: "Rp 3.000.000.000",
+      durasiKontrak: "10 bulan",
+      masaBerlakuPenawaran: "60 hari",
+      tanggalSubmit: "22-01-2025",
+      sow: "Struktur dan arsitektur",
     },
     {
       id: "5",
@@ -154,6 +185,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "11-01-2025",
       statusPenawaran: "Tender",
       statusDokumen: "Close",
+      judulTender: "Pengadaan Material Baja",
+      oeHps: "Rp 600.000.000",
+      durasiKontrak: "3 bulan",
+      masaBerlakuPenawaran: "30 hari",
+      tanggalSubmit: "19-01-2025",
+      sow: "Supply & delivery material",
     },
     {
       id: "6",
@@ -167,6 +204,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "10-01-2025",
       statusPenawaran: "Deal",
       statusDokumen: "Open",
+      judulTender: "Instalasi Pipa Industri",
+      oeHps: "Rp 1.800.000.000",
+      durasiKontrak: "8 bulan",
+      masaBerlakuPenawaran: "60 hari",
+      tanggalSubmit: "17-01-2025",
+      sow: "Pengelasan dan instalasi pipa",
     },
     {
       id: "7",
@@ -180,6 +223,12 @@ const PenawaranTenderDashboard: React.FC = () => {
       terakhirUpdate: "09-01-2025",
       statusPenawaran: "Cancel",
       statusDokumen: "Close",
+      judulTender: "Perawatan Mesin Produksi",
+      oeHps: "Rp 400.000.000",
+      durasiKontrak: "4 bulan",
+      masaBerlakuPenawaran: "30 hari",
+      tanggalSubmit: "16-01-2025",
+      sow: "Preventive & corrective maintenance",
     },
   ]);
 
@@ -699,36 +748,17 @@ const PenawaranTenderDashboard: React.FC = () => {
             <table className="w-full text-xs whitespace-nowrap">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    No
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    No Penawaran
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Nama Client
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    PIC
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Nama Sales
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Jenis Pekerjaan
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Lokasi Kerja
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Terakhir Update
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Status Penawaran
-                  </th>
-                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">
-                    Aksi
-                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Judul Tender</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No Tender</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Perusahaan</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">OE/HPS</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Durasi Kontrak</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Masa berlaku penawaran</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal Submit</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">SOW</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Status</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -747,35 +777,15 @@ const PenawaranTenderDashboard: React.FC = () => {
                       animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-2 py-1">
-                      <div className="flex items-center space-x-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0">
-                          <Info className="h-2 w-2 text-blue-600" />
-                        </div>
-                        <span className="font-medium text-gray-900">
-                          {item.no}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-2 py-1 font-medium text-gray-900">
-                      {item.noPenawaran}
-                    </td>
-                    <td className="px-2 py-1 font-medium text-gray-900">
-                      {item.namaClient}
-                    </td>
-                    <td className="px-2 py-1 text-gray-600">{item.pic}</td>
-                    <td className="px-2 py-1 text-gray-600">
-                      {item.namaSales}
-                    </td>
-                    <td className="px-2 py-1 text-gray-600">
-                      {item.jenisPekerjaan}
-                    </td>
-                    <td className="px-2 py-1 text-gray-600">
-                      {item.lokasiKerja}
-                    </td>
-                    <td className="px-2 py-1 text-gray-600">
-                      {item.terakhirUpdate}
-                    </td>
+                    <td className="px-2 py-1 text-gray-900">{startIndex + index + 1}</td>
+                    <td className="px-2 py-1 font-medium text-gray-900">{item.judulTender || "-"}</td>
+                    <td className="px-2 py-1 font-medium text-gray-900">{item.noPenawaran}</td>
+                    <td className="px-2 py-1 font-medium text-gray-900">{item.namaClient}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.oeHps || "-"}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.durasiKontrak || "-"}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.masaBerlakuPenawaran || "-"}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.tanggalSubmit || "-"}</td>
+                    <td className="px-2 py-1 text-gray-600">{item.sow || "-"}</td>
                     <td className="px-2 py-1">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusPenawaranColor(
