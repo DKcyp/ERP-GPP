@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { LogIn, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { LogIn, AlertCircle } from "lucide-react";
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    
+    setError("");
+
     if (!username || !password) {
-      setError('Please enter both username and password');
+      setError("Please enter both username and password");
       return;
     }
 
     const success = login(username, password);
     if (!success) {
-      setError('Invalid credentials. Please try again.');
+      setError("Invalid credentials. Please try again.");
     }
   };
 
@@ -27,86 +27,107 @@ const Login: React.FC = () => {
   const handleCredentialClick = (user: string, pass: string) => {
     setUsername(user);
     setPassword(pass);
-    setError(''); // Clear any previous errors
+    setError(""); // Clear any previous errors
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
       {/* Floating Demo Credentials Note */}
       <div className="fixed top-4 right-4 z-50 bg-white p-4 rounded-lg shadow-xl max-w-xs border border-gray-200">
-        <p className="text-sm font-semibold text-gray-800 mb-3 text-center">Demo Credentials</p>
+        <p className="text-sm font-semibold text-gray-800 mb-3 text-center">
+          Demo Credentials
+        </p>
         <div className="space-y-2 text-xs">
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('marketing', '12345')}
+            onClick={() => handleCredentialClick("marketing", "12345")}
           >
-            <p><span className="font-medium">Marketing:</span> marketing / 12345</p>
+            <p>
+              <span className="font-medium">Marketing:</span> marketing / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('operational', '12345')}
+            onClick={() => handleCredentialClick("operational", "12345")}
           >
-            <p><span className="font-medium">Operational:</span> operational / 12345</p>
+            <p>
+              <span className="font-medium">Operational:</span> operational /
+              12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('hrd', '12345')}
+            onClick={() => handleCredentialClick("hrd", "12345")}
           >
-            <p><span className="font-medium">HRD:</span> hrd / 12345</p>
+            <p>
+              <span className="font-medium">HRD:</span> hrd / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('pengadaan', '12345')}
+            onClick={() => handleCredentialClick("pengadaan", "12345")}
           >
-            <p><span className="font-medium">Pengadaan:</span> pengadaan / 12345</p>
+            <p>
+              <span className="font-medium">Pengadaan:</span> pengadaan / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('finance', '12345')}
+            onClick={() => handleCredentialClick("finance", "12345")}
           >
-            <p><span className="font-medium">Finance:</span> finance / 12345</p>
+            <p>
+              <span className="font-medium">Finance:</span> finance / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('gudang', '12345')}
+            onClick={() => handleCredentialClick("gudang", "12345")}
           >
-            <p><span className="font-medium">Gudang:</span> gudang / 12345</p>
+            <p>
+              <span className="font-medium">Gudang:</span> gudang / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('management', '12345')}
+            onClick={() => handleCredentialClick("management", "12345")}
           >
-            <p><span className="font-medium">Management:</span> management / 12345</p>
+            <p>
+              <span className="font-medium">Management:</span> management /
+              12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('qhse', '12345')}
+            onClick={() => handleCredentialClick("qhse", "12345")}
           >
-            <p><span className="font-medium">QHSE:</span> qhse / 12345</p>
+            <p>
+              <span className="font-medium">QHSE:</span> qhse / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('accounting', '12345')}
+            onClick={() => handleCredentialClick("accounting", "12345")}
           >
-            <p><span className="font-medium">Accounting:</span> accounting / 12345</p>
+            <p>
+              <span className="font-medium">Accounting:</span> accounting /
+              12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('tax', '12345')}
+            onClick={() => handleCredentialClick("ga", "12345")}
           >
-            <p><span className="font-medium">Tax:</span> tax / 12345</p>
+            <p>
+              <span className="font-medium">GA:</span> ga / 12345
+            </p>
           </div>
-          <div 
+          <div
             className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('ga', '12345')}
+            onClick={() => handleCredentialClick("procon", "12345")}
           >
-            <p><span className="font-medium">GA:</span> ga / 12345</p>
-          </div>
-          <div 
-            className="bg-gray-50 p-2 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => handleCredentialClick('procon', '12345')}
-          >
-            <p><span className="font-medium">Procon:</span> procon / 12345</p>
+            <p>
+              <span className="font-medium">Procon:</span> procon / 12345
+            </p>
           </div>
         </div>
       </div>
@@ -124,7 +145,10 @@ const Login: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Username
               </label>
               <input
@@ -140,7 +164,10 @@ const Login: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Password
               </label>
               <input

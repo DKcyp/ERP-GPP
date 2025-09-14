@@ -1288,6 +1288,101 @@ export const financeMenu: MenuSection[] = [
     items: [],
     directPath: "/finance/reimburse-voucher",
   },
+  {
+    title: "Pajak",
+    icon: "Scale", // Icon for general tax section
+    subSections: [
+      {
+        title: "Pajak", // Sub-section title, can be same as main section or more specific
+        icon: "Scale", // Sub-section icon
+        items: [
+          {
+            title: "Pajak Masukan",
+            icon: "ArrowDownCircle",
+            path: "/tax/pajak-masukan",
+          },
+          {
+            title: "Pajak Keluaran",
+            icon: "ArrowUpCircle",
+            path: "/tax/pajak-keluaran",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "PPH UNIFIKASI",
+    icon: "Layers",
+
+    subSections: [
+      {
+        title: "PPH 21",
+        icon: "FileText",
+        items: [
+          { title: "Karyawan", icon: "User", path: "/tax/pph-21/karyawan" },
+          {
+            title: "Non Karyawan",
+            icon: "Users",
+            path: "/tax/pph-21/non-karyawan",
+          },
+        ],
+      },
+      {
+        title: "PPH 23",
+        icon: "FileText",
+        items: [{ title: "PPh 23", icon: "FileText", path: "/tax/pph-23" }],
+      },
+      {
+        title: "PPH 22",
+        icon: "FileText",
+        items: [{ title: "PPh 22", icon: "FileText", path: "/tax/pph-22" }],
+      },
+      {
+        title: "PPH 4 Ayat 2",
+        icon: "FileText",
+        items: [
+          {
+            title: "PPh 4 Ayat 2",
+            icon: "FileText",
+            path: "/tax/pph-4-ayat-2",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "PPH BADAN",
+    icon: "Briefcase",
+    items: [
+      { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
+      { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
+    ],
+  },
+  {
+    title: "Tagihan Pajak Lainya",
+    icon: "Receipt",
+    items: [
+      { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
+      { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
+      { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
+    ],
+  },
+  {
+    title: "Voucher Lainya",
+    icon: "Ticket",
+    items: [
+      {
+        title: "Voucher",
+        icon: "FileText",
+        path: "/tax/voucher-lainya/voucher",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "FileText",
+        path: "/tax/voucher-lainya/monitoring",
+      },
+    ],
+  },
   // {
   //   title: "Tanda Terima Dokumen Penagihan",
   //   icon: "FileText",
