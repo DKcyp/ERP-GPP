@@ -367,6 +367,16 @@ export const marketingMenu: MenuSection[] = [
         icon: "BadgeCheck",
         path: "/marketing/monitoring/dokumen/legalitas-perusahaan",
       },
+      {
+        title: "Monitoring TKDN",
+        icon: "FileText",
+        path: "/marketing/monitoring/tkdn",
+      },
+      {
+        title: "Penilaian TKDN",
+        icon: "ClipboardCheck",
+        path: "/marketing/monitoring/penilaian-tkdn",
+      },
     ],
   },
   {

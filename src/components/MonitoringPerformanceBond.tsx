@@ -13,7 +13,11 @@ interface PerformanceBondItem {
 }
 
 const MonitoringPerformanceBond: React.FC = () => {
-  const [items, setItems] = useState<PerformanceBondItem[]>([]);
+  const [items, setItems] = useState<PerformanceBondItem[]>([
+    { id: crypto.randomUUID(), noTender: "TN-010", noBidbond: "PB-2025-001", penerbit: "Bank D", biaya: 3200000, kollateral: 75000000, masaBerlaku: "2026-03-31" },
+    { id: crypto.randomUUID(), noTender: "TN-011", noBidbond: "PB-2025-002", penerbit: "Bank E", biaya: 2100000, kollateral: 45000000, masaBerlaku: "2025-11-30" },
+    { id: crypto.randomUUID(), noTender: "TN-012", noBidbond: "PB-2025-003", penerbit: "Asuransi F", biaya: 2800000, kollateral: 60000000, masaBerlaku: "2026-01-15" },
+  ]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);

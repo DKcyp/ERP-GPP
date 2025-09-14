@@ -141,6 +141,151 @@ const CSIMasterDashboard: React.FC = () => {
       ],
       createdAt: new Date().toISOString(),
     },
+    {
+      id: crypto.randomUUID(),
+      namaForm: "Form Penilaian B",
+      deskripsi: "Penilaian layanan after sales",
+      pertanyaan: [
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Respons Keluhan",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Solusi yang Diberikan",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Sikap Petugas",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Waktu Penyelesaian",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+      ],
+      createdAt: new Date(
+        new Date().setMonth(new Date().getMonth() - 1)
+      ).toISOString(),
+    },
+    {
+      id: crypto.randomUUID(),
+      namaForm: "Form Penilaian C",
+      deskripsi: "Penilaian kualitas material",
+      pertanyaan: [
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Sesuai Spesifikasi",
+          tipe: "scale",
+          bobot: 30,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Kualitas Material",
+          tipe: "scale",
+          bobot: 30,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Packaging & Delivery",
+          tipe: "scale",
+          bobot: 20,
+          required: false,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Dokumentasi",
+          tipe: "scale",
+          bobot: 20,
+          required: false,
+        },
+      ],
+      createdAt: new Date(
+        new Date().setMonth(new Date().getMonth() - 2)
+      ).toISOString(),
+    },
+    {
+      id: crypto.randomUUID(),
+      namaForm: "Form Penilaian D",
+      deskripsi: "Penilaian performa proyek",
+      pertanyaan: [
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Progress vs Plan",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Keselamatan Kerja",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Efisiensi Biaya",
+          tipe: "scale",
+          bobot: 25,
+          required: false,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Koordinasi Tim",
+          tipe: "scale",
+          bobot: 25,
+          required: true,
+        },
+      ],
+      createdAt: new Date(
+        new Date().setMonth(new Date().getMonth() - 3)
+      ).toISOString(),
+    },
+    {
+      id: crypto.randomUUID(),
+      namaForm: "Form Penilaian E",
+      deskripsi: "Evaluasi vendor",
+      pertanyaan: [
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Kepatuhan Administrasi",
+          tipe: "scale",
+          bobot: 20,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Kompetitif Harga",
+          tipe: "scale",
+          bobot: 20,
+          required: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          pertanyaan: "Kepuasan Umum",
+          tipe: "scale",
+          bobot: 60,
+          required: true,
+        },
+      ],
+      createdAt: new Date(
+        new Date().setMonth(new Date().getMonth() - 4)
+      ).toISOString(),
+    },
   ]);
   const [namaForm, setNamaForm] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
@@ -598,8 +743,10 @@ const CSIMasterDashboard: React.FC = () => {
                                     }
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                                   >
-                                    <option value={1}>1 - Tidak Puas</option>
-                                    <option value={2}>2 - Cukup</option>
+                                    <option value={1}>
+                                      1 - Sangat Tidak Puas
+                                    </option>
+                                    <option value={2}>2 - Tidak Puas</option>
                                     <option value={3}>3 - Puas</option>
                                     <option value={4}>4 - Sangat Puas</option>
                                   </select>
@@ -688,13 +835,18 @@ const CSIMasterDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-gray-900">
                       {new Date(tpl.createdAt).getFullYear()}
                     </td>
-                    {(() => { const s = getDummyStats(tpl.id); return (
-                      <>
-                        <td className="px-4 py-3 text-gray-900">{s.respondents}</td>
-                        <td className="px-4 py-3 text-gray-900">{s.total}</td>
-                        <td className="px-4 py-3 text-gray-900">{s.avg}</td>
-                      </>
-                    ); })()}
+                    {(() => {
+                      const s = getDummyStats(tpl.id);
+                      return (
+                        <>
+                          <td className="px-4 py-3 text-gray-900">
+                            {s.respondents}
+                          </td>
+                          <td className="px-4 py-3 text-gray-900">{s.total}</td>
+                          <td className="px-4 py-3 text-gray-900">{s.avg}</td>
+                        </>
+                      );
+                    })()}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1">
                         <button

@@ -13,7 +13,11 @@ interface BidbondItem {
 }
 
 const MonitoringBidbond: React.FC = () => {
-  const [items, setItems] = useState<BidbondItem[]>([]);
+  const [items, setItems] = useState<BidbondItem[]>([
+    { id: crypto.randomUUID(), noTender: "TN-001", noBidbond: "BB-2025-001", penerbit: "Bank A", biaya: 2500000, kollateral: 50000000, masaBerlaku: "2025-12-31" },
+    { id: crypto.randomUUID(), noTender: "TN-002", noBidbond: "BB-2025-002", penerbit: "Bank B", biaya: 1750000, kollateral: 30000000, masaBerlaku: "2025-10-15" },
+    { id: crypto.randomUUID(), noTender: "TN-003", noBidbond: "BB-2025-003", penerbit: "Asuransi C", biaya: 2000000, kollateral: 40000000, masaBerlaku: "2026-01-20" },
+  ]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage] = useState(10);

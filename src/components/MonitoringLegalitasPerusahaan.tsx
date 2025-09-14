@@ -41,6 +41,25 @@ const MonitoringLegalitasPerusahaan: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
+  // Seed dummy data on first load
+  useEffect(() => {
+    const dummy: LegalitasItem[] = [
+      { id: "D1", noDokumen: "AKTA-001/2023", jenisDokumen: "Akta Pendirian", masaBerlaku: "2026-12-31", uploadNames: ["akta_pendirian.pdf"], status: "Closed", keterangan: "Dokumen lengkap" },
+      { id: "D2", noDokumen: "SIUP-002/2024", jenisDokumen: "SIUP", masaBerlaku: "2025-11-30", uploadNames: ["siup.pdf", "lampiran.pdf"], status: "Proses", keterangan: "Perpanjangan" },
+      { id: "D3", noDokumen: "NIB-003/2022", jenisDokumen: "NIB", masaBerlaku: "2027-01-15", uploadNames: ["nib.pdf"], status: "Closed", keterangan: "Aktif" },
+      { id: "D4", noDokumen: "NPWP-004/2020", jenisDokumen: "NPWP", masaBerlaku: "2030-05-20", uploadNames: [], status: "Closed", keterangan: "Tetap" },
+      { id: "D5", noDokumen: "TDP-005/2021", jenisDokumen: "TDP", masaBerlaku: "2026-08-10", uploadNames: ["tdp.pdf"], status: "Pengajuan", keterangan: "Update alamat" },
+      { id: "D6", noDokumen: "IZLOC-006/2024", jenisDokumen: "Izin Lokasi", masaBerlaku: "2025-12-31", uploadNames: ["izin_lokasi.pdf"], status: "Proses", keterangan: "Menunggu verifikasi" },
+      { id: "D7", noDokumen: "IZUSAHA-007/2023", jenisDokumen: "Izin Usaha", masaBerlaku: "2026-03-31", uploadNames: ["izin_usaha.pdf"], status: "Closed", keterangan: "Aktif" },
+      { id: "D8", noDokumen: "MHKM-008/2022", jenisDokumen: "SK Menkumham", masaBerlaku: "2032-09-01", uploadNames: ["sk_menkumham.pdf"], status: "Closed", keterangan: "Perubahan direksi" },
+      { id: "D9", noDokumen: "HALAL-009/2024", jenisDokumen: "Sertifikat Halal", masaBerlaku: "2025-07-01", uploadNames: ["sertifikat_halal.pdf"], status: "Proses", keterangan: "Audit dijadwalkan" },
+      { id: "D10", noDokumen: "ISO-010/2023", jenisDokumen: "ISO 9001", masaBerlaku: "2026-10-05", uploadNames: ["iso9001.pdf"], status: "Closed", keterangan: "Re-sertifikasi" },
+      { id: "D11", noDokumen: "PKP-011/2019", jenisDokumen: "PKP", masaBerlaku: "2030-01-01", uploadNames: [], status: "Closed", keterangan: "Tetap" },
+      { id: "D12", noDokumen: "NDA-012/2025", jenisDokumen: "Perjanjian/NDA", masaBerlaku: "2026-02-28", uploadNames: ["nda_vendor.pdf"], status: "Pengajuan", keterangan: "Vendor baru" },
+    ];
+    setItems(dummy);
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return items.filter(

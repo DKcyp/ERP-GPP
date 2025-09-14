@@ -292,6 +292,8 @@ import PerjalananDinasDashboard from "./PerjalananDinasDashboard";
 import MonitoringBidbond from "./MonitoringBidbond";
 import MonitoringPerformanceBond from "./MonitoringPerformanceBond";
 import MonitoringLegalitasPerusahaan from "./MonitoringLegalitasPerusahaan";
+import MonitoringTKDNDashboard from "./MonitoringTKDNDashboard";
+import MonitoringPenilaianTKDNDashboard from "./MonitoringPenilaianTKDNDashboard";
 
 import {
   BarChart3,
@@ -395,6 +397,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/monitoring/dokumen/legalitas-perusahaan") {
       return <MonitoringLegalitasPerusahaan />;
+    }
+    if (currentPage === "/marketing/monitoring/tkdn") {
+      return <MonitoringTKDNDashboard />;
+    }
+    if (currentPage === "/marketing/monitoring/penilaian-tkdn") {
+      return <MonitoringPenilaianTKDNDashboard />;
     }
 
     // Gudang Routes
