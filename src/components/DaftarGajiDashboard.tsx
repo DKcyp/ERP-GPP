@@ -14,6 +14,7 @@ const DaftarGajiDashboard: React.FC = () => {
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedForEdit, setSelectedForEdit] = useState<PeriodPayroll | null>(null);
+  const [showStagesModal, setShowStagesModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -124,11 +125,19 @@ const DaftarGajiDashboard: React.FC = () => {
 
   const openAddEmpty = () => {
     setSelectedForEdit(null);
+    setShowStagesModal(false);
     setIsModalOpen(true);
   };
 
   const openPrefilled = (item: PeriodPayroll) => {
     setSelectedForEdit(item);
+    setShowStagesModal(false);
+    setIsModalOpen(true);
+  };
+
+  const openDetailWithStages = (item: PeriodPayroll) => {
+    setSelectedForEdit(item);
+    setShowStagesModal(true);
     setIsModalOpen(true);
   };
 
@@ -246,7 +255,7 @@ const DaftarGajiDashboard: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-3 text-sm">
                         <button
-                          onClick={() => openPrefilled(item)}
+                          onClick={() => openDetailWithStages(item)}
                           className="text-sky-600 hover:underline"
                           title="Detail"
                         >
@@ -330,6 +339,7 @@ const DaftarGajiDashboard: React.FC = () => {
         onSave={handleAddGaji}
         initialPeriod={selectedForEdit?.periode}
         initialRows={selectedForEdit?.rows}
+        showStages={showStagesModal}
       />
 
       {/* Delete Confirmation Modal */}
