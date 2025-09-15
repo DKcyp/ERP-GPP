@@ -173,21 +173,24 @@ const GajiModal: React.FC<GajiModalProps> = ({
       `Potongan lain lain: ${row.potonganLain}`,
       ...(showStages
         ? [
-            `Tahap 1: ${row.tahap1 ?? 'Rp 0'}`,
-            `Tahap 2: ${row.tahap2 ?? 'Rp 0'}`,
-            `Tahap 3: ${row.tahap3 ?? 'Rp 0'}`,
-            `Outstanding: ${row.outstanding ?? 'Rp 0'}`,
+            `Tahap 1: ${row.tahap1 ?? "Rp 0"}`,
+            `Tahap 2: ${row.tahap2 ?? "Rp 0"}`,
+            `Tahap 3: ${row.tahap3 ?? "Rp 0"}`,
+            `Outstanding: ${row.outstanding ?? "Rp 0"}`,
           ]
         : []),
       `Gaji bersih: ${row.gajiBersih}`,
     ];
-    const content = lines.join('\n');
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const content = lines.join("\n");
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const safePeriod = period.replace(/\//g, '-');
+    const a = document.createElement("a");
+    const safePeriod = period.replace(/\//g, "-");
     a.href = url;
-    a.download = `Payslip_${row.namaPegawai.replace(/\s+/g, '_')}_${safePeriod}.txt`;
+    a.download = `Payslip_${row.namaPegawai.replace(
+      /\s+/g,
+      "_"
+    )}_${safePeriod}.txt`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -283,6 +286,9 @@ const GajiModal: React.FC<GajiModalProps> = ({
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
                           Potongan lain lain
                         </th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                          Gaji bersih
+                        </th>
                         {showStages && (
                           <>
                             <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
@@ -299,9 +305,6 @@ const GajiModal: React.FC<GajiModalProps> = ({
                             </th>
                           </>
                         )}
-                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                          Gaji bersih
-                        </th>
                         {showStages && (
                           <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                             Payslip
