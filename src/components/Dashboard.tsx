@@ -296,6 +296,7 @@ import MonitoringTKDNDashboard from "./MonitoringTKDNDashboard";
 import MonitoringPenilaianTKDNDashboard from "./MonitoringPenilaianTKDNDashboard";
 import GeneralBudgetPengajuanDashboard from "./GeneralBudgetPengajuanDashboard";
 import GeneralBudgetLaporanDashboard from "./GeneralBudgetLaporanDashboard";
+import GeneralPengajuanResignDashboard from "./GeneralPengajuanResignDashboard";
 
 import {
   BarChart3,
@@ -510,6 +511,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/gudang/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
     }
+    if (currentPage === "/gudang/general/absensi/pengajuan-resign") {
+      return <GeneralPengajuanResignDashboard />;
+    }
     if (currentPage === "/gudang/general/budget/pengajuan") {
       return <GeneralBudgetPengajuanDashboard />;
     }
@@ -563,6 +567,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/ga/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/ga/general/absensi/pengajuan-resign") {
+      return <GeneralPengajuanResignDashboard />;
     }
     if (currentPage === "/ga/general/budget/pengajuan") {
       return <GeneralBudgetPengajuanDashboard />;
@@ -672,6 +679,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/pengadaan/general/absensi/pengajuan-resign") {
+      return <GeneralPengajuanResignDashboard />;
     }
     if (currentPage === "/pengadaan/general/budget/pengajuan") {
       return <GeneralBudgetPengajuanDashboard />;
@@ -871,6 +881,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/hrd/general/absensi/pengajuan-resign") {
+      return <GeneralPengajuanResignDashboard />;
     }
     if (currentPage === "/hrd/general/purchase-request/dashboard") {
       return <GeneralPurchasingRequestDashboard />;

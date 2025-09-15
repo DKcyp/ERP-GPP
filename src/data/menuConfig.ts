@@ -200,6 +200,11 @@ const createGeneralMenu = (role: string): MenuSection => ({
           icon: "FilePlus",
           path: "/hrd/absensi/pengajuan-izin",
         },
+        {
+          title: "Pengajuan Resign",
+          icon: "LogOut",
+          path: `/${role}/general/absensi/pengajuan-resign`,
+        },
       ],
     },
     {
