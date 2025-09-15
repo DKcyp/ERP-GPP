@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import GajiModal, { GajiFormData } from './GajiModal';
+import GajiModal, { GajiRow } from './GajiModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { GajiData } from '../types';
 import { 
   Search, 
   Plus, 
-  Edit,
-  Trash2,
   ChevronLeft,
   ChevronRight,
   ArrowUp
@@ -19,65 +16,44 @@ const DaftarGajiDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<GajiData | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<PeriodPayroll | null>(null);
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Sample data matching the image
-  const [gajiData, setGajiData] = useState<GajiData[]>([
-    {
-      id: '1',
-      no: 1,
-      namaPegawai: 'Ahmad Fauzi',
-      gajiPokok: 'Rp 5.000.000',
-      tunjangan: 'Rp 1.000.000',
-      pph21: 'Rp 250.000',
-      potonganMess: 'Rp 100.000',
-      gajiBersih: 'Rp 5.650.000'
-    },
-    {
-      id: '2',
-      no: 2,
-      namaPegawai: 'Siti Nurhaliza',
-      gajiPokok: 'Rp 4.500.000',
-      tunjangan: 'Rp 800.000',
-      pph21: 'Rp 200.000',
-      potonganMess: 'Rp 150.000',
-      gajiBersih: 'Rp 4.950.000'
-    },
-    {
-      id: '3',
-      no: 3,
-      namaPegawai: 'Budi Santoso',
-      gajiPokok: 'Rp 6.200.000',
-      tunjangan: 'Rp 1.200.000',
-      pph21: 'Rp 300.000',
-      potonganMess: 'Rp 120.000',
-      gajiBersih: 'Rp 6.980.000'
-    }
+  type PeriodPayroll = {
+    id: string;
+    no: number;
+    periode: string; // YYYY-MM
+    total: string; // formatted Rp
+    rows: GajiRow[];
+  };
+
+  const [periods, setPeriods] = useState<PeriodPayroll[]>([
+    { id: '1', no: 1, periode: '2025-08', total: 'Rp 12.500.000', rows: [] },
+    { id: '2', no: 2, periode: '2025-07', total: 'Rp 11.300.000', rows: [] },
+    { id: '3', no: 3, periode: '2025-06', total: 'Rp 10.950.000', rows: [] },
   ]);
 
   useEffect(() => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleAddGaji = (formData: GajiFormData) => {
-    const newGaji: any = {
-      id: (gajiData.length + 1).toString(),
-      no: gajiData.length + 1,
-      namaPegawai: formData.namaPegawai,
-      gajiPokok: formData.gajiPokok,
-      tunjangan: formData.tunjangan,
-      pph21: formData.pph21,
-      potonganMess: formData.potonganMess,
-      gajiBersih: formData.gajiBersih,
-      tahap1: formData.tahap1 || 'Rp 0',
-      tahap2: formData.tahap2 || 'Rp 0',
-      tahap3: formData.tahap3 || 'Rp 0',
-      outstanding: formData.outstanding || formData.gajiBersih,
-    };
+  const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
+  const formatRp = (val: number) => `Rp ${val.toLocaleString('id-ID')}`;
 
-    setGajiData(prev => [newGaji, ...prev.map(g => ({ ...g, no: g.no + 1 }))]);
+  const handleAddGaji = ({ period, rows }: { period: string; rows: GajiRow[] }) => {
+    const totalVal = rows.reduce((sum, r) => {
+      const bersih = toNumber(r.gajiBersih) || Math.max(toNumber(r.totalIncome) - toNumber(r.totalDeduct) - toNumber(r.potonganLain), 0);
+      return sum + bersih;
+    }, 0);
+    const newItem: PeriodPayroll = {
+      id: (periods.length + 1).toString(),
+      no: periods.length + 1,
+      periode: period, // store YYYY-MM
+      total: formatRp(totalVal),
+      rows,
+    };
+    setPeriods(prev => [newItem, ...prev.map(p => ({ ...p, no: p.no + 1 }))]);
   };
 
   const handleSort = (field: string) => {
@@ -89,34 +65,25 @@ const DaftarGajiDashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = (gaji: GajiData) => {
-    setItemToDelete(gaji);
+  const handleDeleteClick = (item: PeriodPayroll) => {
+    setItemToDelete(item);
     setDeleteModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      setGajiData(prev => prev.filter(g => g.id !== itemToDelete.id));
-      setItemToDelete(null);
-    }
+    if (!itemToDelete) return;
+    setPeriods(prev => prev.filter(p => p.id !== itemToDelete.id).map((p, i) => ({ ...p, no: i + 1 })));
+    setItemToDelete(null);
   };
 
   // Filter data based on search criteria
-  const filteredData = gajiData.filter(item => {
+  const filteredData = periods.filter(item => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      item.namaPegawai.toLowerCase().includes(searchLower) ||
-      item.gajiPokok.toLowerCase().includes(searchLower) ||
-      item.tunjangan.toLowerCase().includes(searchLower) ||
-      item.gajiBersih.toLowerCase().includes(searchLower)
+      item.periode.toLowerCase().includes(searchLower) ||
+      item.total.toLowerCase().includes(searchLower)
     );
   });
-
-  // Helpers for currency parsing and totals
-  const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
-  const totalIncome = (g: GajiData) => toNumber(g.gajiPokok) + toNumber(g.tunjangan);
-  const totalDeduct = (g: GajiData) => toNumber(g.pph21) + toNumber(g.potonganMess);
-  const formatRp = (val: number) => `Rp ${val.toLocaleString('id-ID')}`;
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
@@ -125,14 +92,10 @@ const DaftarGajiDashboard: React.FC = () => {
     let bv: number | string = '';
     if (sortField === 'no') {
       av = a.no; bv = b.no;
-    } else if (sortField === 'namaPegawai') {
-      av = a.namaPegawai.toLowerCase(); bv = b.namaPegawai.toLowerCase();
-    } else if (sortField === 'totalIncome') {
-      av = totalIncome(a); bv = totalIncome(b);
-    } else if (sortField === 'totalDeduct') {
-      av = totalDeduct(a); bv = totalDeduct(b);
-    } else if (sortField === 'gajiBersih') {
-      av = toNumber(a.gajiBersih); bv = toNumber(b.gajiBersih);
+    } else if (sortField === 'periode') {
+      av = a.periode; bv = b.periode;
+    } else if (sortField === 'total') {
+      av = toNumber(a.total); bv = toNumber(b.total);
     }
 
     if (typeof av === 'string' && typeof bv === 'string') {
@@ -229,52 +192,26 @@ const DaftarGajiDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('namaPegawai')}
+                    onClick={() => handleSort('periode')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Nama Pegawai</span>
-                      {sortField === 'namaPegawai' && (
+                      <span>Periode</span>
+                      {sortField === 'periode' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('totalIncome')}
+                    onClick={() => handleSort('total')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Total Income</span>
-                      {sortField === 'totalIncome' && (
+                      <span>Total</span>
+                      {sortField === 'total' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
                   </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('totalDeduct')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Total Deduct</span>
-                      {sortField === 'totalDeduct' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('gajiBersih')}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Gaji Bersih</span>
-                      {sortField === 'gajiBersih' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahap 1</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahap 2</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tahap 3</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Outstanding</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Aksi</th>
                 </tr>
               </thead>
@@ -291,30 +228,42 @@ const DaftarGajiDashboard: React.FC = () => {
                     }}
                   >
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.namaPegawai}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{formatRp(totalIncome(item))}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{formatRp(totalDeduct(item))}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.gajiBersih}</td>
-                    {/* Pembayaran bertahap */}
-                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).tahap1 || formatRp(0)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).tahap2 || formatRp(0)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).tahap3 || formatRp(0)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{(item as any).outstanding || item.gajiBersih}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {new Date(item.periode + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.total}</td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center space-x-1">
-                        <button 
+                      <div className="flex items-center justify-center gap-3 text-sm">
+                        <button
+                          onClick={() => {/* detail action */}}
+                          className="text-sky-600 hover:underline"
+                          title="Detail"
+                        >
+                          Detail
+                        </button>
+                        <span className="text-gray-300">|</span>
+                        <button
+                          onClick={() => {/* proses action */}}
+                          className="text-emerald-600 hover:underline"
+                          title="Proses"
+                        >
+                          Proses
+                        </button>
+                        <span className="text-gray-300">|</span>
+                        <button
                           onClick={() => setIsModalOpen(true)}
-                          className="p-1.5 bg-yellow-500 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-yellow-600"
+                          className="text-amber-600 hover:underline"
                           title="Edit"
                         >
-                          <Edit className="h-3.5 w-3.5" />
+                          Edit
                         </button>
+                        <span className="text-gray-300">|</span>
                         <button
                           onClick={() => handleDeleteClick(item)}
-                          className="p-1.5 bg-red-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-red-700"
-                          title="Delete"
+                          className="text-red-600 hover:underline"
+                          title="Hapus"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
+                          Hapus
                         </button>
                       </div>
                     </td>
@@ -375,7 +324,7 @@ const DaftarGajiDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaPegawai}
+        itemName={itemToDelete ? new Date(itemToDelete.periode + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : undefined}
       />
     </div>
   );

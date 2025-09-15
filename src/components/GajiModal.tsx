@@ -4,35 +4,21 @@ import { X, Save, Loader2 } from 'lucide-react';
 interface GajiModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: GajiFormData) => void;
+  onSave: (data: { period: string; rows: GajiRow[] }) => void;
 }
 
-export interface GajiFormData {
+export interface GajiRow {
   namaPegawai: string;
-  gajiPokok: string;
-  tunjangan: string;
-  pph21: string;
-  potonganMess: string;
-  bpjs: string;
-  gajiBersih: string;
-  tahap1?: string;
-  tahap2?: string;
-  tahap3?: string;
-  outstanding?: string;
+  totalIncome: string; // formatted Rp
+  totalDeduct: string; // formatted Rp
+  potonganLain: string; // formatted Rp
+  gajiBersih: string; // formatted Rp
 }
 
 const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
-  // Local form aligned with table columns
-  const [namaPegawai, setNamaPegawai] = useState<string>('');
-  const [totalIncome, setTotalIncome] = useState<string>('');
-  const [totalDeduct, setTotalDeduct] = useState<string>('');
-  const [gajiBersih, setGajiBersih] = useState<string>('');
-  const [tahap1, setTahap1] = useState<string>('');
-  const [tahap2, setTahap2] = useState<string>('');
-  const [tahap3, setTahap3] = useState<string>('');
-  const [outstanding, setOutstanding] = useState<string>('');
-
-  const [errors, setErrors] = useState<Partial<Record<'namaPegawai' | 'totalIncome' | 'totalDeduct', string>>>({});
+  // Periode input (month-year)
+  const [period, setPeriod] = useState<string>(''); // format: YYYY-MM from <input type="month" />
+  const [rows, setRows] = useState<GajiRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const pegawaiOptions = [
@@ -66,80 +52,51 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
 
   // Helpers: format Rupiah and parsing
   const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
-  const formatRp = (n: number) => (n ? `Rp ${n.toLocaleString('id-ID')}` : '');
+  const formatRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
-  // Auto calculate Gaji Bersih from totals
-  useEffect(() => {
-    const income = toNumber(totalIncome);
-    const deduct = toNumber(totalDeduct);
-    const bersih = Math.max(income - deduct, 0);
-    setGajiBersih(formatRp(bersih));
-  }, [totalIncome, totalDeduct]);
-
-  // Auto-calc Outstanding = Gaji Bersih - (Tahap 1 + Tahap 2 + Tahap 3)
-  useEffect(() => {
-    const bersih = toNumber(gajiBersih);
-    const t1 = toNumber(tahap1);
-    const t2 = toNumber(tahap2);
-    const t3 = toNumber(tahap3);
-    const sisa = Math.max(bersih - (t1 + t2 + t3), 0);
-    setOutstanding(formatRp(sisa));
-  }, [gajiBersih, tahap1, tahap2, tahap3]);
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<'namaPegawai' | 'totalIncome' | 'totalDeduct', string>> = {};
-    if (!namaPegawai.trim()) newErrors.namaPegawai = 'Nama Pegawai wajib dipilih';
-    if (!totalIncome.trim()) newErrors.totalIncome = 'Total Income wajib diisi';
-    if (!totalDeduct.trim()) newErrors.totalDeduct = 'Total Deduct wajib diisi';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const formatCurrencyInput = (value: string) => {
+    const numericValue = value.replace(/[^\d]/g, '');
+    const num = parseInt(numericValue || '0', 10);
+    return formatRp(num);
   };
 
-  const handleCurrencyChange = (setter: (v: string) => void, key: 'totalIncome' | 'totalDeduct') => (value: string) => {
-    const numericValue = value.replace(/[^\d]/g, '');
-    const formattedValue = numericValue ? `Rp ${parseInt(numericValue).toLocaleString('id-ID')}` : '';
-    setter(formattedValue);
-    setErrors(prev => ({ ...prev, [key]: undefined }));
+  // Build table rows when period changes (mock data based on pegawai list)
+  useEffect(() => {
+    if (!period) {
+      setRows([]);
+      return;
+    }
+    const initial: GajiRow[] = pegawaiOptions.map((nama) => ({
+      namaPegawai: nama,
+      totalIncome: formatRp(0),
+      totalDeduct: formatRp(0),
+      potonganLain: formatRp(0),
+      gajiBersih: formatRp(0),
+    }));
+    setRows(initial);
+  }, [period]);
+
+  const updateRow = (idx: number, field: keyof GajiRow, value: string) => {
+    setRows((prev) =>
+      prev.map((r, i) => {
+        if (i !== idx) return r;
+        // Only currency fields are editable
+        const formatted = formatCurrencyInput(value);
+        return { ...r, [field]: formatted } as GajiRow;
+      })
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!period) return;
     setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    // Map totals to underlying fields so it aligns with table columns
-    const mapped: GajiFormData = {
-      namaPegawai,
-      gajiPokok: totalIncome, // map total income to gaji pokok
-      tunjangan: 'Rp 0',
-      pph21: totalDeduct, // map total deduct to pph21
-      potonganMess: 'Rp 0',
-      bpjs: 'Rp 0',
-      gajiBersih,
-      tahap1,
-      tahap2,
-      tahap3,
-      outstanding,
-    };
-    onSave(mapped);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    onSave({ period, rows });
     setIsLoading(false);
-    
-    // Reset form
-    setNamaPegawai('');
-    setTotalIncome('');
-    setTotalDeduct('');
-    setGajiBersih('');
-    setTahap1('');
-    setTahap2('');
-    setTahap3('');
-    setOutstanding('');
-    setErrors({});
+    // Reset
+    setPeriod('');
+    setRows([]);
     onClose();
   };
 
@@ -156,10 +113,10 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">Entry Gaji</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Entry Gaji Per Periode</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
@@ -168,134 +125,101 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
           </button>
         </div>
 
-        {/* Form Content */}
+        {/* Content */}
         <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
-          <form onSubmit={handleSubmit} className="p-6">
-            <div className="space-y-6">
-              {/* Nama */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={namaPegawai}
-                  onChange={(e) => { setNamaPegawai(e.target.value); setErrors(prev => ({ ...prev, namaPegawai: undefined })); }}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.namaPegawai ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                >
-                  <option value="">Pilih Nama Pegawai</option>
-                  {pegawaiOptions.map((pegawai) => (
-                    <option key={pegawai} value={pegawai}>{pegawai}</option>
-                  ))}
-                </select>
-                {errors.namaPegawai && (
-                  <p className="mt-1 text-sm text-red-600">{errors.namaPegawai}</p>
-                )}
-              </div>
-
-              {/* Total Income */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Total Income <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={totalIncome}
-                  onChange={(e) => handleCurrencyChange(setTotalIncome, 'totalIncome')(e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.totalIncome ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="Rp 6.000.000"
-                />
-                {errors.totalIncome && (
-                  <p className="mt-1 text-sm text-red-600">{errors.totalIncome}</p>
-                )}
-              </div>
-
-              {/* Total Deduct */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Total Deduct <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={totalDeduct}
-                  onChange={(e) => handleCurrencyChange(setTotalDeduct, 'totalDeduct')(e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.totalDeduct ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                  }`}
-                  placeholder="Rp 500.000"
-                />
-                {errors.totalDeduct && (
-                  <p className="mt-1 text-sm text-red-600">{errors.totalDeduct}</p>
-                )}
-              </div>
-
-              {/* Gaji Bersih (Read-only) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gaji Bersih
-                </label>
-                <input
-                  type="text"
-                  value={gajiBersih}
-                  readOnly
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-700 font-medium"
-                  placeholder="Rp 0"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Otomatis dihitung: Total Income - Total Deduct
-                </p>
-              </div>
-
-              {/* Tahap Pembayaran */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahap 1</label>
-                  <input
-                    type="text"
-                    value={tahap1}
-                    onChange={(e) => handleCurrencyChange(setTahap1, 'totalIncome')(e.target.value)}
-                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
-                    placeholder="Rp 0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahap 2</label>
-                  <input
-                    type="text"
-                    value={tahap2}
-                    onChange={(e) => handleCurrencyChange(setTahap2, 'totalIncome')(e.target.value)}
-                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
-                    placeholder="Rp 0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tahap 3</label>
-                  <input
-                    type="text"
-                    value={tahap3}
-                    onChange={(e) => handleCurrencyChange(setTahap3, 'totalIncome')(e.target.value)}
-                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
-                    placeholder="Rp 0"
-                  />
-                </div>
-              </div>
-
-              {/* Outstanding (Read-only) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Outstanding</label>
-                <input
-                  type="text"
-                  value={outstanding}
-                  readOnly
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-700 font-medium"
-                  placeholder="Rp 0"
-                />
-                <p className="mt-1 text-xs text-gray-500">Outstanding = Gaji Bersih - (Tahap 1 + Tahap 2 + Tahap 3)</p>
-              </div>
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Periode Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Periode (Bulan - Tahun)
+              </label>
+              <input
+                type="month"
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
+              />
+              <p className="mt-1 text-xs text-gray-500">Pilih bulan dan tahun untuk menampilkan tabel.</p>
             </div>
+
+            {/* Tabel muncul setelah periode dipilih */}
+            {period && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">Rekap Gaji Periode {new Date(period + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+                    <p className="text-xs text-gray-500">Daftar pegawai berikut adalah template tampilan. Nilai default 0.</p>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Pegawai</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Total Income</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Total Deduct</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Potongan lain lain</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Gaji bersih</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {rows.map((r, idx) => (
+                        <tr key={r.namaPegawai} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-25'}>
+                          <td className="px-4 py-3 text-sm text-gray-900">{idx + 1}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 font-medium">{r.namaPegawai}</td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.totalIncome}
+                              onChange={(e) => updateRow(idx, 'totalIncome', e.target.value)}
+                              className="w-full text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.totalDeduct}
+                              onChange={(e) => updateRow(idx, 'totalDeduct', e.target.value)}
+                              className="w-full text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.potonganLain}
+                              onChange={(e) => updateRow(idx, 'potonganLain', e.target.value)}
+                              className="w-full text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.gajiBersih}
+                              onChange={(e) => updateRow(idx, 'gajiBersih', e.target.value)}
+                              className="w-full text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                      {rows.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="px-4 py-6 text-center text-sm text-gray-500">Tidak ada data</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </form>
         </div>
 
