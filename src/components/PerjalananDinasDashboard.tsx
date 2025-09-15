@@ -21,6 +21,8 @@ interface TripItem {
   tanggalPulang: string; // ISO date
   biaya: number;
   keterangan?: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
 }
 
 const PerjalananDinasDashboard: React.FC = () => {
@@ -34,6 +36,8 @@ const PerjalananDinasDashboard: React.FC = () => {
       tanggalPulang: "2025-03-07",
       biaya: 2500000,
       keterangan: "Kunjungan klien",
+      attachmentName: "SPD_Budi.pdf",
+      attachmentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
     {
       id: "2",
@@ -44,6 +48,8 @@ const PerjalananDinasDashboard: React.FC = () => {
       tanggalPulang: "2025-03-12",
       biaya: 1800000,
       keterangan: "Survey lokasi",
+      attachmentName: "RAB_Siti.xlsx",
+      attachmentUrl: "https://file-examples.com/storage/fe1d6b1a0ec/example.xlsx",
     },
   ]);
 
@@ -328,6 +334,9 @@ const PerjalananDinasDashboard: React.FC = () => {
                     Biaya
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Attachment
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Keterangan
                   </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
@@ -385,6 +394,21 @@ const PerjalananDinasDashboard: React.FC = () => {
                         <DollarSign className="h-3.5 w-3.5 text-gray-400" />
                         <span>{formatIDR(item.biaya)}</span>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {item.attachmentName && item.attachmentUrl ? (
+                        <a
+                          href={item.attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={item.attachmentName}
+                          className="text-blue-600 underline hover:text-blue-800"
+                        >
+                          {item.attachmentName}
+                        </a>
+                      ) : (
+                        <span className="text-gray-500">-</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
                       {item.keterangan || "-"}

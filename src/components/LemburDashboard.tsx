@@ -13,6 +13,7 @@ interface LemburData {
   durasiLembur: string;
   keterangan: string;
   attachmentName?: string;
+  attachmentUrl?: string;
 }
 
 const LemburDashboard: React.FC = () => {
@@ -38,6 +39,8 @@ const LemburDashboard: React.FC = () => {
       waktuEnd: "20:00",
       durasiLembur: "2 Jam",
       keterangan: "-",
+      attachmentName: "LaporanLembur_Ahmad.pdf",
+      attachmentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
     {
       id: "2",
@@ -48,6 +51,8 @@ const LemburDashboard: React.FC = () => {
       waktuEnd: "22:00",
       durasiLembur: "3 Jam",
       keterangan: "Mengantar barang ke luar kota",
+      attachmentName: "Form_Overtime_Budi.xlsx",
+      attachmentUrl: "https://file-examples.com/storage/fe1d6b1a0ec/example.xlsx",
     },
     {
       id: "3",
@@ -68,6 +73,8 @@ const LemburDashboard: React.FC = () => {
       waktuEnd: "21:30",
       durasiLembur: "1 Jam 30 Menit",
       keterangan: "-",
+      attachmentName: "BA_Overtime_Agus.docx",
+      attachmentUrl: "https://file-examples.com/storage/fe1d6b1a0ec/example.docx",
     },
     {
       id: "5",
@@ -131,6 +138,9 @@ const LemburDashboard: React.FC = () => {
       keterangan: formData.keterangan || "-",
       attachmentName: formData.attachment
         ? formData.attachment.name
+        : undefined,
+      attachmentUrl: formData.attachment
+        ? URL.createObjectURL(formData.attachment)
         : undefined,
     };
 
@@ -386,16 +396,20 @@ const LemburDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {item.durasiLembur}
                     </td>
-                    <td className="px-4 py-3 text-sm text-blue-600">
-                      {item.attachmentName ? (
-                        <span
+                    <td className="px-4 py-3 text-sm">
+                      {item.attachmentName && item.attachmentUrl ? (
+                        <a
+                          href={item.attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download={item.attachmentName}
+                          className="text-blue-600 underline hover:text-blue-800"
                           title={item.attachmentName}
-                          className="underline cursor-pointer"
                         >
                           {item.attachmentName}
-                        </span>
+                        </a>
                       ) : (
-                        "-"
+                        <span className="text-gray-500">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
