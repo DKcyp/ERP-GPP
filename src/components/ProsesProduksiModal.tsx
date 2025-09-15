@@ -20,6 +20,8 @@ export interface ProsesProduksiFormData {
   // Optional file attachment (object URL, client-side only)
   fileUrl?: string;
   fileName?: string;
+  // Optional metode pengerjaan rows (synced with local rows state)
+  metodePengerjaan?: Array<{ jenisPekerjaan: string; jumlah: string }>;
 }
 
 const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
@@ -38,6 +40,10 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
 
   const [errors, setErrors] = useState<Partial<ProsesProduksiFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  // Local state for Metode Pengerjaan section (replicating SOTurunanModal bottom section)
+  const [metodePengerjaanRows, setMetodePengerjaanRows] = useState<
+    Array<{ jenisPekerjaan: string; jumlah: string }>
+  >([{ jenisPekerjaan: '', jumlah: '0' }]);
 
   const soTurunanOptions = [
     'SO101.12',
@@ -54,6 +60,75 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     'Proyek D',
     'Proyek E'
   ];
+
+  // Options to mirror SOTurunanModal
+  const jenisPekerjaanOptions = [
+    'On Call',
+    'Project Based',
+    'Maintenance',
+    'Consulting',
+  ];
+
+  // Unit price per metode (mirror SOTurunanModal mapping)
+  const jenisPekerjaanUnitPrice: Record<string, number> = {
+    'On Call': 1500000,
+    'Project Based': 2500000,
+    'Maintenance': 1000000,
+    'Consulting': 2000000,
+  };
+
+  // Tabs and table states (Tenaga Kerja) to mirror SOTurunanModal
+  const tabs = [
+    'Tenaga Kerja',
+    'Jasa',
+    'Alat',
+    'Barang & Consumeble',
+    'PPE',
+    'MobDemob',
+    'Biaya Lain-lain',
+  ];
+  const [activeTab, setActiveTab] = useState<string>(tabs[0]);
+  const [tenagaKerja, setTenagaKerja] = useState<any[]>([
+    {
+      pegawai: 'Budi Santo',
+      tenaga: 'Teknisi',
+      tunjangan: 'Uang Makan',
+      projectRate: '250000',
+      hari: '5',
+      unit: 'H',
+      margin: '10',
+      hargaAkhir: '1375000',
+    },
+  ]);
+
+  // Datalists
+  const tenagaOptions = ['Teknisi', 'Supervisor', 'Operator', 'Admin'];
+  const pegawaiOptions = [
+    'Budi Santo',
+    'Siti Aminah',
+    'Joko Susilo',
+    'Dewi Lestari',
+    'Agus Salim',
+  ];
+  const tunjanganOptions = ['Uang Makan', 'Transport', 'Lembur'];
+
+  const updateRow = (
+    setter: any,
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    setter((prev: any[]) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+  const addRow = (setter: any, empty: any) => setter((prev: any[]) => [...prev, empty]);
+  const removeRow = (setter: any, data: any[]) => {
+    if (data.length === 1) return;
+    setter((prev: any[]) => prev.slice(0, -1));
+  };
 
   // Dummy data autofill based on No SO Turunan selection
   const dummyBySo: Record<string, Partial<ProsesProduksiFormData>> = {
@@ -129,6 +204,15 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
         ...prev,
         ...initialData,
       }));
+      // hydrate metode pengerjaan rows if provided
+      if (initialData.metodePengerjaan && initialData.metodePengerjaan.length > 0) {
+        setMetodePengerjaanRows(
+          initialData.metodePengerjaan.map(r => ({
+            jenisPekerjaan: r.jenisPekerjaan || '',
+            jumlah: r.jumlah || ''
+          }))
+        );
+      }
     }
   }, [isOpen, initialData]);
 
@@ -197,6 +281,61 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     }
   };
 
+  const updateMetodeRow = (
+    idx: number,
+    field: 'jenisPekerjaan' | 'jumlah',
+    value: string
+  ) => {
+    setMetodePengerjaanRows(prev => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], [field]: value } as {
+        jenisPekerjaan: string;
+        jumlah: string;
+      };
+      return next;
+    });
+
+    // Autofill Tenaga Kerja numbers based on selected metode and jumlah
+    if (field === 'jenisPekerjaan') {
+      const unit = jenisPekerjaanUnitPrice[value] || 0;
+      setTenagaKerja(prev => {
+        return prev.map((r) => {
+          const projectRate = unit || Number(r.projectRate) || 0;
+          const hari = Number(metodePengerjaanRows[idx]?.jumlah || r.hari || 1) || 1;
+          const margin = Number(r.margin || 10) || 10;
+          const hargaAwal = projectRate * hari;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
+          return {
+            ...r,
+            projectRate: String(projectRate),
+            hari: String(hari),
+            unit: r.unit || 'H',
+            margin: String(margin),
+            hargaAkhir: String(hargaAkhir),
+          };
+        });
+      });
+    }
+
+    if (field === 'jumlah') {
+      const jumlahNum = Number(value) || 0;
+      setTenagaKerja(prev => {
+        return prev.map(r => {
+          const projectRate = Number(r.projectRate) || 0;
+          const margin = Number(r.margin || 10) || 10;
+          const hargaAwal = projectRate * jumlahNum;
+          const hargaAkhir = hargaAwal + (hargaAwal * margin) / 100;
+          return {
+            ...r,
+            hari: String(jumlahNum),
+            hargaAkhir: String(hargaAkhir),
+          };
+        });
+      });
+    }
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -208,8 +347,13 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    onSave(formData);
+    // Merge metode pengerjaan rows into payload
+    const payload: ProsesProduksiFormData = {
+      ...formData,
+      metodePengerjaan: metodePengerjaanRows,
+    };
+
+    onSave(payload);
     setIsLoading(false);
     
     // Reset form
@@ -225,6 +369,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
       fileUrl: undefined,
       fileName: undefined
     });
+    setMetodePengerjaanRows([{ jenisPekerjaan: '', jumlah: '' }]);
     setErrors({});
     onClose();
   };
@@ -452,6 +597,209 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Metode Pengerjaan - Match SOTurunanModal style */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-semibold text-gray-900">Metode Pengerjaan</h4>
+              </div>
+              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                <table className="w-full text-xs">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Metode Pengerjaan</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Jumlah</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {metodePengerjaanRows.map((row, idx) => (
+                      <tr key={idx}>
+                        <td className="px-3 py-2">
+                          <select
+                            value={row.jenisPekerjaan}
+                            onChange={(e) => updateMetodeRow(idx, 'jenisPekerjaan', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-200 rounded"
+                          >
+                            <option value="">Pilih Metode Pengerjaan</option>
+                            {jenisPekerjaanOptions.map((opt) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number"
+                            min={0}
+                            value={row.jumlah}
+                            onChange={(e) => updateMetodeRow(idx, 'jumlah', e.target.value)}
+                            className="w-full px-2 py-1 border border-gray-200 rounded"
+                            placeholder="0"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          {/* Disabled input for alignment, matches screenshot */}
+                          <input
+                            type="text"
+                            className="w-full px-2 py-1 border border-gray-200 rounded bg-gray-50"
+                            disabled
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Tabs Detail (mengikuti Sales Order) */}
+            <div className="mt-6">
+              <div className="flex flex-wrap gap-2 border-b border-gray-200">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-t-md ${
+                      activeTab === tab
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tenaga Kerja */}
+              {activeTab === 'Tenaga Kerja' && (
+                <div className="mt-3">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-2 py-2 text-left">Pegawai</th>
+                        <th className="px-2 py-2 text-left">Tenaga</th>
+                        <th className="px-2 py-2 text-left">Tunjangan</th>
+                        <th className="px-2 py-2 text-left">Project Rate</th>
+                        <th className="px-2 py-2 text-left">Jumlah</th>
+                        <th className="px-2 py-2 text-left">Satuan</th>
+                        <th className="px-2 py-2 text-left">Margin</th>
+                        <th className="px-2 py-2 text-left">Harga Akhir</th>
+                        <th className="px-2 py-2 text-left">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tenagaKerja.map((row, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.pegawai}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'pegawai', e.target.value)}
+                              list={`pegawaiOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`pegawaiOptions-${idx}`}>
+                              {pegawaiOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.tenaga}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'tenaga', e.target.value)}
+                              list={`tenagaOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`tenagaOptions-${idx}`}>
+                              {tenagaOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              value={row.tunjangan}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'tunjangan', e.target.value)}
+                              list={`tunjanganOptions-${idx}`}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                            <datalist id={`tunjanganOptions-${idx}`}>
+                              {tunjanganOptions.map((o) => (
+                                <option key={o} value={o} />
+                              ))}
+                            </datalist>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="number"
+                              value={row.projectRate}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'projectRate', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="number"
+                              value={row.hari}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'hari', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <select
+                              value={row.unit}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'unit', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            >
+                              <option value="H">H</option>
+                              <option value="D">D</option>
+                            </select>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="number"
+                              value={row.margin}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'margin', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <input
+                              type="number"
+                              value={row.hargaAkhir}
+                              onChange={(e) => updateRow(setTenagaKerja, idx, 'hargaAkhir', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-200 rounded"
+                            />
+                          </td>
+                          <td className="px-2 py-2">
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => addRow(setTenagaKerja, {
+                                  pegawai: '', tenaga: '', tunjangan: '', projectRate: '', hari: '', unit: 'H', margin: '', hargaAkhir: ''
+                                })}
+                                className="px-2 py-1 bg-blue-600 text-white rounded text-[10px] hover:bg-blue-700"
+                              >
+                                Tambah
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeRow(setTenagaKerja, tenagaKerja)}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-[10px] hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={tenagaKerja.length === 1}
+                              >
+                                Hapus
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </form>
         </div>
