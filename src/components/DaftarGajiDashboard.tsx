@@ -13,6 +13,8 @@ const DaftarGajiDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedForEdit, setSelectedForEdit] = useState<PeriodPayroll | null>(null);
+  const [showStagesModal, setShowStagesModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -121,6 +123,24 @@ const DaftarGajiDashboard: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const openAddEmpty = () => {
+    setSelectedForEdit(null);
+    setShowStagesModal(false);
+    setIsModalOpen(true);
+  };
+
+  const openPrefilled = (item: PeriodPayroll) => {
+    setSelectedForEdit(item);
+    setShowStagesModal(false);
+    setIsModalOpen(true);
+  };
+
+  const openDetailWithStages = (item: PeriodPayroll) => {
+    setSelectedForEdit(item);
+    setShowStagesModal(true);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
@@ -131,7 +151,7 @@ const DaftarGajiDashboard: React.FC = () => {
               Daftar Gaji
             </h1>
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={openAddEmpty}
               className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center space-x-2 text-sm"
             >
               <Plus className="h-4 w-4" />
@@ -235,7 +255,7 @@ const DaftarGajiDashboard: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-3 text-sm">
                         <button
-                          onClick={() => {/* detail action */}}
+                          onClick={() => openDetailWithStages(item)}
                           className="text-sky-600 hover:underline"
                           title="Detail"
                         >
@@ -251,7 +271,7 @@ const DaftarGajiDashboard: React.FC = () => {
                         </button>
                         <span className="text-gray-300">|</span>
                         <button
-                          onClick={() => setIsModalOpen(true)}
+                          onClick={() => openPrefilled(item)}
                           className="text-amber-600 hover:underline"
                           title="Edit"
                         >
@@ -317,6 +337,9 @@ const DaftarGajiDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddGaji}
+        initialPeriod={selectedForEdit?.periode}
+        initialRows={selectedForEdit?.rows}
+        showStages={showStagesModal}
       />
 
       {/* Delete Confirmation Modal */}
