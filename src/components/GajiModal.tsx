@@ -5,6 +5,8 @@ interface GajiModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: { period: string; rows: GajiRow[] }) => void;
+  initialPeriod?: string;
+  initialRows?: GajiRow[];
 }
 
 export interface GajiRow {
@@ -15,7 +17,7 @@ export interface GajiRow {
   gajiBersih: string; // formatted Rp
 }
 
-const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
+const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave, initialPeriod, initialRows }) => {
   // Periode input (month-year)
   const [period, setPeriod] = useState<string>(''); // format: YYYY-MM from <input type="month" />
   const [rows, setRows] = useState<GajiRow[]>([]);
@@ -50,6 +52,23 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
     };
   }, [isOpen, onClose]);
 
+  // Prefill when opening if initial values are provided
+  useEffect(() => {
+    if (isOpen) {
+      if (initialPeriod) setPeriod(initialPeriod);
+      if (initialRows && initialRows.length > 0) setRows(initialRows);
+    }
+  }, [isOpen, initialPeriod, initialRows]);
+
+  // Reset when modal closes (so next open Tambah is clean)
+  useEffect(() => {
+    if (!isOpen) {
+      setPeriod('');
+      setRows([]);
+      setIsLoading(false);
+    }
+  }, [isOpen]);
+
   // Helpers: format Rupiah and parsing
   const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, '')) || 0;
   const formatRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
@@ -66,6 +85,8 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
       setRows([]);
       return;
     }
+    // If initialRows are provided (prefill), do not override them
+    if (initialRows && initialRows.length > 0) return;
     const initial: GajiRow[] = pegawaiOptions.map((nama) => ({
       namaPegawai: nama,
       totalIncome: formatRp(0),
@@ -74,7 +95,7 @@ const GajiModal: React.FC<GajiModalProps> = ({ isOpen, onClose, onSave }) => {
       gajiBersih: formatRp(0),
     }));
     setRows(initial);
-  }, [period]);
+  }, [period, initialRows]);
 
   const updateRow = (idx: number, field: keyof GajiRow, value: string) => {
     setRows((prev) =>
