@@ -34,13 +34,6 @@ const ListLamaranDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof TalentPoolData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   // Removed: const [isTambahOpen, setIsTambahOpen] = useState(false);
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedForStatus, setSelectedForStatus] =
-    useState<TalentPoolData | null>(null);
-  const [statusForm, setStatusForm] = useState<{
-    status: TalentPoolData["status"] | "";
-    keterangan: string;
-  }>({ status: "", keterangan: "" });
   
   // New state for Move to Rekrutmen modal
   const [isMoveToRekrutmenModalOpen, setIsMoveToRekrutmenModalOpen] = useState(false);
@@ -181,22 +174,7 @@ const ListLamaranDashboard: React.FC = () => {
     console.log('Moving to recruitment:', selectedForMove);
   };
 
-  const getStatusColor = (status: TalentPoolData["status"]) => {
-    switch (status) {
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "Accepted":
-        return "bg-green-100 text-green-800";
-      case "Rejected":
-        return "bg-red-100 text-red-800";
-      case "Interview":
-        return "bg-blue-100 text-blue-800";
-      case "Hired":
-        return "bg-purple-100 text-purple-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -414,21 +392,6 @@ const ListLamaranDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     File
                   </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("status")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Status</span>
-                      {sortField === "status" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Aksi
                   </th>
@@ -495,15 +458,6 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          item.status
-                        )}`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
                       <div className="flex items-center justify-center">
                         <button
                           onClick={() => handleMoveToRekrutmenClick(item)}
@@ -561,115 +515,6 @@ const ListLamaranDashboard: React.FC = () => {
         </div>
       </div>
       {/* Removed Tambah Talent Pool Modal */}
-
-      {/* Ganti Status Modal */}
-      {isStatusModalOpen && selectedForStatus && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsStatusModalOpen(false);
-          }}
-        >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Ganti Status
-              </h3>
-              <button
-                onClick={() => setIsStatusModalOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-600"
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nama Pelamar
-                </label>
-                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50">
-                  {selectedForStatus.namaPelamar}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={statusForm.status}
-                  onChange={(e) =>
-                    setStatusForm((prev) => ({
-                      ...prev,
-                      status: e.target.value as TalentPoolData["status"],
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                >
-                  {(
-                    [
-                      "Pending",
-                      "Accepted",
-                      "Rejected",
-                      "Interview",
-                      "Hired",
-                    ] as TalentPoolData["status"][]
-                  ).map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Keterangan
-                </label>
-                <textarea
-                  rows={3}
-                  value={statusForm.keterangan}
-                  onChange={(e) =>
-                    setStatusForm((prev) => ({
-                      ...prev,
-                      keterangan: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  placeholder="Tambahkan keterangan..."
-                />
-              </div>
-            </div>
-            <div className="p-4 border-t border-gray-200 flex justify-end gap-2 bg-gray-50">
-              <button
-                className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
-                onClick={() => setIsStatusModalOpen(false)}
-              >
-                Batal
-              </button>
-              <button
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                onClick={() => {
-                  if (!selectedForStatus) return;
-                  setLamaranData((prev) =>
-                    prev.map((it) =>
-                      it.id === selectedForStatus.id
-                        ? {
-                            ...it,
-                            status: (statusForm.status ||
-                              it.status) as TalentPoolData["status"],
-                            keterangan: statusForm.keterangan,
-                          }
-                        : it
-                    )
-                  );
-                  setIsStatusModalOpen(false);
-                }}
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Move to Rekrutmen Confirmation Modal */}
       {isMoveToRekrutmenModalOpen && selectedForMove && (
