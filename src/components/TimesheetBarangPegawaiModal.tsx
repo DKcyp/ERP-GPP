@@ -40,6 +40,34 @@ interface TimesheetBarangPegawaiModalProps {
 const TimesheetBarangPegawaiModal: React.FC<
   TimesheetBarangPegawaiModalProps
 > = ({ isOpen, onClose, onSave, initialData, showOnlyBarang }) => {
+  // Options for No SO dropdown
+  const noSOOptions = [
+    "SO-2024-001",
+    "SO-2024-002", 
+    "SO-2024-003",
+    "SO-2024-004",
+    "SO-2024-005",
+    "SO-2024-006",
+    "SO-2024-007",
+    "SO-2024-008",
+    "SO-2024-009",
+    "SO-2024-010"
+  ];
+
+  // Options for No SO Turunan dropdown
+  const noSOTurunanOptions = [
+    "SOT-2024-001-A",
+    "SOT-2024-001-B",
+    "SOT-2024-002-A",
+    "SOT-2024-002-B",
+    "SOT-2024-003-A",
+    "SOT-2024-003-B",
+    "SOT-2024-004-A",
+    "SOT-2024-004-B",
+    "SOT-2024-005-A",
+    "SOT-2024-005-B"
+  ];
+
   const [form, setForm] = useState<TimesheetFormData>({
     noSO: initialData?.noSO || "",
     noSOTurunan: initialData?.noSOTurunan || "",
@@ -149,25 +177,37 @@ const TimesheetBarangPegawaiModal: React.FC<
               <label className="block text-xs font-medium text-gray-700">
                 No SO
               </label>
-              <input
-                className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-xl text-sm"
+              <select
+                className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white"
                 value={form.noSO}
                 onChange={(e) => setForm({ ...form, noSO: e.target.value })}
-                placeholder="SO001"
-              />
+              >
+                <option value="">Pilih No SO</option>
+                {noSOOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700">
                 No SO Turunan
               </label>
-              <input
-                className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-xl text-sm"
+              <select
+                className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white"
                 value={form.noSOTurunan}
                 onChange={(e) =>
                   setForm({ ...form, noSOTurunan: e.target.value })
                 }
-                placeholder="SO001.01"
-              />
+              >
+                <option value="">Pilih No SO Turunan</option>
+                {noSOTurunanOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700">
