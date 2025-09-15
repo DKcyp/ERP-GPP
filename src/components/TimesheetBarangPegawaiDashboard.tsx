@@ -310,7 +310,7 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                TIMESHEET BARANG/PEGAWAI
+                TIMESHEET PEGAWAI
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
@@ -321,9 +321,7 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                   TimeSheet
                 </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">
-                  Barang/Pegawai
-                </span>
+                <span className="text-blue-600 font-medium">Pegawai</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
