@@ -124,6 +124,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
         jabatan?: string;
         tahunan: number;
         proyek: number;
+        lainnya: number;
         total: number;
         pending: number;
         disetujui: number;
@@ -143,6 +144,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
           jabatan: r.jabatan,
           tahunan: 0,
           proyek: 0,
+          lainnya: 0,
           total: 0,
           pending: 0,
           disetujui: 0,
@@ -152,9 +154,13 @@ const PegawaiListCutiDashboard: React.FC = () => {
         });
       }
       const g = map.get(key)!;
-      if (r.jenisCuti === "Tahunan") g.tahunan += 1;
+      const isTahunan = r.jenisCuti === "Tahunan";
       // Heuristik: deteksi 'proyek' di alasan untuk menghitung Cuti Proyek
-      if (/proyek/i.test(r.alasan)) g.proyek += 1;
+      const isProyek = /proyek/i.test(r.alasan);
+      if (isTahunan) g.tahunan += 1;
+      if (isProyek) g.proyek += 1;
+      // Cuti Lainnya: semua pengajuan yang bukan Tahunan dan bukan Proyek
+      if (!isTahunan && !isProyek) g.lainnya += 1;
       g.total += 1;
       if (r.status === "Pending") g.pending += 1;
       else if (r.status === "Disetujui") g.disetujui += 1;
@@ -579,6 +585,9 @@ const PegawaiListCutiDashboard: React.FC = () => {
                     Cuti Proyek
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cuti Lainnya
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total Cuti
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -636,6 +645,11 @@ const PegawaiListCutiDashboard: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold">
+                            {g.lainnya}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                           <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
                             {g.total}
                           </span>
@@ -663,7 +677,7 @@ const PegawaiListCutiDashboard: React.FC = () => {
                       </tr>
                       {isOpen && (
                         <tr>
-                          <td colSpan={10} className="bg-gray-50">
+                          <td colSpan={11} className="bg-gray-50">
                             <div className="px-6 py-4">
                               <div className="text-xs text-gray-500 mb-2">
                                 Detail Cuti {g.nama}
