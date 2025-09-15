@@ -294,6 +294,8 @@ import MonitoringPerformanceBond from "./MonitoringPerformanceBond";
 import MonitoringLegalitasPerusahaan from "./MonitoringLegalitasPerusahaan";
 import MonitoringTKDNDashboard from "./MonitoringTKDNDashboard";
 import MonitoringPenilaianTKDNDashboard from "./MonitoringPenilaianTKDNDashboard";
+import GeneralBudgetPengajuanDashboard from "./GeneralBudgetPengajuanDashboard";
+import GeneralBudgetLaporanDashboard from "./GeneralBudgetLaporanDashboard";
 
 import {
   BarChart3,
@@ -508,6 +510,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/gudang/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
     }
+    if (currentPage === "/gudang/general/budget/pengajuan") {
+      return <GeneralBudgetPengajuanDashboard />;
+    }
+    if (currentPage === "/gudang/general/budget/laporan") {
+      return <GeneralBudgetLaporanDashboard />;
+    }
     if (currentPage === "/gudang/general/purchase-request/dashboard") {
       return <GeneralPurchasingRequestDashboard />;
     }
@@ -555,6 +563,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/ga/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/ga/general/budget/pengajuan") {
+      return <GeneralBudgetPengajuanDashboard />;
+    }
+    if (currentPage === "/ga/general/budget/laporan") {
+      return <GeneralBudgetLaporanDashboard />;
     }
     if (currentPage === "/ga/general/purchase-request/dashboard") {
       return <GeneralPurchasingRequestDashboard />;
@@ -658,6 +672,18 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
+    }
+    if (currentPage === "/pengadaan/general/budget/pengajuan") {
+      return <GeneralBudgetPengajuanDashboard />;
+    }
+    if (currentPage === "/pengadaan/general/budget/laporan") {
+      return <GeneralBudgetLaporanDashboard />;
+    }
+    if (currentPage === "/hrd/general/budget/pengajuan") {
+      return <GeneralBudgetPengajuanDashboard />;
+    }
+    if (currentPage === "/hrd/general/budget/laporan") {
+      return <GeneralBudgetLaporanDashboard />;
     }
     if (currentPage === "/pengadaan/general/purchase-request/dashboard") {
       return <GeneralPurchasingRequestDashboard />;

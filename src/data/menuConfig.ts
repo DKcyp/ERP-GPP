@@ -76,6 +76,22 @@ const createGeneralMenu = (role: string): MenuSection => ({
       ],
     },
     {
+      title: "Budget",
+      icon: "Wallet",
+      items: [
+        {
+          title: "Pengajuan Budget",
+          icon: "FilePlus",
+          path: `/${role}/general/budget/pengajuan`,
+        },
+        {
+          title: "Laporan Penggunaan Budget",
+          icon: "FileBarChart",
+          path: `/${role}/general/budget/laporan`,
+        },
+      ],
+    },
+    {
       title: "Man Power",
       icon: "Users",
       items: [
