@@ -290,6 +290,7 @@ import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarket
 import CSIMasterDashboard from "./CSIMasterDashboard";
 import CSIPenilaianFormDashboard from "./CSIPenilaianFormDashboard";
 import PerjalananDinasDashboard from "./PerjalananDinasDashboard";
+import PengajuanPerjalananDinasDashboard from "./PengajuanPerjalananDinasDashboard";
 import MonitoringBidbond from "./MonitoringBidbond";
 import MonitoringPerformanceBond from "./MonitoringPerformanceBond";
 import MonitoringLegalitasPerusahaan from "./MonitoringLegalitasPerusahaan";
@@ -680,6 +681,11 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/general/cash-advance/proses") {
       return <GeneralProsesCashAdvance />;
+    }
+
+    // Generic handler for General > Absensi > Pengajuan Perjalanan Dinas across roles
+    if (currentPage.endsWith("/general/absensi/pengajuan-perjalanan-dinas")) {
+      return <PengajuanPerjalananDinasDashboard />;
     }
     if (currentPage === "/pengadaan/general/absensi/pengajuan-resign") {
       return <GeneralPengajuanResignDashboard />;
