@@ -22,6 +22,7 @@ export interface VendorFormData {
   email: string;
   noNPWP: string;
   status: string;
+  attachmentLegalitas: File | null;
 }
 
 const VendorModal: React.FC<VendorModalProps> = ({
@@ -44,6 +45,7 @@ const VendorModal: React.FC<VendorModalProps> = ({
     email: "",
     noNPWP: "",
     status: "",
+    attachmentLegalitas: null,
   });
 
   const [errors, setErrors] = useState<Partial<VendorFormData>>({});
@@ -145,6 +147,7 @@ const VendorModal: React.FC<VendorModalProps> = ({
       email: "",
       noNPWP: "",
       status: "",
+      attachmentLegalitas: null,
     });
     setErrors({});
     onClose();
@@ -462,10 +465,10 @@ const VendorModal: React.FC<VendorModalProps> = ({
                   )}
                 </div>
 
-                {/* No NPWP */}
+                {/* No. NPWP / NIK */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    No NPWP
+                    No. NPWP / NIK
                   </label>
                   <input
                     type="text"
@@ -476,6 +479,31 @@ const VendorModal: React.FC<VendorModalProps> = ({
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="XX.XXX.XXX.X-XXX.XXX"
                   />
+                </div>
+
+                {/* Attachment Legalitas */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Attachment Legalitas
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        attachmentLegalitas:
+                          e.target.files && e.target.files[0]
+                            ? e.target.files[0]
+                            : null,
+                      }))
+                    }
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl"
+                  />
+                  {formData.attachmentLegalitas && (
+                    <div className="mt-1 text-xs text-gray-600">
+                      File dipilih: {formData.attachmentLegalitas.name}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
