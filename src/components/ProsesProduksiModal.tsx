@@ -678,7 +678,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
                   <table className="w-full text-xs">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-2 py-2 text-left">Pegawai</th>
+                        <th className="px-2 py-2 text-left">Pegawaii</th>
                         <th className="px-2 py-2 text-left">Tenaga</th>
                         <th className="px-2 py-2 text-left">Tunjangan</th>
                         <th className="px-2 py-2 text-left">Project Rate</th>
