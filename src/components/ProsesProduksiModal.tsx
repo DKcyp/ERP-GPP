@@ -17,6 +17,7 @@ export interface ProsesProduksiFormData {
   tglPenerimaanFinalReport: string;
   nilaiProduksi: string;
   statusReport: 'Approved' | 'Revisi';
+  noKontrak?: string;
   // Optional file attachment (object URL, client-side only)
   fileUrl?: string;
   fileName?: string;
@@ -34,6 +35,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     tglPenerimaanFinalReport: '',
     nilaiProduksi: '',
     statusReport: 'Approved',
+    noKontrak: '',
     fileUrl: undefined,
     fileName: undefined
   });
@@ -366,6 +368,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
       tglPenerimaanFinalReport: '',
       nilaiProduksi: '',
       statusReport: 'Approved',
+      noKontrak: '',
       fileUrl: undefined,
       fileName: undefined
     });
@@ -558,6 +561,20 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
                   <option value="Approved">Approved</option>
                   <option value="Revisi">Revisi</option>
                 </select>
+              </div>
+
+              {/* No Kontrak */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  No Kontrak
+                </label>
+                <input
+                  type="text"
+                  value={formData.noKontrak || ''}
+                  onChange={(e) => handleInputChange('noKontrak', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  placeholder="Masukkan nomor kontrak"
+                />
               </div>
 
               {/* Upload File (Report/Attachment) */}

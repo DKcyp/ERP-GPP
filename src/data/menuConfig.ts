@@ -578,6 +578,11 @@ export const operationalMenu: MenuSection[] = [
         icon: "GitBranch",
         path: "/operational2/sales-order/so-turunan",
       },
+      {
+        title: "Proses Report",
+        icon: "FileText",
+        path: "/qhse/monitoring-personnel/nomor-report",
+      },
     ],
   },
   // {
@@ -611,18 +616,8 @@ export const operationalMenu: MenuSection[] = [
   {
     title: "Produksi",
     icon: "Factory",
-    items: [
-      {
-        title: "Proses Produksi",
-        icon: "Factory",
-        path: "/operational/produksi/proses",
-      },
-      {
-        title: "Proses Report",
-        icon: "FileText",
-        path: "/qhse/monitoring-personnel/nomor-report",
-      },
-    ],
+    items: [],
+    directPath: "/operational/produksi/proses",
   },
   // {
   //   title: "PBG",
