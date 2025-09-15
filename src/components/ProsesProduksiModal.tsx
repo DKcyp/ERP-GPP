@@ -18,6 +18,7 @@ export interface ProsesProduksiFormData {
   nilaiProduksi: string;
   statusReport: 'Approved' | 'Revisi';
   noKontrak?: string;
+  noReportTerakhir?: string;
   // Optional file attachment (object URL, client-side only)
   fileUrl?: string;
   fileName?: string;
@@ -36,6 +37,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     nilaiProduksi: '',
     statusReport: 'Approved',
     noKontrak: '',
+    noReportTerakhir: '001-00/GBP/UT/I/2025',
     fileUrl: undefined,
     fileName: undefined
   });
@@ -369,6 +371,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
       nilaiProduksi: '',
       statusReport: 'Approved',
       noKontrak: '',
+      noReportTerakhir: '001-00/GBP/UT/I/2025',
       fileUrl: undefined,
       fileName: undefined
     });
@@ -574,6 +577,20 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
                   onChange={(e) => handleInputChange('noKontrak', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan nomor kontrak"
+                />
+              </div>
+
+              {/* No Report Terakhir */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  No Report Terakhir
+                </label>
+                <input
+                  type="text"
+                  value={formData.noReportTerakhir || ''}
+                  onChange={(e) => handleInputChange('noReportTerakhir', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  placeholder="001-00/GBP/UT/I/2025"
                 />
               </div>
 
