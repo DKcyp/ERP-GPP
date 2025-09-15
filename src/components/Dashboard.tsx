@@ -37,6 +37,7 @@ import TunjanganDashboard from "./TunjanganDashboard";
 import ResignDashboard from "./ResignDashboard";
 import HRDMarketingDashboard from "./HRDMarketingDashboard";
 import LemburDashboard from "./LemburDashboard";
+import PengajuanLemburDashboard from "./PengajuanLemburDashboard";
 import DaftarPegawaiDashboard from "./DaftarPegawaiDashboard";
 import KontrakPegawaiDashboard from "./KontrakPegawaiDashboard";
 import MonitoringKontrakPegawaiDashboard from "./MonitoringKontrakPegawaiDashboard";
@@ -884,6 +885,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/general/absensi/pengajuan-resign") {
       return <GeneralPengajuanResignDashboard />;
+    }
+    if (currentPage === "/hrd/general/absensi/pengajuan-lembur") {
+      return <PengajuanLemburDashboard />;
     }
     if (currentPage === "/hrd/general/purchase-request/dashboard") {
       return <GeneralPurchasingRequestDashboard />;
