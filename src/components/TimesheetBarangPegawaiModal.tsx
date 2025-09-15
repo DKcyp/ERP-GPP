@@ -12,6 +12,7 @@ export interface PegawaiRow {
 export interface BarangRow {
   id: string;
   namaBarang: string;
+  kategori: string;
   ditagihkan: number;
   dikembalikan: number;
   selisih: number;
@@ -68,6 +69,18 @@ const TimesheetBarangPegawaiModal: React.FC<
     "SOT-2024-005-B"
   ];
 
+  // Options for Kategori Barang dropdown
+  const kategoriBarangOptions = [
+    "Alat Kerja",
+    "Material",
+    "Peralatan Safety",
+    "Elektronik",
+    "Consumable",
+    "Spare Part",
+    "Tools",
+    "Equipment"
+  ];
+
   const [form, setForm] = useState<TimesheetFormData>({
     noSO: initialData?.noSO || "",
     noSOTurunan: initialData?.noSOTurunan || "",
@@ -120,6 +133,7 @@ const TimesheetBarangPegawaiModal: React.FC<
         {
           id: crypto.randomUUID(),
           namaBarang: "",
+          kategori: "",
           ditagihkan: 0,
           dikembalikan: 0,
           selisih: 0,
@@ -380,6 +394,7 @@ const TimesheetBarangPegawaiModal: React.FC<
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-3 py-2 text-left">Nama Barang</th>
+                    <th className="px-3 py-2 text-left">Kategori Barang</th>
                     <th className="px-3 py-2 text-left">QTY</th>
                     <th className="px-3 py-2 text-left">Ditagihkan</th>
                     <th className="px-3 py-2 text-left">Selisih</th>
@@ -398,6 +413,22 @@ const TimesheetBarangPegawaiModal: React.FC<
                             updateBarang(row.id, "namaBarang", e.target.value)
                           }
                         />
+                      </td>
+                      <td className="px-3 py-2">
+                        <select
+                          className="w-full px-2 py-1 border rounded-lg bg-white"
+                          value={row.kategori}
+                          onChange={(e) =>
+                            updateBarang(row.id, "kategori", e.target.value)
+                          }
+                        >
+                          <option value="">Pilih Kategori</option>
+                          {kategoriBarangOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
                       </td>
                       <td className="px-3 py-2">
                         <input

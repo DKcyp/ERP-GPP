@@ -10,15 +10,20 @@ interface PerformanceBondItem {
   biaya: number; // Rp
   kollateral: number; // Rp
   masaBerlaku: string; // YYYY-MM-DD
+  namaPegawai: string;
+  kualifikasi: string[];
+  durasi: string;
+  zona: string;
+  statusApproval: 'Approve by HRD' | 'Approve by Manager OPS' | 'Pending' | 'Rejected';
   documentName?: string;
   documentUrl?: string;
 }
 
 const MonitoringPerformanceBond: React.FC = () => {
   const [items, setItems] = useState<PerformanceBondItem[]>([
-    { id: crypto.randomUUID(), noTender: "TN-010", noBidbond: "PB-2025-001", penerbit: "Bank D", biaya: 3200000, kollateral: 75000000, masaBerlaku: "2026-03-31", documentName: "pb_TN-010.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-010" },
-    { id: crypto.randomUUID(), noTender: "TN-011", noBidbond: "PB-2025-002", penerbit: "Bank E", biaya: 2100000, kollateral: 45000000, masaBerlaku: "2025-11-30", documentName: "pb_TN-011.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-011" },
-    { id: crypto.randomUUID(), noTender: "TN-012", noBidbond: "PB-2025-003", penerbit: "Asuransi F", biaya: 2800000, kollateral: 60000000, masaBerlaku: "2026-01-15", documentName: "pb_TN-012.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-012" },
+    { id: crypto.randomUUID(), noTender: "TN-010", noBidbond: "PB-2025-001", penerbit: "Bank D", biaya: 3200000, kollateral: 75000000, masaBerlaku: "2026-03-31", namaPegawai: "John Doe", kualifikasi: ["Welder", "Rope Access"], durasi: "19 Hari", zona: "Zona 4", statusApproval: "Approve by HRD", documentName: "pb_TN-010.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-010" },
+    { id: crypto.randomUUID(), noTender: "TN-011", noBidbond: "PB-2025-002", penerbit: "Bank E", biaya: 2100000, kollateral: 45000000, masaBerlaku: "2025-11-30", namaPegawai: "Jane Smith", kualifikasi: ["Electrician", "Rope Access"], durasi: "20 Hari", zona: "Zona 10", statusApproval: "Approve by Manager OPS", documentName: "pb_TN-011.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-011" },
+    { id: crypto.randomUUID(), noTender: "TN-012", noBidbond: "PB-2025-003", penerbit: "Asuransi F", biaya: 2800000, kollateral: 60000000, masaBerlaku: "2026-01-15", namaPegawai: "Michael Johnson", kualifikasi: ["Rigger", "Welding Supervisor"], durasi: "29 Hari", zona: "Zona 2", statusApproval: "Pending", documentName: "pb_TN-012.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-012" },
   ]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -36,6 +41,11 @@ const MonitoringPerformanceBond: React.FC = () => {
     biaya: 0,
     kollateral: 0,
     masaBerlaku: "",
+    namaPegawai: "",
+    kualifikasi: [],
+    durasi: "",
+    zona: "",
+    statusApproval: "Pending",
     documentName: undefined,
     documentUrl: undefined,
   });
@@ -66,7 +76,7 @@ const MonitoringPerformanceBond: React.FC = () => {
 
   const openAdd = () => {
     setEditing(null);
-    setForm({ id: "", noTender: "", noBidbond: "", penerbit: "", biaya: 0, kollateral: 0, masaBerlaku: "" });
+    setForm({ id: "", noTender: "", noBidbond: "", penerbit: "", biaya: 0, kollateral: 0, masaBerlaku: "", namaPegawai: "", kualifikasi: [], durasi: "", zona: "", statusApproval: "Pending" });
     setErrors({});
     setShowForm(true);
   };
@@ -205,9 +215,14 @@ const MonitoringPerformanceBond: React.FC = () => {
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No Tender</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Tender</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Penerbit</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Pegawai</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Kualifikasi</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Durasi</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Zona</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Biaya (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Kollateral (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Masa Berlaku</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status Approval</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Dokumen</th>
                   <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
@@ -225,9 +240,33 @@ const MonitoringPerformanceBond: React.FC = () => {
                     <td className="px-3 py-2 font-medium text-gray-900">{it.noTender}</td>
                     <td className="px-3 py-2">{it.noBidbond}</td>
                     <td className="px-3 py-2">{it.penerbit}</td>
+                    <td className="px-3 py-2">{it.namaPegawai}</td>
+                    <td className="px-3 py-2">
+                      <div className="space-y-1">
+                        {it.kualifikasi.map((kual, idx) => (
+                          <div key={idx} className="flex items-center space-x-1">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                              {kual}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2">{it.durasi}</td>
+                    <td className="px-3 py-2">{it.zona}</td>
                     <td className="px-3 py-2">{it.biaya.toLocaleString("id-ID")}</td>
                     <td className="px-3 py-2">{it.kollateral.toLocaleString("id-ID")}</td>
                     <td className="px-3 py-2">{new Date(it.masaBerlaku).toLocaleDateString("id-ID")}</td>
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                        it.statusApproval === 'Approve by HRD' ? 'bg-green-100 text-green-800' :
+                        it.statusApproval === 'Approve by Manager OPS' ? 'bg-blue-100 text-blue-800' :
+                        it.statusApproval === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {it.statusApproval}
+                      </span>
+                    </td>
                     <td className="px-3 py-2">
                       {it.documentUrl ? (
                         <a href={it.documentUrl} download={it.documentName || "performance_bond_document"} className="text-blue-700 hover:underline inline-flex items-center gap-1">
