@@ -1,6 +1,15 @@
 import React, { useMemo, useState } from "react";
-import { Clock, File, FileSpreadsheet, FileText, Plus, ArrowUp } from "lucide-react";
-import TimesheetBarangPegawaiModal, { TimesheetFormData } from "./TimesheetBarangPegawaiModal";
+import {
+  Clock,
+  File,
+  FileSpreadsheet,
+  FileText,
+  Plus,
+  ArrowUp,
+} from "lucide-react";
+import TimesheetBarangPegawaiModal, {
+  TimesheetFormData,
+} from "./TimesheetBarangPegawaiModal";
 
 interface RowData {
   id: string;
@@ -65,7 +74,7 @@ const samplePegawaiData: PegawaiData[] = [
     durasi: "9 hari",
     zona: "Jakarta",
     nilaiTimesheet: "Rp 12.000.000",
-    statusApproval: "Approved"
+    statusApproval: "Approved",
   },
   {
     id: "2",
@@ -81,7 +90,7 @@ const samplePegawaiData: PegawaiData[] = [
     durasi: "12 hari",
     zona: "Surabaya",
     nilaiTimesheet: "Rp 8.500.000",
-    statusApproval: "Pending"
+    statusApproval: "Pending",
   },
   {
     id: "3",
@@ -97,19 +106,24 @@ const samplePegawaiData: PegawaiData[] = [
     durasi: "15 hari",
     zona: "Bandung",
     nilaiTimesheet: "Rp 15.000.000",
-    statusApproval: "Rejected"
-  }
+    statusApproval: "Rejected",
+  },
 ];
 
 const TimesheetBarangPegawaiDashboard: React.FC = () => {
   const [rows, setRows] = useState<RowData[]>(sampleRows);
-  const [pegawaiData, setPegawaiData] = useState<PegawaiData[]>(samplePegawaiData);
+  const [pegawaiData, setPegawaiData] =
+    useState<PegawaiData[]>(samplePegawaiData);
   const [search, setSearch] = useState("");
   const [selectedPegawai, setSelectedPegawai] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [sortField, setSortField] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [mobFrom, setMobFrom] = useState<string>("");
+  const [mobTo, setMobTo] = useState<string>("");
+  const [demobFrom, setDemobFrom] = useState<string>("");
+  const [demobTo, setDemobTo] = useState<string>("");
 
   const filtered = useMemo(() => {
     const s = search.toLowerCase();
@@ -121,58 +135,134 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
     );
   }, [rows, search]);
 
+  const parseDdMmYyyy = (s: string): number | null => {
+    if (!s) return null;
+    // input like DD-MM-YYYY
+    const [dd, mm, yyyy] = s.split("-").map((v) => parseInt(v, 10));
+    if (!dd || !mm || !yyyy) return null;
+    const d = new Date(yyyy, mm - 1, dd);
+    return isNaN(d.getTime()) ? null : d.getTime();
+  };
+
   const currentPegawaiData = useMemo(() => {
     const s = search.toLowerCase();
     let filtered = pegawaiData.filter(
       (p) =>
         (p.noSO.toLowerCase().includes(s) ||
-        p.noSOTurunan.toLowerCase().includes(s) ||
-        p.namaProyek.toLowerCase().includes(s) ||
-        p.namaPegawai.toLowerCase().includes(s)) &&
+          p.noSOTurunan.toLowerCase().includes(s) ||
+          p.namaProyek.toLowerCase().includes(s) ||
+          p.namaPegawai.toLowerCase().includes(s)) &&
         (selectedPegawai === "" || p.namaPegawai === selectedPegawai)
     );
+
+    // Apply MOB/DEMOB date range filters
+    const mf = mobFrom
+      ? parseDdMmYyyy(
+          new Date(mobFrom)
+            .toLocaleDateString("id-ID")
+            .split("/")
+            .reverse()
+            .join("-")
+        )
+      : null;
+    const mt = mobTo
+      ? parseDdMmYyyy(
+          new Date(mobTo)
+            .toLocaleDateString("id-ID")
+            .split("/")
+            .reverse()
+            .join("-")
+        )
+      : null;
+    const df = demobFrom
+      ? parseDdMmYyyy(
+          new Date(demobFrom)
+            .toLocaleDateString("id-ID")
+            .split("/")
+            .reverse()
+            .join("-")
+        )
+      : null;
+    const dt = demobTo
+      ? parseDdMmYyyy(
+          new Date(demobTo)
+            .toLocaleDateString("id-ID")
+            .split("/")
+            .reverse()
+            .join("-")
+        )
+      : null;
+
+    if (mf || mt) {
+      filtered = filtered.filter((p) => {
+        const pmob = parseDdMmYyyy(p.mob);
+        if (pmob === null) return false;
+        if (mf && pmob < mf) return false;
+        if (mt && pmob > mt) return false;
+        return true;
+      });
+    }
+    if (df || dt) {
+      filtered = filtered.filter((p) => {
+        const pdemob = parseDdMmYyyy(p.demob);
+        if (pdemob === null) return false;
+        if (df && pdemob < df) return false;
+        if (dt && pdemob > dt) return false;
+        return true;
+      });
+    }
 
     // Apply sorting if sortField is set
     if (sortField) {
       filtered = filtered.sort((a, b) => {
         let aValue = a[sortField as keyof PegawaiData];
         let bValue = b[sortField as keyof PegawaiData];
-        
+
         // Handle string comparison
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
+        if (typeof aValue === "string" && typeof bValue === "string") {
           aValue = aValue.toLowerCase();
           bValue = bValue.toLowerCase();
         }
-        
+
         if (aValue < bValue) {
-          return sortDirection === 'asc' ? -1 : 1;
+          return sortDirection === "asc" ? -1 : 1;
         }
         if (aValue > bValue) {
-          return sortDirection === 'asc' ? 1 : -1;
+          return sortDirection === "asc" ? 1 : -1;
         }
         return 0;
       });
     }
 
     return filtered;
-  }, [pegawaiData, search, selectedPegawai, sortField, sortDirection]);
+  }, [
+    pegawaiData,
+    search,
+    selectedPegawai,
+    sortField,
+    sortDirection,
+    mobFrom,
+    mobTo,
+    demobFrom,
+    demobTo,
+  ]);
 
   // Get unique employee names for filter dropdown
   const uniquePegawaiNames = useMemo(() => {
-    const names = pegawaiData.map(p => p.namaPegawai);
+    const names = pegawaiData.map((p) => p.namaPegawai);
     return [...new Set(names)].sort();
   }, [pegawaiData]);
 
   const getStatusColorPegawai = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'approved':
-        return 'bg-green-100 text-green-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
+      case "approved":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "rejected":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -184,10 +274,10 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -223,11 +313,17 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                 TIMESHEET BARANG/PEGAWAI
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Operational</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Operational
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">TimeSheet</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  TimeSheet
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Barang/Pegawai</span>
+                <span className="text-blue-600 font-medium">
+                  Barang/Pegawai
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -245,7 +341,9 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
           {/* Search and actions */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 text-xs">
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Cari</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Cari
+              </label>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -254,7 +352,9 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">Filter Pegawai</label>
+              <label className="block text-xs font-medium text-gray-700">
+                Filter Pegawai
+              </label>
               <select
                 value={selectedPegawai}
                 onChange={(e) => setSelectedPegawai(e.target.value)}
@@ -268,7 +368,26 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                 ))}
               </select>
             </div>
-            <div />
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-gray-700">
+                Periode MOB
+              </label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="date"
+                  value={mobFrom}
+                  onChange={(e) => setMobFrom(e.target.value)}
+                  className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                />
+                <span className="text-gray-500">s.d</span>
+                <input
+                  type="date"
+                  value={mobTo}
+                  onChange={(e) => setMobTo(e.target.value)}
+                  className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                />
+              </div>
+            </div>
             <div className="flex items-end justify-end">
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -278,6 +397,12 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                 <span>Tambah Timesheet</span>
               </button>
             </div>
+          </div>
+
+          {/* Demob Range */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2 text-xs">
+            <div className="hidden md:block" />
+            <div className="hidden md:block" />
           </div>
 
           {/* Quick Export Bar */}
@@ -303,89 +428,154 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-          <table className="w-full">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('no')}
+                    onClick={() => handleSort("no")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No</span>
-                      {sortField === 'no' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "no" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('tanggal')}
+                    onClick={() => handleSort("tanggal")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Tanggal</span>
-                      {sortField === 'tanggal' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "tanggal" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('noSO')}
+                    onClick={() => handleSort("noSO")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>No SO</span>
-                      {sortField === 'noSO' && (
-                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      {sortField === "noSO" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No SO Turunan</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Proyek</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Pegawai</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Kualifikasi</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">MOB</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">DEMOB</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Durasi</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Zona</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Timesheet</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Approval</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    No SO Turunan
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nama Proyek
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nama Pegawai
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Kualifikasi
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    MOB
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    DEMOB
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Durasi
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Zona
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Nilai Timesheet
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Status Approval
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentPegawaiData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.tanggal}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.noSOTurunan}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaProyek}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaPegawai}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.tanggal}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.noSO}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.noSOTurunan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.namaProyek}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.namaPegawai}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="space-y-1">
                         {item.kualifikasi.map((kual, idx) => (
-                          <div key={idx} className="flex items-center space-x-1">
+                          <div
+                            key={idx}
+                            className="flex items-center space-x-1"
+                          >
                             <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                             <span>{kual}</span>
                           </div>
                         ))}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.mob}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.durasi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{item.zona}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nilaiTimesheet}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.mob}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.demob}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.durasi}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.zona}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                      {item.nilaiTimesheet}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColorPegawai(item.statusApproval)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColorPegawai(
+                          item.statusApproval
+                        )}`}
+                      >
                         {item.statusApproval}
                       </span>
                     </td>
