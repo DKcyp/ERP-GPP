@@ -1943,8 +1943,17 @@ export const accountingMenu: MenuSection[] = [
   {
     title: "Asset",
     icon: "Boxes",
+    items: [
+      { title: "Asset", icon: "Package", path: "/accounting/asset" },
+      { title: "Master Kategori Asset", icon: "Tags", path: "/accounting/asset/master-kategori" },
+      { title: "Aktivasi Asset", icon: "CheckCircle", path: "/accounting/asset/aktivasi" },
+    ],
+  },
+  {
+    title: "Buku Besar",
+    icon: "BookOpen",
     items: [],
-    directPath: "/accounting/asset",
+    directPath: "/accounting/buku-besar",
   },
   {
     title: "Trial Balance",

@@ -41,7 +41,12 @@ const JurnalManualDashboard: React.FC = () => {
       user: "accounting",
       keterangan: "Jurnal penyesuaian awal bulan",
       details: [
-        { coa: "1101 - Kas", keterangan: "Saldo awal kas", debit: 1000000, kredit: 0 },
+        {
+          coa: "1101 - Kas",
+          keterangan: "Saldo awal kas",
+          debit: 1000000,
+          kredit: 0,
+        },
         { coa: "3101 - Modal", keterangan: "Modal", debit: 0, kredit: 1000000 },
       ],
     },
@@ -63,7 +68,8 @@ const JurnalManualDashboard: React.FC = () => {
         entry.user.toLowerCase().includes(searchQuery.toLowerCase());
       const entryDate = new Date(entry.tanggal);
       const matchesDate =
-        (!startDate || entryDate >= startDate) && (!endDate || entryDate <= endDate);
+        (!startDate || entryDate >= startDate) &&
+        (!endDate || entryDate <= endDate);
       return matchesSearch && matchesDate;
     });
   }, [data, searchQuery, startDate, endDate]);
@@ -117,8 +123,14 @@ const JurnalManualDashboard: React.FC = () => {
       alert("No Jurnal dan Tanggal wajib diisi");
       return;
     }
-    const totalDebit = form.details.reduce((s, d) => s + (Number(d.debit) || 0), 0);
-    const totalKredit = form.details.reduce((s, d) => s + (Number(d.kredit) || 0), 0);
+    const totalDebit = form.details.reduce(
+      (s, d) => s + (Number(d.debit) || 0),
+      0
+    );
+    const totalKredit = form.details.reduce(
+      (s, d) => s + (Number(d.kredit) || 0),
+      0
+    );
     if (totalDebit !== totalKredit) {
       alert("Total Debit dan Kredit harus seimbang");
       return;
@@ -380,7 +392,9 @@ const JurnalManualDashboard: React.FC = () => {
                       <tr>
                         <td colSpan={6} className="p-4 bg-gray-50">
                           <div className="ml-8 border-l-2 border-blue-200 pl-4">
-                            <h5 className="text-md font-semibold text-gray-800 mb-2">Detail Jurnal:</h5>
+                            <h5 className="text-md font-semibold text-gray-800 mb-2">
+                              Detail Jurnal:
+                            </h5>
                             <table className="min-w-full divide-y divide-gray-200">
                               <thead className="bg-gray-100">
                                 <tr>
@@ -408,24 +422,37 @@ const JurnalManualDashboard: React.FC = () => {
                                       {d.keterangan}
                                     </td>
                                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-right">
-                                      {d.debit > 0 ? `Rp ${d.debit.toLocaleString("id-ID")}` : "-"}
+                                      {d.debit > 0
+                                        ? `Rp ${d.debit.toLocaleString(
+                                            "id-ID"
+                                          )}`
+                                        : "-"}
                                     </td>
                                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-right">
-                                      {d.kredit > 0 ? `Rp ${d.kredit.toLocaleString("id-ID")}` : "-"}
+                                      {d.kredit > 0
+                                        ? `Rp ${d.kredit.toLocaleString(
+                                            "id-ID"
+                                          )}`
+                                        : "-"}
                                     </td>
                                   </tr>
                                 ))}
                                 <tr className="font-bold bg-gray-50">
-                                  <td colSpan={2} className="px-4 py-2 text-right text-sm text-gray-900">
+                                  <td
+                                    colSpan={2}
+                                    className="px-4 py-2 text-right text-sm text-gray-900"
+                                  >
                                     Total
                                   </td>
                                   <td className="px-4 py-2 text-right text-sm text-gray-900">
-                                    Rp {entry.details
+                                    Rp{" "}
+                                    {entry.details
                                       .reduce((s, d) => s + d.debit, 0)
                                       .toLocaleString("id-ID")}
                                   </td>
                                   <td className="px-4 py-2 text-right text-sm text-gray-900">
-                                    Rp {entry.details
+                                    Rp{" "}
+                                    {entry.details
                                       .reduce((s, d) => s + d.kredit, 0)
                                       .toLocaleString("id-ID")}
                                   </td>
@@ -448,42 +475,63 @@ const JurnalManualDashboard: React.FC = () => {
       </div>
 
       {/* Form Modal */}
-      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Jurnal" : "Tambah Jurnal"} size="xl">
+      <Modal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        title={editingId ? "Edit Jurnal" : "Tambah Jurnal"}
+        size="xl"
+      >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">No Jurnal</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                No Jurnal
+              </label>
               <input
                 type="text"
                 value={form.noJurnal}
-                onChange={(e) => setForm((f) => ({ ...f, noJurnal: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, noJurnal: e.target.value }))
+                }
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tanggal
+              </label>
               <input
                 type="date"
                 value={form.tanggal}
-                onChange={(e) => setForm((f) => ({ ...f, tanggal: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, tanggal: e.target.value }))
+                }
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                User
+              </label>
               <input
                 type="text"
                 value={form.user}
-                onChange={(e) => setForm((f) => ({ ...f, user: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, user: e.target.value }))
+                }
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Keterangan
+              </label>
               <input
                 type="text"
                 value={form.keterangan}
-                onChange={(e) => setForm((f) => ({ ...f, keterangan: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, keterangan: e.target.value }))
+                }
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -492,13 +540,18 @@ const JurnalManualDashboard: React.FC = () => {
           {/* Detail Lines */}
           <div className="border rounded-xl p-3">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-semibold text-gray-800 text-sm">Detail Jurnal</h4>
+              <h4 className="font-semibold text-gray-800 text-sm">
+                Detail Jurnal
+              </h4>
               <button
                 type="button"
                 onClick={() =>
                   setForm((f) => ({
                     ...f,
-                    details: [...f.details, { coa: "", keterangan: "", debit: 0, kredit: 0 }],
+                    details: [
+                      ...f.details,
+                      { coa: "", keterangan: "", debit: 0, kredit: 0 },
+                    ],
                   }))
                 }
                 className="px-2 py-1 text-xs rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200"
@@ -510,11 +563,24 @@ const JurnalManualDashboard: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">COA</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Debit</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Kredit</th>
-                    <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Hapus</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      COA
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Nama COA
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Keterangan
+                    </th>
+                    <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                      Debit
+                    </th>
+                    <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                      Kredit
+                    </th>
+                    <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                      Hapus
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -527,7 +593,27 @@ const JurnalManualDashboard: React.FC = () => {
                           onChange={(e) =>
                             setForm((f) => {
                               const details = [...f.details];
-                              details[idx] = { ...details[idx], coa: e.target.value };
+                              details[idx] = {
+                                ...details[idx],
+                                coa: e.target.value,
+                              };
+                              return { ...f, details };
+                            })
+                          }
+                          className="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input
+                          type="text"
+                          value={d.coa}
+                          onChange={(e) =>
+                            setForm((f) => {
+                              const details = [...f.details];
+                              details[idx] = {
+                                ...details[idx],
+                                coa: e.target.value,
+                              };
                               return { ...f, details };
                             })
                           }
@@ -541,7 +627,10 @@ const JurnalManualDashboard: React.FC = () => {
                           onChange={(e) =>
                             setForm((f) => {
                               const details = [...f.details];
-                              details[idx] = { ...details[idx], keterangan: e.target.value };
+                              details[idx] = {
+                                ...details[idx],
+                                keterangan: e.target.value,
+                              };
                               return { ...f, details };
                             })
                           }
@@ -555,7 +644,10 @@ const JurnalManualDashboard: React.FC = () => {
                           onChange={(e) =>
                             setForm((f) => {
                               const details = [...f.details];
-                              details[idx] = { ...details[idx], debit: Number(e.target.value) };
+                              details[idx] = {
+                                ...details[idx],
+                                debit: Number(e.target.value),
+                              };
                               return { ...f, details };
                             })
                           }
@@ -569,7 +661,10 @@ const JurnalManualDashboard: React.FC = () => {
                           onChange={(e) =>
                             setForm((f) => {
                               const details = [...f.details];
-                              details[idx] = { ...details[idx], kredit: Number(e.target.value) };
+                              details[idx] = {
+                                ...details[idx],
+                                kredit: Number(e.target.value),
+                              };
                               return { ...f, details };
                             })
                           }
@@ -597,10 +692,22 @@ const JurnalManualDashboard: React.FC = () => {
             </div>
             <div className="flex items-center justify-end gap-6 mt-3 text-sm">
               <div className="text-gray-600">
-                Total Debit: <span className="font-semibold">Rp {form.details.reduce((s, d) => s + (Number(d.debit) || 0), 0).toLocaleString("id-ID")}</span>
+                Total Debit:{" "}
+                <span className="font-semibold">
+                  Rp{" "}
+                  {form.details
+                    .reduce((s, d) => s + (Number(d.debit) || 0), 0)
+                    .toLocaleString("id-ID")}
+                </span>
               </div>
               <div className="text-gray-600">
-                Total Kredit: <span className="font-semibold">Rp {form.details.reduce((s, d) => s + (Number(d.kredit) || 0), 0).toLocaleString("id-ID")}</span>
+                Total Kredit:{" "}
+                <span className="font-semibold">
+                  Rp{" "}
+                  {form.details
+                    .reduce((s, d) => s + (Number(d.kredit) || 0), 0)
+                    .toLocaleString("id-ID")}
+                </span>
               </div>
             </div>
           </div>
