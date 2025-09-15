@@ -4,8 +4,6 @@ import {
   FileSpreadsheet,
   FileText,
   File,
-  ThumbsUp,
-  ThumbsDown,
   ChevronDown,
   ArrowUp,
   Download,
@@ -36,13 +34,10 @@ const ListLamaranDashboard: React.FC = () => {
   const [sortField, setSortField] = useState<keyof TalentPoolData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   // Removed: const [isTambahOpen, setIsTambahOpen] = useState(false);
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [selectedForStatus, setSelectedForStatus] =
-    useState<TalentPoolData | null>(null);
-  const [statusForm, setStatusForm] = useState<{
-    status: TalentPoolData["status"] | "";
-    keterangan: string;
-  }>({ status: "", keterangan: "" });
+  
+  // New state for Move to Rekrutmen modal
+  const [isMoveToRekrutmenModalOpen, setIsMoveToRekrutmenModalOpen] = useState(false);
+  const [selectedForMove, setSelectedForMove] = useState<TalentPoolData | null>(null);
 
   // Sample data matching the image, now with status and keterangan
   const [lamaranData, setLamaranData] = useState<TalentPoolData[]>([
@@ -160,35 +155,26 @@ const ListLamaranDashboard: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleThumbUpClick = (item: TalentPoolData) => {
-    setSelectedForStatus(item);
-    setStatusForm({ status: item.status, keterangan: item.keterangan || "" });
-    setIsStatusModalOpen(true);
+  const handleMoveToRekrutmenClick = (item: TalentPoolData) => {
+    setSelectedForMove(item);
+    setIsMoveToRekrutmenModalOpen(true);
   };
 
-  const handleThumbDownClick = (item: TalentPoolData) => {
-    // Preselect status to Rejected but still allow editing via modal
-    setSelectedForStatus(item);
-    setStatusForm({ status: "Rejected", keterangan: item.keterangan || "" });
-    setIsStatusModalOpen(true);
+  const handleConfirmMoveToRekrutmen = () => {
+    if (!selectedForMove) return;
+    
+    // Remove from talent pool data
+    setLamaranData((prev) => prev.filter((item) => item.id !== selectedForMove.id));
+    
+    // Close modal and reset selection
+    setIsMoveToRekrutmenModalOpen(false);
+    setSelectedForMove(null);
+    
+    // You can add additional logic here to actually move the data to recruitment system
+    console.log('Moving to recruitment:', selectedForMove);
   };
 
-  const getStatusColor = (status: TalentPoolData["status"]) => {
-    switch (status) {
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "Accepted":
-        return "bg-green-100 text-green-800";
-      case "Rejected":
-        return "bg-red-100 text-red-800";
-      case "Interview":
-        return "bg-blue-100 text-blue-800";
-      case "Hired":
-        return "bg-purple-100 text-purple-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -406,21 +392,6 @@ const ListLamaranDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     File
                   </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("status")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Status</span>
-                      {sortField === "status" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Aksi
                   </th>
@@ -487,29 +458,13 @@ const ListLamaranDashboard: React.FC = () => {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          item.status
-                        )}`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center space-x-2">
+                      <div className="flex items-center justify-center">
                         <button
-                          onClick={() => handleThumbUpClick(item)}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Approve Application"
+                          onClick={() => handleMoveToRekrutmenClick(item)}
+                          className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                          title="Move to Rekrutmen"
                         >
-                          <ThumbsUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleThumbDownClick(item)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
-                          title="Reject Application"
-                        >
-                          <ThumbsDown className="h-4 w-4" />
+                          Move to rekrutmen
                         </button>
                       </div>
                     </td>
@@ -561,21 +516,21 @@ const ListLamaranDashboard: React.FC = () => {
       </div>
       {/* Removed Tambah Talent Pool Modal */}
 
-      {/* Ganti Status Modal */}
-      {isStatusModalOpen && selectedForStatus && (
+      {/* Move to Rekrutmen Confirmation Modal */}
+      {isMoveToRekrutmenModalOpen && selectedForMove && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setIsStatusModalOpen(false);
+            if (e.target === e.currentTarget) setIsMoveToRekrutmenModalOpen(false);
           }}
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
-                Ganti Status
+                Konfirmasi Move to Rekrutmen
               </h3>
               <button
-                onClick={() => setIsStatusModalOpen(false)}
+                onClick={() => setIsMoveToRekrutmenModalOpen(false)}
                 className="p-2 text-gray-400 hover:text-gray-600"
               >
                 ×
@@ -587,83 +542,44 @@ const ListLamaranDashboard: React.FC = () => {
                   Nama Pelamar
                 </label>
                 <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50">
-                  {selectedForStatus.namaPelamar}
+                  {selectedForMove.namaPelamar}
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  Email
                 </label>
-                <select
-                  value={statusForm.status}
-                  onChange={(e) =>
-                    setStatusForm((prev) => ({
-                      ...prev,
-                      status: e.target.value as TalentPoolData["status"],
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                >
-                  {(
-                    [
-                      "Pending",
-                      "Accepted",
-                      "Rejected",
-                      "Interview",
-                      "Hired",
-                    ] as TalentPoolData["status"][]
-                  ).map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50">
+                  {selectedForMove.email}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Keterangan
+                  Kualifikasi
                 </label>
-                <textarea
-                  rows={3}
-                  value={statusForm.keterangan}
-                  onChange={(e) =>
-                    setStatusForm((prev) => ({
-                      ...prev,
-                      keterangan: e.target.value,
-                    }))
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  placeholder="Tambahkan keterangan..."
-                />
+                <div className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 max-h-20 overflow-y-auto">
+                  {selectedForMove.kualifikasi}
+                </div>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Perhatian:</strong> Pelamar ini akan dipindahkan dari Talent Pool ke sistem Rekrutmen. 
+                  Aksi ini tidak dapat dibatalkan.
+                </p>
               </div>
             </div>
             <div className="p-4 border-t border-gray-200 flex justify-end gap-2 bg-gray-50">
               <button
                 className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
-                onClick={() => setIsStatusModalOpen(false)}
+                onClick={() => setIsMoveToRekrutmenModalOpen(false)}
               >
                 Batal
               </button>
               <button
                 className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                onClick={() => {
-                  if (!selectedForStatus) return;
-                  setLamaranData((prev) =>
-                    prev.map((it) =>
-                      it.id === selectedForStatus.id
-                        ? {
-                            ...it,
-                            status: (statusForm.status ||
-                              it.status) as TalentPoolData["status"],
-                            keterangan: statusForm.keterangan,
-                          }
-                        : it
-                    )
-                  );
-                  setIsStatusModalOpen(false);
-                }}
+                onClick={handleConfirmMoveToRekrutmen}
               >
-                Simpan
+                Ya, Pindahkan ke Rekrutmen
               </button>
             </div>
           </div>

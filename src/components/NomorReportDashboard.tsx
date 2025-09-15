@@ -265,7 +265,7 @@ const NomorReportDashboard: React.FC = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
               <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-                <h2 className="text-xl font-bold text-gray-900">{editing ? 'Edit Nomor Report' : 'Tambah Nomor Report'}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{editing ? 'Edit Report' : 'Tambah Report'}</h2>
                 <button onClick={() => setShowForm(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
                   <X className="h-5 w-5" />
                 </button>
@@ -290,7 +290,7 @@ const NomorReportDashboard: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Report</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Report</label>
                     <input
                       value={form.nomorReport}
                       onChange={(e) => setForm({ ...form, nomorReport: e.target.value })}

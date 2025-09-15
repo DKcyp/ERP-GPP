@@ -600,16 +600,22 @@ export const operationalMenu: MenuSection[] = [
   {
     title: "TimeSheet",
     icon: "Clock",
+    items: [],
+    directPath: "/operational/timesheet/barang-pegawai",
+  },
+  {
+    title: "Produksi",
+    icon: "Factory",
     items: [
-      {
-        title: "Report",
-        icon: "FileText",
-        path: "/operational/timesheet/barang-pegawai",
-      },
       {
         title: "Proses Produksi",
         icon: "Factory",
         path: "/operational/produksi/proses",
+      },
+      {
+        title: "Proses Report",
+        icon: "FileText",
+        path: "/qhse/monitoring-personnel/nomor-report",
       },
     ],
   },
@@ -619,12 +625,6 @@ export const operationalMenu: MenuSection[] = [
   //   items: [],
   //   directPath: "/operational/pbg/dashboard",
   // },
-  {
-    title: "Nomor Report",
-    icon: "FileText",
-    items: [],
-    directPath: "/qhse/monitoring-personnel/nomor-report",
-  },
   createGeneralMenu("operational"),
 ];
 
