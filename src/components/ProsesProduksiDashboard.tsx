@@ -25,8 +25,8 @@ interface ProsesProduksiData {
   tglPenerimaanFinalReport: string;
   nilaiProduksi: string;
   statusReport: "Approved" | "Pending" | "Revisi";
-  approvalTeknisi?: "Approved" | "Pending" | "Revisi";
-  approvalBAST?: "Approved" | "Pending" | "Revisi";
+  tanggalApprovalTeknisi?: string;
+  tanggalApprovalBAST?: string;
   fileUrl?: string;
   fileName?: string;
 }
@@ -69,8 +69,8 @@ const ProsesProduksiDashboard: React.FC = () => {
       tglPenerimaanFinalReport: "25-02-2025",
       nilaiProduksi: "Rp 80,000,000",
       statusReport: "Approved",
-      approvalTeknisi: "Approved",
-      approvalBAST: "Approved",
+      tanggalApprovalTeknisi: "23-02-2025",
+      tanggalApprovalBAST: "26-02-2025",
     },
     {
       id: "2",
@@ -84,8 +84,8 @@ const ProsesProduksiDashboard: React.FC = () => {
       tglPenerimaanFinalReport: "-",
       nilaiProduksi: "Rp 30,000,000",
       statusReport: "Pending",
-      approvalTeknisi: "Pending",
-      approvalBAST: "Pending",
+      tanggalApprovalTeknisi: "-",
+      tanggalApprovalBAST: "-",
     },
     {
       id: "3",
@@ -99,8 +99,8 @@ const ProsesProduksiDashboard: React.FC = () => {
       tglPenerimaanFinalReport: "06-03-2025",
       nilaiProduksi: "Rp 45,000,000",
       statusReport: "Approved",
-      approvalTeknisi: "Approved",
-      approvalBAST: "Approved",
+      tanggalApprovalTeknisi: "03-03-2025",
+      tanggalApprovalBAST: "07-03-2025",
     },
     {
       id: "4",
@@ -114,8 +114,8 @@ const ProsesProduksiDashboard: React.FC = () => {
       tglPenerimaanFinalReport: "-",
       nilaiProduksi: "Rp 10,000,000",
       statusReport: "Revisi",
-      approvalTeknisi: "Pending",
-      approvalBAST: "Pending",
+      tanggalApprovalTeknisi: "-",
+      tanggalApprovalBAST: "-",
     },
   ]);
 
@@ -542,10 +542,10 @@ const ProsesProduksiDashboard: React.FC = () => {
                     Tgl Penerimaan Report Teknisi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Approval Teknisi
+                    Tgl Approval Teknisi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Approval BAST
+                    Tgl Approval BAST
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Tgl Penerimaan Final Report
@@ -591,31 +591,11 @@ const ProsesProduksiDashboard: React.FC = () => {
                     <td className="px-3 py-2 text-gray-600">
                       {item.tglPenerimaanReportTeknisi}
                     </td>
-                    <td className="px-3 py-2">
-                      {item.approvalTeknisi ? (
-                        <span
-                          className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusColor(
-                            item.approvalTeknisi
-                          )}`}
-                        >
-                          {item.approvalTeknisi}
-                        </span>
-                      ) : (
-                        <span className="text-gray-500">-</span>
-                      )}
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.tanggalApprovalTeknisi || "-"}
                     </td>
-                    <td className="px-3 py-2">
-                      {item.approvalBAST ? (
-                        <span
-                          className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${getStatusColor(
-                            item.approvalBAST
-                          )}`}
-                        >
-                          {item.approvalBAST}
-                        </span>
-                      ) : (
-                        <span className="text-gray-500">-</span>
-                      )}
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.tanggalApprovalBAST || "-"}
                     </td>
                     <td className="px-3 py-2 text-gray-600">{item.tglPenerimaanFinalReport}</td>
                     <td className="px-3 py-2 text-gray-900 font-medium">
