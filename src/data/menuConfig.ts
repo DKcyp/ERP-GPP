@@ -616,13 +616,8 @@ export const operationalMenu: MenuSection[] = [
   {
     title: "Produksi",
     icon: "Factory",
-    items: [
-      {
-        title: "Proses Produksi",
-        icon: "Factory",
-        path: "/operational/produksi/proses",
-      },
-    ],
+    items: [],
+    directPath: "/operational/produksi/proses",
   },
   // {
   //   title: "PBG",
