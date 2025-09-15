@@ -105,6 +105,7 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
   const [rows, setRows] = useState<RowData[]>(sampleRows);
   const [pegawaiData, setPegawaiData] = useState<PegawaiData[]>(samplePegawaiData);
   const [search, setSearch] = useState("");
+  const [selectedPegawai, setSelectedPegawai] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [sortField, setSortField] = useState<string>("");
@@ -124,10 +125,11 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
     const s = search.toLowerCase();
     let filtered = pegawaiData.filter(
       (p) =>
-        p.noSO.toLowerCase().includes(s) ||
+        (p.noSO.toLowerCase().includes(s) ||
         p.noSOTurunan.toLowerCase().includes(s) ||
         p.namaProyek.toLowerCase().includes(s) ||
-        p.namaPegawai.toLowerCase().includes(s)
+        p.namaPegawai.toLowerCase().includes(s)) &&
+        (selectedPegawai === "" || p.namaPegawai === selectedPegawai)
     );
 
     // Apply sorting if sortField is set
@@ -153,7 +155,13 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
     }
 
     return filtered;
-  }, [pegawaiData, search, sortField, sortDirection]);
+  }, [pegawaiData, search, selectedPegawai, sortField, sortDirection]);
+
+  // Get unique employee names for filter dropdown
+  const uniquePegawaiNames = useMemo(() => {
+    const names = pegawaiData.map(p => p.namaPegawai);
+    return [...new Set(names)].sort();
+  }, [pegawaiData]);
 
   const getStatusColorPegawai = (status: string) => {
     switch (status.toLowerCase()) {
@@ -235,7 +243,7 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
         {/* Filter & Action Panel */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
           {/* Search and actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 text-xs">
             <div className="space-y-2">
               <label className="block text-xs font-medium text-gray-700">Cari</label>
               <input
@@ -244,6 +252,21 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                 placeholder="No SO / SO Turunan / Proyek"
                 className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
               />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-gray-700">Filter Pegawai</label>
+              <select
+                value={selectedPegawai}
+                onChange={(e) => setSelectedPegawai(e.target.value)}
+                className="w-full pl-2 pr-8 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs bg-white"
+              >
+                <option value="">Semua Pegawai</option>
+                {uniquePegawaiNames.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div />
             <div className="flex items-end justify-end">
