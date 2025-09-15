@@ -201,9 +201,9 @@ const createGeneralMenu = (role: string): MenuSection => ({
           path: "/hrd/general/absensi/pengajuan-lembur",
         },
         {
-          title: "Pengajuan Izin",
-          icon: "FilePlus",
-          path: "/hrd/absensi/pengajuan-izin",
+          title: "Approval Izin",
+          icon: "CheckCircle",
+          path: "/hrd/absensi/approval-izin",
         },
         {
           title: "Pengajuan Resign",
@@ -848,7 +848,7 @@ export const hrdMenu: MenuSection[] = [
         path: "/hrd/absensi/kalender",
       },
       {
-        title: "Pengajuan Izin",
+        title: "Approval Izin",
         icon: "FilePlus",
         path: "/hrd/absensi/pengajuan-izin",
       },

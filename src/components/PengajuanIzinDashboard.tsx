@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Plus, Search, FileSpreadsheet, FileText, File, Download, Edit2, Trash2 } from "lucide-react";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { Search, FileSpreadsheet, FileText, File, Download } from "lucide-react";
 
 interface IzinData {
   id: string;
@@ -15,14 +14,7 @@ interface IzinData {
   fileUrl?: string;
 }
 
-interface IzinForm {
-  namaPegawai: string;
-  tanggal: string;
-  jenisIzin: IzinData["jenisIzin"] | "";
-  durasi: string;
-  keterangan: string;
-  file?: File | null;
-}
+
 
 const PengajuanIzinDashboard: React.FC = () => {
   const [data, setData] = useState<IzinData[]>([
@@ -53,13 +45,7 @@ const PengajuanIzinDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [animateRows, setAnimateRows] = useState(false);
 
-  // Modal states
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editingItem, setEditingItem] = useState<IzinData | null>(null);
-  const [form, setForm] = useState<IzinForm>({ namaPegawai: "", tanggal: "", jenisIzin: "", durasi: "", keterangan: "", file: null });
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<IzinData | null>(null);
+
 
   useEffect(() => {
     const t = setTimeout(() => setAnimateRows(true), 100);
@@ -81,98 +67,29 @@ const PengajuanIzinDashboard: React.FC = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentData = filtered.slice(startIndex, endIndex);
 
-  const resetForm = () => {
-    setForm({ namaPegawai: "", tanggal: "", jenisIzin: "", durasi: "", keterangan: "", file: null });
-    setEditingItem(null);
-    setIsEditMode(false);
+
+
+  const handleApprove = (item: IzinData) => {
+    setData((prev) =>
+      prev.map((d) =>
+        d.id === item.id ? { ...d, status: "Disetujui" } : d
+      )
+    );
   };
 
-  const openAddModal = () => {
-    resetForm();
-    setIsFormOpen(true);
-  };
-
-  const openEditModal = (item: IzinData) => {
-    setEditingItem(item);
-    setForm({
-      namaPegawai: item.namaPegawai,
-      tanggal: item.tanggal,
-      jenisIzin: item.jenisIzin,
-      durasi: item.durasi,
-      keterangan: item.keterangan,
-      file: null,
-    });
-    setIsEditMode(true);
-    setIsFormOpen(true);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setForm((p) => ({ ...p, file }));
-  };
-
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.namaPegawai || !form.tanggal || !form.jenisIzin) return;
-
-    const fileName = form.file?.name;
-    const fileUrl = form.file ? URL.createObjectURL(form.file) : undefined;
-
-    if (isEditMode && editingItem) {
-      setData((prev) =>
-        prev.map((d) =>
-          d.id === editingItem.id
-            ? {
-                ...d,
-                namaPegawai: form.namaPegawai,
-                tanggal: form.tanggal,
-                jenisIzin: form.jenisIzin as IzinData["jenisIzin"],
-                durasi: form.durasi,
-                keterangan: form.keterangan,
-                fileName: fileName || d.fileName,
-                fileUrl: fileUrl || d.fileUrl,
-              }
-            : d
-        )
-      );
-    } else {
-      const nextNo = data.length > 0 ? Math.max(...data.map((x) => x.no)) + 1 : 1;
-      const newItem: IzinData = {
-        id: Date.now().toString(),
-        no: nextNo,
-        namaPegawai: form.namaPegawai,
-        tanggal: form.tanggal,
-        jenisIzin: form.jenisIzin as IzinData["jenisIzin"],
-        durasi: form.durasi,
-        keterangan: form.keterangan,
-        status: "Menunggu Review",
-        fileName,
-        fileUrl,
-      };
-      setData((prev) => [newItem, ...prev]);
-    }
-
-    setIsFormOpen(false);
-    resetForm();
-  };
-
-  const confirmDelete = (item: IzinData) => {
-    setItemToDelete(item);
-    setDeleteModalOpen(true);
-  };
-
-  const doDelete = () => {
-    if (!itemToDelete) return;
-    setData((prev) => prev.filter((d) => d.id !== itemToDelete.id));
-    setItemToDelete(null);
-    setDeleteModalOpen(false);
+  const handleReject = (item: IzinData) => {
+    setData((prev) =>
+      prev.map((d) =>
+        d.id === item.id ? { ...d, status: "Ditolak" } : d
+      )
+    );
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">PENGAJUAN IZIN</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">APPROVAL IZIN</h1>
 
           {/* Controls */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
@@ -189,9 +106,6 @@ const PengajuanIzinDashboard: React.FC = () => {
               </button>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={openAddModal} className="inline-flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 rounded-md text-sm font-medium">
-                <Plus className="h-4 w-4" /> Tambah
-              </button>
               <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium flex items-center gap-1">
                 <FileSpreadsheet className="h-4 w-4" /> Excel
               </button>
@@ -294,20 +208,26 @@ const PengajuanIzinDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => openEditModal(item)}
-                          className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 hover:scale-110 transition"
-                          title="Edit"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => confirmDelete(item)}
-                          className="p-1.5 bg-red-600 text-white rounded hover:bg-red-700 hover:scale-110 transition"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        {item.status === "Menunggu Review" ? (
+                          <>
+                            <button
+                              onClick={() => handleApprove(item)}
+                              className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition"
+                              title="Approve"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleReject(item)}
+                              className="px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition"
+                              title="Reject"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-500">-</span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -343,96 +263,7 @@ const PengajuanIzinDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Form Modal */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-xl rounded-lg bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-6 py-4">
-              <h3 className="text-lg font-semibold text-gray-900">{isEditMode ? "Edit Pengajuan Izin" : "Tambah Pengajuan Izin"}</h3>
-              <button onClick={() => setIsFormOpen(false)} className="rounded p-1 text-gray-500 hover:bg-gray-100">✕</button>
-            </div>
-            <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
-                <input
-                  value={form.namaPegawai}
-                  onChange={(e) => setForm((p) => ({ ...p, namaPegawai: e.target.value }))}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                  <input
-                    type="date"
-                    value={form.tanggal}
-                    onChange={(e) => setForm((p) => ({ ...p, tanggal: e.target.value }))}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Izin</label>
-                  <select
-                    value={form.jenisIzin}
-                    onChange={(e) => setForm((p) => ({ ...p, jenisIzin: e.target.value as any }))}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">-- Pilih --</option>
-                    <option value="Sakit">Sakit</option>
-                    <option value="Cuti">Cuti</option>
-                    <option value="Izin">Izin</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Durasi</label>
-                  <input
-                    value={form.durasi}
-                    onChange={(e) => setForm((p) => ({ ...p, durasi: e.target.value }))}
-                    placeholder="cth: 1 Hari / 3 Jam"
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Upload File (opsional)</label>
-                  <input type="file" onChange={handleFileChange} className="w-full text-sm" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-                <textarea
-                  rows={3}
-                  value={form.keterangan}
-                  onChange={(e) => setForm((p) => ({ ...p, keterangan: e.target.value }))}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                />
-              </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button type="button" onClick={() => setIsFormOpen(false)} className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                  Batal
-                </button>
-                <button type="submit" className="rounded-md bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700">
-                  Simpan
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Confirm Delete Modal */}
-      <ConfirmDeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={doDelete}
-        itemName={itemToDelete?.namaPegawai}
-      />
     </div>
   );
 };
