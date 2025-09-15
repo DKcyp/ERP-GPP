@@ -267,6 +267,9 @@ import GABackupDataUserDashboard from "./GABackupDataUserDashboard";
 import GAITTroubleShootDashboard from "./GAITTroubleShootDashboard";
 import GAITMaintenanceDeviceDashboard from "./GAITMaintenanceDeviceDashboard";
 import GAITMonitoringServerDashboard from "./GAITMonitoringServerDashboard";
+import GAPajakPBBDashboard from "./GAPajakPBBDashboard";
+import GAIuranKeanggotaanDashboard from "./GAIuranKeanggotaanDashboard";
+import GAMasterAsetDashboard from "./GAMasterAsetDashboard";
 
 // NEW: Import your new blank page components
 import MasterKPIHRDDashboard from "./MasterKPIHRDDashboard";
@@ -300,6 +303,11 @@ import MonitoringPenilaianTKDNDashboard from "./MonitoringPenilaianTKDNDashboard
 import GeneralBudgetPengajuanDashboard from "./GeneralBudgetPengajuanDashboard";
 import GeneralBudgetLaporanDashboard from "./GeneralBudgetLaporanDashboard";
 import GeneralPengajuanResignDashboard from "./GeneralPengajuanResignDashboard";
+
+// General Kendaraan
+import GeneralKendaraanPengajuanDriver from "./GeneralKendaraanPengajuanDriver";
+import GeneralKendaraanLogbookDriver from "./GeneralKendaraanLogbookDriver";
+import GeneralKendaraanApprovalDriver from "./GeneralKendaraanApprovalDriver";
 
 import {
   BarChart3,
@@ -536,6 +544,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/gudang/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
     }
+    // Gudang General Kendaraan
+    if (currentPage === "/gudang/general/kendaraan/pengajuan-driver") {
+      return <GeneralKendaraanPengajuanDriver />;
+    }
+    if (currentPage === "/gudang/general/kendaraan/logbook-driver") {
+      return <GeneralKendaraanLogbookDriver />;
+    }
+    if (currentPage === "/gudang/general/kendaraan/approval-driver") {
+      return <GeneralKendaraanApprovalDriver />;
+    }
 
     if (currentPage === "/ga/general/kpi/dashboard") {
       console.log(
@@ -595,6 +613,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/ga/general/utility/dashboard") {
       return <GeneralUtilityDashboard />;
+    }
+    // GA General Kendaraan
+    if (currentPage === "/ga/general/kendaraan/pengajuan-driver") {
+      return <GeneralKendaraanPengajuanDriver />;
+    }
+    if (currentPage === "/ga/general/kendaraan/logbook-driver") {
+      return <GeneralKendaraanLogbookDriver />;
+    }
+    if (currentPage === "/ga/general/kendaraan/approval-driver") {
+      return <GeneralKendaraanApprovalDriver />;
     }
 
     // Pengadaan Routes
@@ -676,6 +704,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/general/reimburse/proses") {
       return <GeneralProsesReimburseDashboard />;
+    }
+    // Pengadaan General Kendaraan
+    if (currentPage === "/pengadaan/general/kendaraan/pengajuan-driver") {
+      return <GeneralKendaraanPengajuanDriver />;
+    }
+    if (currentPage === "/pengadaan/general/kendaraan/logbook-driver") {
+      return <GeneralKendaraanLogbookDriver />;
+    }
+    if (currentPage === "/pengadaan/general/kendaraan/approval-driver") {
+      return <GeneralKendaraanApprovalDriver />;
     }
     if (currentPage === "/pengadaan/general/cash-advance/dashboard") {
       return <GeneralCashAdvanceDashboard />;
@@ -871,6 +909,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/general/kpi/list") {
       return <GeneralListKPIDashboard />;
+    }
+    // HRD General Kendaraan
+    if (currentPage === "/hrd/general/kendaraan/pengajuan-driver") {
+      return <GeneralKendaraanPengajuanDriver />;
+    }
+    if (currentPage === "/hrd/general/kendaraan/logbook-driver") {
+      return <GeneralKendaraanLogbookDriver />;
+    }
+    if (currentPage === "/hrd/general/kendaraan/approval-driver") {
+      return <GeneralKendaraanApprovalDriver />;
     }
     if (currentPage === "/hrd/general/voucher/dashboard") {
       return <GeneralVoucherDashboard />;
@@ -1072,6 +1120,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/marketing/general/kpi/list") {
       return <GeneralListKPIDashboard />;
     }
+    // Marketing General Kendaraan
+    if (currentPage === "/marketing/general/kendaraan/pengajuan-driver") {
+      return <GeneralKendaraanPengajuanDriver />;
+    }
+    if (currentPage === "/marketing/general/kendaraan/logbook-driver") {
+      return <GeneralKendaraanLogbookDriver />;
+    }
+    if (currentPage === "/marketing/general/kendaraan/approval-driver") {
+      return <GeneralKendaraanApprovalDriver />;
+    }
     if (currentPage === "/marketing/general/voucher/dashboard") {
       return <GeneralVoucherDashboard />;
     }
@@ -1117,6 +1175,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/ga/pajak-kendaraan/pajak-kendaraan") {
       return <GAPajakKendaraanDashboard />;
+    }
+    // GA Monitoring Pajak - Tambahan
+    if (currentPage === "/ga/pajak/pbb") {
+      return <GAPajakPBBDashboard />;
+    }
+    if (currentPage === "/ga/pajak/iuran-keanggotaan") {
+      return <GAIuranKeanggotaanDashboard />;
+    }
+    // GA Master Aset
+    if (currentPage === "/ga/aset/master") {
+      return <GAMasterAsetDashboard />;
     }
     if (currentPage === "/ga/legalitas/monitoring") {
       return <GALegalitasPerusahaanDashboard />;
@@ -1317,6 +1386,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/operational/general/kpi/list") {
       return <GeneralListKPIDashboard />;
+    }
+    // Operational General Kendaraan
+    if (currentPage === "/operational/general/kendaraan/pengajuan-driver") {
+      return <GeneralKendaraanPengajuanDriver />;
+    }
+    if (currentPage === "/operational/general/kendaraan/logbook-driver") {
+      return <GeneralKendaraanLogbookDriver />;
+    }
+    if (currentPage === "/operational/general/kendaraan/approval-driver") {
+      return <GeneralKendaraanApprovalDriver />;
     }
     if (currentPage === "/operational/general/voucher/dashboard") {
       return <GeneralVoucherDashboard />;

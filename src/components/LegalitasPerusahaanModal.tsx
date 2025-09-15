@@ -5,9 +5,11 @@ export interface LegalitasForm {
   noDokumen: string;
   tanggalMulai: string; // yyyy-mm-dd
   tanggalBerakhir: string; // yyyy-mm-dd
-  status: 'Aktif' | 'Segera Perpanjang' | 'Kadaluarsa';
-  lkpm: 'On Schedule' | 'Late' | 'N/A';
+  status: 'Pengajuan' | 'Proses' | 'Selesai';
+  penerbit: string;
   keterangan?: string;
+  dokumenUrl?: string; // object URL for uploaded file (local demo)
+  dokumenName?: string;
 }
 
 interface LegalitasPerusahaanModalProps {
@@ -32,9 +34,11 @@ const LegalitasPerusahaanModal: React.FC<LegalitasPerusahaanModalProps> = ({
     noDokumen: '',
     tanggalMulai: '',
     tanggalBerakhir: '',
-    status: 'Aktif',
-    lkpm: 'On Schedule',
+    status: 'Pengajuan',
+    penerbit: '',
     keterangan: '',
+    dokumenUrl: '',
+    dokumenName: '',
   });
 
   useEffect(() => {
@@ -45,9 +49,11 @@ const LegalitasPerusahaanModal: React.FC<LegalitasPerusahaanModalProps> = ({
           noDokumen: '',
           tanggalMulai: '',
           tanggalBerakhir: '',
-          status: 'Aktif',
-          lkpm: 'On Schedule',
+          status: 'Pengajuan',
+          penerbit: '',
           keterangan: '',
+          dokumenUrl: '',
+          dokumenName: '',
         }
       );
     }
@@ -97,6 +103,16 @@ const LegalitasPerusahaanModal: React.FC<LegalitasPerusahaanModalProps> = ({
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Penerbit</label>
+              <input
+                name="penerbit"
+                value={form.penerbit}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Contoh: OSS, Kementerian, Pemda"
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
               <input
                 type="date"
@@ -124,23 +140,27 @@ const LegalitasPerusahaanModal: React.FC<LegalitasPerusahaanModalProps> = ({
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
               >
-                <option value="Aktif">Aktif</option>
-                <option value="Segera Perpanjang">Segera Perpanjang</option>
-                <option value="Kadaluarsa">Kadaluarsa</option>
+                <option value="Pengajuan">Pengajuan</option>
+                <option value="Proses">Proses</option>
+                <option value="Selesai">Selesai</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status LKPM</label>
-              <select
-                name="lkpm"
-                value={form.lkpm}
-                onChange={handleChange}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen</label>
+              <input
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const url = URL.createObjectURL(file);
+                    setForm((prev) => ({ ...prev, dokumenUrl: url, dokumenName: file.name }));
+                  }
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
-                <option value="On Schedule">On Schedule</option>
-                <option value="Late">Late</option>
-                <option value="N/A">N/A</option>
-              </select>
+              />
+              {form.dokumenName && (
+                <p className="mt-1 text-xs text-gray-600">Terunggah: {form.dokumenName}</p>
+              )}
             </div>
           </div>
           <div>
