@@ -62,9 +62,10 @@ const OperationalMainDashboard: React.FC = () => {
   const todayStandbyHours = 42;
   const monthStandbyHours = 920;
   const formatRupiah = (num: number) =>
-    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(
-      num
-    );
+    new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(num);
   const todayCost = todayStandbyHours * standbyRatePerHour;
   const monthCost = monthStandbyHours * standbyRatePerHour;
   return (
@@ -201,7 +202,7 @@ const OperationalMainDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600 font-medium">
                   Akumulatif Man Power
                 </p>
-                <p className="text-3xl font-bold text-gray-900">1.234</p>
+                <p className="text-3xl font-bold text-gray-900">1.234.000.00</p>
                 <p className="text-sm text-gray-500 font-medium">
                   YTD (Jan – Sep)
                 </p>

@@ -10,13 +10,15 @@ interface PerformanceBondItem {
   biaya: number; // Rp
   kollateral: number; // Rp
   masaBerlaku: string; // YYYY-MM-DD
+  documentName?: string;
+  documentUrl?: string;
 }
 
 const MonitoringPerformanceBond: React.FC = () => {
   const [items, setItems] = useState<PerformanceBondItem[]>([
-    { id: crypto.randomUUID(), noTender: "TN-010", noBidbond: "PB-2025-001", penerbit: "Bank D", biaya: 3200000, kollateral: 75000000, masaBerlaku: "2026-03-31" },
-    { id: crypto.randomUUID(), noTender: "TN-011", noBidbond: "PB-2025-002", penerbit: "Bank E", biaya: 2100000, kollateral: 45000000, masaBerlaku: "2025-11-30" },
-    { id: crypto.randomUUID(), noTender: "TN-012", noBidbond: "PB-2025-003", penerbit: "Asuransi F", biaya: 2800000, kollateral: 60000000, masaBerlaku: "2026-01-15" },
+    { id: crypto.randomUUID(), noTender: "TN-010", noBidbond: "PB-2025-001", penerbit: "Bank D", biaya: 3200000, kollateral: 75000000, masaBerlaku: "2026-03-31", documentName: "pb_TN-010.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-010" },
+    { id: crypto.randomUUID(), noTender: "TN-011", noBidbond: "PB-2025-002", penerbit: "Bank E", biaya: 2100000, kollateral: 45000000, masaBerlaku: "2025-11-30", documentName: "pb_TN-011.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-011" },
+    { id: crypto.randomUUID(), noTender: "TN-012", noBidbond: "PB-2025-003", penerbit: "Asuransi F", biaya: 2800000, kollateral: 60000000, masaBerlaku: "2026-01-15", documentName: "pb_TN-012.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Performance%20Bond%20TN-012" },
   ]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -34,8 +36,11 @@ const MonitoringPerformanceBond: React.FC = () => {
     biaya: 0,
     kollateral: 0,
     masaBerlaku: "",
+    documentName: undefined,
+    documentUrl: undefined,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof PerformanceBondItem, string>>>({});
+  const [formFile, setFormFile] = useState<File | null>(null);
 
   // delete state
   const [showDelete, setShowDelete] = useState(false);
@@ -94,6 +99,13 @@ const MonitoringPerformanceBond: React.FC = () => {
     }
     setShowForm(false);
     setEditing(null);
+    setFormFile(null);
+  };
+
+  const onRowUpload = (item: PerformanceBondItem, file: File | null) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setItems((prev) => prev.map((it) => (it.id === item.id ? { ...it, documentName: file.name, documentUrl: url } : it)));
   };
 
   const askDelete = (item: PerformanceBondItem) => {
@@ -196,6 +208,7 @@ const MonitoringPerformanceBond: React.FC = () => {
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Biaya (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Kollateral (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Masa Berlaku</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Dokumen</th>
                   <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -216,7 +229,26 @@ const MonitoringPerformanceBond: React.FC = () => {
                     <td className="px-3 py-2">{it.kollateral.toLocaleString("id-ID")}</td>
                     <td className="px-3 py-2">{new Date(it.masaBerlaku).toLocaleDateString("id-ID")}</td>
                     <td className="px-3 py-2">
+                      {it.documentUrl ? (
+                        <a href={it.documentUrl} download={it.documentName || "performance_bond_document"} className="text-blue-700 hover:underline inline-flex items-center gap-1">
+                          <FileText className="h-3.5 w-3.5" /> Download
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-3 text-xs">
+                        <label className="text-green-700 hover:underline cursor-pointer">
+                          Upload
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => onRowUpload(it, e.target.files ? e.target.files[0] : null)}
+                          />
+                        </label>
+                        <span className="text-gray-300">|</span>
                         <button className="text-blue-700 hover:underline" onClick={() => openEdit(it)}>Edit</button>
                         <span className="text-gray-300">|</span>
                         <button className="text-red-700 hover:underline" onClick={() => askDelete(it)}>Hapus</button>
@@ -292,6 +324,26 @@ const MonitoringPerformanceBond: React.FC = () => {
                 <label className="block text-xs text-gray-700 mb-1">Masa Berlaku <span className="text-red-500">*</span></label>
                 <input type="date" value={form.masaBerlaku} onChange={(e) => { setForm((f) => ({ ...f, masaBerlaku: e.target.value })); if (errors.masaBerlaku) setErrors((pr) => ({ ...pr, masaBerlaku: undefined })); }} className={`w-full px-3 py-2 border rounded-lg ${errors.masaBerlaku ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} />
                 {errors.masaBerlaku && <p className="text-xs text-red-600 mt-1">{errors.masaBerlaku}</p>}
+              </div>
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Upload Dokumen (PDF/Gambar)</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => {
+                    const f = e.target.files ? e.target.files[0] : null;
+                    setFormFile(f);
+                    if (f) {
+                      setForm((prev) => ({ ...prev, documentName: f.name, documentUrl: URL.createObjectURL(f) }));
+                    } else {
+                      setForm((prev) => ({ ...prev, documentName: undefined, documentUrl: undefined }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 border rounded-lg border-gray-200"
+                />
+                {form.documentName && (
+                  <p className="text-[11px] text-gray-500 mt-1">Terpilih: {form.documentName}</p>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-200 bg-gray-50">

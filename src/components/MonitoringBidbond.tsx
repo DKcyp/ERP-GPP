@@ -10,13 +10,15 @@ interface BidbondItem {
   biaya: number; // Rp
   kollateral: number; // Rp
   masaBerlaku: string; // YYYY-MM-DD
+  documentName?: string;
+  documentUrl?: string;
 }
 
 const MonitoringBidbond: React.FC = () => {
   const [items, setItems] = useState<BidbondItem[]>([
-    { id: crypto.randomUUID(), noTender: "TN-001", noBidbond: "BB-2025-001", penerbit: "Bank A", biaya: 2500000, kollateral: 50000000, masaBerlaku: "2025-12-31" },
-    { id: crypto.randomUUID(), noTender: "TN-002", noBidbond: "BB-2025-002", penerbit: "Bank B", biaya: 1750000, kollateral: 30000000, masaBerlaku: "2025-10-15" },
-    { id: crypto.randomUUID(), noTender: "TN-003", noBidbond: "BB-2025-003", penerbit: "Asuransi C", biaya: 2000000, kollateral: 40000000, masaBerlaku: "2026-01-20" },
+    { id: crypto.randomUUID(), noTender: "TN-001", noBidbond: "BB-2025-001", penerbit: "Bank A", biaya: 2500000, kollateral: 50000000, masaBerlaku: "2025-12-31", documentName: "bidbond_TN-001.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Bidbond%20TN-001" },
+    { id: crypto.randomUUID(), noTender: "TN-002", noBidbond: "BB-2025-002", penerbit: "Bank B", biaya: 1750000, kollateral: 30000000, masaBerlaku: "2025-10-15", documentName: "bidbond_TN-002.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Bidbond%20TN-002" },
+    { id: crypto.randomUUID(), noTender: "TN-003", noBidbond: "BB-2025-003", penerbit: "Asuransi C", biaya: 2000000, kollateral: 40000000, masaBerlaku: "2026-01-20", documentName: "bidbond_TN-003.pdf", documentUrl: "data:text/plain;charset=utf-8,Dummy%20Bidbond%20TN-003" },
   ]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -34,8 +36,11 @@ const MonitoringBidbond: React.FC = () => {
     biaya: 0,
     kollateral: 0,
     masaBerlaku: "",
+    documentName: undefined,
+    documentUrl: undefined,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof BidbondItem, string>>>({});
+  const [formFile, setFormFile] = useState<File | null>(null);
 
   // delete state
   const [showDelete, setShowDelete] = useState(false);
@@ -94,6 +99,14 @@ const MonitoringBidbond: React.FC = () => {
     }
     setShowForm(false);
     setEditing(null);
+    setFormFile(null);
+  };
+
+  // Per-row upload handler
+  const onRowUpload = (item: BidbondItem, file: File | null) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setItems((prev) => prev.map((it) => (it.id === item.id ? { ...it, documentName: file.name, documentUrl: url } : it)));
   };
 
   const askDelete = (item: BidbondItem) => {
@@ -196,6 +209,7 @@ const MonitoringBidbond: React.FC = () => {
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Biaya (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Kollateral (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Masa Berlaku</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Dokumen</th>
                   <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -216,7 +230,26 @@ const MonitoringBidbond: React.FC = () => {
                     <td className="px-3 py-2">{it.kollateral.toLocaleString("id-ID")}</td>
                     <td className="px-3 py-2">{new Date(it.masaBerlaku).toLocaleDateString("id-ID")}</td>
                     <td className="px-3 py-2">
+                      {it.documentUrl ? (
+                        <a href={it.documentUrl} download={it.documentName || "bidbond_document"} className="text-blue-700 hover:underline inline-flex items-center gap-1">
+                          <FileText className="h-3.5 w-3.5" /> Download
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-3 text-xs">
+                        <label className="text-green-700 hover:underline cursor-pointer">
+                          Upload
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            onChange={(e) => onRowUpload(it, e.target.files ? e.target.files[0] : null)}
+                          />
+                        </label>
+                        <span className="text-gray-300">|</span>
                         <button className="text-blue-700 hover:underline" onClick={() => openEdit(it)}>Edit</button>
                         <span className="text-gray-300">|</span>
                         <button className="text-red-700 hover:underline" onClick={() => askDelete(it)}>Hapus</button>
@@ -292,6 +325,26 @@ const MonitoringBidbond: React.FC = () => {
                 <label className="block text-xs text-gray-700 mb-1">Masa Berlaku <span className="text-red-500">*</span></label>
                 <input type="date" value={form.masaBerlaku} onChange={(e) => { setForm((f) => ({ ...f, masaBerlaku: e.target.value })); if (errors.masaBerlaku) setErrors((pr) => ({ ...pr, masaBerlaku: undefined })); }} className={`w-full px-3 py-2 border rounded-lg ${errors.masaBerlaku ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} />
                 {errors.masaBerlaku && <p className="text-xs text-red-600 mt-1">{errors.masaBerlaku}</p>}
+              </div>
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Upload Dokumen (PDF/Gambar)</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => {
+                    const f = e.target.files ? e.target.files[0] : null;
+                    setFormFile(f);
+                    if (f) {
+                      setForm((prev) => ({ ...prev, documentName: f.name, documentUrl: URL.createObjectURL(f) }));
+                    } else {
+                      setForm((prev) => ({ ...prev, documentName: undefined, documentUrl: undefined }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 border rounded-lg border-gray-200"
+                />
+                {form.documentName && (
+                  <p className="text-[11px] text-gray-500 mt-1">Terpilih: {form.documentName}</p>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 p-3 border-t border-gray-200 bg-gray-50">

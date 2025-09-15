@@ -8,6 +8,7 @@ interface LegalitasItem {
   jenisDokumen: string;
   masaBerlaku: string; // YYYY-MM-DD
   uploadNames: string[]; // store selected file names
+  uploadUrls?: string[]; // store object URLs for download
   status: "Pengajuan" | "Proses" | "Closed";
   keterangan?: string;
 }
@@ -28,6 +29,7 @@ const MonitoringLegalitasPerusahaan: React.FC = () => {
     jenisDokumen: "",
     masaBerlaku: "",
     uploadNames: [],
+    uploadUrls: [],
     status: "Pengajuan",
     keterangan: "",
   });
@@ -44,18 +46,18 @@ const MonitoringLegalitasPerusahaan: React.FC = () => {
   // Seed dummy data on first load
   useEffect(() => {
     const dummy: LegalitasItem[] = [
-      { id: "D1", noDokumen: "AKTA-001/2023", jenisDokumen: "Akta Pendirian", masaBerlaku: "2026-12-31", uploadNames: ["akta_pendirian.pdf"], status: "Closed", keterangan: "Dokumen lengkap" },
-      { id: "D2", noDokumen: "SIUP-002/2024", jenisDokumen: "SIUP", masaBerlaku: "2025-11-30", uploadNames: ["siup.pdf", "lampiran.pdf"], status: "Proses", keterangan: "Perpanjangan" },
-      { id: "D3", noDokumen: "NIB-003/2022", jenisDokumen: "NIB", masaBerlaku: "2027-01-15", uploadNames: ["nib.pdf"], status: "Closed", keterangan: "Aktif" },
-      { id: "D4", noDokumen: "NPWP-004/2020", jenisDokumen: "NPWP", masaBerlaku: "2030-05-20", uploadNames: [], status: "Closed", keterangan: "Tetap" },
-      { id: "D5", noDokumen: "TDP-005/2021", jenisDokumen: "TDP", masaBerlaku: "2026-08-10", uploadNames: ["tdp.pdf"], status: "Pengajuan", keterangan: "Update alamat" },
-      { id: "D6", noDokumen: "IZLOC-006/2024", jenisDokumen: "Izin Lokasi", masaBerlaku: "2025-12-31", uploadNames: ["izin_lokasi.pdf"], status: "Proses", keterangan: "Menunggu verifikasi" },
-      { id: "D7", noDokumen: "IZUSAHA-007/2023", jenisDokumen: "Izin Usaha", masaBerlaku: "2026-03-31", uploadNames: ["izin_usaha.pdf"], status: "Closed", keterangan: "Aktif" },
-      { id: "D8", noDokumen: "MHKM-008/2022", jenisDokumen: "SK Menkumham", masaBerlaku: "2032-09-01", uploadNames: ["sk_menkumham.pdf"], status: "Closed", keterangan: "Perubahan direksi" },
-      { id: "D9", noDokumen: "HALAL-009/2024", jenisDokumen: "Sertifikat Halal", masaBerlaku: "2025-07-01", uploadNames: ["sertifikat_halal.pdf"], status: "Proses", keterangan: "Audit dijadwalkan" },
-      { id: "D10", noDokumen: "ISO-010/2023", jenisDokumen: "ISO 9001", masaBerlaku: "2026-10-05", uploadNames: ["iso9001.pdf"], status: "Closed", keterangan: "Re-sertifikasi" },
-      { id: "D11", noDokumen: "PKP-011/2019", jenisDokumen: "PKP", masaBerlaku: "2030-01-01", uploadNames: [], status: "Closed", keterangan: "Tetap" },
-      { id: "D12", noDokumen: "NDA-012/2025", jenisDokumen: "Perjanjian/NDA", masaBerlaku: "2026-02-28", uploadNames: ["nda_vendor.pdf"], status: "Pengajuan", keterangan: "Vendor baru" },
+      { id: "D1", noDokumen: "AKTA-001/2023", jenisDokumen: "Akta Pendirian", masaBerlaku: "2026-12-31", uploadNames: ["akta_pendirian.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,Dokumen%20AKTA-001"], status: "Closed", keterangan: "Dokumen lengkap" },
+      { id: "D2", noDokumen: "SIUP-002/2024", jenisDokumen: "SIUP", masaBerlaku: "2025-11-30", uploadNames: ["siup.pdf", "lampiran.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,SIUP%20002","data:text/plain;charset=utf-8,Lampiran%20SIUP%20002"], status: "Proses", keterangan: "Perpanjangan" },
+      { id: "D3", noDokumen: "NIB-003/2022", jenisDokumen: "NIB", masaBerlaku: "2027-01-15", uploadNames: ["nib.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,NIB%20003"], status: "Closed", keterangan: "Aktif" },
+      { id: "D4", noDokumen: "NPWP-004/2020", jenisDokumen: "NPWP", masaBerlaku: "2030-05-20", uploadNames: [], uploadUrls: [], status: "Closed", keterangan: "Tetap" },
+      { id: "D5", noDokumen: "TDP-005/2021", jenisDokumen: "TDP", masaBerlaku: "2026-08-10", uploadNames: ["tdp.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,TDP%20005"], status: "Pengajuan", keterangan: "Update alamat" },
+      { id: "D6", noDokumen: "IZLOC-006/2024", jenisDokumen: "Izin Lokasi", masaBerlaku: "2025-12-31", uploadNames: ["izin_lokasi.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,Izin%20Lokasi%20006"], status: "Proses", keterangan: "Menunggu verifikasi" },
+      { id: "D7", noDokumen: "IZUSAHA-007/2023", jenisDokumen: "Izin Usaha", masaBerlaku: "2026-03-31", uploadNames: ["izin_usaha.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,Izin%20Usaha%20007"], status: "Closed", keterangan: "Aktif" },
+      { id: "D8", noDokumen: "MHKM-008/2022", jenisDokumen: "SK Menkumham", masaBerlaku: "2032-09-01", uploadNames: ["sk_menkumham.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,SK%20Menkumham%20008"], status: "Closed", keterangan: "Perubahan direksi" },
+      { id: "D9", noDokumen: "HALAL-009/2024", jenisDokumen: "Sertifikat Halal", masaBerlaku: "2025-07-01", uploadNames: ["sertifikat_halal.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,Sertifikat%20Halal%20009"], status: "Proses", keterangan: "Audit dijadwalkan" },
+      { id: "D10", noDokumen: "ISO-010/2023", jenisDokumen: "ISO 9001", masaBerlaku: "2026-10-05", uploadNames: ["iso9001.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,ISO%209001%20010"], status: "Closed", keterangan: "Re-sertifikasi" },
+      { id: "D11", noDokumen: "PKP-011/2019", jenisDokumen: "PKP", masaBerlaku: "2030-01-01", uploadNames: [], uploadUrls: [], status: "Closed", keterangan: "Tetap" },
+      { id: "D12", noDokumen: "NDA-012/2025", jenisDokumen: "Perjanjian/NDA", masaBerlaku: "2026-02-28", uploadNames: ["nda_vendor.pdf"], uploadUrls: ["data:text/plain;charset=utf-8,NDA%20012"], status: "Pengajuan", keterangan: "Vendor baru" },
     ];
     setItems(dummy);
   }, []);
@@ -212,7 +214,7 @@ const MonitoringLegalitasPerusahaan: React.FC = () => {
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No Dokumen</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Jenis Dokumen</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Masa Berlaku</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Upload</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Dokumen</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Status</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Keterangan</th>
                   <th className="px-3 py-2 text-center text-xs font-semibold text-gray-900">Aksi</th>
@@ -231,11 +233,45 @@ const MonitoringLegalitasPerusahaan: React.FC = () => {
                     <td className="px-3 py-2 font-medium text-gray-900">{it.noDokumen}</td>
                     <td className="px-3 py-2">{it.jenisDokumen}</td>
                     <td className="px-3 py-2">{new Date(it.masaBerlaku).toLocaleDateString("id-ID")}</td>
-                    <td className="px-3 py-2">{it.uploadNames.length > 0 ? it.uploadNames.join(", ") : "-"}</td>
+                    <td className="px-3 py-2">
+                      {it.uploadNames.length > 0 ? (
+                        <div className="space-y-1">
+                          {it.uploadNames.map((name, i) => (
+                            it.uploadUrls && it.uploadUrls[i] ? (
+                              <div key={i}>
+                                <a href={it.uploadUrls[i]} download={name} className="text-blue-700 hover:underline inline-flex items-center gap-1">
+                                  <FileText className="h-3.5 w-3.5" /> {name}
+                                </a>
+                              </div>
+                            ) : (
+                              <div key={i} className="text-gray-600">{name}</div>
+                            )
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
                     <td className="px-3 py-2">{it.status}</td>
                     <td className="px-3 py-2">{it.keterangan || "-"}</td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-3 text-xs">
+                        <label className="text-green-700 hover:underline cursor-pointer">
+                          Upload
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            multiple
+                            className="hidden"
+                            onChange={(e) => {
+                              const files = e.target.files ? Array.from(e.target.files) : [];
+                              const names = files.map((f) => f.name);
+                              const urls = files.map((f) => URL.createObjectURL(f));
+                              setItems((prev) => prev.map((row) => row.id === it.id ? { ...row, uploadNames: names, uploadUrls: urls } : row));
+                            }}
+                          />
+                        </label>
+                        <span className="text-gray-300">|</span>
                         <button className="text-blue-700 hover:underline" onClick={() => openEdit(it)}>Edit</button>
                         <span className="text-gray-300">|</span>
                         <button className="text-red-700 hover:underline" onClick={() => askDelete(it)}>Hapus</button>
@@ -299,8 +335,10 @@ const MonitoringLegalitasPerusahaan: React.FC = () => {
                 <div>
                   <label className="block text-xs text-gray-700 mb-1">Upload Dokumen</label>
                   <input type="file" accept="image/*,.pdf" multiple onChange={(e) => {
-                    const files = e.target.files ? Array.from(e.target.files).map((f) => f.name) : [];
-                    setForm((f) => ({ ...f, uploadNames: files }));
+                    const files = e.target.files ? Array.from(e.target.files) : [];
+                    const names = files.map((f) => f.name);
+                    const urls = files.map((f) => URL.createObjectURL(f));
+                    setForm((f) => ({ ...f, uploadNames: names, uploadUrls: urls }));
                   }} className="w-full px-3 py-2 border rounded-lg border-gray-200" />
                   {form.uploadNames.length > 0 && (
                     <ul className="mt-1 space-y-1">

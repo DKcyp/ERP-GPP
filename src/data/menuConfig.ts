@@ -369,11 +369,6 @@ export const marketingMenu: MenuSection[] = [
     icon: "Monitor",
     items: [
       {
-        title: "Monitoring Marketing",
-        icon: "BarChart3",
-        path: "/marketing/monitoring/marketing",
-      },
-      {
         title: "Monitoring Dokumen - Bidbond",
         icon: "FileSignature",
         path: "/marketing/monitoring/dokumen/bidbond",
