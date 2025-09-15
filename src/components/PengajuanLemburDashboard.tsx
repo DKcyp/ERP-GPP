@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import LemburModal, { LemburFormData } from "./LemburModal";
-import ConfirmActionModal from "./ConfirmActionModal";
-import { ArrowUp, Check, X } from "lucide-react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUp,
+} from "lucide-react";
 
 interface LemburData {
   id: string;
@@ -15,17 +23,16 @@ interface LemburData {
   attachmentName?: string;
 }
 
-const LemburDashboard: React.FC = () => {
+const PengajuanLemburDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<LemburData | null>(null);
   const [sortField, setSortField] = useState<keyof LemburData | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmType, setConfirmType] = useState<"approve" | "reject" | null>(null);
-  const [selectedItem, setSelectedItem] = useState<LemburData | null>(null);
 
   // Sample data matching the image
   const [lemburData, setLemburData] = useState<LemburData[]>([
@@ -149,30 +156,16 @@ const LemburDashboard: React.FC = () => {
     }
   };
 
-  const handleApprove = (lembur: LemburData) => {
-    setSelectedItem(lembur);
-    setConfirmType("approve");
-    setConfirmOpen(true);
+  const handleDeleteClick = (lembur: LemburData) => {
+    setItemToDelete(lembur);
+    setDeleteModalOpen(true);
   };
 
-  const handleReject = (lembur: LemburData) => {
-    setSelectedItem(lembur);
-    setConfirmType("reject");
-    setConfirmOpen(true);
-  };
-
-  const handleConfirmAction = () => {
-    if (!selectedItem || !confirmType) return;
-    if (confirmType === "approve") {
-      // TODO: Integrate approve action with backend/state as needed
-      console.log("Approved:", selectedItem);
-    } else if (confirmType === "reject") {
-      // TODO: Integrate reject action with backend/state as needed
-      console.log("Rejected:", selectedItem);
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      setLemburData((prev) => prev.filter((l) => l.id !== itemToDelete.id));
+      setItemToDelete(null);
     }
-    // reset selection
-    setSelectedItem(null);
-    setConfirmType(null);
   };
 
   // Filter data based on search criteria
@@ -220,7 +213,16 @@ const LemburDashboard: React.FC = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Lembur</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Pengajuan Lembur
+            </h1>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 flex items-center space-x-2 text-sm"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Tambah</span>
+            </button>
           </div>
         </div>
       </div>
@@ -404,18 +406,18 @@ const LemburDashboard: React.FC = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         <button
-                          onClick={() => handleApprove(item)}
-                          className="p-1.5 bg-green-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-green-700"
-                          title="Approve"
+                          onClick={() => setIsModalOpen(true)}
+                          className="p-1.5 bg-yellow-500 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-yellow-600"
+                          title="Edit"
                         >
-                          <Check className="h-3.5 w-3.5" />
+                          <Edit className="h-3.5 w-3.5" />
                         </button>
                         <button
-                          onClick={() => handleReject(item)}
+                          onClick={() => handleDeleteClick(item)}
                           className="p-1.5 bg-red-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-red-700"
-                          title="Reject"
+                          title="Delete"
                         >
-                          <X className="h-3.5 w-3.5" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>
@@ -473,23 +475,15 @@ const LemburDashboard: React.FC = () => {
         onSave={handleAddLembur}
       />
 
-      {/* Confirm Action Modal */}
-      <ConfirmActionModal
-        isOpen={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={handleConfirmAction}
-        title={confirmType === "approve" ? "Konfirmasi Approve" : "Konfirmasi Reject"}
-        message={
-          confirmType === "approve"
-            ? `Apakah Anda yakin ingin meng-approve lembur ${selectedItem?.namaDriver}?`
-            : `Apakah Anda yakin ingin me-reject lembur ${selectedItem?.namaDriver}?`
-        }
-        confirmLabel={confirmType === "approve" ? "Ya, Approve" : "Ya, Reject"}
-        confirmColor={confirmType === "approve" ? "green" : "red"}
-        Icon={confirmType === "approve" ? Check : X}
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDelete?.namaDriver}
       />
     </div>
   );
 };
 
-export default LemburDashboard;
+export default PengajuanLemburDashboard;

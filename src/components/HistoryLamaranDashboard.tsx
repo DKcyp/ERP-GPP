@@ -22,7 +22,7 @@ interface HistoryLamaranData {
   no: number;
   nik: string;
   nama: string;
-  kelurahan: string;
+  posisi: string;
   minatPekerjaan: string;
   tanggalLamar: string;
   status: "Terima" | "Tolak";
@@ -46,7 +46,7 @@ const HistoryLamaranDashboard: React.FC = () => {
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Sample data matching the image
+  // Sample data
   const [historyLamaranData, setHistoryLamaranData] = useState<
     HistoryLamaranData[]
   >([
@@ -55,7 +55,7 @@ const HistoryLamaranDashboard: React.FC = () => {
       no: 1,
       nik: "3313154213200001",
       nama: "Nafi",
-      kelurahan: "p1",
+      posisi: "Operator Produksi",
       minatPekerjaan: "-",
       tanggalLamar: "01-01-2025",
       status: "Terima",
@@ -65,7 +65,7 @@ const HistoryLamaranDashboard: React.FC = () => {
       no: 2,
       nik: "3313154213200001",
       nama: "Alvian",
-      kelurahan: "p1",
+      posisi: "Admin Gudang",
       minatPekerjaan: "-",
       tanggalLamar: "02-01-2025",
       status: "Tolak",
@@ -75,7 +75,7 @@ const HistoryLamaranDashboard: React.FC = () => {
       no: 3,
       nik: "3313154213200001",
       nama: "Dani",
-      kelurahan: "p1",
+      posisi: "Quality Control",
       minatPekerjaan: "-",
       tanggalLamar: "03-01-2025",
       status: "Tolak",
@@ -85,7 +85,7 @@ const HistoryLamaranDashboard: React.FC = () => {
       no: 4,
       nik: "3313154213200001",
       nama: "Arva",
-      kelurahan: "p1",
+      posisi: "Technician",
       minatPekerjaan: "-",
       tanggalLamar: "03-01-2025",
       status: "Tolak",
@@ -95,7 +95,7 @@ const HistoryLamaranDashboard: React.FC = () => {
       no: 5,
       nik: "3313154213200001",
       nama: "Yohanes",
-      kelurahan: "p1",
+      posisi: "Driver",
       minatPekerjaan: "-",
       tanggalLamar: "04-01-2025",
       status: "Terima",
@@ -399,11 +399,11 @@ const HistoryLamaranDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("kelurahan")}
+                    onClick={() => handleSort("posisi")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Posisi</span>
-                      {sortField === "kelurahan" && (
+                      {sortField === "posisi" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -485,7 +485,7 @@ const HistoryLamaranDashboard: React.FC = () => {
                       {item.nama}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
-                      {item.kelurahan}
+                      {item.posisi}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
                       {item.minatPekerjaan}
