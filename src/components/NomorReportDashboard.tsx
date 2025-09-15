@@ -110,11 +110,11 @@ const NomorReportDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">NOMOR REPORT</h1>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">REPORT</h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Monitoring Personnel</span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Nomor Report</span>
+                <span className="text-blue-600 font-medium">Report</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -130,12 +130,12 @@ const NomorReportDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cari Nomor Report</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Cari Report</label>
               <div className="relative">
                 <input
                   type="text"
                   className="block w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                  placeholder="Masukkan nomor report..."
+                  placeholder="Masukkan report..."
                   value={searchNomor}
                   onChange={(e) => setSearchNomor(e.target.value)}
                 />
@@ -343,8 +343,8 @@ const NomorReportDashboard: React.FC = () => {
         {/* Modal Konfirmasi Hapus */}
         <ConfirmDeleteModal
           isOpen={showDelete}
-          title="Hapus Nomor Report?"
-          message={deleteTarget ? `Apakah Anda yakin ingin menghapus Nomor Report ${deleteTarget.nomorReport} (Personil: ${deleteTarget.personil})?` : ''}
+          title="Hapus Report?"
+          message={deleteTarget ? `Apakah Anda yakin ingin menghapus Report ${deleteTarget.nomorReport} (Personil: ${deleteTarget.personil})?` : ''}
           onClose={() => setShowDelete(false)}
           onConfirm={confirmDelete}
         />
