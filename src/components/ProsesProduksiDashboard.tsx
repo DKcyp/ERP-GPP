@@ -542,10 +542,10 @@ const ProsesProduksiDashboard: React.FC = () => {
                     Tgl Penerimaan Report Teknisi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Tanggal Approval Teknisi
+                    Tgl Approval Teknisi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Tanggal Approval BAST
+                    Tgl Approval BAST
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Tgl Penerimaan Final Report
