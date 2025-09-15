@@ -191,6 +191,11 @@ const createGeneralMenu = (role: string): MenuSection => ({
           path: `/${role}/general/cuti/approve`,
         },
         {
+          title: "Pengajuan Perjalanan Dinas",
+          icon: "Plane",
+          path: `/${role}/general/absensi/pengajuan-perjalanan-dinas`,
+        },
+        {
           title: "PengajuanLembur",
           icon: "Clock",
           path: "/hrd/general/absensi/pengajuan-lembur",
