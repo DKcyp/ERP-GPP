@@ -9,14 +9,10 @@ import {
   Trash2,
   Calendar,
 } from "lucide-react";
-import LegalitasPerusahaanModal, {
-  LegalitasForm,
-} from "./LegalitasPerusahaanModal";
+import LegalitasPerusahaanModal, { LegalitasForm } from "./LegalitasPerusahaanModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-interface LegalitasItem extends LegalitasForm {
-  id: string;
-}
+interface LegalitasItem extends LegalitasForm { id: string }
 
 const seedData = (): LegalitasItem[] => [
   {
@@ -25,8 +21,8 @@ const seedData = (): LegalitasItem[] => [
     noDokumen: "812/NIB/2024",
     tanggalMulai: "2024-01-01",
     tanggalBerakhir: "2027-01-01",
-    status: "Aktif",
-    lkpm: "On Schedule",
+    status: "Selesai",
+    penerbit: "OSS",
     keterangan: "Valid",
   },
   {
@@ -35,8 +31,8 @@ const seedData = (): LegalitasItem[] => [
     noDokumen: "SIUP-221/2023",
     tanggalMulai: "2023-06-01",
     tanggalBerakhir: "2026-06-01",
-    status: "Aktif",
-    lkpm: "On Schedule",
+    status: "Proses",
+    penerbit: "Pemda",
   },
   {
     id: "3",
@@ -44,36 +40,30 @@ const seedData = (): LegalitasItem[] => [
     noDokumen: "TDP-900/2022",
     tanggalMulai: "2022-03-15",
     tanggalBerakhir: "2025-03-15",
-    status: "Segera Perpanjang",
-    lkpm: "Late",
+    status: "Pengajuan",
+    penerbit: "Kementerian",
     keterangan: "Perpanjang 1 bulan lagi",
   },
 ];
 
 const statusPill = (status: LegalitasItem["status"]) => {
   switch (status) {
-    case "Aktif":
+    case "Pengajuan":
+      return "bg-amber-100 text-amber-800 border-amber-200";
+    case "Proses":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "Selesai":
       return "bg-green-100 text-green-800 border-green-200";
-    case "Segera Perpanjang":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "Kadaluarsa":
-      return "bg-red-100 text-red-800 border-red-200";
     default:
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
 };
 
-const lkpmPill = (lkpm: LegalitasItem["lkpm"]) => {
-  switch (lkpm) {
-    case "On Schedule":
-      return "bg-blue-100 text-blue-800 border-blue-200";
-    case "Late":
-      return "bg-red-100 text-red-800 border-red-200";
-    case "N/A":
-      return "bg-gray-100 text-gray-800 border-gray-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
+const daysUntil = (dateStr: string) => {
+  const now = new Date();
+  const target = new Date(dateStr);
+  const ms = target.getTime() - now.getTime();
+  return Math.ceil(ms / (1000 * 60 * 60 * 24));
 };
 
 const GALegalitasPerusahaanDashboard: React.FC = () => {
@@ -83,7 +73,7 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [lkpmFilter, setLkpmFilter] = useState("");
+  // LKPM dihilangkan
 
   // Data
   const [data, setData] = useState<LegalitasItem[]>(seedData());
@@ -116,9 +106,6 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
       const matchesStatus = statusFilter
         ? d.status === (statusFilter as LegalitasItem["status"])
         : true;
-      const matchesLkpm = lkpmFilter
-        ? d.lkpm === (lkpmFilter as LegalitasItem["lkpm"])
-        : true;
 
       const start = dateFrom ? new Date(dateFrom) : null;
       const end = dateTo ? new Date(dateTo) : null;
@@ -126,11 +113,9 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
       const matchesDate =
         (!start || docEnd >= start) && (!end || docEnd <= end);
 
-      return (
-        matchesJenis && matchesNo && matchesStatus && matchesLkpm && matchesDate
-      );
+      return matchesJenis && matchesNo && matchesStatus && matchesDate;
     });
-  }, [data, searchJenis, searchNo, statusFilter, lkpmFilter, dateFrom, dateTo]);
+  }, [data, searchJenis, searchNo, statusFilter, dateFrom, dateTo]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -280,26 +265,9 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs bg-white"
               >
                 <option value="">Semua</option>
-                <option value="Aktif">Aktif</option>
-                <option value="Segera Perpanjang">Segera Perpanjang</option>
-                <option value="Kadaluarsa">Kadaluarsa</option>
-              </select>
-            </div>
-
-            {/* LKPM */}
-            <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Status LKPM
-              </label>
-              <select
-                value={lkpmFilter}
-                onChange={(e) => setLkpmFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs bg-white"
-              >
-                <option value="">Semua</option>
-                <option value="On Schedule">On Schedule</option>
-                <option value="Late">Late</option>
-                <option value="N/A">N/A</option>
+                <option value="Pengajuan">Pengajuan</option>
+                <option value="Proses">Proses</option>
+                <option value="Selesai">Selesai</option>
               </select>
             </div>
 
@@ -359,12 +327,8 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
                     Berlaku s.d
                   </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    Status
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
-                    LKPM
-                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Status</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Penerbit</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
                     Keterangan
                   </th>
@@ -404,9 +368,27 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
                       {new Date(item.tanggalMulai).toLocaleDateString("id-ID")}
                     </td>
                     <td className="px-2 py-1 text-gray-700">
-                      {new Date(item.tanggalBerakhir).toLocaleDateString(
-                        "id-ID"
-                      )}
+                      <div className="flex items-center gap-2">
+                        <span>{new Date(item.tanggalBerakhir).toLocaleDateString("id-ID")}</span>
+                        {(() => {
+                          const d = daysUntil(item.tanggalBerakhir);
+                          if (d < 0) {
+                            return (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 text-rose-800 border border-rose-200">
+                                Kadaluarsa
+                              </span>
+                            );
+                          }
+                          if (d <= 90) {
+                            return (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 border border-amber-200">
+                                {d} hari lagi
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
                     </td>
                     <td className="px-2 py-1">
                       <span
@@ -417,15 +399,7 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-2 py-1">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${lkpmPill(
-                          item.lkpm
-                        )}`}
-                      >
-                        {item.lkpm}
-                      </span>
-                    </td>
+                    <td className="px-2 py-1 text-gray-700">{item.penerbit || '-'}</td>
                     <td className="px-2 py-1 text-gray-700">
                       {item.keterangan || "-"}
                     </td>
@@ -550,8 +524,10 @@ const GALegalitasPerusahaanDashboard: React.FC = () => {
                 tanggalMulai: editingItem.tanggalMulai,
                 tanggalBerakhir: editingItem.tanggalBerakhir,
                 status: editingItem.status,
-                lkpm: editingItem.lkpm,
+                penerbit: editingItem.penerbit,
                 keterangan: editingItem.keterangan,
+                dokumenName: editingItem.dokumenName,
+                dokumenUrl: editingItem.dokumenUrl,
               }
             : null
         }

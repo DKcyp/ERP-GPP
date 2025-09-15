@@ -37,43 +37,42 @@ const InsentifMarketingDashboard: React.FC = () => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
-  const data: InsentifItem[] = useMemo(
-    () => [
-      {
-        id: "1",
-        soNumber: "SO001",
-        client: "Client A",
-        invoiceValue: 25000000,
-        margin: 12,
-        jobDesc: "Maintenance Server",
-        yearOfContract: 2025,
-        typeContract: "On Call",
-        paymentDate: "2025-01-31",
-        commission: 1250000,
-        remarks: "Pembayaran termin 1",
-        approval: "Menunggu",
-        periodPembayaran: "Jan 2025",
-      },
-      {
-        id: "2",
-        soNumber: "SO023",
-        client: "Client B",
-        invoiceValue: 50000000,
-        margin: 10,
-        jobDesc: "Network Setup",
-        yearOfContract: 2025,
-        typeContract: "Tender",
-        paymentDate: "2025-02-15",
-        commission: 2500000,
-        remarks: "Full payment",
-        approval: "Approve",
-        periodPembayaran: "Feb 2025",
-      },
-    ],
-    []
-  );
+  const [items, setItems] = useState<InsentifItem[]>([
+    {
+      id: "1",
+      soNumber: "SO001",
+      client: "Client A",
+      invoiceValue: 25000000,
+      margin: 12,
+      jobDesc: "Maintenance Server",
+      yearOfContract: 2025,
+      typeContract: "On Call",
+      paymentDate: "2025-01-31",
+      commission: 1250000,
+      remarks: "Pembayaran termin 1",
+      approval: "Menunggu",
+      periodPembayaran: "Jan 2025",
+    },
+    {
+      id: "2",
+      soNumber: "SO023",
+      client: "Client B",
+      invoiceValue: 50000000,
+      margin: 10,
+      jobDesc: "Network Setup",
+      yearOfContract: 2025,
+      typeContract: "Tender",
+      paymentDate: "2025-02-15",
+      commission: 2500000,
+      remarks: "Full payment",
+      approval: "Approve",
+      periodPembayaran: "Feb 2025",
+    },
+  ]);
 
-  const filtered = data.filter((row) => {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const filtered = items.filter((row) => {
     const okSO = row.soNumber.toLowerCase().includes(qSO.toLowerCase());
     const okClient = row.client.toLowerCase().includes(qClient.toLowerCase());
     const t = new Date(row.paymentDate).getTime();
@@ -82,6 +81,30 @@ const InsentifMarketingDashboard: React.FC = () => {
     const okDate = t >= f && t <= to;
     return okSO && okClient && okDate;
   });
+
+  const allVisibleSelected = filtered.length > 0 && filtered.every((r) => selectedIds.includes(r.id));
+  const someVisibleSelected = filtered.some((r) => selectedIds.includes(r.id));
+
+  const toggleSelectAllVisible = () => {
+    if (allVisibleSelected) {
+      // remove all visible from selection
+      setSelectedIds((prev) => prev.filter((id) => !filtered.some((r) => r.id === id)));
+    } else {
+      // add all visible
+      const visibleIds = filtered.map((r) => r.id);
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleIds])));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const approveSelected = () => {
+    if (selectedIds.length === 0) return;
+    setItems((prev) => prev.map((it) => (selectedIds.includes(it.id) ? { ...it, approval: "Approve" } : it)));
+    setSelectedIds([]);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -165,6 +188,14 @@ const InsentifMarketingDashboard: React.FC = () => {
           <table className="w-full text-xs">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="px-2 py-2 text-left w-8">
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectAllVisible}
+                    aria-checked={allVisibleSelected && !someVisibleSelected ? "mixed" : undefined}
+                  />
+                </th>
                 <th className="px-2 py-2 text-left">SO Number</th>
                 <th className="px-2 py-2 text-left">Client</th>
                 <th className="px-2 py-2 text-left">Invoice Value</th>
@@ -182,6 +213,13 @@ const InsentifMarketingDashboard: React.FC = () => {
             <tbody className="divide-y divide-gray-100">
               {filtered.map((row, idx) => (
                 <tr key={row.id} className={idx % 2 === 0 ? "bg-white" : "bg-gray-25"}>
+                  <td className="px-2 py-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(row.id)}
+                      onChange={() => toggleOne(row.id)}
+                    />
+                  </td>
                   <td className="px-2 py-2 font-medium text-gray-900">{row.soNumber}</td>
                   <td className="px-2 py-2 text-gray-800">{row.client}</td>
                   <td className="px-2 py-2 text-gray-800">{currency(row.invoiceValue)}</td>
@@ -202,11 +240,24 @@ const InsentifMarketingDashboard: React.FC = () => {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={12} className="px-2 py-6 text-center text-gray-500">Tidak ada data</td>
+                  <td colSpan={13} className="px-2 py-6 text-center text-gray-500">Tidak ada data</td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+        {/* Footer actions */}
+        <div className="flex items-center justify-between bg-white rounded-2xl shadow border border-gray-100 p-4">
+          <div className="text-xs text-gray-600">Dipilih: <span className="font-semibold">{selectedIds.length}</span> baris</div>
+          <div className="space-x-2">
+            <button
+              onClick={approveSelected}
+              disabled={selectedIds.length === 0}
+              className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <CheckCircle className="h-4 w-4 mr-1" /> Approve
+            </button>
+          </div>
         </div>
       </div>
     </div>

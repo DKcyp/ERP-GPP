@@ -76,6 +76,27 @@ const createGeneralMenu = (role: string): MenuSection => ({
       ],
     },
     {
+      title: "Kendaraan",
+      icon: "Car",
+      items: [
+        {
+          title: "Pengajuan Driver",
+          icon: "FilePlus",
+          path: `/${role}/general/kendaraan/pengajuan-driver`,
+        },
+        {
+          title: "Logbook Driver",
+          icon: "Notebook",
+          path: `/${role}/general/kendaraan/logbook-driver`,
+        },
+        {
+          title: "Approval Driver",
+          icon: "CheckCircle",
+          path: `/${role}/general/kendaraan/approval-driver`,
+        },
+      ],
+    },
+    {
       title: "Budget",
       icon: "Wallet",
       items: [
@@ -434,7 +455,13 @@ export const gaMenu: MenuSection[] = [
     directPath: "/ga/dashboard",
   },
   {
-    title: "Monitoring Pajak Kendaraan",
+    title: "Master Aset",
+    icon: "Boxes",
+    items: [],
+    directPath: "/ga/aset/master",
+  },
+  {
+    title: "Monitoring Pajak GA",
     icon: "Car",
     subSections: [
       {
@@ -453,6 +480,28 @@ export const gaMenu: MenuSection[] = [
           },
         ],
       },
+      {
+        title: "PBB",
+        icon: "FileText",
+        items: [
+          {
+            title: "PBB",
+            icon: "FileText",
+            path: "/ga/pajak/pbb",
+          },
+        ],
+      },
+      {
+        title: "Iuran Keanggotaan",
+        icon: "Users",
+        items: [
+          {
+            title: "Iuran Keanggotaan",
+            icon: "Users",
+            path: "/ga/pajak/iuran-keanggotaan",
+          },
+        ],
+      },
     ],
   },
   {
@@ -461,12 +510,12 @@ export const gaMenu: MenuSection[] = [
     items: [],
     directPath: "/ga/legalitas/monitoring",
   },
-  {
-    title: "GA Performance",
-    icon: "Gauge",
-    items: [],
-    directPath: "/ga/performance",
-  },
+  // {
+  //   title: "GA Performance",
+  //   icon: "Gauge",
+  //   items: [],
+  //   directPath: "/ga/performance",
+  // },
   {
     title: "Monitoring Sarana dan Prasarana",
     icon: "Building2",
@@ -509,22 +558,22 @@ export const gaMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Monitoring ATK",
-    icon: "Package",
-    items: [
-      {
-        title: "Monitoring Stok ATK",
-        icon: "Package",
-        path: "/ga/atk/monitoring-stok",
-      },
-      {
-        title: "Pengajuan ATK dari User",
-        icon: "FilePlus",
-        path: "/ga/atk/pengajuan",
-      },
-    ],
-  },
+  // {
+  //   title: "Monitoring ATK",
+  //   icon: "Package",
+  //   items: [
+  //     {
+  //       title: "Monitoring Stok ATK",
+  //       icon: "Package",
+  //       path: "/ga/atk/monitoring-stok",
+  //     },
+  //     {
+  //       title: "Pengajuan ATK dari User",
+  //       icon: "FilePlus",
+  //       path: "/ga/atk/pengajuan",
+  //     },
+  //   ],
+  // },
   {
     title: "Monitoring IT",
     icon: "Server",
@@ -536,15 +585,15 @@ export const gaMenu: MenuSection[] = [
       },
       { title: "Trouble Shoot", icon: "Bug", path: "/ga/it/troubleshoot" },
       {
-        title: "Maintenance Perangkat Device",
+        title: "Maintenance Rutin",
         icon: "Cpu",
         path: "/ga/it/maintenance-device",
       },
-      {
-        title: "Monitoring Server",
-        icon: "Server",
-        path: "/ga/it/monitoring-server",
-      },
+      // {
+      //   title: "Monitoring Server",
+      //   icon: "Server",
+      //   path: "/ga/it/monitoring-server",
+      // },
     ],
   },
   createGeneralMenu("ga"),
@@ -2142,82 +2191,9 @@ export const proconMenu: MenuSection[] = [
         path: "/marketing/sales-order/dashboard",
       },
       {
-        title: "Kick Off Meeting",
-        icon: "Users",
-        path: "/marketing/kontrak-deal/dashboard",
-      },
-      {
         title: "Insentif Marketing",
         icon: "Award",
         path: "/marketing/insentif-marketing/dashboard",
-      },
-    ],
-  },
-  {
-    title: "Operasional",
-    icon: "Settings",
-    items: [
-      {
-        title: "HPP Turunan",
-        icon: "Calculator",
-        path: "/operational/hpp-turunan/dashboard",
-      },
-      {
-        title: "Proses Produksi",
-        icon: "Cog",
-        path: "/operational/produksi/proses",
-      },
-      {
-        title: "Timesheet",
-        icon: "Clock",
-        path: "/operational/timesheet/dashboard",
-      },
-      {
-        title: "Report",
-        icon: "FileText",
-        path: "/operational/produksi/dashboard",
-      },
-    ],
-  },
-  {
-    title: "Procurement",
-    icon: "ShoppingCart",
-    items: [
-      {
-        title: "Dashboard Purchase Request",
-        icon: "LayoutDashboard",
-        path: "/procon/purchase-request/dashboard",
-      },
-      {
-        title: "Proses Purchase Request",
-        icon: "FilePlus",
-        path: "/procon/purchase-request/proses",
-      },
-      {
-        title: "Approval Purchase Request",
-        icon: "CheckCircle",
-        path: "/procon/purchase-request/approval",
-      },
-    ],
-  },
-  {
-    title: "Finance",
-    icon: "DollarSign",
-    items: [
-      {
-        title: "Dashboard AR",
-        icon: "LayoutDashboard",
-        path: "/finance/ar/dashboard",
-      },
-      {
-        title: "Bukti Kas Keluar",
-        icon: "FilePlus",
-        path: "/finance/kas/bukti-kas-keluar",
-      },
-      {
-        title: "Bukti Bank Keluar",
-        icon: "CheckCircle",
-        path: "/finance/bank/bukti-bank-keluar",
       },
     ],
   },
