@@ -11,13 +11,16 @@ import {
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface ReportRecord {
-  personil: string; // Nama Personil
-  tanggalPermintaan: string; // ISO date
-  nomorReport: string; // Nomor Report
-  noSO: string; // No SO
-  namaProject: string; // Nama Project
+  personil: string; // Nama Personil (dari pegawai pertama)
+  tanggalPermintaan: string; // Tanggal MOB (ISO)
+  nomorReport: string; // Nomor Kontrak
+  noSO: string; // SO Turunan
+  namaProject: string; // Jenis Pekerjaan
   lokasiKerja: string; // Lokasi Kerja
   namaInspector: string; // Nama Inspector
+  tanggalDemob?: string; // Tanggal Demob (ISO)
+  qtyBekerja?: number; // Jumlah Qty yang Bekerja
+  keterangan?: string; // Keterangan
 }
 
 // (optional) constants for filter dropdowns can be added later if needed
@@ -187,6 +190,9 @@ const NomorReportDashboard: React.FC = () => {
       namaProject: jenisPekerjaan.trim(),
       lokasiKerja: form.lokasiKerja.trim(),
       namaInspector: firstPegawai,
+      tanggalDemob,
+      qtyBekerja,
+      keterangan,
     };
     if (!payload.noSO || !payload.nomorReport) {
       alert("SO Induk dan Nomor Kontrak wajib diisi");
@@ -346,26 +352,27 @@ const NomorReportDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama Personil
+                    SO Turunan
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tanggal Permintaan
+                    Jenis Pekerjaan
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nomor Report
+                    Tanggal MOB
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    No SO
+                    Nomor Kontrak
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama Project
+                    Tanggal Demob
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Qty Bekerja
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Lokasi Kerja
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama Inspector
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
@@ -374,15 +381,6 @@ const NomorReportDashboard: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {displayed.map((row, idx) => (
                   <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {row.personil}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {formatDate(row.tanggalPermintaan)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {row.nomorReport}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {row.noSO}
                     </td>
@@ -390,10 +388,22 @@ const NomorReportDashboard: React.FC = () => {
                       {row.namaProject}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {row.lokasiKerja}
+                      {row.tanggalPermintaan ? formatDate(row.tanggalPermintaan) : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {row.namaInspector}
+                      {row.nomorReport}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.tanggalDemob ? formatDate(row.tanggalDemob) : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {typeof row.qtyBekerja === 'number' ? row.qtyBekerja : '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.lokasiKerja}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 max-w-xs truncate" title={row.keterangan || ''}>
+                      {row.keterangan || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                       <div className="inline-flex items-center space-x-2">
@@ -418,8 +428,8 @@ const NomorReportDashboard: React.FC = () => {
           </div>
         </div>
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
                 <h2 className="text-xl font-bold text-gray-900">
                   {editing ? "Edit Report" : "Tambah Report"}
@@ -431,7 +441,7 @@ const NomorReportDashboard: React.FC = () => {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-6 space-y-6 overflow-y-auto">
                 {/* Top form - 2 columns */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* SO Induk */}
@@ -444,7 +454,7 @@ const NomorReportDashboard: React.FC = () => {
                       onChange={(e) => setSoInduk(e.target.value)}
                       className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
                     >
-                      <option value="">Pilih SO Induk</option>
+                      <option value="">Pilih SO Turunan</option>
                       {soOptions.map((opt) => (
                         <option key={opt} value={opt}>
                           {opt}
@@ -529,11 +539,15 @@ const NomorReportDashboard: React.FC = () => {
 
                 {/* Lokasi Kerja */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Lokasi Kerja</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Lokasi Kerja
+                  </label>
                   <input
                     type="text"
                     value={form.lokasiKerja}
-                    onChange={(e) => setForm({ ...form, lokasiKerja: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, lokasiKerja: e.target.value })
+                    }
                     placeholder="Masukkan lokasi kerja..."
                     className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
                   />
@@ -566,9 +580,6 @@ const NomorReportDashboard: React.FC = () => {
                           </th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Kualifikasi
-                          </th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Gaji
                           </th>
                         </tr>
                       </thead>
@@ -618,18 +629,6 @@ const NomorReportDashboard: React.FC = () => {
                                 <option value="Middle">Middle</option>
                                 <option value="Junior">Junior</option>
                               </select>
-                            </td>
-                            <td className="px-4 py-2">
-                              <input
-                                type="text"
-                                inputMode="numeric"
-                                value={r.gaji}
-                                onChange={(e) =>
-                                  handleGajiChange(idx, e.target.value)
-                                }
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Rp 0"
-                              />
                             </td>
                           </tr>
                         ))}
