@@ -509,9 +509,6 @@ const ResignDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Surat Resign
                   </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    BA
-                  </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">EC</th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Aksi
@@ -566,18 +563,6 @@ const ResignDashboard: React.FC = () => {
                           title={item.attachmentSuratResignName}
                         >
                           {item.attachmentSuratResignName}
-                        </span>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-blue-600">
-                      {item.attachmentBAName ? (
-                        <span
-                          className="underline cursor-pointer"
-                          title={item.attachmentBAName}
-                        >
-                          {item.attachmentBAName}
                         </span>
                       ) : (
                         "-"
