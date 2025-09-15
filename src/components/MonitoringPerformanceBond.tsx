@@ -119,7 +119,7 @@ const MonitoringPerformanceBond: React.FC = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ["No Tender", "No Bidbond", "Penerbit", "Biaya", "Kollateral", "Masa Berlaku"];
+    const headers = ["No Tender", "Nama Tender", "Penerbit", "Biaya", "Kollateral", "Masa Berlaku"];
     const rows = filtered.map((it) => [it.noTender, it.noBidbond, it.penerbit, it.biaya, it.kollateral, it.masaBerlaku]);
     const csv = [headers, ...rows]
       .map((r) => r.map((x) => `"${(x ?? "").toString().replace(/"/g, '""')}"`).join(","))
@@ -167,7 +167,7 @@ const MonitoringPerformanceBond: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                placeholder="No Tender / No Bidbond / Penerbit"
+                placeholder="No Tender / Nama Tender / Penerbit"
               />
             </div>
             <div className="space-y-2 flex items-end">
@@ -203,7 +203,7 @@ const MonitoringPerformanceBond: React.FC = () => {
                 <tr>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No Tender</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">No Bidbond</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Nama Tender</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Penerbit</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Biaya (Rp)</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-900">Kollateral (Rp)</th>
@@ -298,8 +298,8 @@ const MonitoringPerformanceBond: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-700 mb-1">No Bidbond <span className="text-red-500">*</span></label>
-                  <input value={form.noBidbond} onChange={(e) => { setForm((f) => ({ ...f, noBidbond: e.target.value })); if (errors.noBidbond) setErrors((pr) => ({ ...pr, noBidbond: undefined })); }} className={`w-full px-3 py-2 border rounded-lg ${errors.noBidbond ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Masukkan No Bidbond" />
+                  <label className="block text-xs text-gray-700 mb-1">Nama Tender <span className="text-red-500">*</span></label>
+                  <input value={form.noBidbond} onChange={(e) => { setForm((f) => ({ ...f, noBidbond: e.target.value })); if (errors.noBidbond) setErrors((pr) => ({ ...pr, noBidbond: undefined })); }} className={`w-full px-3 py-2 border rounded-lg ${errors.noBidbond ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Masukkan Nama Tender" />
                   {errors.noBidbond && <p className="text-xs text-red-600 mt-1">{errors.noBidbond}</p>}
                 </div>
                 <div>
