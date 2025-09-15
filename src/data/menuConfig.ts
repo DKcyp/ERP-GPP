@@ -950,6 +950,12 @@ export const hrdMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "Monitoring Dokumen HRD",
+    icon: "FileText",
+    items: [],
+    directPath: "/hrd/monitoring/dokumen",
+  },
   // {
   //   title: "SPK", // Moved SPK Section to HRD
   //   icon: "FileSignature",

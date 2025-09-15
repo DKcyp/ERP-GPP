@@ -47,6 +47,9 @@ export interface PegawaiFormData {
   attachmentRekening: File | null;
   attachmentIjazah: File | null;
   attachmentDokumen: File | null; // general additional docs
+  // Tugas dan Tanggungjawab
+  tugasTanggungJawab: string;
+  attachmentTugas: File | null;
 }
 
 const PegawaiModal: React.FC<PegawaiModalProps> = ({
@@ -89,6 +92,8 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({
     attachmentRekening: null,
     attachmentIjazah: null,
     attachmentDokumen: null,
+    tugasTanggungJawab: "",
+    attachmentTugas: null,
   });
 
   const [errors, setErrors] = useState<Partial<PegawaiFormData>>({});
@@ -220,6 +225,8 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({
       attachmentRekening: null,
       attachmentIjazah: null,
       attachmentDokumen: null,
+      tugasTanggungJawab: "",
+      attachmentTugas: null,
     });
     setErrors({});
     onClose();
@@ -802,6 +809,38 @@ const PegawaiModal: React.FC<PegawaiModalProps> = ({
                       setFormData((prev) => ({
                         ...prev,
                         attachmentDokumen:
+                          e.target.files && e.target.files[0]
+                            ? e.target.files[0]
+                            : null,
+                      }))
+                    }
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              {/* Tugas dan Tanggungjawab Karyawan */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tugas dan Tanggungjawab Karyawan
+                </label>
+                <textarea
+                  value={formData.tugasTanggungJawab}
+                  onChange={(e) => handleInputChange("tugasTanggungJawab", e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Uraikan tugas dan tanggung jawab utama karyawan"
+                />
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Upload File
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        attachmentTugas:
                           e.target.files && e.target.files[0]
                             ? e.target.files[0]
                             : null,
