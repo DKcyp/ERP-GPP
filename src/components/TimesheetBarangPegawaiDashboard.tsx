@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Clock, File, FileSpreadsheet, FileText, Plus } from "lucide-react";
+import { Clock, File, FileSpreadsheet, FileText, Plus, ArrowUp } from "lucide-react";
 import TimesheetBarangPegawaiModal, { TimesheetFormData } from "./TimesheetBarangPegawaiModal";
 
 interface RowData {
@@ -10,6 +10,23 @@ interface RowData {
   nilaiTimesheet: string;
   mob: string; // DD-MM-YYYY
   demob: string; // DD-MM-YYYY
+}
+
+interface PegawaiData {
+  id: string;
+  no: string;
+  tanggal: string;
+  noSO: string;
+  noSOTurunan: string;
+  namaProyek: string;
+  namaPegawai: string;
+  kualifikasi: string[];
+  mob: string;
+  demob: string;
+  durasi: string;
+  zona: string;
+  nilaiTimesheet: string;
+  statusApproval: string;
 }
 
 const sampleRows: RowData[] = [
@@ -33,10 +50,65 @@ const sampleRows: RowData[] = [
   },
 ];
 
+const samplePegawaiData: PegawaiData[] = [
+  {
+    id: "1",
+    no: "001",
+    tanggal: "15-09-2025",
+    noSO: "SO001",
+    noSOTurunan: "SO001.01",
+    namaProyek: "Proyek A",
+    namaPegawai: "John Doe",
+    kualifikasi: ["Engineer", "Project Manager"],
+    mob: "01-09-2025",
+    demob: "10-09-2025",
+    durasi: "9 hari",
+    zona: "Jakarta",
+    nilaiTimesheet: "Rp 12.000.000",
+    statusApproval: "Approved"
+  },
+  {
+    id: "2",
+    no: "002",
+    tanggal: "15-09-2025",
+    noSO: "SO002",
+    noSOTurunan: "SO002.02",
+    namaProyek: "Proyek B",
+    namaPegawai: "Jane Smith",
+    kualifikasi: ["Senior Engineer"],
+    mob: "03-09-2025",
+    demob: "15-09-2025",
+    durasi: "12 hari",
+    zona: "Surabaya",
+    nilaiTimesheet: "Rp 8.500.000",
+    statusApproval: "Pending"
+  },
+  {
+    id: "3",
+    no: "003",
+    tanggal: "15-09-2025",
+    noSO: "SO003",
+    noSOTurunan: "SO003.01",
+    namaProyek: "Proyek C",
+    namaPegawai: "Bob Wilson",
+    kualifikasi: ["Technician", "Safety Officer"],
+    mob: "05-09-2025",
+    demob: "20-09-2025",
+    durasi: "15 hari",
+    zona: "Bandung",
+    nilaiTimesheet: "Rp 15.000.000",
+    statusApproval: "Rejected"
+  }
+];
+
 const TimesheetBarangPegawaiDashboard: React.FC = () => {
   const [rows, setRows] = useState<RowData[]>(sampleRows);
+  const [pegawaiData, setPegawaiData] = useState<PegawaiData[]>(samplePegawaiData);
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [animateRows, setAnimateRows] = useState(false);
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const filtered = useMemo(() => {
     const s = search.toLowerCase();
@@ -47,6 +119,69 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
         r.namaProyek.toLowerCase().includes(s)
     );
   }, [rows, search]);
+
+  const currentPegawaiData = useMemo(() => {
+    const s = search.toLowerCase();
+    let filtered = pegawaiData.filter(
+      (p) =>
+        p.noSO.toLowerCase().includes(s) ||
+        p.noSOTurunan.toLowerCase().includes(s) ||
+        p.namaProyek.toLowerCase().includes(s) ||
+        p.namaPegawai.toLowerCase().includes(s)
+    );
+
+    // Apply sorting if sortField is set
+    if (sortField) {
+      filtered = filtered.sort((a, b) => {
+        let aValue = a[sortField as keyof PegawaiData];
+        let bValue = b[sortField as keyof PegawaiData];
+        
+        // Handle string comparison
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          aValue = aValue.toLowerCase();
+          bValue = bValue.toLowerCase();
+        }
+        
+        if (aValue < bValue) {
+          return sortDirection === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortDirection === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filtered;
+  }, [pegawaiData, search, sortField, sortDirection]);
+
+  const getStatusColorPegawai = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Trigger animation when component mounts
+  React.useEffect(() => {
+    const timer = setTimeout(() => setAnimateRows(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const handleSave = (data: TimesheetFormData) => {
     const fmt = (iso: string) => {
@@ -145,26 +280,92 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 text-xs">
+          <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">No SO</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">No SO Turunan</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nama Proyek</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nilai Timesheet</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">MOB</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">DEMOB</th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('no')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>No</span>
+                      {sortField === 'no' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('tanggal')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Tanggal</span>
+                      {sortField === 'tanggal' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('noSO')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>No SO</span>
+                      {sortField === 'noSO' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No SO Turunan</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Proyek</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Pegawai</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Kualifikasi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">MOB</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">DEMOB</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Durasi</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Zona</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Timesheet</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Approval</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filtered.map((item, idx) => (
-                  <tr key={item.id} className={`hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
-                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.noSOTurunan}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.namaProyek}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.nilaiTimesheet}</td>
-                    <td className="px-2 py-2 text-xs text-gray-600">{item.mob}</td>
-                    <td className="px-2 py-2 text-xs text-gray-600">{item.demob}</td>
+                {currentPegawaiData.map((item, index) => (
+                  <tr 
+                    key={item.id}
+                    className={`hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
+                    style={{ 
+                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
+                      animationFillMode: 'forwards'
+                    }}
+                  >
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.tanggal}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.noSOTurunan}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaProyek}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.namaPegawai}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      <div className="space-y-1">
+                        {item.kualifikasi.map((kual, idx) => (
+                          <div key={idx} className="flex items-center space-x-1">
+                            <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
+                            <span>{kual}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{item.mob}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.durasi}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{item.zona}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nilaiTimesheet}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColorPegawai(item.statusApproval)}`}>
+                        {item.statusApproval}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
