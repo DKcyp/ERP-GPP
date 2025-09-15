@@ -796,11 +796,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "MinusCircle",
         path: "/hrd/gaji/pendebetan",
       },
-      {
-        title: "Payslip",
-        icon: "FileSignature",
-        path: "/hrd/gaji/payslip",
-      },
+      // {
+      //   title: "Payslip",
+      //   icon: "FileSignature",
+      //   path: "/hrd/gaji/payslip",
+      // },
       // {
       //   title: "History Peminjaman",
       //   icon: "History",
