@@ -391,11 +391,12 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="file"
-                      value={editing.invoice || ""}
                       onChange={(e) =>
-                        setEditing({ ...editing, invoice: e.target.value })
+                        setEditing({
+                          ...editing,
+                          invoice: e.target.files?.[0]?.name || "",
+                        })
                       }
-                      placeholder="Nama file atau link"
                       className="w-full border rounded px-2 py-1.5 text-sm"
                     />
                     <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
@@ -410,11 +411,12 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="file"
-                      value={editing.fakturPajak || ""}
                       onChange={(e) =>
-                        setEditing({ ...editing, fakturPajak: e.target.value })
+                        setEditing({
+                          ...editing,
+                          fakturPajak: e.target.files?.[0]?.name || "",
+                        })
                       }
-                      placeholder="Nama file atau link"
                       className="w-full border rounded px-2 py-1.5 text-sm"
                     />
                     <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
@@ -432,9 +434,11 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <input
                           type="file"
-                          value={editing.ba || ""}
                           onChange={(e) =>
-                            setEditing({ ...editing, ba: e.target.value })
+                            setEditing({
+                              ...editing,
+                              ba: e.target.files?.[0]?.name || "",
+                            })
                           }
                           className="w-full border rounded px-2 py-1.5 text-sm"
                         />
@@ -450,11 +454,10 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <input
                           type="file"
-                          value={editing.timesheet || ""}
                           onChange={(e) =>
                             setEditing({
                               ...editing,
-                              timesheet: e.target.value,
+                              timesheet: e.target.files?.[0]?.name || "",
                             })
                           }
                           className="w-full border rounded px-2 py-1.5 text-sm"
@@ -471,9 +474,11 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <input
                           type="file"
-                          value={editing.report || ""}
                           onChange={(e) =>
-                            setEditing({ ...editing, report: e.target.value })
+                            setEditing({
+                              ...editing,
+                              report: e.target.files?.[0]?.name || "",
+                            })
                           }
                           className="w-full border rounded px-2 py-1.5 text-sm"
                         />
@@ -492,9 +497,11 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <input
                           type="file"
-                          value={editing.do || ""}
                           onChange={(e) =>
-                            setEditing({ ...editing, do: e.target.value })
+                            setEditing({
+                              ...editing,
+                              do: e.target.files?.[0]?.name || "",
+                            })
                           }
                           className="w-full border rounded px-2 py-1.5 text-sm"
                         />
@@ -510,9 +517,11 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <input
                           type="file"
-                          value={editing.lpb || ""}
                           onChange={(e) =>
-                            setEditing({ ...editing, lpb: e.target.value })
+                            setEditing({
+                              ...editing,
+                              lpb: e.target.files?.[0]?.name || "",
+                            })
                           }
                           className="w-full border rounded px-2 py-1.5 text-sm"
                         />
@@ -528,9 +537,11 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <input
                           type="file"
-                          value={editing.rfi || ""}
                           onChange={(e) =>
-                            setEditing({ ...editing, rfi: e.target.value })
+                            setEditing({
+                              ...editing,
+                              rfi: e.target.files?.[0]?.name || "",
+                            })
                           }
                           className="w-full border rounded px-2 py-1.5 text-sm"
                         />
