@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import VendorModal, { VendorFormData } from './VendorModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import VendorPODetailModal from './VendorPODetailModal';
 import { 
   Plus, 
   FileSpreadsheet, 
@@ -8,9 +9,6 @@ import {
   File,
   Edit,
   Trash2,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
   ArrowUp
 } from 'lucide-react';
 
@@ -42,6 +40,10 @@ const MasterVendorDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<MasterVendorData | null>(null);
   const [sortField, setSortField] = useState<keyof MasterVendorData | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isPODetailOpen, setIsPODetailOpen] = useState(false);
+  const [vendorPODetail, setVendorPODetail] = useState<
+    { id: string; namaVendor: string; kodeVendor: string } | null
+  >(null);
 
   // Sample data matching the image
   const [masterVendorData, setMasterVendorData] = useState<MasterVendorData[]>([
@@ -113,7 +115,8 @@ const MasterVendorDashboard: React.FC = () => {
       alamatVendor: formData.alamatVendor,
       picVendor: formData.picVendor,
       noTelp: formData.noTelp,
-      status: formData.status || 'Aktif'
+      status: formData.status || 'Aktif',
+      barang: formData.barang || ''
     };
 
     setMasterVendorData(prev => [newVendor, ...prev.map(v => ({ ...v, no: v.no + 1 }))]);
@@ -153,15 +156,18 @@ const MasterVendorDashboard: React.FC = () => {
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
+    const aRaw = a[sortField] ?? '';
+    const bRaw = b[sortField] ?? '';
+
+    if (typeof aRaw === 'number' && typeof bRaw === 'number') {
+      return sortDirection === 'asc' ? aRaw - bRaw : bRaw - aRaw;
     }
+
+    const aStr = String(aRaw);
+    const bStr = String(bRaw);
+    return sortDirection === 'asc'
+      ? aStr.localeCompare(bStr)
+      : bStr.localeCompare(aStr);
   });
 
   // Pagination logic
@@ -199,7 +205,7 @@ const MasterVendorDashboard: React.FC = () => {
           {/* Search and Filter Section */}
           <div className="space-y-4 mb-6">
             {/* Search Inputs Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               {/* Search Nama Vendor */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
@@ -244,6 +250,22 @@ const MasterVendorDashboard: React.FC = () => {
                     onChange={(e) => setSearchPICVendor(e.target.value)}
                     className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
                     placeholder="Budi Santoso"
+                  />
+                </div>
+              </div>
+
+              {/* Search Barang/Jasa */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Cari Barang/Jasa
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={searchBarang}
+                    onChange={(e) => setSearchBarang(e.target.value)}
+                    className="flex-1 px-2 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-xs"
+                    placeholder="Nama barang atau jasa"
                   />
                 </div>
               </div>
@@ -450,6 +472,20 @@ const MasterVendorDashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center space-x-1">
+                        <button
+                          onClick={() => {
+                            setVendorPODetail({
+                              id: item.id,
+                              namaVendor: item.namaVendor,
+                              kodeVendor: item.kodeVendor,
+                            });
+                            setIsPODetailOpen(true);
+                          }}
+                          className="p-1 bg-emerald-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-emerald-700"
+                          title="Detail PO"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                        </button>
                         <button 
                           onClick={() => setIsModalOpen(true)}
                           className="p-1 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
@@ -524,6 +560,16 @@ const MasterVendorDashboard: React.FC = () => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaVendor}
+      />
+
+      {/* Vendor PO Detail Modal */}
+      <VendorPODetailModal
+        isOpen={isPODetailOpen}
+        onClose={() => {
+          setIsPODetailOpen(false);
+          setVendorPODetail(null);
+        }}
+        vendor={vendorPODetail}
       />
     </div>
   );

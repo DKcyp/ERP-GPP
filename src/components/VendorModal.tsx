@@ -23,6 +23,7 @@ export interface VendorFormData {
   noNPWP: string;
   status: string;
   attachmentLegalitas: File | null;
+  barang: string; // barang/jasa terkait untuk keperluan filter
 }
 
 const VendorModal: React.FC<VendorModalProps> = ({
@@ -46,6 +47,7 @@ const VendorModal: React.FC<VendorModalProps> = ({
     noNPWP: "",
     status: "",
     attachmentLegalitas: null,
+    barang: "",
   });
 
   const [errors, setErrors] = useState<Partial<VendorFormData>>({});
@@ -146,6 +148,7 @@ const VendorModal: React.FC<VendorModalProps> = ({
       noNPWP: "",
       status: "",
       attachmentLegalitas: null,
+      barang: "",
     });
     setErrors({});
     onClose();
@@ -345,6 +348,20 @@ const VendorModal: React.FC<VendorModalProps> = ({
                       {errors.alamatVendor}
                     </p>
                   )}
+                </div>
+                {/* Barang/Jasa terkait */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Barang/Jasa Terkait
+                  </label>
+                  <textarea
+                    value={formData.barang}
+                    onChange={(e) => handleInputChange("barang", e.target.value)}
+                    rows={2}
+                    className="w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none border-gray-200"
+                    placeholder='Contoh: "Peralatan Inspeksi; Alat keselamatan kerja"'
+                  />
+                  <p className="mt-1 text-[11px] text-gray-500">Gunakan tanda ; untuk memisahkan item.</p>
                 </div>
               </div>
 
