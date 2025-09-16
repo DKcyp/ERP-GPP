@@ -178,6 +178,7 @@ import SPDashboard from "./SPDashboard";
 import JadwalRealisasiProgramDashboard from "./JadwalRealisasiProgramDashboard";
 import LegalitasPerusahaanDashboard from "./LegalitasPerusahaanDashboard";
 import QHSEPerformanceDashboard from "./QHSEPerformanceDashboard";
+import QHSEKameraRadiographyDashboard from "./QHSEKameraRadiographyDashboard";
 import RadiographyMonitoringKameraDashboard from "./RadiographyMonitoringKameraDashboard";
 import RadiographySIBPersonnelRadiasiDashboard from "./RadiographySIBPersonnelRadiasiDashboard";
 import RadiographyDosimeterSakuDashboard from "./RadiographyDosimeterSakuDashboard";
@@ -186,9 +187,11 @@ import RadiographyTLDBadgeDashboard from "./RadiographyTLDBadgeDashboard";
 import RadiographyUjiUsapKameraDashboard from "./RadiographyUjiUsapKameraDashboard";
 import RadiographyKontrakSIBDashboard from "./RadiographyKontrakSIBDashboard";
 import MonitoringDaftarAlatUkurDashboard from "./MonitoringDaftarAlatUkurDashboard";
+import QHSEDaftarAlatUkurDashboard from "./QHSEDaftarAlatUkurDashboard";
 import MonitoringPersonnelDashboard from "./MonitoringPersonnelDashboard";
 import TrainingMatrixDashboard from "./TrainingMatrixDashboard";
 import MedicalCheckUpDashboard from "./MedicalCheckUpDashboard";
+import QHSEMedicalCheckUpPersonilDashboard from "./QHSEMedicalCheckUpPersonilDashboard";
 import APDDashboard from "./APDDashboard";
 import NomorReportDashboard from "./NomorReportDashboard";
 import MonitoringPRDashboard from "./MonitoringPRDashboard";
@@ -201,6 +204,8 @@ import MonitoringPBGDashboard from "./MonitoringPBGDashboard";
 import MonitoringRFIDashboard from "./MonitoringRFIDashboard";
 import QHSEMasterKPIDashboard from "./QHSEMasterKPIDashboard";
 import QHSEListKPIDashboard from "./QHSEListKPIDashboard";
+import QHSEKompetensiPersonilDashboard from "./QHSEKompetensiPersonilDashboard";
+import QHSEAlatPelindungDiriDashboard from "./QHSEAlatPelindungDiriDashboard";
 // New QHSE Components
 import KameraDashboard from "./KameraDashboard";
 import SIBPersonilDashboard from "./SIBPersonilDashboard";
@@ -346,6 +351,8 @@ import PembagianAPDRecordDashboard from "./PembagianAPDRecordDashboard";
 import PerundanganK3LDashboard from "./PerundanganK3LDashboard";
 import DaftarIndukDokumenEksternalDashboard from "./DaftarIndukDokumenEksternalDashboard";
 import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDashboard";
+import QHSEKPIDepartmentDashboard from "./QHSEKPIDepartmentDashboard";
+import QHSEKompetensiPerusahaanDashboard from "./QHSEKompetensiPerusahaanDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1608,6 +1615,30 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/dashboard") {
       return <QHSENewDashboard />;
     }
+    // Make The KPI Departemen Here
+    if (currentPage === "/qhse/kpi-department/dashboard") {
+      return <QHSEKPIDepartmentDashboard />;
+    }
+    if (currentPage === "/qhse/kpi-department/master") {
+      return <QHSEMasterKPIDashboard />;
+    } 
+    if (currentPage === "/qhse/kpi-department/list") {
+      return <QHSEListKPIDashboard />;
+    } 
+
+    if (currentPage === "/qhse/kompetensi-perusahaan") {
+      return <QHSEKompetensiPerusahaanDashboard />;
+    }
+
+    if(currentPage === "/qhse/qhse-performance") {
+      return <QHSEPerformanceDashboard />;
+    }
+
+    if(currentPage === "/qhse/kamera-radiography") {
+      return <QHSEKameraRadiographyDashboard />;
+    }
+    
+
     if (currentPage === "/qhse/perizinan-alat") {
       return <PerizinanAlatDashboard />;
     }
@@ -1619,6 +1650,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/monitoring-daftar-alat-ukur") {
       return <MonitoringDaftarAlatUkurDashboard />;
+    }
+    if (currentPage === "/qhse/daftar-alat-ukur") {
+      return <QHSEDaftarAlatUkurDashboard />;
     }
     if (currentPage === "/qhse/monitoring-personnel") {
       return <MonitoringPersonnelDashboard />;
@@ -1632,22 +1666,28 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/monitoring-personnel/apd") {
       return <APDDashboard />;
     }
+    if (currentPage === "/qhse/monitoring-personnel/mcu") {
+      return <MedicalCheckUpDashboard />;
+    }
+    if (currentPage === "/qhse/medical-checkup-personil") {
+      return <QHSEMedicalCheckUpPersonilDashboard />;
+    }
     if (currentPage === "/qhse/monitoring-personnel/nomor-report") {
       return <NomorReportDashboard />;
     }
-    if (currentPage === "/qhse/monitoring/pr") {
+    if (currentPage === "/qhse/monitoring-pr") {
       return <MonitoringPRDashboard />;
     }
-    if (currentPage === "/qhse/monitoring/cash-advance") {
+    if (currentPage === "/qhse/monitoring-cash-advance") {
       return <MonitoringCADashboard />;
     }
-    if (currentPage === "/qhse/monitoring/voucher") {
+    if (currentPage === "/qhse/monitoring-voucher") {
       return <MonitoringVoucherDashboard />;
     }
-    if (currentPage === "/qhse/monitoring/endorse-certificate") {
+    if (currentPage === "/qhse/monitoring-endorse-certificate") {
       return <MonitoringEndorseCertificateDashboard />;
     }
-    if (currentPage === "/qhse/monitoring/reimburse") {
+    if (currentPage === "/qhse/monitoring-reimburse") {
       return <MonitoringReimburseDashboard />;
     }
     if (currentPage === "/qhse/monitoring-gudang/manifest-barang") {
@@ -1757,6 +1797,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/general/kpi/list") {
       return <QHSEListKPIDashboard />;
+    }
+    if (currentPage === "/qhse/kompetensi-personil") {
+      return <QHSEKompetensiPersonilDashboard />;
+    }
+    if (currentPage === "/qhse/alat-pelindung-diri") {
+      return <QHSEAlatPelindungDiriDashboard />;
     }
 
     // Accounting Routes

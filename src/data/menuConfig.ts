@@ -1714,16 +1714,49 @@ export const qhseMenu: MenuSection[] = [
     directPath: "/qhse/dashboard",
   },
   {
+    title: "KPI Department",
+    icon: "BarChart3",
+    items: [
+      {
+        title: "Dashboard KPI Department",
+        icon: "LayoutDashboard",
+        path: "/qhse/kpi-department/dashboard",
+      },
+      {
+        title: "KPI Master",
+        icon: "Database",
+        path: "/qhse/kpi-department/master",
+      },
+      {
+        title: "List KPI",
+        icon: "List",
+        path: "/qhse/kpi-department/list",
+      },
+    ],
+  },
+  {
+    title: "Kompetensi Perusahaan",
+    icon: "Award",
+    items: [],
+    directPath: "/qhse/kompetensi-perusahaan",
+  },
+  {
+    title: "QHSE Performance",
+    icon: "TrendingUp",
+    items: [],
+    directPath: "/qhse/performance",
+  },
+  {
     title: "Legalitas Perusahaan",
     icon: "ShieldCheck",
     items: [],
     directPath: "/qhse/legalitas-perusahaan",
   },
   {
-    title: "Kamera",
+    title: "Kamera Radiography",
     icon: "Camera",
     items: [],
-    directPath: "/qhse/kamera",
+    directPath: "/qhse/kamera-radiography",
   },
   {
     title: "SIB Personil",
@@ -1776,10 +1809,10 @@ export const qhseMenu: MenuSection[] = [
     directPath: "/qhse/hydro-test",
   },
   {
-    title: "Monitoring Daftar Alat Ukur",
-    icon: "ListChecks",
+    title: "Daftar Alat Ukur",
+    icon: "Settings",
     items: [],
-    directPath: "/qhse/monitoring-daftar-alat-ukur",
+    directPath: "/qhse/daftar-alat-ukur",
   },
   {
     title: "Matrix Training",
@@ -1788,10 +1821,22 @@ export const qhseMenu: MenuSection[] = [
     directPath: "/qhse/matrix-training",
   },
   {
-    title: "Pembagian APD Record",
+    title: "Medical Check Up Personil",
+    icon: "Heart",
+    items: [],
+    directPath: "/qhse/medical-checkup-personil",
+  },
+  {
+    title: "Kompetensi Personil",
+    icon: "GraduationCap",
+    items: [],
+    directPath: "/qhse/kompetensi-personil",
+  },
+  {
+    title: "Alat Pelindung Diri (APD)",
     icon: "Shield",
     items: [],
-    directPath: "/qhse/pembagian-apd-record",
+    directPath: "/qhse/alat-pelindung-diri",
   },
   {
     title: "Nomor Report",
