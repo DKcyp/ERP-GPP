@@ -197,6 +197,17 @@ import MonitoringPBGDashboard from "./MonitoringPBGDashboard";
 import MonitoringRFIDashboard from "./MonitoringRFIDashboard";
 import QHSEMasterKPIDashboard from "./QHSEMasterKPIDashboard";
 import QHSEListKPIDashboard from "./QHSEListKPIDashboard";
+// New QHSE Components
+import KameraDashboard from "./KameraDashboard";
+import SIBPersonilDashboard from "./SIBPersonilDashboard";
+import DosisCardDashboard from "./DosisCardDashboard";
+import RadiographyDashboard from "./RadiographyDashboard";
+import ProsesISOTOPDashboard from "./ProsesISOTOPDashboard";
+import RadiographyMonitoringDashboard from "./RadiographyMonitoringDashboard";
+import PengadaanQHSEDashboard from "./PengadaanQHSEDashboard";
+import HydroTestDashboard from "./HydroTestDashboard";
+import MatrixTrainingDashboard from "./MatrixTrainingDashboard";
+import MonitoringReportDashboard from "./MonitoringReportDashboard";
 import ProconApprovalPBGDashboard from "./ProconApprovalPBGDashboard";
 import ISOSystemDaftarIndukDokumenInternalDashboard from "./ISOSystemDaftarIndukDokumenInternalDashboard";
 
@@ -319,6 +330,10 @@ import {
   File,
   CheckCircle,
 } from "lucide-react";
+import PembagianAPDRecordDashboard from "./PembagianAPDRecordDashboard";
+import PerundanganK3LDashboard from "./PerundanganK3LDashboard";
+import DaftarIndukDokumenEksternalDashboard from "./DaftarIndukDokumenEksternalDashboard";
+import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -860,7 +875,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <ApproveSPKDashboard />;
     }
     if (currentPage === "/hrd/monitoring/endorse-certificate") {
-      return <MonitoringEndorseCertificateHRD role="hrd" />;
+      return <MonitoringEndorseCertificateHRD />;
     }
     // HRD General Routes
     if (currentPage === "/hrd/general/kpi/dashboard") {
@@ -1501,7 +1516,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <POJasaDashboard role="management" />; // Pass role prop
     }
     if (currentPage === "/management/po/barang") {
-      return <POBarangDashboard role="management" />;
+      return <POBarangDashboard />;
     }
     // QHSE Routes
     if (currentPage === "/qhse/dashboard") {
@@ -1599,6 +1614,57 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/legalitas-perusahaan") {
       return <LegalitasPerusahaanDashboard />;
+    }
+    // New QHSE Menu Routes
+    if (currentPage === "/qhse/kamera") {
+      return <KameraDashboard />;
+    }
+    if (currentPage === "/qhse/sib-personil") {
+      return <SIBPersonilDashboard />;
+    }
+    if (currentPage === "/qhse/dosis-card") {
+      return <DosisCardDashboard />;
+    }
+    if (currentPage === "/qhse/radiography") {
+      return <RadiographyDashboard />;
+    }
+    if (currentPage === "/qhse/radiography/proses-isotop") {
+      return <ProsesISOTOPDashboard />;
+    }
+    if (currentPage === "/qhse/radiography/monitoring") {
+      return <RadiographyMonitoringDashboard />;
+    }
+    // QHSE Components - Available
+    if (currentPage === "/qhse/pengadaan") {
+      return <PengadaanQHSEDashboard />;
+    }
+    if (currentPage === "/qhse/hydro-test") {
+      return <HydroTestDashboard />;
+    }
+    if (currentPage === "/qhse/matrix-training") {
+      return <MatrixTrainingDashboard />;
+    }
+    // TODO: Implement remaining QHSE components
+    if (currentPage === "/qhse/pembagian-apd-record") {
+      return <PembagianAPDRecordDashboard />;
+    }
+    if (currentPage === "/qhse/nomor-report") {
+      return <NomorReportDashboard />;
+    }
+    if (currentPage === "/qhse/monitoring-report") {
+      return <MonitoringReportDashboard />;
+    }
+    if (currentPage === "/qhse/daftar-induk-dokumen-internal") {
+      return <ISOSystemDaftarIndukDokumenInternalDashboard />;
+    }
+    if (currentPage === "/qhse/perundangan-k3l") {
+      return <PerundanganK3LDashboard />;
+    }
+    if (currentPage === "/qhse/daftar-induk-dokumen-eksternal") {
+      return <DaftarIndukDokumenEksternalDashboard />;
+    }
+    if (currentPage === "/qhse/daftar-induk-rekaman-internal") {
+      return <DaftarIndukRekamanInternalDashboard />;
     }
     if (currentPage === "/qhse/general/kpi/master") {
       return <QHSEMasterKPIDashboard />;

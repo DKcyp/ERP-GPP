@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Clock,
   ShieldCheck,
   AlertTriangle,
   Users,
   CalendarCheck,
-  Bell,
-  X,
 } from "lucide-react";
 
 const QHSENewDashboard: React.FC = () => {
@@ -215,107 +213,124 @@ const QHSENewDashboard: React.FC = () => {
       });
   });
 
-  // Local dismiss state for individual alerts
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
-  const visibleAlerts = alerts.filter((a) => !dismissed.has(a.id));
-  const dismiss = (id: string) =>
-    setDismissed((prev) => new Set([...prev, id]));
+  // Minimal PNotify-like notifier for bottom-right alerts
+  const pnotify = (
+    title: string,
+    text: string,
+    type: "success" | "info" | "warning" | "error" = "info",
+    link?: string
+  ) => {
+    const containerId = "qhse-alert-container";
+    let container = document.getElementById(containerId);
+    if (!container) {
+      container = document.createElement("div");
+      container.id = containerId;
+      container.style.position = "fixed";
+      container.style.bottom = "1rem";
+      container.style.right = "1rem";
+      container.style.zIndex = "9999";
+      container.style.display = "flex";
+      container.style.flexDirection = "column-reverse";
+      container.style.gap = "8px";
+      document.body.appendChild(container);
+    }
 
-  // Draggable position state (persist to localStorage)
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const [pos, setPos] = useState<{ top: number; left: number }>({
-    top: 80,
-    left: 0,
-  });
-  const storageKey = "qhse_alert_panel_pos";
+    const note = document.createElement("div");
+    note.style.padding = "12px 16px";
+    note.style.borderRadius = "12px";
+    note.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+    note.style.color = "#ffffff";
+    note.style.background =
+      type === "success"
+        ? "#10b981"
+        : type === "warning"
+        ? "#f59e0b"
+        : type === "error"
+        ? "#ef4444"
+        : "#3b82f6";
+    note.style.border = "1px solid rgba(255,255,255,0.2)";
+    note.style.maxWidth = "360px";
+    note.style.minWidth = "280px";
+    note.style.cursor = "pointer";
 
-  useEffect(() => {
-    // Restore saved position or set default to top-right
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved) as { top: number; left: number };
-        setPos(parsed);
-        return;
-      }
-    } catch {}
-    // Default place: near top-right
-    const width = panelRef.current?.offsetWidth ?? 384; // w-96 ~ 384px
-    const padding = 24; // ~ right-6
-    const left = Math.max(12, window.innerWidth - width - padding);
-    setPos({ top: 80, left });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const titleEl = document.createElement("div");
+    titleEl.style.fontWeight = "600";
+    titleEl.style.fontSize = "0.9rem";
+    titleEl.style.marginBottom = "4px";
+    titleEl.textContent = title;
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(pos));
-    } catch {}
-  }, [pos]);
+    const textEl = document.createElement("div");
+    textEl.style.fontSize = "0.85rem";
+    textEl.style.opacity = "0.9";
+    textEl.textContent = text;
 
-  // Drag handlers
-  const dragState = useRef<{
-    dragging: boolean;
-    startX: number;
-    startY: number;
-    origTop: number;
-    origLeft: number;
-  }>({ dragging: false, startX: 0, startY: 0, origTop: 0, origLeft: 0 });
+    const actionContainer = document.createElement("div");
+    actionContainer.style.display = "flex";
+    actionContainer.style.justifyContent = "space-between";
+    actionContainer.style.alignItems = "center";
+    actionContainer.style.marginTop = "8px";
 
-  const beginDrag = (clientX: number, clientY: number) => {
-    dragState.current = {
-      dragging: true,
-      startX: clientX,
-      startY: clientY,
-      origTop: pos.top,
-      origLeft: pos.left,
+    if (link) {
+      const actionBtn = document.createElement("button");
+      actionBtn.textContent = "Kerjakan";
+      actionBtn.style.background = "rgba(255,255,255,0.2)";
+      actionBtn.style.color = "#ffffff";
+      actionBtn.style.border = "1px solid rgba(255,255,255,0.3)";
+      actionBtn.style.borderRadius = "6px";
+      actionBtn.style.padding = "4px 12px";
+      actionBtn.style.fontSize = "0.8rem";
+      actionBtn.style.cursor = "pointer";
+      actionBtn.onclick = () => {
+        window.location.href = link;
+      };
+      actionContainer.appendChild(actionBtn);
+    }
+
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "×";
+    closeBtn.style.background = "none";
+    closeBtn.style.border = "none";
+    closeBtn.style.color = "rgba(255,255,255,0.8)";
+    closeBtn.style.fontSize = "1.2rem";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.padding = "0 4px";
+    closeBtn.onclick = () => {
+      note.style.opacity = "0";
+      note.style.transition = "opacity 300ms ease";
+      setTimeout(() => note.remove(), 320);
     };
+    actionContainer.appendChild(closeBtn);
+
+    note.appendChild(titleEl);
+    note.appendChild(textEl);
+    note.appendChild(actionContainer);
+    container.appendChild(note);
+
+    setTimeout(() => {
+      note.style.opacity = "0";
+      note.style.transition = "opacity 300ms ease";
+      setTimeout(() => note.remove(), 320);
+    }, 5000);
   };
 
-  const onMove = (clientX: number, clientY: number) => {
-    if (!dragState.current.dragging) return;
-    const dx = clientX - dragState.current.startX;
-    const dy = clientY - dragState.current.startY;
-    const panelW = panelRef.current?.offsetWidth ?? 380;
-    const panelH = panelRef.current?.offsetHeight ?? 200;
-    const margin = 8;
-    let nextLeft = dragState.current.origLeft + dx;
-    let nextTop = dragState.current.origTop + dy;
-    // clamp to viewport
-    nextLeft = Math.max(
-      margin,
-      Math.min(window.innerWidth - panelW - margin, nextLeft)
-    );
-    nextTop = Math.max(
-      margin,
-      Math.min(window.innerHeight - panelH - margin, nextTop)
-    );
-    setPos({ top: nextTop, left: nextLeft });
-  };
-
+  // Show alerts when component mounts using bottom-right notifications
+  const didNotifyRef = useRef(false);
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => onMove(e.clientX, e.clientY);
-    const handleMouseUp = () => {
-      dragState.current.dragging = false;
-    };
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches && e.touches[0])
-        onMove(e.touches[0].clientX, e.touches[0].clientY);
-    };
-    const handleTouchEnd = () => {
-      dragState.current.dragging = false;
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("touchend", handleTouchEnd);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("touchmove", handleTouchMove as any);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
+    if (didNotifyRef.current) return;
+    didNotifyRef.current = true;
+
+    // Show alerts with delay for better UX
+    alerts.slice(0, 5).forEach((alert, index) => {
+      setTimeout(() => {
+        pnotify(
+          alert.title,
+          alert.message,
+          alert.severity === "critical" ? "error" : "warning",
+          alert.link
+        );
+      }, index * 800);
+    });
+  }, [alerts, pnotify]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -339,74 +354,6 @@ const QHSENewDashboard: React.FC = () => {
               <Clock className="h-4 w-4" />
               <span>Last updated: {today.toLocaleString("id-ID")}</span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating Alerts Panel (Draggable) */}
-      <div
-        ref={panelRef}
-        className="fixed z-50 w-96 max-w-[90vw]"
-        style={{ top: pos.top, left: pos.left }}
-      >
-        <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-          <div
-            className="px-4 py-3 flex items-center justify-between border-b bg-gray-50 cursor-move select-none"
-            onMouseDown={(e) => beginDrag(e.clientX, e.clientY)}
-            onTouchStart={(e) => {
-              const t = e.touches[0];
-              if (t) beginDrag(t.clientX, t.clientY);
-            }}
-          >
-            <div className="flex items-center gap-2 text-gray-800 font-semibold">
-              <Bell className="h-4 w-4 text-blue-600" />
-              Alerts
-              <span className="ml-2 text-xs text-gray-500">
-                {visibleAlerts.length} items
-              </span>
-            </div>
-            <button
-              className="p-1 hover:bg-gray-200 rounded"
-              title="Dismiss"
-              onClick={() => {
-                /* optional: hide panel */
-              }}
-            >
-              <X className="h-4 w-4 text-gray-500" />
-            </button>
-          </div>
-          <div className="max-h-96 overflow-auto divide-y">
-            {visibleAlerts.length === 0 && (
-              <div className="p-4 text-sm text-gray-500">
-                Tidak ada alert saat ini
-              </div>
-            )}
-            {visibleAlerts.map((a) => (
-              <div
-                key={a.id}
-                className={`${
-                  a.severity === "critical" ? "bg-red-500" : "bg-green-500"
-                } text-white rounded-xl mx-3 my-3 p-4 shadow flex items-center justify-between`}
-              >
-                <div className="pr-3">
-                  <div className="font-semibold text-sm">{a.message}</div>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <a
-                    href={a.link || "#"}
-                    className="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-white/90 hover:bg-white text-gray-800 rounded-md shadow"
-                  >
-                    Kerjakan
-                  </a>
-                  <button
-                    onClick={() => dismiss(a.id)}
-                    className="text-white/90 hover:text-white text-sm"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -493,7 +440,7 @@ const QHSENewDashboard: React.FC = () => {
               { category: "Compliant", value: 90, color: "bg-green-500" },
               { category: "Warning", value: 15, color: "bg-yellow-500" },
               { category: "Critical", value: 5, color: "bg-red-500" },
-            ].map((item, index) => (
+            ].map((item) => (
               <div
                 key={item.category}
                 className="flex flex-col items-center space-y-2"

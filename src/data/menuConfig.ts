@@ -1659,183 +1659,128 @@ export const managementMenu: MenuSection[] = [
 
 export const qhseMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
+    title: "Dashboard",
     icon: "Home",
     items: [],
     directPath: "/qhse/dashboard",
   },
-  // {
-  //   title: "Perizinan Alat",
-  //   icon: "Tool",
-  //   items: [],
-  //   directPath: "/qhse/perizinan-alat",
-  // },
   {
-    title: "Kompetensi Perusahaan",
+    title: "Legalitas Perusahaan",
     icon: "ShieldCheck",
     items: [],
     directPath: "/qhse/legalitas-perusahaan",
   },
   {
-    title: "QHSE Performance",
-    icon: "BarChart3",
+    title: "Kamera",
+    icon: "Camera",
     items: [],
-    directPath: "/qhse/performance",
+    directPath: "/qhse/kamera",
   },
   {
-    title: "RADIOGRAPHY",
-    icon: "Camera",
-    subSections: [
+    title: "SIB Personil",
+    icon: "UserCheck",
+    items: [],
+    directPath: "/qhse/sib-personil",
+  },
+  {
+    title: "Dosis Card",
+    icon: "CreditCard",
+    items: [],
+    directPath: "/qhse/dosis-card",
+  },
+  {
+    title: "Radiography",
+    icon: "Zap",
+    items: [
       {
-        title: "Radiography",
-        icon: "Camera",
-        items: [
-          {
-            title: "Monitoring Kamera Radiography",
-            icon: "Camera",
-            path: "/qhse/radiography/monitoring-kamera-radiography",
-          },
-          {
-            title: "Proses Isotop",
-            icon: "UserCheck",
-            path: "/qhse/radiography/sib-personnel-radiasi",
-          },
-
-          {
-            title: "ThermoLuminescent Dosimeter (TLD) Badge",
-            icon: "Tag",
-            path: "/qhse/radiography/tld-badge",
-          },
-          {
-            title: "Uji Usap Kamera",
-            icon: "ClipboardCheck",
-            path: "/qhse/radiography/uji-usap-kamera",
-          },
-        ],
+        title: "Proses ISOTOP",
+        icon: "Atom",
+        path: "/qhse/radiography/proses-isotop",
+      },
+      {
+        title: "Uji Usap Kamera",
+        icon: "ClipboardCheck",
+        path: "/qhse/radiography/uji-usap-kamera",
+      },
+      {
+        title: "TLD",
+        icon: "Tag",
+        path: "/qhse/radiography/tld",
+      },
+      {
+        title: "Monitoring",
+        icon: "Monitor",
+        path: "/qhse/radiography/monitoring",
       },
     ],
   },
-  // {
-  //   title: "Monitoring MCU",
-  //   icon: "HeartPulse",
-  //   items: [],
-  //   directPath: "/qhse/monitoring-mcu",
-  // },
+  {
+    title: "Pengadaan",
+    icon: "ShoppingCart",
+    items: [],
+    directPath: "/qhse/pengadaan",
+  },
+  {
+    title: "Hydro Test",
+    icon: "Droplets",
+    items: [],
+    directPath: "/qhse/hydro-test",
+  },
   {
     title: "Monitoring Daftar Alat Ukur",
     icon: "ListChecks",
     items: [],
     directPath: "/qhse/monitoring-daftar-alat-ukur",
   },
-  // {
-  //   title: "KPI",
-  //   icon: "BarChart",
-  //   items: [
-  //     {
-  //       title: "Master KPI",
-  //       icon: "Database",
-  //       path: "/qhse/general/kpi/master",
-  //     },
-  //     { title: "List KPI", icon: "List", path: "/qhse/general/kpi/list" },
-  //   ],
-  // },
   {
-    title: "Monitoring Personnel",
-    icon: "Users",
-    subSections: [
-      {
-        title: "Monitoring Personnel",
-        icon: "Users",
-        items: [
-          {
-            title: "Training Matrix (Technical and QHSE)",
-            icon: "GraduationCap",
-            path: "/qhse/monitoring-personnel/training-matrix",
-          },
-          {
-            title: "Medical Check Up (MCU)",
-            icon: "HeartPulse",
-            path: "/qhse/monitoring-personnel/mcu",
-          },
-          {
-            title: "Alat Pelindung Diri (APD)",
-            icon: "Shield",
-            path: "/qhse/monitoring-personnel/apd",
-          },
-          {
-            title: "Nomor Report",
-            icon: "FileText",
-            path: "/qhse/monitoring-personnel/nomor-report",
-          },
-        ],
-      },
-    ],
+    title: "Matrix Training",
+    icon: "GraduationCap",
+    items: [],
+    directPath: "/qhse/matrix-training",
   },
   {
-    title: "Monitoring",
+    title: "Pembagian APD Record",
+    icon: "Shield",
+    items: [],
+    directPath: "/qhse/pembagian-apd-record",
+  },
+  {
+    title: "Nomor Report",
+    icon: "FileText",
+    items: [],
+    directPath: "/qhse/nomor-report",
+  },
+  {
+    title: "Monitoring Report",
     icon: "Monitor",
-    items: [
-      {
-        title: "Monitoring Purchase Request (PR)",
-        icon: "ShoppingCart",
-        path: "/qhse/monitoring/pr",
-      },
-      {
-        title: "Monitoring Cash Advance (CA)",
-        icon: "Banknote",
-        path: "/qhse/monitoring/cash-advance",
-      },
-      {
-        title: "Monitoring Voucher",
-        icon: "Ticket",
-        path: "/qhse/monitoring/voucher",
-      },
-      {
-        title: "Monitoring Endorse Certificate",
-        icon: "FileCheck",
-        path: "/qhse/monitoring/endorse-certificate",
-      },
-      {
-        title: "Monitoring Reimburse",
-        icon: "Wallet",
-        path: "/qhse/monitoring/reimburse",
-      },
-    ],
+    items: [],
+    directPath: "/qhse/monitoring-report",
   },
   {
-    title: "Monitoring Gudang",
-    icon: "Boxes",
-    items: [
-      {
-        title: "Monitoring Manifest Barang",
-        icon: "Package",
-        path: "/qhse/monitoring-gudang/manifest-barang",
-      },
-      {
-        title: "Monitoring Permintaan Barang Gudang (PBG)",
-        icon: "ClipboardList",
-        path: "/qhse/monitoring-gudang/pbg",
-      },
-      {
-        title: "Monitoring Request for Inspection (RFI)",
-        icon: "FileSearch",
-        path: "/qhse/monitoring-gudang/rfi",
-      },
-    ],
+    title: "Daftar Induk Dokumen Internal",
+    icon: "FileText",
+    items: [],
+    directPath: "/qhse/daftar-induk-dokumen-internal",
   },
   {
-    title: "ISO System",
-    icon: "Book",
-    items: [
-      {
-        title: "Daftar Induk Dokumen Internal",
-        icon: "FileText",
-        path: "/qhse/iso/daftar-induk-dokumen-internal",
-      },
-    ],
+    title: "Perundangan K3L",
+    icon: "Scale",
+    items: [],
+    directPath: "/qhse/perundangan-k3l",
   },
-
-  createGeneralMenu("operational"),
+  {
+    title: "Daftar Induk Dokumen Eksternal",
+    icon: "FileCheck",
+    items: [],
+    directPath: "/qhse/daftar-induk-dokumen-eksternal",
+  },
+  {
+    title: "Daftar Induk Rekaman Internal",
+    icon: "Archive",
+    items: [],
+    directPath: "/qhse/daftar-induk-rekaman-internal",
+  },
+  createGeneralMenu("qhse"),
 ];
 
 export const accountingMenu: MenuSection[] = [
