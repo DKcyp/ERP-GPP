@@ -55,8 +55,6 @@ const VendorModal: React.FC<VendorModalProps> = ({
   const kodeGroupSupplierOptions = ["Group A", "Group B", "Group C"];
   const mataUangOptions = ["IDR", "USD", "EUR"];
   const pajakOptions = [
-    "PPH 4 ayat 2",
-    "PPH 21",
     "PPN 11%",
     "PPH 23",
     "Tidak Kena Pajak",
