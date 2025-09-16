@@ -58,6 +58,7 @@ import POBarangDashboard from "./POBarangDashboard";
 import POJasaDashboard from "./POJasaDashboard";
 import ProsesSeleksiSupplierDashboard from "./ProsesSeleksiSupplierDashboard";
 import PODashboard from "./PODashboard";
+import ListPRDashboard from "./ListPRDashboard";
 import DaftarPenerimaanBarangDashboard from "./DaftarPenerimaanBarangDashboard";
 import PurchasingDashboard from "./PurchasingDashboard";
 import InvoiceDashboard from "./InvoiceDashboard";
@@ -660,6 +661,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/pengadaan/po/jasa") {
       return <POJasaDashboard />;
     }
+    if (currentPage === "/pengadaan/po/laporan") {
+      return <ListPRDashboard />;
+    }
     if (currentPage === "/pengadaan/penerimaan/daftar") {
       return <DaftarPenerimaanBarangDashboard />;
     }
@@ -901,7 +905,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <ApproveSPKDashboard />;
     }
     if (currentPage === "/hrd/monitoring/endorse-certificate") {
-      return <MonitoringEndorseCertificateHRD role="hrd" />;
+      return <MonitoringEndorseCertificateHRD />;
     }
     // HRD General Routes
     if (currentPage === "/hrd/general/kpi/dashboard") {

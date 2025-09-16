@@ -160,9 +160,13 @@ const addDaysDdMmYyyy = (dateStr: string, days: number): string => {
   return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
 };
 
-const POBarangDashboard: React.FC = () => {
+interface POBarangDashboardProps {
+  role?: string;
+}
+
+const POBarangDashboard: React.FC<POBarangDashboardProps> = ({ role }) => {
   const { user } = useAuth();
-  const isManagement = user?.role === 'management';
+  const isManagement = role === 'management' || user?.role === 'management';
 
   const [poList, setPoList] = useState<POBarangData[]>(initialPoData);
   const [isEntryPOModalOpen, setIsEntryPOModalOpen] = useState(false);
