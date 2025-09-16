@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, Eye, Clock, Printer, Plus } from 'lucide-react';
+import { ChevronDown, Eye, Clock, Printer, Plus, FileCheck, FilePlus, X, Info } from 'lucide-react';
 import EntryPurchasingRequestModal from './EntryPurchasingRequestModal'; // Import the new modal
 import { EntryPurchasingRequestFormData } from '../types'; // Import the new type
 
@@ -12,16 +12,19 @@ interface PurchasingRequest {
   keterangan: string;
   statusPR: 'Approve' | 'Rejected' | 'Pending'; // Added 'Pending' for form options
   statusPO: 'PO' | '-';
+  statusBA: 'BA' | '-';
 }
 
 const GeneralProsesPurchasingRequest: React.FC = () => {
   const [purchasingRequests, setPurchasingRequests] = useState<PurchasingRequest[]>([
-    { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO' },
-    { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-' },
-    { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-' },
-    { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO' },
-    { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-' },
+    { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
+    { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-', statusBA: '-' },
+    { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-', statusBA: '-' },
+    { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
+    { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-', statusBA: '-' },
   ]);
+
+  const [alert, setAlert] = useState<{ type: 'success' | 'info' | 'warning' | 'error'; message: string } | null>(null);
 
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -71,9 +74,18 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
       // Default statuses for new PR since inputs removed from modal
       statusPR: 'Pending',
       statusPO: '-',
+      statusBA: '-',
     };
     setPurchasingRequests((prev) => [...prev, newRequest]);
     console.log('New Purchasing Request Added:', newRequest);
+  };
+
+  const handleGenerateBA = (id: number) => {
+    setPurchasingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, statusBA: 'BA' } : req)));
+    const pr = purchasingRequests.find((r) => r.id === id);
+    setAlert({ type: 'success', message: `Berita Acara berhasil dibuat untuk PR ${pr?.noPR ?? id}.` });
+    // Auto dismiss after 4 seconds
+    setTimeout(() => setAlert(null), 4000);
   };
 
   const getRowBackgroundColor = (index: number) => {
@@ -96,6 +108,26 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
             Tambah PR
           </button>
         </div>
+
+        {alert && (
+          <div
+            className={`mb-6 rounded-lg border p-3 flex items-start gap-2 ${
+              alert.type === 'success'
+                ? 'border-green-200 bg-green-50 text-green-800'
+                : alert.type === 'error'
+                ? 'border-red-200 bg-red-50 text-red-800'
+                : alert.type === 'warning'
+                ? 'border-yellow-200 bg-yellow-50 text-yellow-800'
+                : 'border-blue-200 bg-blue-50 text-blue-800'
+            }`}
+          >
+            <Info className="h-4 w-4 mt-0.5" />
+            <div className="flex-1 text-sm">{alert.message}</div>
+            <button onClick={() => setAlert(null)} className="rounded p-1 hover:bg-white/50">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
         {/* Filter Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -177,6 +209,9 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     <div className="flex items-center">Status PO <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">Status BA <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">Aksi <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                 </tr>
@@ -215,8 +250,28 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                           {request.statusPO}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          request.statusBA === 'BA' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {request.statusBA}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center space-x-2">
+                          {request.statusBA === 'BA' ? (
+                            <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="BA sudah dibuat">
+                              <FileCheck className="h-4 w-4" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleGenerateBA(request.id)}
+                              className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                              title="Buat BA"
+                            >
+                              <FilePlus className="h-4 w-4" />
+                            </button>
+                          )}
                           {request.statusPO === 'PO' ? (
                             <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors">
                               <Eye className="h-4 w-4" />
@@ -237,7 +292,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     </tr>
                     {expanded.has(request.id) && (
                       <tr className="bg-gray-50">
-                        <td colSpan={10} className="px-6 py-4">
+                        <td colSpan={11} className="px-6 py-4">
                           <div className="border border-gray-200 rounded-lg overflow-hidden">
                             <table className="w-full text-xs">
                               <thead className="bg-gray-100">

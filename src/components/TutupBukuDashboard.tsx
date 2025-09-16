@@ -13,6 +13,14 @@ interface TutupBukuEntry {
   status: 'Closed' | 'Open';
 }
 
+interface HistoryEntry {
+  id: string;
+  action: 'Tutup Buku' | 'Buka Buku';
+  tanggal: string; // yyyy-mm-dd
+  periodeBulan: string;
+  periodeTahun: number;
+}
+
 const TutupBukuDashboard: React.FC = () => {
   const today = new Date();
 
@@ -39,6 +47,17 @@ const TutupBukuDashboard: React.FC = () => {
     { id: '6', tanggalTutup: '2024-01-31', periodeBulan: 'Januari', periodeTahun: 2024, status: 'Closed' },
   ]);
 
+  const [history, setHistory] = useState<HistoryEntry[]>(() =>
+    [
+      { id: 'h1', action: 'Tutup Buku', tanggal: '2024-06-30', periodeBulan: 'Juni', periodeTahun: 2024 },
+      { id: 'h2', action: 'Tutup Buku', tanggal: '2024-05-31', periodeBulan: 'Mei', periodeTahun: 2024 },
+      { id: 'h3', action: 'Tutup Buku', tanggal: '2024-04-30', periodeBulan: 'April', periodeTahun: 2024 },
+      { id: 'h4', action: 'Tutup Buku', tanggal: '2024-03-31', periodeBulan: 'Maret', periodeTahun: 2024 },
+      { id: 'h5', action: 'Tutup Buku', tanggal: '2024-02-29', periodeBulan: 'Februari', periodeTahun: 2024 },
+      { id: 'h6', action: 'Tutup Buku', tanggal: '2024-01-31', periodeBulan: 'Januari', periodeTahun: 2024 },
+    ]
+  );
+
   const months = [
     { value: '1', label: 'Januari' }, { value: '2', label: 'Februari' },
     { value: '3', label: 'Maret' }, { value: '4', label: 'April' },
@@ -61,6 +80,16 @@ const TutupBukuDashboard: React.FC = () => {
         status: 'Closed',
       };
       setDummyData(prev => [newEntry, ...prev]);
+      setHistory(prev => [
+        {
+          id: `h${Date.now()}`,
+          action: 'Tutup Buku',
+          tanggal: newEntry.tanggalTutup,
+          periodeBulan: newEntry.periodeBulan,
+          periodeTahun: newEntry.periodeTahun,
+        },
+        ...prev,
+      ]);
       alert(`Melakukan Tutup Buku untuk periode ${selectedMonthLabel} ${tahun} pada tanggal ${tanggalTutup.toLocaleDateString('id-ID')}`);
     }
   };
@@ -77,6 +106,16 @@ const TutupBukuDashboard: React.FC = () => {
           entry.id === selectedEntryToOpen.id ? { ...entry, status: 'Open' } : entry
         )
       );
+      setHistory(prev => [
+        {
+          id: `h${Date.now()}`,
+          action: 'Buka Buku',
+          tanggal: new Date().toISOString().split('T')[0],
+          periodeBulan: selectedEntryToOpen.periodeBulan,
+          periodeTahun: selectedEntryToOpen.periodeTahun,
+        },
+        ...prev,
+      ]);
       alert(`Membuka kembali buku untuk entri: ${selectedEntryToOpen.id} (${selectedEntryToOpen.periodeBulan} ${selectedEntryToOpen.periodeTahun})`);
       setSelectedEntryToOpen(null);
       setShowBukaTutupBukuConfirmModal(false);
@@ -265,6 +304,44 @@ const TutupBukuDashboard: React.FC = () => {
                     </td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* History Tutup Buku */}
+      <div className="max-w-7xl mx-auto px-6 pb-12">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mt-8">
+          <h3 className="text-2xl font-bold text-gray-900 p-8 pb-4">History Tutup Buku</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode Bulan</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode Tahun</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {history.map((h) => (
+                  <tr key={h.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{new Date(h.tanggal).toLocaleDateString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${h.action === 'Tutup Buku' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                        {h.action}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{h.periodeBulan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{h.periodeTahun}</td>
+                  </tr>
+                ))}
+                {history.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-500">Belum ada history</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

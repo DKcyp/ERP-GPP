@@ -22,6 +22,8 @@ export interface VendorFormData {
   email: string;
   noNPWP: string;
   status: string;
+  attachmentLegalitas: File | null;
+  barang: string; // barang/jasa terkait untuk keperluan filter
 }
 
 const VendorModal: React.FC<VendorModalProps> = ({
@@ -44,6 +46,8 @@ const VendorModal: React.FC<VendorModalProps> = ({
     email: "",
     noNPWP: "",
     status: "",
+    attachmentLegalitas: null,
+    barang: "",
   });
 
   const [errors, setErrors] = useState<Partial<VendorFormData>>({});
@@ -53,8 +57,6 @@ const VendorModal: React.FC<VendorModalProps> = ({
   const kodeGroupSupplierOptions = ["Group A", "Group B", "Group C"];
   const mataUangOptions = ["IDR", "USD", "EUR"];
   const pajakOptions = [
-    "PPH 4 ayat 2",
-    "PPH 21",
     "PPN 11%",
     "PPH 23",
     "Tidak Kena Pajak",
@@ -145,6 +147,8 @@ const VendorModal: React.FC<VendorModalProps> = ({
       email: "",
       noNPWP: "",
       status: "",
+      attachmentLegalitas: null,
+      barang: "",
     });
     setErrors({});
     onClose();
@@ -345,6 +349,20 @@ const VendorModal: React.FC<VendorModalProps> = ({
                     </p>
                   )}
                 </div>
+                {/* Barang/Jasa terkait */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Barang/Jasa Terkait
+                  </label>
+                  <textarea
+                    value={formData.barang}
+                    onChange={(e) => handleInputChange("barang", e.target.value)}
+                    rows={2}
+                    className="w-full px-2 py-1.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none border-gray-200"
+                    placeholder='Contoh: "Peralatan Inspeksi; Alat keselamatan kerja"'
+                  />
+                  <p className="mt-1 text-[11px] text-gray-500">Gunakan tanda ; untuk memisahkan item.</p>
+                </div>
               </div>
 
               {/* Right Column */}
@@ -462,10 +480,10 @@ const VendorModal: React.FC<VendorModalProps> = ({
                   )}
                 </div>
 
-                {/* No NPWP */}
+                {/* No. NPWP / NIK */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    No NPWP
+                    No. NPWP / NIK
                   </label>
                   <input
                     type="text"
@@ -476,6 +494,31 @@ const VendorModal: React.FC<VendorModalProps> = ({
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="XX.XXX.XXX.X-XXX.XXX"
                   />
+                </div>
+
+                {/* Attachment Legalitas */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Attachment Legalitas
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        attachmentLegalitas:
+                          e.target.files && e.target.files[0]
+                            ? e.target.files[0]
+                            : null,
+                      }))
+                    }
+                    className="w-full px-2 py-1.5 border border-gray-200 rounded-xl"
+                  />
+                  {formData.attachmentLegalitas && (
+                    <div className="mt-1 text-xs text-gray-600">
+                      File dipilih: {formData.attachmentLegalitas.name}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
