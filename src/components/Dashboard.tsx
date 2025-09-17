@@ -283,7 +283,10 @@ import GAKendaraanMasterDashboard from "./GAKendaraanMasterDashboard";
 import GAPajakKendaraanDashboard from "./GAPajakKendaraanDashboard";
 import GALegalitasPerusahaanDashboard from "./GALegalitasPerusahaanDashboard";
 import GAPerformanceDashboard from "./GAPerformanceDashboard";
-import GASaranaPrasaranaDashboard from "./GASaranaPrasaranaDashboard";
+// GA Monitoring pages
+import GAMonitoringSaprasDashboard from "./GAMonitoringSaprasDashboard";
+import GAMonitoringKendaraanDashboard from "./GAMonitoringKendaraanDashboard";
+import GAPermintaanDriverApprovalDashboard from "./GAPermintaanDriverApprovalDashboard";
 import GAServiceKendaraanDashboard from "./GAServiceKendaraanDashboard";
 import GAMaintenanceSaprasDashboard from "./GAMaintenanceSaprasDashboard";
 import GAUtilityDashboard from "./GAUtilityDashboard";
@@ -1238,7 +1241,13 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <GAPerformanceDashboard />;
     }
     if (currentPage === "/ga/monitoring/sapras") {
-      return <GASaranaPrasaranaDashboard />;
+      return <GAMonitoringSaprasDashboard />;
+    }
+    if (currentPage === "/ga/monitoring/kendaraan") {
+      return <GAMonitoringKendaraanDashboard />;
+    }
+    if (currentPage === "/ga/monitoring/permintaan-driver") {
+      return <GAPermintaanDriverApprovalDashboard />;
     }
     if (currentPage === "/ga/monitoring/service-kendaraan") {
       return <GAServiceKendaraanDashboard />;

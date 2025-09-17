@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Calendar, Database } from 'lucide-react';
+import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Calendar, Paperclip, UploadCloud } from 'lucide-react';
 import BackupDataUserModal, { BackupDataUserForm } from './BackupDataUserModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
-interface BackupItem extends BackupDataUserForm { id: string }
+interface Attachment { id: string; name: string; url: string; addedAt: string }
+
+interface BackupItem extends BackupDataUserForm { id: string; attachments?: Attachment[] }
 
 const seedData = (): BackupItem[] => [
-  { id: '1', userName: 'Rudi', department: 'Operasional', deviceName: 'LAP-OPS-01', backupType: 'Full', backupDate: '2025-09-01', storageLocation: 'NAS-01', size: '18 GB', status: 'Successful', notes: 'Bulanan' },
-  { id: '2', userName: 'Sari', department: 'HRD', deviceName: 'LAP-HRD-02', backupType: 'Incremental', backupDate: '2025-09-05', storageLocation: 'Google Drive', size: '2.1 GB', status: 'Scheduled' },
-  { id: '3', userName: 'Budi', department: 'Finance', deviceName: 'LAP-FIN-03', backupType: 'Full', backupDate: '2025-09-07', storageLocation: 'NAS-02', size: '21 GB', status: 'Failed', notes: 'Jaringan putus' },
+  { id: '1', userName: 'Rudi', department: 'Operasional', deviceName: 'LAP-OPS-01', backupType: 'Full', backupDate: '2025-09-01', storageLocation: 'NAS-01', size: '18 GB', status: 'Successful', notes: 'Bulanan', attachments: [] },
+  { id: '2', userName: 'Sari', department: 'HRD', deviceName: 'LAP-HRD-02', backupType: 'Incremental', backupDate: '2025-09-05', storageLocation: 'Google Drive', size: '2.1 GB', status: 'Scheduled', attachments: [] },
+  { id: '3', userName: 'Budi', department: 'Finance', deviceName: 'LAP-FIN-03', backupType: 'Full', backupDate: '2025-09-07', storageLocation: 'NAS-02', size: '21 GB', status: 'Failed', notes: 'Jaringan putus', attachments: [] },
 ];
 
 const statusPill = (status: BackupItem['status']) => {
@@ -39,6 +41,12 @@ const GABackupDataUserDashboard: React.FC = () => {
   const [editingItem, setEditingItem] = useState<BackupItem | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<BackupItem | null>(null);
+
+  // Approval Confirm Dialog
+  const [isApproveOpen, setIsApproveOpen] = useState(false);
+  const [approveTarget, setApproveTarget] = useState<BackupItem | null>(null);
+  const [approveNextStatus, setApproveNextStatus] = useState<BackupDataUserForm['status']>('Scheduled');
+  const [approveFiles, setApproveFiles] = useState<FileList | null>(null);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,8 +95,45 @@ const GABackupDataUserDashboard: React.FC = () => {
     setDeleteTarget(null);
   };
 
+  const handleStatusChange = (id: string, next: BackupDataUserForm['status']) => {
+    setData(prev => prev.map(x => (x.id === id ? { ...x, status: next } : x)));
+  };
+
+  const handleUploadAttachment = (id: string, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const toAdd: Attachment[] = Array.from(files).map((f) => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: f.name,
+      url: URL.createObjectURL(f),
+      addedAt: new Date().toISOString(),
+    }));
+    setData(prev => prev.map(x => (x.id === id ? { ...x, attachments: [ ...(x.attachments ?? []), ...toAdd ] } : x)));
+  };
+
   const handlePageChange = (page: number) => setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   const handleGoToPage = () => { if (!goToPageInput) return; const n = parseInt(goToPageInput, 10); if (!isNaN(n)) handlePageChange(n); };
+
+  const openApproveDialog = (item: BackupItem, next: BackupDataUserForm['status']) => {
+    setApproveTarget(item);
+    setApproveNextStatus(next);
+    setApproveFiles(null);
+    setIsApproveOpen(true);
+  };
+
+  const confirmApprove = () => {
+    if (!approveTarget) return;
+    handleStatusChange(approveTarget.id, approveNextStatus);
+    if (approveFiles && approveFiles.length > 0) {
+      handleUploadAttachment(approveTarget.id, approveFiles);
+    }
+    setIsApproveOpen(false);
+    setApproveTarget(null);
+  };
+
+  const cancelApprove = () => {
+    setIsApproveOpen(false);
+    setApproveTarget(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -213,6 +258,7 @@ const GABackupDataUserDashboard: React.FC = () => {
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Ukuran</th>
                   <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Status</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Catatan</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tindak Lanjut</th>
                   <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -229,6 +275,54 @@ const GABackupDataUserDashboard: React.FC = () => {
                     <td className="px-2 py-1 text-gray-700">{item.size}</td>
                     <td className="px-2 py-1 text-center"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusPill(item.status)}`}>{item.status}</span></td>
                     <td className="px-2 py-1 text-gray-700">{item.notes || '-'}</td>
+                    <td className="px-2 py-1">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={item.status}
+                            onChange={(e) => openApproveDialog(item, e.target.value as BackupDataUserForm['status'])}
+                            className="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Running">Running</option>
+                            <option value="Successful">Successful</option>
+                            <option value="Failed">Failed</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <label className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 cursor-pointer text-xs">
+                            <UploadCloud className="h-4 w-4" />
+                            <span>Upload</span>
+                            <input
+                              type="file"
+                              className="hidden"
+                              multiple
+                              onChange={(e) => handleUploadAttachment(item.id, e.target.files)}
+                            />
+                          </label>
+                          {item.attachments && item.attachments.length > 0 && (
+                            <div className="flex items-center gap-1 flex-wrap">
+                              <Paperclip className="h-3 w-3 text-gray-500" />
+                              {item.attachments.slice(0, 3).map((att) => (
+                                <a
+                                  key={att.id}
+                                  href={att.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-2 py-0.5 rounded-full bg-gray-100 border border-gray-200 text-gray-700 hover:bg-gray-200 text-[10px]"
+                                  title={att.name}
+                                >
+                                  {att.name.length > 12 ? `${att.name.slice(0, 12)}…` : att.name}
+                                </a>
+                              ))}
+                              {item.attachments.length > 3 && (
+                                <span className="text-xs text-gray-500">+{item.attachments.length - 3} lagi</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
                     <td className="px-2 py-1">
                       <div className="flex items-center justify-center space-x-1">
                         <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110" title="Edit">
@@ -308,6 +402,62 @@ const GABackupDataUserDashboard: React.FC = () => {
         onConfirm={() => deleteTarget && handleDelete(deleteTarget.id)}
         itemName={`${deleteTarget?.userName ?? ''} - ${deleteTarget?.deviceName ?? ''}`}
       />
+
+      {isApproveOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg border border-gray-200">
+            <div className="px-5 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Konfirmasi Tindak Lanjut</h3>
+            </div>
+            <div className="px-5 py-4 space-y-4 text-sm">
+              <p className="text-gray-700">Anda akan mengubah status backup berikut:</p>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-800">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">User</span>
+                  <span>{approveTarget?.userName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Perangkat</span>
+                  <span>{approveTarget?.deviceName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Status Saat Ini</span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${approveTarget ? statusPill(approveTarget.status) : ''}`}>{approveTarget?.status}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Status Baru</span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusPill(approveNextStatus)}`}>{approveNextStatus}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-xs font-medium text-gray-700">Lampiran (opsional)</label>
+                <label className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 cursor-pointer w-fit">
+                  <UploadCloud className="h-4 w-4" />
+                  <span className="text-xs">Upload file</span>
+                  <input type="file" multiple className="hidden" onChange={(e) => setApproveFiles(e.target.files)} />
+                </label>
+                {approveFiles && approveFiles.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Paperclip className="h-3 w-3 text-gray-500" />
+                    {Array.from(approveFiles).slice(0, 3).map((f, idx) => (
+                      <span key={idx} className="px-2 py-0.5 rounded-full bg-gray-100 border border-gray-200 text-gray-700 text-[10px]">
+                        {f.name.length > 12 ? `${f.name.slice(0, 12)}…` : f.name}
+                      </span>
+                    ))}
+                    {approveFiles.length > 3 && (
+                      <span className="text-xs text-gray-500">+{approveFiles.length - 3} lagi</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="px-5 py-3 border-t border-gray-200 flex items-center justify-end gap-2">
+              <button onClick={cancelApprove} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">Batal</button>
+              <button onClick={confirmApprove} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm">Setujui</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ export interface PajakKendaraanForm {
   jatuhTempo: string; // yyyy-mm-dd
   status: 'Lunas' | 'Belum Lunas';
   keterangan?: string;
+  uploads?: { name: string; size: number }[]; // metadata dokumen ter-upload
 }
 
 interface PajakKendaraanModalProps {
@@ -31,7 +32,21 @@ const PajakKendaraanModal: React.FC<PajakKendaraanModalProps> = ({
     jatuhTempo: '',
     status: 'Belum Lunas',
     keterangan: '',
+    uploads: [],
   });
+
+  // Opsi kendaraan (dummy) - bisa disinkronkan dengan Master Kendaraan bila diperlukan
+  const kendaraanOptions = [
+    { merek: 'Expander', platNomor: 'B 1875 ROB' },
+    { merek: 'Expander', platNomor: 'B 1079 ROJ' },
+    { merek: 'Expander', platNomor: 'B 1044 ROR' },
+    { merek: 'Rubicon', platNomor: 'B 500 GBP' },
+    { merek: 'Rubicon', platNomor: 'B 2141 UZT' },
+    { merek: 'Chery', platNomor: 'B 1753 TNT' },
+    { merek: 'Chery', platNomor: 'Triton 9319 TBB' },
+  ];
+
+  const [selectedVehicle, setSelectedVehicle] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
@@ -42,8 +57,15 @@ const PajakKendaraanModal: React.FC<PajakKendaraanModalProps> = ({
           jatuhTempo: '',
           status: 'Belum Lunas',
           keterangan: '',
+          uploads: [],
         }
       );
+      // Set selected vehicle berdasarkan data awal (edit)
+      if (initialData?.merek && initialData?.platNomor) {
+        setSelectedVehicle(`${initialData.merek} | ${initialData.platNomor}`);
+      } else {
+        setSelectedVehicle('');
+      }
     }
   }, [isOpen, initialData]);
 
@@ -59,7 +81,7 @@ const PajakKendaraanModal: React.FC<PajakKendaraanModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.merek.trim() || !form.platNomor.trim() || !form.jatuhTempo) return;
-    onSave({ ...form, merek: form.merek.trim(), platNomor: form.platNomor.trim() });
+    onSave({ ...form, merek: form.merek.trim(), platNomor: form.platNomor.trim(), uploads: form.uploads ?? [] });
   };
 
   return (
@@ -69,26 +91,39 @@ const PajakKendaraanModal: React.FC<PajakKendaraanModalProps> = ({
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         </div>
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+          {/* Pilih Kendaraan */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Kendaraan</label>
+            <select
+              value={selectedVehicle}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedVehicle(val);
+                const [m, p] = val.split(' | ');
+                if (m && p) setForm((prev) => ({ ...prev, merek: m, platNomor: p }));
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">-- Pilih Kendaraan --</option>
+              {kendaraanOptions.map((opt) => {
+                const key = `${opt.merek} | ${opt.platNomor}`;
+                return (
+                  <option key={key} value={key}>{opt.merek} - {opt.platNomor}</option>
+                );
+              })}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Merek dan plat nomor akan terisi otomatis berdasarkan pilihan.</p>
+          </div>
+
+          {/* Tampilkan Merek & Plat (read-only) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Merek</label>
-              <input
-                name="merek"
-                value={form.merek}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Contoh: Expander"
-              />
+              <input value={form.merek} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Plat Nomor</label>
-              <input
-                name="platNomor"
-                value={form.platNomor}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Contoh: B 1875 ROB"
-              />
+              <input value={form.platNomor} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Jatuh Tempo</label>
@@ -124,6 +159,36 @@ const PajakKendaraanModal: React.FC<PajakKendaraanModalProps> = ({
               placeholder="Opsional"
             />
           </div>
+
+          {/* Upload Dokumen */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen (opsional)</label>
+            <input
+              type="file"
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                const meta = files.map((f) => ({ name: f.name, size: f.size }));
+                setForm((prev) => ({ ...prev, uploads: [...(prev.uploads || []), ...meta] }));
+              }}
+              className="block w-full text-sm text-gray-700"
+            />
+            {!!(form.uploads && form.uploads.length) && (
+              <ul className="mt-2 space-y-1 text-xs text-gray-700">
+                {form.uploads!.map((u, idx) => (
+                  <li key={idx} className="flex items-center justify-between">
+                    <span>• {u.name} <span className="text-gray-400">({Math.round(u.size / 1024)} KB)</span></span>
+                    <button
+                      type="button"
+                      className="text-red-600 hover:underline"
+                      onClick={() => setForm((prev) => ({ ...prev, uploads: prev.uploads?.filter((_, i) => i !== idx) }))}
+                    >Hapus</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
           <div className="flex items-center justify-end space-x-2 pt-2">
             <button
               type="button"
