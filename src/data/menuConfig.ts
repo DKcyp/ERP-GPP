@@ -1031,9 +1031,9 @@ export const pengadaanMenu: MenuSection[] = [
       //   icon: "LayoutDashboard",
       //   path: "/pengadaan/po/dashboard",
       // },
+      { title: "Approval PR", icon: "FileBarChart", path: "/pengadaan/po/approval_pr" },
       { title: "PO Barang", icon: "Package", path: "/pengadaan/po/barang" },
       { title: "PO Jasa", icon: "Wrench", path: "/pengadaan/po/jasa" },
-      { title: "Approval PR", icon: "FileBarChart", path: "/pengadaan/po/approval_pr" },
     ],
   },
   {
