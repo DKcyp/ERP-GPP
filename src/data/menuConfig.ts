@@ -1019,12 +1019,7 @@ export const pengadaanMenu: MenuSection[] = [
         title: "Daftar Seleksi Supplier / Bidding",
         icon: "ClipboardList",
         path: "/pengadaan/seleksi/daftar",
-      },
-      {
-        title: "Laporan",
-        icon: "FileText",
-        path: "/pengadaan/seleksi/laporan",
-      },
+      }
     ],
   },
   {
