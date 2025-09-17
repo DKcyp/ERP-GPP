@@ -1039,33 +1039,8 @@ export const pengadaanMenu: MenuSection[] = [
   {
     title: "Penerimaan Barang",
     icon: "Truck",
-    items: [
-      {
-        title: "Daftar Penerimaan Barang",
-        icon: "ListChecks",
-        path: "/pengadaan/penerimaan/daftar",
-      },
-      {
-        title: "Purchasing",
-        icon: "ShoppingCart",
-        path: "/pengadaan/penerimaan/purchasing",
-      },
-      {
-        title: "Gudang",
-        icon: "Warehouse",
-        path: "/pengadaan/penerimaan/gudang",
-      }, // NEW: Gudang sub-menu
-      {
-        title: "Invoice",
-        icon: "FileInvoice",
-        path: "/pengadaan/penerimaan/invoice",
-      },
-      {
-        title: "Laporan",
-        icon: "BarChart2",
-        path: "/pengadaan/penerimaan/laporan",
-      },
-    ],
+    items: [],
+    directPath: "/pengadaan/penerimaan",
   },
   createGeneralMenu("pengadaan"),
 ];

@@ -60,6 +60,7 @@ import ProsesSeleksiSupplierDashboard from "./ProsesSeleksiSupplierDashboard";
 import PODashboard from "./PODashboard";
 import ListPRDashboard from "./ListPRDashboard";
 import DaftarPenerimaanBarangDashboard from "./DaftarPenerimaanBarangDashboard";
+import PenerimaanBarangDashboard from "./PenerimaanBarangDashboard";
 import PurchasingDashboard from "./PurchasingDashboard";
 import InvoiceDashboard from "./InvoiceDashboard";
 import GudangDashboard from "./GudangDashboard";
@@ -682,6 +683,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/po/jasa") {
       return <POJasaDashboard />;
+    }
+    if (currentPage === "/pengadaan/penerimaan") {
+      return <PenerimaanBarangDashboard />;
     }
     if (currentPage === "/pengadaan/po/approval_pr") {
       return <ListPRDashboard />;
