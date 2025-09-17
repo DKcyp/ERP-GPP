@@ -365,6 +365,7 @@ import QHSEKompetensiPerusahaanDashboard from "./QHSEKompetensiPerusahaanDashboa
 import QHSELogBookRATDashboard from "./QHSELogBookRATDashboard";
 import QHSEMonitoringKameraRadiographyDashboard from "./QHSEMonitoringKameraRadiographyDashboard";
 import QHSEUjiUsapKameraDashboard from "./QHSEUjiUsapKameraDashboard";
+import QHSEDaftarIndukDokumenInternalDashboard from "./QHSEDaftarIndukDokumenInternalDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1812,7 +1813,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <MonitoringReportDashboard />;
     }
     if (currentPage === "/qhse/daftar-induk-dokumen-internal") {
-      return <ISOSystemDaftarIndukDokumenInternalDashboard />;
+      return <QHSEDaftarIndukDokumenInternalDashboard />;
     }
     if (currentPage === "/qhse/perundangan-k3l") {
       return <PerundanganK3LDashboard />;
