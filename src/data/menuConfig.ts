@@ -2114,30 +2114,8 @@ export const proconMenu: MenuSection[] = [
   {
     title: "Laba Rugi Project",
     icon: "TrendingUp",
-    items: [
-      {
-        title: "Dashboard",
-        icon: "LayoutDashboard",
-        path: "/procon/lrp/dashboard",
-      },
-      {
-        title: "Tunjangan / Timesheet Teknisi",
-        icon: "UserCheck",
-        path: "/procon/lrp/tunjangan-timesheet-teknisi",
-      },
-      { title: "Gaji", icon: "Wallet", path: "/hrd/gaji/pengajian" },
-      {
-        title: "Timesheet Barang",
-        icon: "Package",
-        path: "/operational/timesheet/barang",
-      },
-      { title: "Kas Keluar", icon: "Wallet", path: "/accounting/kas-keluar" },
-      {
-        title: "Bank Keluar",
-        icon: "Banknote",
-        path: "/accounting/bank-keluar",
-      },
-    ],
+    items: [],
+    directPath: "/procon/lrp",
   },
   // New sections requested for Procon: Marketing, Operasional, Procurement, Finance
   {
