@@ -565,22 +565,28 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-2">
-              Monitoring Kamera Radiography – Tahun 2025
-            </h1>
-            <p className="text-xl text-blue-100">
-              PT. Gamma Buana Persada | Dept. QHSE
-            </p>
-            <div className="flex items-center justify-center space-x-3 text-sm text-blue-100 mt-4">
-              <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+     <div className="bg-gradient-to-r from-purple-50 to-white border-b border-gray-100">
+             <div className="max-w-7xl mx-auto px-6 py-8">
+               <div className="flex items-center justify-between">
+                 <div>
+                   <div className="flex items-center gap-3 mb-2">
+                     <h1 className="text-4xl font-bold text-gray-900 tracking-wide">
+                     Monitoring Kamera Radiography
+                     </h1>
+                   </div>
+                   <nav className="text-sm text-gray-600">
+                     <span>QHSE</span> <span className="mx-2">›</span>
+                     <span>RADIOGRAPHY</span> <span className="mx-2">›</span>
+                     <span className="text-blue-600 font-medium">Monitoring Kamera Radiography</span>
+                   </nav>
+                 </div>
+                 <div className="flex items-center space-x-3 text-sm text-gray-500">
+                   <Clock className="h-4 w-4" />
+                   <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+                 </div>
+               </div>
+             </div>
+           </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Statistics Cards */}
