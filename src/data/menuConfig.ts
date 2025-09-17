@@ -1,4 +1,4 @@
-import { MenuSection, MenuSubSection, MenuItem } from "../types";
+import { MenuSection } from "../types";
 
 // Helper to create the General menu section with sub-sections
 const createGeneralMenu = (role: string): MenuSection => ({
@@ -314,6 +314,18 @@ const createGeneralMenu = (role: string): MenuSection => ({
               },
             ],
           },
+          // GA-only: IT under General (moved from Monitoring IT)
+          {
+            title: "IT",
+            icon: "Server",
+            items: [
+              {
+                title: "Trouble Shoot",
+                icon: "Bug",
+                path: `/${role}/it/troubleshoot`,
+              },
+            ],
+          },
         ]
       : []),
   ],
@@ -586,7 +598,6 @@ export const gaMenu: MenuSection[] = [
         icon: "DatabaseBackup",
         path: "/ga/it/backup",
       },
-      { title: "Trouble Shoot", icon: "Bug", path: "/ga/it/troubleshoot" },
       {
         title: "Maintenance Rutin",
         icon: "Cpu",
