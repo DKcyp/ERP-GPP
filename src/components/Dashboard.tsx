@@ -71,6 +71,7 @@ import ApprovalPenggajianDashboard from "./ApprovalPenggajianDashboard";
 import ApprovalPOTrainingDashboard from "./ApprovalPOTrainingDashboard";
 import ApprovalVoucherDashboard from "./ApprovalVoucherDashboard";
 import DaftarPembayaranDashboard from "./DaftarPembayaranDashboard";
+import ProconLRPExcelDashboard from "./ProconLRPExcelDashboard";
 import DaftarVoucherDashboard from "./DaftarVoucherDashboard";
 import LaporanHutangUsahaDashboard from "./LaporanHutangUsahaDashboard";
 import MonitoringEndorseCertificateHRD from "./MonitoringEndorseCertificateHRD";
@@ -1042,12 +1043,15 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/procon/proforma-invoice/pembuatan") {
       return <ProconPembuatanPIDashboard />;
     }
+    if (currentPage === "/procon/lrp") {
+      return <ProconLRPExcelDashboard />;
+    }
     if (currentPage === "/procon/hpp-induk/dashboard") {
       return <ProconHPPIndukDashboard />;
     }
     // Procon Laba Rugi Project (LRP)
     if (currentPage === "/procon/lrp/dashboard") {
-      return <ProconLRPDashboard />;
+      return <ProconLRPExcelDashboard />;
     }
     if (currentPage === "/procon/lrp/tunjangan-timesheet-teknisi") {
       return <ProconLRPTunjanganTimesheetTeknisi />;
