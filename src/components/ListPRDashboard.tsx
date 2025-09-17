@@ -8,26 +8,31 @@ interface PRItem {
   noSO: string;
   departemen: string;
   keterangan: string;
-  statusPR: 'Approve' | 'Rejected';
+  statusPR: 'Approve' | 'Rejected' | 'Pending';
   statusPO: 'PO' | '-';
+  statusBA: 'BA' | '-';
 }
 
 const initialData: PRItem[] = [
-  { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO' },
-  { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-' },
-  { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-' },
-  { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO' },
-  { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-' },
-  { id: 6, tanggalPR: '12-02-2025', noPR: 'PR006', noSO: 'SO006.10', departemen: 'Operasional', keterangan: 'Pembelian Safety Shoes', statusPR: 'Rejected', statusPO: '-' },
+  { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
+  { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance',     keterangan: 'Pembelian Software Akuntansi', statusPR: 'Pending', statusPO: '-',  statusBA: '-'  },
+  { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Pending', statusPO: '-',  statusBA: 'BA' },
+  { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
+  { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-',  statusBA: '-'  },
+  { id: 6, tanggalPR: '12-02-2025', noPR: 'PR006', noSO: 'SO006.10', departemen: 'Operasional', keterangan: 'Pembelian Safety Shoes',      statusPR: 'Rejected', statusPO: '-',  statusBA: '-'  },
+  { id: 7, tanggalPR: '13-02-2025', noPR: 'PR007', noSO: 'SO007.21', departemen: 'Procurement', keterangan: 'Pembelian Laptop',               statusPR: 'Pending',  statusPO: '-',  statusBA: '-'  },
+  { id: 8, tanggalPR: '14-02-2025', noPR: 'PR008', noSO: 'SO008.08', departemen: 'IT',          keterangan: 'Langganan Software',            statusPR: 'Pending',  statusPO: '-',  statusBA: '-'  },
 ];
 
 const ListPRDashboard: React.FC = () => {
-  const [filterStatusPR, setFilterStatusPR] = useState<'Semua' | 'Approve' | 'Rejected'>('Semua');
+  const [filterStatusPR, setFilterStatusPR] = useState<'Semua' | 'Approve' | 'Rejected' | 'Pending'>('Semua');
   const [search, setSearch] = useState('');
   const [pageSize, setPageSize] = useState(10);
+  // Make items stateful so we can approve/reject
+  const [items, setItems] = useState<PRItem[]>(initialData);
 
   const data = useMemo(() => {
-    const filtered = initialData.filter((d) => filterStatusPR === 'Semua' || d.statusPR === filterStatusPR);
+    const filtered = items.filter((d) => filterStatusPR === 'Semua' || d.statusPR === filterStatusPR);
     if (!search.trim()) return filtered;
     const s = search.toLowerCase();
     return filtered.filter((d) =>
@@ -36,11 +41,11 @@ const ListPRDashboard: React.FC = () => {
       d.departemen.toLowerCase().includes(s) ||
       d.keterangan.toLowerCase().includes(s)
     );
-  }, [filterStatusPR, search]);
+  }, [items, filterStatusPR, search]);
 
   const handleExportCSV = () => {
-    const headers = ['Tanggal PR','No PR','No SO','Departemen','Keterangan','Status PR','Status PO'];
-    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO]);
+    const headers = ['Tanggal PR','No PR','No SO','Departemen','Keterangan','Status PR','Status PO','Status BA'];
+    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO, r.statusBA]);
     const escape = (v: any) => {
       const s = String(v ?? '');
       if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
@@ -52,7 +57,7 @@ const ListPRDashboard: React.FC = () => {
     const a = document.createElement('a');
     a.href = url;
     const fileSuffix = filterStatusPR === 'Semua' ? 'all' : filterStatusPR.toLowerCase();
-    a.download = `list-pr-${fileSuffix}.csv`;
+    a.download = `approval-pr-${fileSuffix}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -69,12 +74,12 @@ const ListPRDashboard: React.FC = () => {
         h1 { font-size: 16px; margin: 0 0 12px; }
       </style>
     `;
-    const header = `<h1>List PR - ${filterStatusPR === 'Semua' ? 'All' : filterStatusPR}</h1>`;
+    const header = `<h1>Approval PR - ${filterStatusPR === 'Semua' ? 'All' : filterStatusPR}</h1>`;
     const table = `
       <table>
         <thead>
           <tr>
-            <th>No</th><th>Tanggal PR</th><th>No PR</th><th>No SO</th><th>Departemen</th><th>Keterangan</th><th>Status PR</th><th>Status PO</th>
+            <th>No</th><th>Tanggal PR</th><th>No PR</th><th>No SO</th><th>Departemen</th><th>Keterangan</th><th>Status PR</th><th>Status PO</th><th>Status BA</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +93,7 @@ const ListPRDashboard: React.FC = () => {
               <td>${r.keterangan}</td>
               <td>${r.statusPR}</td>
               <td>${r.statusPO}</td>
+              <td>${r.statusBA}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -100,11 +106,32 @@ const ListPRDashboard: React.FC = () => {
     w.close();
   };
 
+  const handleApprove = (id: number) => {
+    setItems(prev => prev.map(it => it.id === id ? { ...it, statusPR: 'Approve' } : it));
+  };
+
+  const handleReject = (id: number) => {
+    setItems(prev => prev.map(it => it.id === id ? { ...it, statusPR: 'Rejected' } : it));
+  };
+
+  // Confirm dialog state
+  const [confirmState, setConfirmState] = useState<{ open: boolean; id: number | null; type: 'approve' | 'reject' | null }>({ open: false, id: null, type: null });
+  const openConfirm = (type: 'approve' | 'reject', id: number) => {
+    setConfirmState({ open: true, id, type });
+  };
+  const closeConfirm = () => setConfirmState({ open: false, id: null, type: null });
+  const proceedConfirm = () => {
+    if (!confirmState.open || confirmState.id == null || !confirmState.type) return;
+    if (confirmState.type === 'approve') handleApprove(confirmState.id);
+    if (confirmState.type === 'reject') handleReject(confirmState.id);
+    closeConfirm();
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">LIST PR</h1>
+          <h1 className="text-3xl font-bold text-gray-800">APPROVAL PR</h1>
           <div className="flex items-center gap-2">
             <button onClick={handlePrint} className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm">
               <Printer className="h-4 w-4" /> Cetak
@@ -146,12 +173,13 @@ const ListPRDashboard: React.FC = () => {
               <div className="relative">
                 <select
                   value={filterStatusPR}
-                  onChange={(e) => setFilterStatusPR(e.target.value as 'Semua' | 'Approve' | 'Rejected')}
+                  onChange={(e) => setFilterStatusPR(e.target.value as 'Semua' | 'Approve' | 'Rejected' | 'Pending')}
                   className="block w-44 appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-md leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="Semua">Semua Status</option>
                   <option value="Approve">Approved</option>
                   <option value="Rejected">Rejected</option>
+                  <option value="Pending">Pending</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                   <ChevronDown className="h-4 w-4" />
@@ -175,6 +203,8 @@ const ListPRDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status PR</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status PO</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status BA</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -189,7 +219,11 @@ const ListPRDashboard: React.FC = () => {
                     <td className="px-6 py-3 text-sm">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          row.statusPR === 'Approve' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          row.statusPR === 'Approve'
+                            ? 'bg-green-100 text-green-800'
+                            : row.statusPR === 'Rejected'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
                         {row.statusPR}
@@ -204,6 +238,40 @@ const ListPRDashboard: React.FC = () => {
                         {row.statusPO}
                       </span>
                     </td>
+                    <td className="px-6 py-3 text-sm">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          row.statusBA === 'BA' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {row.statusBA}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 text-sm text-right">
+                      {(() => {
+                        const locked = row.statusPR === 'Approve' || row.statusPR === 'Rejected';
+                        return (
+                          <div className="inline-flex gap-2">
+                            <button
+                              onClick={() => openConfirm('approve', row.id)}
+                              className={`px-3 py-1 rounded-md text-white text-xs ${locked ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+                              disabled={locked}
+                              title={locked ? 'Status sudah ditetapkan' : 'Setujui PR ini'}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => openConfirm('reject', row.id)}
+                              className={`px-3 py-1 rounded-md text-white text-xs ${locked ? 'bg-gray-300 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                              disabled={locked}
+                              title={locked ? 'Status sudah ditetapkan' : 'Tolak PR ini'}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        );
+                      })()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -213,7 +281,7 @@ const ListPRDashboard: React.FC = () => {
           {/* Footer */}
           <div className="flex items-center justify-between mt-4 text-sm text-gray-700">
             <div>
-              Menampilkan {Math.min(pageSize, data.length)} dari {data.length} PR {filterStatusPR === 'Semua' ? 'All' : (filterStatusPR === 'Approve' ? 'Approved' : 'Rejected')}
+              Menampilkan {Math.min(pageSize, data.length)} dari {data.length} PR {filterStatusPR === 'Semua' ? 'All' : (filterStatusPR === 'Approve' ? 'Approved' : filterStatusPR)}
             </div>
             <div className="space-x-2">
               <button className="px-3 py-1 border rounded-md bg-white hover:bg-gray-50">Previous</button>
@@ -223,6 +291,27 @@ const ListPRDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Confirm Dialog */}
+      {confirmState.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+            <div className="px-6 py-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">Konfirmasi</h3>
+            </div>
+            <div className="px-6 py-4 text-sm text-gray-700">
+              {confirmState.type === 'approve' ? (
+                <p>Anda yakin ingin <span className="font-semibold text-green-700">Approve</span> PR ini?</p>
+              ) : (
+                <p>Anda yakin ingin <span className="font-semibold text-red-700">Reject</span> PR ini?</p>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t flex items-center justify-end gap-2">
+              <button onClick={closeConfirm} className="px-3 py-1.5 rounded-md border text-gray-700 bg-white hover:bg-gray-50">Batal</button>
+              <button onClick={proceedConfirm} className="px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700">Ya, Lanjutkan</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

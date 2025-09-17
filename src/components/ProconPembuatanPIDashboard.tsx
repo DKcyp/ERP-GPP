@@ -14,6 +14,7 @@ interface PIEntry {
   item: string;           // Item apa saja (ringkas)
   taxType: 'PPN' | 'Non PPN'; // pajak
   dueDate: string;        // Due pembayaran (dd/MM/yyyy)
+  dueDays?: number;       // Jumlah hari jatuh tempo dari tanggal dokumen
   contractOrPO: string;   // nomor kontrak / PO
   bankCode: string;       // Kode Bank
   // Legacy fields (optional)
@@ -25,6 +26,22 @@ interface PIEntry {
 }
 
 // formatRupiah removed (no longer used)
+
+// Helper: compute due date from document date (dd/MM/yyyy) + days
+const computeDueDate = (documentDate: string, days: number): string => {
+  try {
+    if (!documentDate) return '';
+    const [dd, mm, yyyy] = documentDate.split('/').map((v) => parseInt(v, 10));
+    if (!dd || !mm || !yyyy) return '';
+    const d = new Date(yyyy, mm - 1, dd);
+    if (isNaN(d.getTime())) return '';
+    d.setDate(d.getDate() + (Number.isFinite(days) ? days : 0));
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+  } catch {
+    return '';
+  }
+};
 
 const ProconPembuatanPIDashboard: React.FC = () => {
   // Master options (Client -> SO Induk -> SO Turunan)
@@ -116,6 +133,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
             item: r.item ?? '',
             taxType: (r.taxType as any) ?? 'PPN',
             dueDate: r.dueDate ?? (r.contractEnd || ''),
+            dueDays: r.dueDays ?? undefined,
             contractOrPO: r.contractOrPO ?? '',
             bankCode: r.bankCode ?? '',
             contractStart: r.contractStart,
@@ -153,6 +171,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     item: '',
     taxType: 'PPN',
     dueDate: '',
+    dueDays: 0,
     contractOrPO: '',
     bankCode: '',
     contractStart: '',
@@ -176,11 +195,28 @@ const ProconPembuatanPIDashboard: React.FC = () => {
   const handleOpenAdd = () => {
     setForm({
       clientName: '', soInduk: '', soTurunan: '',
-      documentDate: '', salesName: '', item: '', taxType: 'PPN', dueDate: '', contractOrPO: '', bankCode: '',
+      documentDate: '', salesName: '', item: '', taxType: 'PPN', dueDate: '', dueDays: 0, contractOrPO: '', bankCode: '',
       contractStart: '', contractEnd: '', nilaiKontrak: 0, absorbKontrak: 0, remainingKontrak: 0,
     });
     setEditId(null);
     setIsAddOpen(true);
+  };
+
+  // Helper: compute number of days between documentDate and dueDate (both dd/MM/yyyy)
+  const computeDueDays = (documentDate?: string, dueDate?: string): number => {
+    try {
+      if (!documentDate || !dueDate) return 0;
+      const [dd1, mm1, yy1] = documentDate.split('/').map((v) => parseInt(v, 10));
+      const [dd2, mm2, yy2] = dueDate.split('/').map((v) => parseInt(v, 10));
+      if (!dd1 || !mm1 || !yy1 || !dd2 || !mm2 || !yy2) return 0;
+      const d1 = new Date(yy1, mm1 - 1, dd1).getTime();
+      const d2 = new Date(yy2, mm2 - 1, dd2).getTime();
+      if (!Number.isFinite(d1) || !Number.isFinite(d2)) return 0;
+      const msPerDay = 24 * 60 * 60 * 1000;
+      return Math.max(0, Math.round((d2 - d1) / msPerDay));
+    } catch {
+      return 0;
+    }
   };
 
   const handleSave = () => {
@@ -206,6 +242,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       item: found.item || "",
       taxType: (found.taxType as any) || 'PPN',
       dueDate: found.dueDate || "",
+      dueDays: computeDueDays(found.documentDate, found.dueDate),
       contractOrPO: found.contractOrPO || "",
       bankCode: found.bankCode || "",
       contractStart: found.contractStart || "",
@@ -397,7 +434,20 @@ const ProconPembuatanPIDashboard: React.FC = () => {
               {/* Tanggal Dokumen */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Dokumen</label>
-                <input type="text" placeholder="dd/MM/yyyy" value={form.documentDate} onChange={(e) => setForm(prev => ({...prev, documentDate: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <input
+                  type="text"
+                  placeholder="dd/MM/yyyy"
+                  value={form.documentDate}
+                  onChange={(e) => {
+                    const documentDate = e.target.value;
+                    setForm(prev => ({
+                      ...prev,
+                      documentDate,
+                      dueDate: computeDueDate(documentDate, prev.dueDays ?? 0),
+                    }));
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
               </div>
               {/* Select Client (helper for SO options) */}
               <div>
@@ -442,10 +492,24 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                   <option value="Non PPN">Non PPN</option>
                 </select>
               </div>
-              {/* Due Pembayaran */}
+              {/* Due Pembayaran (hari) & Tanggal Jatuh Tempo */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Due Pembayaran</label>
-                <input type="text" placeholder="dd/MM/yyyy" value={form.dueDate} onChange={(e) => setForm(prev => ({...prev, dueDate: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Due Pembayaran (hari)</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={form.dueDays ?? 0}
+                  onChange={(e) => {
+                    const days = Number(e.target.value || 0);
+                    setForm(prev => ({
+                      ...prev,
+                      dueDays: days,
+                      dueDate: computeDueDate(prev.documentDate, days),
+                    }));
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-1">Tanggal Jatuh Tempo: <span className="font-medium">{form.dueDate || '-'}</span></p>
               </div>
               {/* No. Kontrak / PO */}
               <div>
