@@ -519,8 +519,11 @@ export const gaMenu: MenuSection[] = [
   {
     title: "Monitoring Sarana dan Prasarana",
     icon: "Building2",
-    items: [],
-    directPath: "/ga/monitoring/sapras",
+    items: [
+      { title: "Monitoring Sarana & Prasarana", icon: "Building2", path: "/ga/monitoring/sapras" },
+      { title: "Monitoring Kendaraan", icon: "Car", path: "/ga/monitoring/kendaraan" },
+      { title: "Permintaan Driver", icon: "User", path: "/ga/monitoring/permintaan-driver" },
+    ],
   },
   {
     title: "Monitoring",

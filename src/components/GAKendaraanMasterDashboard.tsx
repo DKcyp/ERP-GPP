@@ -1,18 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2 } from 'lucide-react';
 import KendaraanModal from './KendaraanModal';
+import KendaraanRangkaMesinModal from './KendaraanRangkaMesinModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface KendaraanItem {
   id: string;
   merek: string;
   platNomor: string;
+  noRangka?: string;
+  noMesin?: string;
 }
 
 const seedData = (): KendaraanItem[] => {
   const items: KendaraanItem[] = [];
   const push = (merek: string, plats: string[]) => {
-    plats.forEach((p, idx) => items.push({ id: `${merek}-${idx}-${p}`, merek, platNomor: p }));
+    plats.forEach((p, idx) => items.push({ id: `${merek}-${idx}-${p}`, merek, platNomor: p, noRangka: '', noMesin: '' }));
   };
   push('Expander', ['B 1875 ROB', 'B 1079 ROJ', 'B 1044 ROR']);
   push('Rubicon', ['B 500 GBP', 'B 2141 UZT']);
@@ -32,6 +35,8 @@ const GAKendaraanMasterDashboard: React.FC = () => {
   // Modal Add/Edit
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<KendaraanItem | null>(null);
+  // Modal khusus No Rangka/No Mesin
+  const [isRangkaMesinOpen, setIsRangkaMesinOpen] = useState(false);
 
   // Delete Confirm
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -66,15 +71,21 @@ const GAKendaraanMasterDashboard: React.FC = () => {
   };
 
   const handleSave = (item: { merek: string; platNomor: string }) => {
-    if (editingItem) {
-      // Update existing
-      setData(prev => prev.map(x => x.id === editingItem.id ? { ...x, merek: item.merek, platNomor: item.platNomor } : x));
-    } else {
+    // Khusus modal tambah kendaraan (merek/plat)
+    if (!editingItem) {
       // Add new
       setData(prev => [{ id: `${Date.now()}`, merek: item.merek, platNomor: item.platNomor }, ...prev]);
       setCurrentPage(1);
     }
     setIsModalOpen(false);
+    setEditingItem(null);
+  };
+
+  const handleSaveRangkaMesin = (payload: { noRangka: string; noMesin: string }) => {
+    if (editingItem) {
+      setData(prev => prev.map(x => x.id === editingItem.id ? { ...x, noRangka: payload.noRangka, noMesin: payload.noMesin } : x));
+    }
+    setIsRangkaMesinOpen(false);
     setEditingItem(null);
   };
 
@@ -170,7 +181,7 @@ const GAKendaraanMasterDashboard: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2 mt-6">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => { setEditingItem(null); setIsModalOpen(true); }}
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
             >
               <Plus className="h-4 w-4" />
@@ -196,6 +207,8 @@ const GAKendaraanMasterDashboard: React.FC = () => {
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Merek</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Plat Nomor</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No. Rangka</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No. Mesin</th>
                   <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -209,12 +222,14 @@ const GAKendaraanMasterDashboard: React.FC = () => {
                     <td className="px-2 py-1"><span className="font-medium text-gray-900">{startIndex + index + 1}</span></td>
                     <td className="px-2 py-1 font-medium text-gray-900">{item.merek}</td>
                     <td className="px-2 py-1 text-gray-700">{item.platNomor}</td>
+                    <td className="px-2 py-1 text-gray-700">{item.noRangka || '-'}</td>
+                    <td className="px-2 py-1 text-gray-700">{item.noMesin || '-'}</td>
                     <td className="px-2 py-1">
                       <div className="flex items-center justify-center space-x-1">
                         <button
-                          onClick={() => { setEditingItem(item); setIsModalOpen(true); }}
+                          onClick={() => { setEditingItem(item); setIsRangkaMesinOpen(true); }}
                           className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
-                          title="Edit"
+                          title="Lengkapi No. Rangka & No. Mesin"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
@@ -291,9 +306,16 @@ const GAKendaraanMasterDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingItem(null); }}
         onSave={handleSave}
-        initialData={editingItem ? { merek: editingItem.merek, platNomor: editingItem.platNomor } : null}
-        title={editingItem ? 'Edit Kendaraan' : 'Tambah Kendaraan'}
-        submitLabel={editingItem ? 'Update' : 'Simpan'}
+        initialData={null}
+        title={'Tambah Kendaraan'}
+        submitLabel={'Simpan'}
+      />
+
+      <KendaraanRangkaMesinModal
+        isOpen={isRangkaMesinOpen}
+        onClose={() => { setIsRangkaMesinOpen(false); setEditingItem(null); }}
+        onSave={handleSaveRangkaMesin}
+        initialData={editingItem ? { merek: editingItem.merek, platNomor: editingItem.platNomor, noRangka: editingItem.noRangka, noMesin: editingItem.noMesin } : undefined}
       />
 
       <ConfirmDeleteModal
