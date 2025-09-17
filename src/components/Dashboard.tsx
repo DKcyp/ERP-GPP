@@ -683,7 +683,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/pengadaan/po/jasa") {
       return <POJasaDashboard />;
     }
-    if (currentPage === "/pengadaan/po/laporan") {
+    if (currentPage === "/pengadaan/po/approval_pr") {
       return <ListPRDashboard />;
     }
     if (currentPage === "/pengadaan/penerimaan/daftar") {
