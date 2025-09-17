@@ -1033,7 +1033,7 @@ export const pengadaanMenu: MenuSection[] = [
       // },
       { title: "PO Barang", icon: "Package", path: "/pengadaan/po/barang" },
       { title: "PO Jasa", icon: "Wrench", path: "/pengadaan/po/jasa" },
-      { title: "List PR", icon: "FileBarChart", path: "/pengadaan/po/laporan" },
+      { title: "Approval PR", icon: "FileBarChart", path: "/pengadaan/po/laporan" },
     ],
   },
   {

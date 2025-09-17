@@ -10,15 +10,16 @@ interface PRItem {
   keterangan: string;
   statusPR: 'Approve' | 'Rejected';
   statusPO: 'PO' | '-';
+  statusBA: 'BA' | '-';
 }
 
 const initialData: PRItem[] = [
-  { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO' },
-  { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-' },
-  { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-' },
-  { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO' },
-  { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-' },
-  { id: 6, tanggalPR: '12-02-2025', noPR: 'PR006', noSO: 'SO006.10', departemen: 'Operasional', keterangan: 'Pembelian Safety Shoes', statusPR: 'Rejected', statusPO: '-' },
+  { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
+  { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance',     keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-',  statusBA: '-'  },
+  { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-',  statusBA: 'BA' },
+  { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
+  { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-',  statusBA: '-'  },
+  { id: 6, tanggalPR: '12-02-2025', noPR: 'PR006', noSO: 'SO006.10', departemen: 'Operasional', keterangan: 'Pembelian Safety Shoes',      statusPR: 'Rejected', statusPO: '-',  statusBA: '-'  },
 ];
 
 const ListPRDashboard: React.FC = () => {
@@ -39,8 +40,8 @@ const ListPRDashboard: React.FC = () => {
   }, [filterStatusPR, search]);
 
   const handleExportCSV = () => {
-    const headers = ['Tanggal PR','No PR','No SO','Departemen','Keterangan','Status PR','Status PO'];
-    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO]);
+    const headers = ['Tanggal PR','No PR','No SO','Departemen','Keterangan','Status PR','Status PO','Status BA'];
+    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO, r.statusBA]);
     const escape = (v: any) => {
       const s = String(v ?? '');
       if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
@@ -52,7 +53,7 @@ const ListPRDashboard: React.FC = () => {
     const a = document.createElement('a');
     a.href = url;
     const fileSuffix = filterStatusPR === 'Semua' ? 'all' : filterStatusPR.toLowerCase();
-    a.download = `list-pr-${fileSuffix}.csv`;
+    a.download = `approval-pr-${fileSuffix}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -69,12 +70,12 @@ const ListPRDashboard: React.FC = () => {
         h1 { font-size: 16px; margin: 0 0 12px; }
       </style>
     `;
-    const header = `<h1>List PR - ${filterStatusPR === 'Semua' ? 'All' : filterStatusPR}</h1>`;
+    const header = `<h1>Approval PR - ${filterStatusPR === 'Semua' ? 'All' : filterStatusPR}</h1>`;
     const table = `
       <table>
         <thead>
           <tr>
-            <th>No</th><th>Tanggal PR</th><th>No PR</th><th>No SO</th><th>Departemen</th><th>Keterangan</th><th>Status PR</th><th>Status PO</th>
+            <th>No</th><th>Tanggal PR</th><th>No PR</th><th>No SO</th><th>Departemen</th><th>Keterangan</th><th>Status PR</th><th>Status PO</th><th>Status BA</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +89,7 @@ const ListPRDashboard: React.FC = () => {
               <td>${r.keterangan}</td>
               <td>${r.statusPR}</td>
               <td>${r.statusPO}</td>
+              <td>${r.statusBA}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -104,7 +106,7 @@ const ListPRDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">LIST PR</h1>
+          <h1 className="text-3xl font-bold text-gray-800">APPROVAL PR</h1>
           <div className="flex items-center gap-2">
             <button onClick={handlePrint} className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm">
               <Printer className="h-4 w-4" /> Cetak
@@ -175,6 +177,7 @@ const ListPRDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status PR</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status PO</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status BA</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -202,6 +205,15 @@ const ListPRDashboard: React.FC = () => {
                         }`}
                       >
                         {row.statusPO}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 text-sm">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          row.statusBA === 'BA' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {row.statusBA}
                       </span>
                     </td>
                   </tr>
