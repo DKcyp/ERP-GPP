@@ -1019,12 +1019,7 @@ export const pengadaanMenu: MenuSection[] = [
         title: "Daftar Seleksi Supplier / Bidding",
         icon: "ClipboardList",
         path: "/pengadaan/seleksi/daftar",
-      },
-      {
-        title: "Laporan",
-        icon: "FileText",
-        path: "/pengadaan/seleksi/laporan",
-      },
+      }
     ],
   },
   {
@@ -1036,41 +1031,16 @@ export const pengadaanMenu: MenuSection[] = [
       //   icon: "LayoutDashboard",
       //   path: "/pengadaan/po/dashboard",
       // },
+      { title: "Approval PR", icon: "FileBarChart", path: "/pengadaan/po/approval_pr" },
       { title: "PO Barang", icon: "Package", path: "/pengadaan/po/barang" },
       { title: "PO Jasa", icon: "Wrench", path: "/pengadaan/po/jasa" },
-      { title: "List PR", icon: "FileBarChart", path: "/pengadaan/po/laporan" },
     ],
   },
   {
     title: "Penerimaan Barang",
     icon: "Truck",
-    items: [
-      {
-        title: "Daftar Penerimaan Barang",
-        icon: "ListChecks",
-        path: "/pengadaan/penerimaan/daftar",
-      },
-      {
-        title: "Purchasing",
-        icon: "ShoppingCart",
-        path: "/pengadaan/penerimaan/purchasing",
-      },
-      {
-        title: "Gudang",
-        icon: "Warehouse",
-        path: "/pengadaan/penerimaan/gudang",
-      }, // NEW: Gudang sub-menu
-      {
-        title: "Invoice",
-        icon: "FileInvoice",
-        path: "/pengadaan/penerimaan/invoice",
-      },
-      {
-        title: "Laporan",
-        icon: "BarChart2",
-        path: "/pengadaan/penerimaan/laporan",
-      },
-    ],
+    items: [],
+    directPath: "/pengadaan/penerimaan",
   },
   createGeneralMenu("pengadaan"),
 ];
@@ -1708,66 +1678,36 @@ export const qhseMenu: MenuSection[] = [
     directPath: "/qhse/dashboard",
   },
   {
-    title: "KPI Department",
-    icon: "BarChart3",
-    items: [
-      {
-        title: "Dashboard KPI Department",
-        icon: "LayoutDashboard",
-        path: "/qhse/kpi-department/dashboard",
-      },
-      {
-        title: "KPI Master",
-        icon: "Database",
-        path: "/qhse/kpi-department/master",
-      },
-      {
-        title: "List KPI",
-        icon: "List",
-        path: "/qhse/kpi-department/list",
-      },
-    ],
-  },
-  {
-    title: "Kompetensi Perusahaan",
-    icon: "Award",
-    items: [],
-    directPath: "/qhse/kompetensi-perusahaan",
-  },
-  {
-    title: "QHSE Performance",
-    icon: "TrendingUp",
-    items: [],
-    directPath: "/qhse/performance",
-  },
-  {
     title: "Legalitas Perusahaan",
     icon: "ShieldCheck",
     items: [],
     directPath: "/qhse/legalitas-perusahaan",
   },
   {
-    title: "Kamera Radiography",
-    icon: "Camera",
+    title: "QHSE Performance",
+    icon: "BarChart3",
     items: [],
-    directPath: "/qhse/kamera-radiography",
+    directPath: "/qhse/performance",
   },
   {
-    title: "SIB Personil",
-    icon: "UserCheck",
-    items: [],
-    directPath: "/qhse/sib-personil",
-  },
-  {
-    title: "Dosis Card",
-    icon: "CreditCard",
-    items: [],
-    directPath: "/qhse/dosis-card",
-  },
-  {
-    title: "Radiography",
+    title: "RADIOGRAPHY",
     icon: "Zap",
     items: [
+      {
+        title: "Kamera Radiography",
+        icon: "Camera",
+        path: "/qhse/kamera-radiography",
+      },
+      {
+        title: "SIB Personil",
+        icon: "UserCheck",
+        path: "/qhse/sib-personil",
+      },
+      {
+        title: "Dosis Card",
+        icon: "CreditCard",
+        path: "/qhse/dosis-card",
+      },
       {
         title: "Proses ISOTOP",
         icon: "Atom",
@@ -1791,82 +1731,124 @@ export const qhseMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Pengadaan",
-    icon: "ShoppingCart",
-    items: [],
-    directPath: "/qhse/pengadaan",
-  },
-  {
-    title: "Hydro Test",
-    icon: "Droplets",
-    items: [],
-    directPath: "/qhse/hydro-test",
-  },
-  {
-    title: "Daftar Alat Ukur",
+    title: "Monitoring Daftar Alat Ukur",
     icon: "Settings",
     items: [],
     directPath: "/qhse/daftar-alat-ukur",
   },
   {
-    title: "Matrix Training",
-    icon: "GraduationCap",
-    items: [],
-    directPath: "/qhse/matrix-training",
+    title: "Monitoring Personnel",
+    icon: "Users",
+    items: [
+      {
+        title: "Medical Check Up Personil",
+        icon: "Heart",
+        path: "/qhse/medical-checkup-personil",
+      },
+      {
+        title: "Kompetensi Personil",
+        icon: "GraduationCap",
+        path: "/qhse/kompetensi-personil",
+      },
+      {
+        title: "Matrix Training",
+        icon: "BookOpen",
+        path: "/qhse/matrix-training",
+      },
+    ],
   },
   {
-    title: "Medical Check Up Personil",
-    icon: "Heart",
-    items: [],
-    directPath: "/qhse/medical-checkup-personil",
-  },
-  {
-    title: "Kompetensi Personil",
-    icon: "GraduationCap",
-    items: [],
-    directPath: "/qhse/kompetensi-personil",
-  },
-  {
-    title: "Alat Pelindung Diri (APD)",
-    icon: "Shield",
-    items: [],
-    directPath: "/qhse/alat-pelindung-diri",
-  },
-  {
-    title: "Nomor Report",
-    icon: "FileText",
-    items: [],
-    directPath: "/qhse/nomor-report",
-  },
-  {
-    title: "Monitoring Report",
+    title: "Monitoring",
     icon: "Monitor",
-    items: [],
-    directPath: "/qhse/monitoring-report",
+    items: [
+      {
+        title: "KPI Department",
+        icon: "BarChart3",
+        path: "/qhse/kpi-department/dashboard",
+      },
+      {
+        title: "Kompetensi Perusahaan",
+        icon: "Award",
+        path: "/qhse/kompetensi-perusahaan",
+      },
+      {
+        title: "Alat Pelindung Diri (APD)",
+        icon: "Shield",
+        path: "/qhse/alat-pelindung-diri",
+      },
+      {
+        title: "Nomor Report",
+        icon: "FileText",
+        path: "/qhse/nomor-report",
+      },
+      {
+        title: "Log in Log Out Log Book RAT",
+        icon: "BookOpen",
+        path: "/qhse/log-book-rat",
+      },
+      {
+        title: "Log In Log out TLD",
+        icon: "BookOpenCheck",
+        path: "/qhse/log-book-tld",
+      },
+      {
+        title: "Monitoring Report",
+        icon: "FileSearch",
+        path: "/qhse/monitoring-report",
+      },
+    ],
   },
   {
-    title: "Daftar Induk Dokumen Internal",
-    icon: "FileText",
-    items: [],
-    directPath: "/qhse/daftar-induk-dokumen-internal",
+    title: "Monitoring Gudang",
+    icon: "Warehouse",
+    items: [
+      {
+        title: "Pengadaan",
+        icon: "ShoppingCart",
+        path: "/qhse/pengadaan",
+      },
+      {
+        title: "Hydro Test",
+        icon: "Droplets",
+        path: "/qhse/hydro-test",
+      },
+      {
+        title: "Pembagian APD Record",
+        icon: "Package",
+        path: "/qhse/pembagian-apd-record",
+      },
+    ],
   },
   {
-    title: "Perundangan K3L",
-    icon: "Scale",
-    items: [],
-    directPath: "/qhse/perundangan-k3l",
-  },
-  {
-    title: "Daftar Induk Dokumen Eksternal",
-    icon: "FileCheck",
-    items: [],
-    directPath: "/qhse/daftar-induk-dokumen-eksternal",
-  },
-  {
-    title: "Daftar Induk Rekaman Internal",
-    icon: "Archive",
-    items: [],
-    directPath: "/qhse/daftar-induk-rekaman-internal",
+    title: "General",
+    icon: "Settings",
+    items: [
+      {
+        title: "ISO System",
+        icon: "FileCheck",
+        path: "/qhse/general/iso-system",
+      },
+      {
+        title: "Daftar Induk Dokumen Internal",
+        icon: "FileText",
+        path: "/qhse/iso-system/daftar-induk-dokumen-internal",
+      },
+      {
+        title: "Perundangan K3L",
+        icon: "Scale",
+        path: "/qhse/perundangan-k3l",
+      },
+      {
+        title: "Daftar Induk Dokumen Eksternal",
+        icon: "FileCheck",
+        path: "/qhse/daftar-induk-dokumen-eksternal",
+      },
+      {
+        title: "Daftar Induk Rekaman Internal",
+        icon: "Archive",
+        path: "/qhse/daftar-induk-rekaman-internal",
+      },
+    ],
   },
   createGeneralMenu("qhse"),
 ];
@@ -2144,30 +2126,8 @@ export const proconMenu: MenuSection[] = [
   {
     title: "Laba Rugi Project",
     icon: "TrendingUp",
-    items: [
-      {
-        title: "Dashboard",
-        icon: "LayoutDashboard",
-        path: "/procon/lrp/dashboard",
-      },
-      {
-        title: "Tunjangan / Timesheet Teknisi",
-        icon: "UserCheck",
-        path: "/procon/lrp/tunjangan-timesheet-teknisi",
-      },
-      { title: "Gaji", icon: "Wallet", path: "/hrd/gaji/pengajian" },
-      {
-        title: "Timesheet Barang",
-        icon: "Package",
-        path: "/operational/timesheet/barang",
-      },
-      { title: "Kas Keluar", icon: "Wallet", path: "/accounting/kas-keluar" },
-      {
-        title: "Bank Keluar",
-        icon: "Banknote",
-        path: "/accounting/bank-keluar",
-      },
-    ],
+    items: [],
+    directPath: "/procon/lrp",
   },
   // New sections requested for Procon: Marketing, Operasional, Procurement, Finance
   {

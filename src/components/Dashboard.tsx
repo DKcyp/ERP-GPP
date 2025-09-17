@@ -219,6 +219,8 @@ import MatrixTrainingDashboard from "./MatrixTrainingDashboard";
 import MonitoringReportDashboard from "./MonitoringReportDashboard";
 import ProconApprovalPBGDashboard from "./ProconApprovalPBGDashboard";
 import ISOSystemDaftarIndukDokumenInternalDashboard from "./ISOSystemDaftarIndukDokumenInternalDashboard";
+import QHSELogBookTLDDashboard from "./QHSELogBookTLDDashboard";
+import QHSEGeneralISOSystemDashboard from "./QHSEGeneralISOSystemDashboard";
 
 // Accounting Dashboards
 import AccountingMainDashboard from "./AccountingMainDashboard";
@@ -353,6 +355,7 @@ import DaftarIndukDokumenEksternalDashboard from "./DaftarIndukDokumenEksternalD
 import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDashboard";
 import QHSEKPIDepartmentDashboard from "./QHSEKPIDepartmentDashboard";
 import QHSEKompetensiPerusahaanDashboard from "./QHSEKompetensiPerusahaanDashboard";
+import QHSELogBookRATDashboard from "./QHSELogBookRATDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1663,6 +1666,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/monitoring-personnel/mcu") {
       return <MedicalCheckUpDashboard />;
     }
+    if (currentPage === "/qhse/log-book-rat") {
+      return <QHSELogBookRATDashboard />;
+    }
     if (currentPage === "/qhse/monitoring-personnel/apd") {
       return <APDDashboard />;
     }
@@ -1804,6 +1810,16 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/alat-pelindung-diri") {
       return <QHSEAlatPelindungDiriDashboard />;
     }
+    if (currentPage === "/qhse/log-book-tld") {
+      return <QHSELogBookTLDDashboard />;
+    }
+    if (currentPage === "/qhse/iso-system") {
+      return <ISOSystemDaftarIndukDokumenInternalDashboard />;
+    }
+    if (currentPage === "/qhse/general/iso-system") {
+      return <QHSEGeneralISOSystemDashboard />;
+    }
+    
 
     // Accounting Routes
     if (currentPage === "/accounting/dashboard") {

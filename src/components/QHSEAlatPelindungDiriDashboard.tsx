@@ -1,22 +1,32 @@
 import React, { useMemo, useState } from 'react';
-import { Shield, Search, PlusCircle, Download, Pencil, Trash2, AlertTriangle, User, Upload, Eye, CheckCircle, Clock, XCircle, ExternalLink, Package, FileText } from 'lucide-react';
+import { Shield, Search, PlusCircle, Download, Pencil, Trash2, AlertTriangle, User, Upload, Eye, CheckCircle, Clock, XCircle, ExternalLink, Package, FileText, Calendar } from 'lucide-react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface APDPersonilItem {
   id: string;
+  no: string;
   namaPersonil: string;
-  jenisAPD: 'Coverall' | 'Safety Shoes';
-  sizeCoverall?: string;
-  jumlahPermintaan: number;
-  jumlahJatahTahunan: number;
-  sisaJatah: number;
-  documentBAKerusakan?: string;
-  status: 'Pengajuan' | 'Proses' | 'Selesai';
-  permintaanTambahan: boolean;
-  dibebankanKeSOProject?: string;
+  // Coverall tracking
+  coverallJumlah: number;
+  coverallJatahTahunan: number;
+  coverallSisaJatah: number;
+  coverallSize?: string;
+  coverallDocumentBA?: string;
+  coverallStatus: 'Pengajuan' | 'Proses' | 'Selesai';
+  coverallTglTerima?: string;
+  // Safety Shoes tracking
+  safetyShoeJumlah: number;
+  safetyShoeJatahTahunan: number;
+  safetyShoeSisaJatah: number;
+  safetyShoeSize?: string;
+  safetyShoeDocumentBA?: string;
+  safetyShoeStatus: 'Pengajuan' | 'Proses' | 'Selesai';
+  safetyShoeTglTerima?: string;
+  // General info
   tahunJatah: number;
   tanggalPermintaan: string;
-  keterangan?: string;
+  catatan?: string;
+  dibebankanKeSOProject?: string;
   hrdSyncStatus: 'Synced' | 'Pending' | 'Failed';
 }
 
@@ -30,110 +40,120 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
   const [deleteItem, setDeleteItem] = useState<APDPersonilItem | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Sample data with quota tracking
+  // Sample data with separate Coverall and Safety Shoes tracking
   const [apdData, setApdData] = useState<APDPersonilItem[]>([
     {
       id: '1',
+      no: 'APD001',
       namaPersonil: 'John Doe',
-      jenisAPD: 'Coverall',
-      sizeCoverall: 'L',
-      jumlahPermintaan: 1,
-      jumlahJatahTahunan: 2,
-      sisaJatah: 1,
-      status: 'Selesai',
-      permintaanTambahan: false,
+      coverallJumlah: 1,
+      coverallJatahTahunan: 2,
+      coverallSisaJatah: 1,
+      coverallSize: 'L',
+      coverallStatus: 'Selesai',
+      coverallTglTerima: '2024-03-20',
+      safetyShoeJumlah: 1,
+      safetyShoeJatahTahunan: 1,
+      safetyShoeSisaJatah: 0,
+      safetyShoeSize: '42',
+      safetyShoeStatus: 'Selesai',
+      safetyShoeTglTerima: '2024-03-20',
       tahunJatah: 2024,
       tanggalPermintaan: '2024-03-15',
-      keterangan: 'Permintaan rutin',
+      catatan: 'Permintaan rutin tahunan',
       hrdSyncStatus: 'Synced'
     },
     {
       id: '2',
+      no: 'APD002',
       namaPersonil: 'Jane Smith',
-      jenisAPD: 'Safety Shoes',
-      jumlahPermintaan: 1,
-      jumlahJatahTahunan: 1,
-      sisaJatah: 0,
-      status: 'Proses',
-      permintaanTambahan: false,
+      coverallJumlah: 2,
+      coverallJatahTahunan: 2,
+      coverallSisaJatah: 0,
+      coverallSize: 'M',
+      coverallStatus: 'Proses',
+      safetyShoeJumlah: 1,
+      safetyShoeJatahTahunan: 1,
+      safetyShoeSisaJatah: 0,
+      safetyShoeSize: '38',
+      safetyShoeDocumentBA: 'ba_kerusakan_safety_shoes_jane.pdf',
+      safetyShoeStatus: 'Proses',
       tahunJatah: 2024,
       tanggalPermintaan: '2024-08-20',
-      keterangan: 'Penggantian sepatu rusak',
-      documentBAKerusakan: 'ba_kerusakan_safety_shoes_jane.pdf',
+      catatan: 'Penggantian sepatu rusak',
       hrdSyncStatus: 'Synced'
     },
     {
       id: '3',
+      no: 'APD003',
       namaPersonil: 'Ahmad Rahman',
-      jenisAPD: 'Coverall',
-      sizeCoverall: 'XL',
-      jumlahPermintaan: 1,
-      jumlahJatahTahunan: 2,
-      sisaJatah: -1,
-      status: 'Pengajuan',
-      permintaanTambahan: true,
-      dibebankanKeSOProject: 'SO-2024-001',
+      coverallJumlah: 3,
+      coverallJatahTahunan: 2,
+      coverallSisaJatah: -1,
+      coverallSize: 'XL',
+      coverallDocumentBA: 'ba_kerusakan_coverall_ahmad.pdf',
+      coverallStatus: 'Pengajuan',
+      safetyShoeJumlah: 1,
+      safetyShoeJatahTahunan: 1,
+      safetyShoeSisaJatah: 0,
+      safetyShoeSize: '44',
+      safetyShoeStatus: 'Selesai',
+      safetyShoeTglTerima: '2024-09-05',
       tahunJatah: 2024,
       tanggalPermintaan: '2024-09-10',
-      keterangan: 'Permintaan tambahan - jatah habis',
+      catatan: 'Permintaan tambahan - jatah habis',
+      dibebankanKeSOProject: 'SO-2024-001',
       hrdSyncStatus: 'Pending'
-    },
-    {
-      id: '4',
-      namaPersonil: 'Maria Garcia',
-      jenisAPD: 'Coverall',
-      sizeCoverall: 'M',
-      jumlahPermintaan: 2,
-      jumlahJatahTahunan: 2,
-      sisaJatah: 0,
-      status: 'Selesai',
-      permintaanTambahan: false,
-      tahunJatah: 2024,
-      tanggalPermintaan: '2024-06-05',
-      keterangan: 'Permintaan jatah penuh',
-      hrdSyncStatus: 'Synced'
     }
   ]);
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const totalPersonil = new Set(apdData.map(item => item.namaPersonil)).size;
-    const totalPermintaan = apdData.length;
-    const permintaanTambahan = apdData.filter(item => item.permintaanTambahan).length;
-    const quotaHabis = apdData.filter(item => item.sisaJatah <= 0).length;
-    const needsProcessing = apdData.filter(item => item.status === 'Pengajuan' || item.status === 'Proses').length;
+    const totalPersonil = apdData.length;
+    const coverallExcess = apdData.filter(item => item.coverallSisaJatah < 0).length;
+    const safetyShoeExcess = apdData.filter(item => item.safetyShoeSisaJatah < 0).length;
+    const needsProcessing = apdData.filter(item => 
+      item.coverallStatus === 'Pengajuan' || item.coverallStatus === 'Proses' ||
+      item.safetyShoeStatus === 'Pengajuan' || item.safetyShoeStatus === 'Proses'
+    ).length;
     const hrdSyncPending = apdData.filter(item => item.hrdSyncStatus === 'Pending' || item.hrdSyncStatus === 'Failed').length;
-    const completed = apdData.filter(item => item.status === 'Selesai').length;
+    const completed = apdData.filter(item => 
+      item.coverallStatus === 'Selesai' && item.safetyShoeStatus === 'Selesai'
+    ).length;
+    const hasBAKerusakan = apdData.filter(item => 
+      item.coverallDocumentBA || item.safetyShoeDocumentBA
+    ).length;
 
     return {
       totalPersonil,
-      totalPermintaan,
-      permintaanTambahan,
-      quotaHabis,
+      coverallExcess,
+      safetyShoeExcess,
       needsProcessing,
       hrdSyncPending,
-      completed
+      completed,
+      hasBAKerusakan
     };
   }, [apdData]);
 
   // Filter data
   const filteredData = useMemo(() => {
     return apdData.filter(item => {
-      const matchesSearch = item.namaPersonil.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = !filterStatus || item.status === filterStatus;
-      const matchesJenisAPD = !filterJenisAPD || item.jenisAPD === filterJenisAPD;
+      const matchesSearch = item.namaPersonil.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.no.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = !filterStatus || 
+        item.coverallStatus === filterStatus || item.safetyShoeStatus === filterStatus;
       const matchesTahun = !filterTahun || item.tahunJatah.toString() === filterTahun;
 
-      return matchesSearch && matchesStatus && matchesJenisAPD && matchesTahun;
+      return matchesSearch && matchesStatus && matchesTahun;
     });
-  }, [apdData, searchTerm, filterStatus, filterJenisAPD, filterTahun]);
+  }, [apdData, searchTerm, filterStatus, filterTahun]);
 
   const getStatusBadge = (status: string, type: 'proses' | 'sync' | 'quota') => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
     
     if (type === 'quota') {
-      if (status === 'habis') return `${baseClasses} bg-red-100 text-red-800`;
-      if (status === 'sisa') return `${baseClasses} bg-yellow-100 text-yellow-800`;
+      if (status === 'excess') return `${baseClasses} bg-red-100 text-red-800`;
+      if (status === 'exhausted') return `${baseClasses} bg-orange-100 text-orange-800`;
       return `${baseClasses} bg-green-100 text-green-800`;
     } else if (type === 'sync') {
       switch (status) {
@@ -153,12 +173,12 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
   };
 
   const getQuotaStatus = (sisaJatah: number) => {
-    if (sisaJatah < 0) return 'habis';
-    if (sisaJatah === 0) return 'habis';
-    return 'tersedia';
+    if (sisaJatah < 0) return 'excess';
+    if (sisaJatah === 0) return 'exhausted';
+    return 'available';
   };
 
-  const formatQuotaText = (sisaJatah: number, jenisAPD: string) => {
+  const formatQuotaText = (sisaJatah: number) => {
     if (sisaJatah < 0) return `Kelebihan ${Math.abs(sisaJatah)}`;
     if (sisaJatah === 0) return 'Jatah Habis';
     return `Sisa ${sisaJatah}`;
@@ -172,7 +192,7 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
           <Shield className="h-8 w-8 text-blue-600" />
           <h1 className="text-2xl font-bold text-gray-900">Alat Pelindung Diri (APD)</h1>
         </div>
-        <p className="text-gray-600">Manajemen APD personil dengan jatah tahunan dan integrasi HRD</p>
+        <p className="text-gray-600">Manajemen APD personil dengan tracking terpisah Coverall dan Safety Shoes</p>
       </div>
 
       {/* Statistics Cards */}
@@ -187,33 +207,23 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Permintaan</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalPermintaan}</p>
+              <p className="text-sm font-medium text-gray-600">Coverall Excess</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.coverallExcess}</p>
             </div>
-            <Package className="h-8 w-8 text-green-500" />
+            <AlertTriangle className="h-8 w-8 text-red-500" />
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Permintaan Tambahan</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.permintaanTambahan}</p>
+              <p className="text-sm font-medium text-gray-600">Safety Shoe Excess</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.safetyShoeExcess}</p>
             </div>
             <AlertTriangle className="h-8 w-8 text-orange-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Quota Habis</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.quotaHabis}</p>
-            </div>
-            <XCircle className="h-8 w-8 text-red-500" />
           </div>
         </div>
 
@@ -224,6 +234,16 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
               <p className="text-2xl font-bold text-gray-900">{stats.needsProcessing}</p>
             </div>
             <Clock className="h-8 w-8 text-purple-500" />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">BA Kerusakan</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.hasBAKerusakan}</p>
+            </div>
+            <FileText className="h-8 w-8 text-green-500" />
           </div>
         </div>
 
@@ -261,7 +281,7 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            <span><strong>Safety Shoes:</strong> 1 unit per personil per tahun</span>
+            <span><strong>Safety Shoes:</strong> 1 pasang per personil per tahun</span>
           </div>
         </div>
         <p className="text-xs text-blue-700 mt-2">
@@ -277,7 +297,7 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <input
                 type="text"
-                placeholder="Cari nama personil..."
+                placeholder="Cari nama personil atau nomor..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -303,7 +323,7 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
                 <PlusCircle className="h-4 w-4" />
-                Tambah Permintaan APD
+                Tambah APD
               </button>
               <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
                 <Download className="h-4 w-4" />
@@ -316,7 +336,7 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
         {/* Filters */}
         {showFilters && (
           <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
@@ -328,18 +348,6 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
                   <option value="Pengajuan">Pengajuan</option>
                   <option value="Proses">Proses</option>
                   <option value="Selesai">Selesai</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Jenis APD</label>
-                <select
-                  value={filterJenisAPD}
-                  onChange={(e) => setFilterJenisAPD(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Semua Jenis</option>
-                  <option value="Coverall">Coverall</option>
-                  <option value="Safety Shoes">Safety Shoes</option>
                 </select>
               </div>
               <div>
@@ -358,7 +366,6 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
                 <button
                   onClick={() => {
                     setFilterStatus('');
-                    setFilterJenisAPD('');
                     setFilterTahun('');
                   }}
                   className="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
@@ -376,12 +383,11 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Personil</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis APD</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permintaan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jatah & Sisa</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tambahan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No & Personil</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">🧥 Coverall</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">👟 Safety Shoes</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Terima</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catatan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HRD Sync</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -393,52 +399,65 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-gray-400" />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{item.namaPersonil}</div>
-                          <div className="text-sm text-gray-500">Tahun: {item.tahunJatah}</div>
+                          <div className="text-sm font-medium text-gray-900">{item.no}</div>
+                          <div className="text-sm text-gray-500">{item.namaPersonil}</div>
+                          <div className="text-xs text-gray-400">Tahun: {item.tahunJatah}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1">
-                        <Shield className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{item.jenisAPD}</div>
-                          {item.sizeCoverall && (
-                            <div className="text-sm text-gray-500">Size: {item.sizeCoverall}</div>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.jumlahPermintaan} unit</div>
-                      <div className="text-sm text-gray-500">{item.tanggalPermintaan}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">Jatah: {item.jumlahJatahTahunan}</div>
-                      <span className={getStatusBadge(getQuotaStatus(item.sisaJatah), 'quota')}>
-                        {formatQuotaText(item.sisaJatah, item.jenisAPD)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.permintaanTambahan ? (
-                        <div>
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            Ya
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{item.coverallJumlah} unit</span>
+                          <span className={getStatusBadge(getQuotaStatus(item.coverallSisaJatah), 'quota')}>
+                            {formatQuotaText(item.coverallSisaJatah)}
                           </span>
-                          {item.dibebankanKeSOProject && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              SO: {item.dibebankanKeSOProject}
-                            </div>
-                          )}
                         </div>
-                      ) : (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Tidak
-                        </span>
-                      )}
+                        <div className="text-xs text-gray-500">Size: {item.coverallSize || '-'}</div>
+                        <div className="flex items-center gap-1">
+                          <span className={getStatusBadge(item.coverallStatus, 'proses')}>{item.coverallStatus}</span>
+                          {item.coverallDocumentBA && <FileText className="h-3 w-3 text-green-500" />}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getStatusBadge(item.status, 'proses')}>{item.status}</span>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{item.safetyShoeJumlah} pasang</span>
+                          <span className={getStatusBadge(getQuotaStatus(item.safetyShoeSisaJatah), 'quota')}>
+                            {formatQuotaText(item.safetyShoeSisaJatah)}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500">Size: {item.safetyShoeSize || '-'}</div>
+                        <div className="flex items-center gap-1">
+                          <span className={getStatusBadge(item.safetyShoeStatus, 'proses')}>{item.safetyShoeStatus}</span>
+                          {item.safetyShoeDocumentBA && <FileText className="h-3 w-3 text-green-500" />}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3 text-gray-400" />
+                          <span className="text-xs text-gray-600">Coverall:</span>
+                        </div>
+                        <div className="text-xs text-gray-900">{item.coverallTglTerima || '-'}</div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3 text-gray-400" />
+                          <span className="text-xs text-gray-600">Safety Shoes:</span>
+                        </div>
+                        <div className="text-xs text-gray-900">{item.safetyShoeTglTerima || '-'}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-xs text-gray-600 max-w-32 truncate" title={item.catatan}>
+                        {item.catatan || '-'}
+                      </div>
+                      {item.dibebankanKeSOProject && (
+                        <div className="text-xs text-orange-600 mt-1">
+                          SO: {item.dibebankanKeSOProject}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={getStatusBadge(item.hrdSyncStatus, 'sync')}>{item.hrdSyncStatus}</span>
@@ -452,14 +471,12 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
-                        {item.documentBAKerusakan && (
-                          <button
-                            className="text-green-600 hover:text-green-900"
-                            title="View BA Kerusakan"
-                          >
-                            <FileText className="h-4 w-4" />
-                          </button>
-                        )}
+                        <button
+                          className="text-green-600 hover:text-green-900"
+                          title="View Documents"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                         <button
                           onClick={() => setDeleteItem(item)}
                           className="text-red-600 hover:text-red-900"
@@ -487,7 +504,7 @@ const QHSEAlatPelindungDiriDashboard: React.FC = () => {
             setDeleteItem(null);
           }}
           title="Hapus Data APD"
-          message={`Apakah Anda yakin ingin menghapus permintaan APD "${deleteItem.jenisAPD}" untuk "${deleteItem.namaPersonil}"?`}
+          message={`Apakah Anda yakin ingin menghapus data APD untuk "${deleteItem.namaPersonil}"?`}
         />
       )}
     </div>
