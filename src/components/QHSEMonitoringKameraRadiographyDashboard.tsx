@@ -26,6 +26,8 @@ import {
   FileUp,
   SortAsc,
   SortDesc,
+  X,
+  Save,
 } from "lucide-react";
 
 interface PersonilData {
@@ -161,6 +163,41 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedData, setSelectedData] = useState<MonitoringKameraData | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState<string>("");
+
+  // Form states
+  const [formData, setFormData] = useState<MonitoringKameraData>({
+    id: "",
+    no: 0,
+    kamera: "",
+    isotop: "",
+    personil: [{
+      nama: "",
+      validSIB: "",
+      endKontrak: "",
+      keterangan: "BARU",
+      dosimeterSaku: "",
+      validCertDosimeter: "",
+      surveymeter: "",
+      validCertSurveymeter: "",
+      tld: "",
+    }],
+    ujiUsapKamera: "",
+    serumberW1: 0,
+    serumberW2: 0,
+    serumberW3: 0,
+    serumberW4: 0,
+    lokasiPemanfaatan: [""],
+    posisiKamera: "",
+    posisiColor: "bg-blue-600 text-white",
+    dedicated: "",
+  });
 
   // Get expiry status with color coding
   const getExpiryStatus = (date: string) => {
@@ -347,11 +384,153 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                 {kamera.dedicated}
               </td>
             )}
+            
+            {/* Actions - merged for all personnel */}
+            {isFirstRow && (
+              <td rowSpan={rowSpan} className="px-2 py-2 text-center">
+                <div className="flex justify-center gap-1">
+                  <button
+                    onClick={() => openViewModal(kamera)}
+                    className="text-blue-600 hover:text-blue-800 p-1"
+                    title="View"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => openEditModal(kamera)}
+                    className="text-green-600 hover:text-green-800 p-1"
+                    title="Edit"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(kamera.id)}
+                    className="text-red-600 hover:text-red-800 p-1"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </td>
+            )}
           </tr>
         );
       });
     });
     return rows;
+  };
+
+  // Modal handlers
+  const openAddModal = () => {
+    setModalMode('add');
+    setFormData({
+      id: "",
+      no: monitoringData.length + 1,
+      kamera: "",
+      isotop: "",
+      personil: [{
+        nama: "",
+        validSIB: "",
+        endKontrak: "",
+        keterangan: "BARU",
+        dosimeterSaku: "",
+        validCertDosimeter: "",
+        surveymeter: "",
+        validCertSurveymeter: "",
+        tld: "",
+      }],
+      ujiUsapKamera: "",
+      serumberW1: 0,
+      serumberW2: 0,
+      serumberW3: 0,
+      serumberW4: 0,
+      lokasiPemanfaatan: [""],
+      posisiKamera: "",
+      posisiColor: "bg-blue-600 text-white",
+      dedicated: "",
+    });
+    setShowModal(true);
+  };
+
+  const openEditModal = (data: MonitoringKameraData) => {
+    setModalMode('edit');
+    setSelectedData(data);
+    setFormData({ ...data });
+    setShowModal(true);
+  };
+
+  const openViewModal = (data: MonitoringKameraData) => {
+    setModalMode('view');
+    setSelectedData(data);
+    setFormData({ ...data });
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedData(null);
+  };
+
+  // CRUD operations
+  const handleSave = () => {
+    if (modalMode === 'add') {
+      const newData = {
+        ...formData,
+        id: Date.now().toString(),
+      };
+      setMonitoringData([...monitoringData, newData]);
+    } else if (modalMode === 'edit') {
+      setMonitoringData(monitoringData.map(item => 
+        item.id === formData.id ? formData : item
+      ));
+    }
+    closeModal();
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    setMonitoringData(monitoringData.filter(item => item.id !== deleteId));
+    setShowDeleteConfirm(false);
+    setDeleteId("");
+  };
+
+  // Form handlers
+  const handleInputChange = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handlePersonilChange = (index: number, field: string, value: any) => {
+    const updatedPersonil = [...formData.personil];
+    updatedPersonil[index] = { ...updatedPersonil[index], [field]: value };
+    setFormData({ ...formData, personil: updatedPersonil });
+  };
+
+  const addPersonil = () => {
+    setFormData({
+      ...formData,
+      personil: [...formData.personil, {
+        nama: "",
+        validSIB: "",
+        endKontrak: "",
+        keterangan: "BARU",
+        dosimeterSaku: "",
+        validCertDosimeter: "",
+        surveymeter: "",
+        validCertSurveymeter: "",
+        tld: "",
+      }]
+    });
+  };
+
+  const removePersonil = (index: number) => {
+    if (formData.personil.length > 1) {
+      const updatedPersonil = formData.personil.filter((_, i) => i !== index);
+      setFormData({ ...formData, personil: updatedPersonil });
+    }
   };
 
   // Statistics
@@ -475,13 +654,12 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
               </div>
 
               <div className="flex gap-2">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                <button 
+                  onClick={openAddModal}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                >
                   <Plus className="h-4 w-4" />
                   Add Data
-                </button>
-                <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center gap-2">
-                  <FileUp className="h-4 w-4" />
-                  Upload
                 </button>
                 <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
                   <Download className="h-4 w-4" />
@@ -562,6 +740,9 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider">
                     DEDICATED
                   </th>
+                  <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider">
+                    ACTIONS
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -586,6 +767,435 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Modal Form */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {modalMode === 'add' ? 'Tambah Data Kamera' : 
+                   modalMode === 'edit' ? 'Edit Data Kamera' : 'Detail Data Kamera'}
+                </h3>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Basic Info */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      No Urut
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.no}
+                      onChange={(e) => handleInputChange('no', parseInt(e.target.value))}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Kamera
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.kamera}
+                      onChange={(e) => handleInputChange('kamera', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Isotop
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.isotop}
+                      onChange={(e) => handleInputChange('isotop', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Uji Usap Kamera
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.ujiUsapKamera}
+                      onChange={(e) => handleInputChange('ujiUsapKamera', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Serumber Data */}
+                <div>
+                  <h4 className="text-md font-medium text-gray-900 mb-3">Data Serumber (Weekly)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">W1</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.serumberW1}
+                        onChange={(e) => handleInputChange('serumberW1', parseFloat(e.target.value))}
+                        disabled={modalMode === 'view'}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">W2</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.serumberW2}
+                        onChange={(e) => handleInputChange('serumberW2', parseFloat(e.target.value))}
+                        disabled={modalMode === 'view'}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">W3</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.serumberW3}
+                        onChange={(e) => handleInputChange('serumberW3', parseFloat(e.target.value))}
+                        disabled={modalMode === 'view'}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">W4</label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={formData.serumberW4}
+                        onChange={(e) => handleInputChange('serumberW4', parseFloat(e.target.value))}
+                        disabled={modalMode === 'view'}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Position & Dedicated */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Posisi Kamera
+                    </label>
+                    <select
+                      value={formData.posisiKamera}
+                      onChange={(e) => {
+                        const colors = {
+                          "PHE ONWJ": "bg-blue-600 text-white",
+                          "MEDCO EPG": "bg-green-600 text-white",
+                          "OFFICE": "bg-gray-600 text-white",
+                          "PROJECT": "bg-purple-600 text-white"
+                        };
+                        handleInputChange('posisiKamera', e.target.value);
+                        handleInputChange('posisiColor', colors[e.target.value as keyof typeof colors] || "bg-blue-600 text-white");
+                      }}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    >
+                      <option value="">Pilih Posisi</option>
+                      <option value="PHE ONWJ">PHE ONWJ</option>
+                      <option value="MEDCO EPG">MEDCO EPG</option>
+                      <option value="OFFICE">OFFICE</option>
+                      <option value="PROJECT">PROJECT</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Dedicated
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.dedicated}
+                      onChange={(e) => handleInputChange('dedicated', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Preview Posisi
+                    </label>
+                    <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${formData.posisiColor}`}>
+                        {formData.posisiKamera || "Preview"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lokasi Pemanfaatan */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-md font-medium text-gray-900">Lokasi Pemanfaatan</h4>
+                    {modalMode !== 'view' && (
+                      <button
+                        onClick={() => setFormData({
+                          ...formData,
+                          lokasiPemanfaatan: [...formData.lokasiPemanfaatan, ""]
+                        })}
+                        className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 flex items-center gap-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Tambah Lokasi
+                      </button>
+                    )}
+                  </div>
+                  
+                  {formData.lokasiPemanfaatan.map((lokasi, index) => (
+                    <div key={index} className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={lokasi}
+                        onChange={(e) => {
+                          const updatedLokasi = [...formData.lokasiPemanfaatan];
+                          updatedLokasi[index] = e.target.value;
+                          setFormData({ ...formData, lokasiPemanfaatan: updatedLokasi });
+                        }}
+                        disabled={modalMode === 'view'}
+                        placeholder={`Lokasi ${index + 1}`}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      />
+                      {modalMode !== 'view' && formData.lokasiPemanfaatan.length > 1 && (
+                        <button
+                          onClick={() => {
+                            const updatedLokasi = formData.lokasiPemanfaatan.filter((_, i) => i !== index);
+                            setFormData({ ...formData, lokasiPemanfaatan: updatedLokasi });
+                          }}
+                          className="text-red-600 hover:text-red-800 p-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Personil Section */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-md font-medium text-gray-900">Data Personil</h4>
+                    {modalMode !== 'view' && (
+                      <button
+                        onClick={addPersonil}
+                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 flex items-center gap-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Tambah Personil
+                      </button>
+                    )}
+                  </div>
+                  
+                  {formData.personil.map((person, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-medium text-gray-700">Personil {index + 1}</h5>
+                        {modalMode !== 'view' && formData.personil.length > 1 && (
+                          <button
+                            onClick={() => removePersonil(index)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Nama Personil
+                          </label>
+                          <input
+                            type="text"
+                            value={person.nama}
+                            onChange={(e) => handlePersonilChange(index, 'nama', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Valid SIB
+                          </label>
+                          <input
+                            type="date"
+                            value={person.validSIB}
+                            onChange={(e) => handlePersonilChange(index, 'validSIB', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            End Kontrak
+                          </label>
+                          <input
+                            type="date"
+                            value={person.endKontrak}
+                            onChange={(e) => handlePersonilChange(index, 'endKontrak', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Keterangan
+                          </label>
+                          <select
+                            value={person.keterangan}
+                            onChange={(e) => handlePersonilChange(index, 'keterangan', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          >
+                            <option value="BARU">BARU</option>
+                            <option value="PERPANJANG">PERPANJANG</option>
+                            <option value="OFF">OFF</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Dosimeter Saku
+                          </label>
+                          <input
+                            type="text"
+                            value={person.dosimeterSaku}
+                            onChange={(e) => handlePersonilChange(index, 'dosimeterSaku', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Valid Cert Dosimeter
+                          </label>
+                          <input
+                            type="date"
+                            value={person.validCertDosimeter}
+                            onChange={(e) => handlePersonilChange(index, 'validCertDosimeter', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Surveymeter
+                          </label>
+                          <input
+                            type="text"
+                            value={person.surveymeter}
+                            onChange={(e) => handlePersonilChange(index, 'surveymeter', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Valid Cert Surveymeter
+                          </label>
+                          <input
+                            type="date"
+                            value={person.validCertSurveymeter}
+                            onChange={(e) => handlePersonilChange(index, 'validCertSurveymeter', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            TLD
+                          </label>
+                          <input
+                            type="text"
+                            value={person.tld}
+                            onChange={(e) => handlePersonilChange(index, 'tld', e.target.value)}
+                            disabled={modalMode === 'view'}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                >
+                  {modalMode === 'view' ? 'Tutup' : 'Batal'}
+                </button>
+                {modalMode !== 'view' && (
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {modalMode === 'add' ? 'Simpan' : 'Update'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertTriangle className="h-8 w-8 text-red-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Konfirmasi Hapus
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-6">
+                  Apakah Anda yakin ingin menghapus data kamera ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
