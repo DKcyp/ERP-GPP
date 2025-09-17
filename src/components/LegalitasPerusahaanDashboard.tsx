@@ -271,7 +271,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                 onClick={openAdd}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
               >
-                <PlusCircle className="h-5 w-5 mr-2" /> Tambah Legalitas
+                <PlusCircle className="h-5 w-5 mr-2" /> Tambah Sertifikat
               </button>
               <button
                 onClick={() => setPage(1)}
@@ -575,40 +575,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Approval</label>
-                  <input
-                    type="text"
-                    value={modal.data?.approval ?? ""}
-                    onChange={(e) =>
-                      setModal((m) => ({
-                        ...m,
-                        data: { ...m.data, approval: e.target.value },
-                      }))
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Status</label>
-                  <select
-                    value={modal.data?.status ?? "Pengajuan"}
-                    onChange={(e) =>
-                      setModal((m) => ({
-                        ...m,
-                        data: { ...m.data, status: e.target.value as any },
-                      }))
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="Pengajuan">Pengajuan</option>
-                    <option value="Proses">Proses</option>
-                    <option value="Tersertifikasi">Tersertifikasi</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Upload File</label>
                   <input
@@ -626,22 +593,6 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                     }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Director Approval</label>
-                  <select
-                    value={modal.data?.approvedByDirector ? "true" : "false"}
-                    onChange={(e) =>
-                      setModal((m) => ({
-                        ...m,
-                        data: { ...m.data, approvedByDirector: e.target.value === "true" },
-                      }))
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="false">Belum Disetujui</option>
-                    <option value="true">Disetujui Direktur</option>
-                  </select>
                 </div>
               </div>
             </div>
