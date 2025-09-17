@@ -1721,6 +1721,11 @@ export const qhseMenu: MenuSection[] = [
         path: "/qhse/medical-checkup-personil",
       },
       {
+        title: "Monitoring APD",
+        icon: "HardHat",
+        path: "/qhse/monitoring-apd",
+      },
+      {
         title: "Kompetensi Personil",
         icon: "GraduationCap",
         path: "/qhse/kompetensi-personil",

@@ -215,7 +215,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
           <div className="flex items-center justify-between">
             <div>
@@ -285,7 +285,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
             <Bell className="h-8 w-8 text-pink-500" />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Search and Actions */}
       <div className="bg-white rounded-lg shadow mb-6">

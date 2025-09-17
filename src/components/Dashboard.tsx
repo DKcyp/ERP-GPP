@@ -208,6 +208,8 @@ import QHSEMasterKPIDashboard from "./QHSEMasterKPIDashboard";
 import QHSEListKPIDashboard from "./QHSEListKPIDashboard";
 import QHSEKompetensiPersonilDashboard from "./QHSEKompetensiPersonilDashboard";
 import QHSEAlatPelindungDiriDashboard from "./QHSEAlatPelindungDiriDashboard";
+import QHSEMonitoringAPDDashboard from "./QHSEMonitoringAPDDashboard";
+import QHSEDaftarIndukDokumenEksternalDashboard from "./QHSEDaftarIndukDokumenEksternalDashboard";
 // New QHSE Components
 import KameraDashboard from "./KameraDashboard";
 import SIBPersonilDashboard from "./SIBPersonilDashboard";
@@ -1647,6 +1649,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <QHSEPerformanceDashboard />;
     }
 
+    if(currentPage === "/qhse/monitoring-apd") {
+      return <QHSEMonitoringAPDDashboard />;
+    }
+
     if(currentPage === "/qhse/kamera-radiography") {
       return <QHSEKameraRadiographyDashboard />;
     }
@@ -1803,7 +1809,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <PerundanganK3LDashboard />;
     }
     if (currentPage === "/qhse/daftar-induk-dokumen-eksternal") {
-      return <DaftarIndukDokumenEksternalDashboard />;
+      return <QHSEDaftarIndukDokumenEksternalDashboard />;
     }
     if (currentPage === "/qhse/daftar-induk-rekaman-internal") {
       return <DaftarIndukRekamanInternalDashboard />;

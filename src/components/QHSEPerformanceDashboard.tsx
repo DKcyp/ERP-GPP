@@ -24,6 +24,37 @@ interface LaggingIndicators {
   nearMiss: number;
 }
 
+interface KPIItem {
+  id: string;
+  kpiName: string;
+  category: string;
+  responsible: string;
+  target: number;
+  actual: number;
+}
+
+interface TargetItem {
+  id: string;
+  description: string;
+  target: number;
+  targetYTD: number;
+  jan: number;
+  feb: number;
+  mar: number;
+  apr: number;
+  may: number;
+  jun: number;
+  jul: number;
+  aug: number;
+  sep: number;
+  oct: number;
+  nov: number;
+  dec: number;
+  last12MthTotal: number;
+  jumlahHariHilang?: number;
+  category: 'LAGGING' | 'LEADING';
+}
+
 const BULAN_OPTIONS = [
   'Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'
 ];
@@ -40,9 +71,21 @@ const initialData: PerformanceItem[] = [
   { id: '2', bulan: 'Februari', tahun: 2025, lagging: '1 incident', leading: '4 toolbox meeting', document: undefined },
 ];
 
+const initialKPIData: KPIItem[] = [
+  { id: '1', kpiName: 'KPI 1', category: 'Category 1', responsible: 'John Doe', target: 100, actual: 80 },
+  { id: '2', kpiName: 'KPI 2', category: 'Category 2', responsible: 'Jane Doe', target: 200, actual: 150 },
+];
+
+const initialTargetData: TargetItem[] = [
+  { id: '1', description: 'Target 1', target: 100, targetYTD: 100, jan: 10, feb: 20, mar: 30, apr: 40, may: 50, jun: 60, jul: 70, aug: 80, sep: 90, oct: 100, nov: 110, dec: 120, last12MthTotal: 1200, jumlahHariHilang: 10, category: 'LAGGING' },
+  { id: '2', description: 'Target 2', target: 200, targetYTD: 200, jan: 20, feb: 40, mar: 60, apr: 80, may: 100, jun: 120, jul: 140, aug: 160, sep: 180, oct: 200, nov: 220, dec: 240, last12MthTotal: 2400, jumlahHariHilang: 20, category: 'LEADING' },
+];
+
 const QHSEPerformanceDashboard: React.FC = () => {
   // table state
   const [rows, setRows] = useState<PerformanceItem[]>(initialData);
+  const [kpis, setKpis] = useState<KPIItem[]>(initialKPIData);
+  const [targets, setTargets] = useState<TargetItem[]>(initialTargetData);
 
   // filters
   const [bulan, setBulan] = useState<string>('');
@@ -57,6 +100,35 @@ const QHSEPerformanceDashboard: React.FC = () => {
   const [mode, setMode] = useState<'add'|'edit'>('add');
   const [form, setForm] = useState<Partial<PerformanceItem & { laggingIndicators: LaggingIndicators; notes: string }>>({});
   const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  // KPI and Target modal states
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'kpi' | 'target'>('dashboard');
+  const [showKPIModal, setShowKPIModal] = useState(false);
+  const [showTargetModal, setShowTargetModal] = useState(false);
+  const [kpiMode, setKpiMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [targetMode, setTargetMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
+  const [selectedTarget, setSelectedTarget] = useState<TargetItem | null>(null);
+  const [kpiForm, setKpiForm] = useState<Partial<KPIItem>>({});
+  const [targetForm, setTargetForm] = useState<Partial<TargetItem>>({});
+  const [searchKPI, setSearchKPI] = useState('');
+  const [searchTarget, setSearchTarget] = useState('');
+
+  // Filter functions
+  const filteredKPIs = useMemo(() => {
+    return kpis.filter(kpi =>
+      kpi.kpiName.toLowerCase().includes(searchKPI.toLowerCase()) ||
+      kpi.category.toLowerCase().includes(searchKPI.toLowerCase()) ||
+      kpi.responsible.toLowerCase().includes(searchKPI.toLowerCase())
+    );
+  }, [kpis, searchKPI]);
+
+  const filteredTargets = useMemo(() => {
+    return targets.filter(target =>
+      target.description.toLowerCase().includes(searchTarget.toLowerCase()) ||
+      target.category.toLowerCase().includes(searchTarget.toLowerCase())
+    );
+  }, [targets, searchTarget]);
 
   const filtered = useMemo(() => {
     return rows.filter(r => {
@@ -113,6 +185,106 @@ const QHSEPerformanceDashboard: React.FC = () => {
   const confirmDelete = () => {
     if (confirmId) setRows(prev => prev.filter(p => p.id !== confirmId));
     setConfirmId(null);
+  };
+
+  const openKPIAdd = () => {
+    setKpiMode('add');
+    setKpiForm({});
+    setShowKPIModal(true);
+  };
+
+  const openKPIEdit = (kpi: KPIItem) => {
+    setKpiMode('edit');
+    setKpiForm(kpi);
+    setSelectedKPI(kpi);
+    setShowKPIModal(true);
+  };
+
+  const saveKPIForm = () => {
+    if (kpiMode === 'add') {
+      const newKPI: KPIItem = {
+        id: String(Date.now()),
+        kpiName: kpiForm.kpiName as string,
+        category: kpiForm.category as string,
+        responsible: kpiForm.responsible as string,
+        target: kpiForm.target as number,
+        actual: kpiForm.actual as number,
+      };
+      setKpis(prev => [newKPI, ...prev]);
+    } else if (kpiMode === 'edit' && selectedKPI) {
+      setKpis(prev => prev.map(p => p.id === selectedKPI.id ? ({
+        id: selectedKPI.id,
+        kpiName: kpiForm.kpiName as string,
+        category: kpiForm.category as string,
+        responsible: kpiForm.responsible as string,
+        target: kpiForm.target as number,
+        actual: kpiForm.actual as number,
+      }) : p));
+    }
+    setShowKPIModal(false);
+  };
+
+  const openTargetAdd = () => {
+    setTargetMode('add');
+    setTargetForm({});
+    setShowTargetModal(true);
+  };
+
+  const openTargetEdit = (target: TargetItem) => {
+    setTargetMode('edit');
+    setTargetForm(target);
+    setSelectedTarget(target);
+    setShowTargetModal(true);
+  };
+
+  const saveTargetForm = () => {
+    if (targetMode === 'add') {
+      const newTarget: TargetItem = {
+        id: String(Date.now()),
+        description: targetForm.description as string,
+        target: targetForm.target as number,
+        targetYTD: targetForm.targetYTD as number,
+        jan: targetForm.jan as number,
+        feb: targetForm.feb as number,
+        mar: targetForm.mar as number,
+        apr: targetForm.apr as number,
+        may: targetForm.may as number,
+        jun: targetForm.jun as number,
+        jul: targetForm.jul as number,
+        aug: targetForm.aug as number,
+        sep: targetForm.sep as number,
+        oct: targetForm.oct as number,
+        nov: targetForm.nov as number,
+        dec: targetForm.dec as number,
+        last12MthTotal: targetForm.last12MthTotal as number,
+        jumlahHariHilang: targetForm.jumlahHariHilang as number | undefined,
+        category: targetForm.category as 'LAGGING' | 'LEADING',
+      };
+      setTargets(prev => [newTarget, ...prev]);
+    } else if (targetMode === 'edit' && selectedTarget) {
+      setTargets(prev => prev.map(p => p.id === selectedTarget.id ? ({
+        id: selectedTarget.id,
+        description: targetForm.description as string,
+        target: targetForm.target as number,
+        targetYTD: targetForm.targetYTD as number,
+        jan: targetForm.jan as number,
+        feb: targetForm.feb as number,
+        mar: targetForm.mar as number,
+        apr: targetForm.apr as number,
+        may: targetForm.may as number,
+        jun: targetForm.jun as number,
+        jul: targetForm.jul as number,
+        aug: targetForm.aug as number,
+        sep: targetForm.sep as number,
+        oct: targetForm.oct as number,
+        nov: targetForm.nov as number,
+        dec: targetForm.dec as number,
+        last12MthTotal: targetForm.last12MthTotal as number,
+        jumlahHariHilang: targetForm.jumlahHariHilang as number | undefined,
+        category: targetForm.category as 'LAGGING' | 'LEADING',
+      }) : p));
+    }
+    setShowTargetModal(false);
   };
 
   return (
@@ -413,6 +585,78 @@ const QHSEPerformanceDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* KPI Management Tab */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <Shield className="h-5 w-5 text-blue-500" />
+                KPI Management
+              </h3>
+              <button
+                onClick={openKPIAdd}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <PlusCircle className="h-4 w-4" />
+                Tambah KPI
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <span className="text-sm font-medium text-gray-700">KPI Name</span>
+                <span className="text-sm text-gray-600">Target</span>
+              </div>
+              {filteredKPIs.map(kpi => (
+                <div key={kpi.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">{kpi.kpiName}</span>
+                  <span className="text-sm text-gray-600">{kpi.target}</span>
+                  <button
+                    onClick={() => openKPIEdit(kpi)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Target Management Tab */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <Shield className="h-5 w-5 text-blue-500" />
+                Target Management
+              </h3>
+              <button
+                onClick={openTargetAdd}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <PlusCircle className="h-4 w-4" />
+                Tambah Target
+              </button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <span className="text-sm font-medium text-gray-700">Description</span>
+                <span className="text-sm text-gray-600">Target</span>
+              </div>
+              {filteredTargets.map(target => (
+                <div key={target.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">{target.description}</span>
+                  <span className="text-sm text-gray-600">{target.target}</span>
+                  <button
+                    onClick={() => openTargetEdit(target)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -642,6 +886,291 @@ const QHSEPerformanceDashboard: React.FC = () => {
               </button>
               <button 
                 onClick={saveForm} 
+                className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* KPI Modal */}
+      {showKPIModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowKPIModal(false)} />
+          <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+            <h2 className="text-xl font-semibold mb-6">{kpiMode === 'add' ? 'Tambah KPI' : 'Edit KPI'}</h2>
+            
+            <div className="grid grid-cols-1 gap-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">KPI Name</label>
+                  <input
+                    type="text"
+                    value={kpiForm.kpiName || ''}
+                    onChange={e => setKpiForm(f => ({ ...f, kpiName: e.target.value }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <input
+                    type="text"
+                    value={kpiForm.category || ''}
+                    onChange={e => setKpiForm(f => ({ ...f, category: e.target.value }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              </div>
+
+              {/* Target */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Target</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={kpiForm.target || 0}
+                  onChange={e => setKpiForm(f => ({ ...f, target: Number(e.target.value) }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button 
+                onClick={() => setShowKPIModal(false)} 
+                className="px-4 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={saveKPIForm} 
+                className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Target Modal */}
+      {showTargetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowTargetModal(false)} />
+          <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+            <h2 className="text-xl font-semibold mb-6">{targetMode === 'add' ? 'Tambah Target' : 'Edit Target'}</h2>
+            
+            <div className="grid grid-cols-1 gap-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <input
+                    type="text"
+                    value={targetForm.description || ''}
+                    onChange={e => setTargetForm(f => ({ ...f, description: e.target.value }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Target</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.target || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, target: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              </div>
+
+              {/* Target YTD */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Target YTD</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={targetForm.targetYTD || 0}
+                  onChange={e => setTargetForm(f => ({ ...f, targetYTD: Number(e.target.value) }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Monthly Targets */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Jan</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.jan || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, jan: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Feb</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.feb || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, feb: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mar</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.mar || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, mar: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Apr</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.apr || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, apr: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">May</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.may || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, may: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Jun</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.jun || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, jun: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Jul</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.jul || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, jul: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Aug</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.aug || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, aug: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Sep</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.sep || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, sep: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Oct</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.oct || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, oct: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nov</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.nov || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, nov: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Dec</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={targetForm.dec || 0}
+                    onChange={e => setTargetForm(f => ({ ...f, dec: Number(e.target.value) }))}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              </div>
+
+              {/* Last 12 Month Total */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Last 12 Month Total</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={targetForm.last12MthTotal || 0}
+                  onChange={e => setTargetForm(f => ({ ...f, last12MthTotal: Number(e.target.value) }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Jumlah Hari Hilang */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah Hari Hilang</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={targetForm.jumlahHariHilang || 0}
+                  onChange={e => setTargetForm(f => ({ ...f, jumlahHariHilang: Number(e.target.value) }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select
+                  value={targetForm.category || ''}
+                  onChange={e => setTargetForm(f => ({ ...f, category: e.target.value as 'LAGGING' | 'LEADING' }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">Pilih Category</option>
+                  <option value="LAGGING">LAGGING</option>
+                  <option value="LEADING">LEADING</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button 
+                onClick={() => setShowTargetModal(false)} 
+                className="px-4 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={saveTargetForm} 
                 className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               >
                 Simpan
