@@ -291,18 +291,29 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-     {/* Header */}
-     <div className="bg-white rounded-lg shadow-sm mb-6">
-        <div className="bg-gradient-to-r from-white-600 to-white-700 text-dark p-6 rounded-t-lg">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold mb-2">DAFTAR INDUK DOKUMEN INTERNAL</h1>
-              {/* <p className="text-gray-100">PT. Gamma Buana Persada | Dept. QHSE</p> */}
+    <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-50 to-white border-b border-gray-100">
+            <div className="max-w-7xl mx-auto px-6 py-8">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <FileText className="h-8 w-8 text-green-600" />
+                    <h1 className="text-4xl font-bold text-gray-900 tracking-wide">
+                      DAFTAR INDUK DOKUMEN INTERNAL
+                    </h1>
+                  </div>
+                  <nav className="text-sm text-gray-600">
+                    <span>Dashboard</span> <span className="mx-2">›</span>
+                    <span>QHSE</span> <span className="mx-2">›</span>
+                    <span className="text-green-600 font-medium">Dokumen Internal</span>
+                  </nav>
+                </div>
+                
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+          <div className="max-w-7xl mx-auto px-6 py-8">
 
       {/* Controls */}
       <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
@@ -602,6 +613,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
