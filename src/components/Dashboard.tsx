@@ -358,6 +358,8 @@ import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDas
 import QHSEKPIDepartmentDashboard from "./QHSEKPIDepartmentDashboard";
 import QHSEKompetensiPerusahaanDashboard from "./QHSEKompetensiPerusahaanDashboard";
 import QHSELogBookRATDashboard from "./QHSELogBookRATDashboard";
+import QHSEMonitoringKameraRadiographyDashboard from "./QHSEMonitoringKameraRadiographyDashboard";
+import QHSEUjiUsapKameraDashboard from "./QHSEUjiUsapKameraDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1827,7 +1829,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/general/iso-system") {
       return <QHSEGeneralISOSystemDashboard />;
     }
-    
+    if (currentPage === "/qhse/radiography/qhse/monitoring-kamera") {
+      return <QHSEMonitoringKameraRadiographyDashboard />;
+    }
+    if (currentPage === "/qhse/radiography/qhse/uji-usap-kamera") {
+      return <QHSEUjiUsapKameraDashboard />;
+    }
 
     // Accounting Routes
     if (currentPage === "/accounting/dashboard") {

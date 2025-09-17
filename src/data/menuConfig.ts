@@ -1678,7 +1678,7 @@ export const qhseMenu: MenuSection[] = [
     directPath: "/qhse/dashboard",
   },
   {
-    title: "Legalitas Perusahaan",
+    title: "Kompetensi Perusahaan",
     icon: "ShieldCheck",
     items: [],
     directPath: "/qhse/legalitas-perusahaan",
@@ -1694,39 +1694,14 @@ export const qhseMenu: MenuSection[] = [
     icon: "Zap",
     items: [
       {
-        title: "Kamera Radiography",
+        title: "Monitoring Kamera Radiography",
         icon: "Camera",
-        path: "/qhse/kamera-radiography",
-      },
-      {
-        title: "SIB Personil",
-        icon: "UserCheck",
-        path: "/qhse/sib-personil",
-      },
-      {
-        title: "Dosis Card",
-        icon: "CreditCard",
-        path: "/qhse/dosis-card",
-      },
-      {
-        title: "Proses ISOTOP",
-        icon: "Atom",
-        path: "/qhse/radiography/proses-isotop",
+        path: "/qhse/radiography/qhse/monitoring-kamera",
       },
       {
         title: "Uji Usap Kamera",
-        icon: "ClipboardCheck",
-        path: "/qhse/radiography/uji-usap-kamera",
-      },
-      {
-        title: "TLD",
-        icon: "Tag",
-        path: "/qhse/radiography/tld",
-      },
-      {
-        title: "Monitoring",
-        icon: "Monitor",
-        path: "/qhse/radiography/monitoring",
+        icon: "TestTube",
+        path: "/qhse/radiography/qhse/uji-usap-kamera",
       },
     ],
   },
@@ -1758,97 +1733,16 @@ export const qhseMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Monitoring",
-    icon: "Monitor",
-    items: [
-      {
-        title: "KPI Department",
-        icon: "BarChart3",
-        path: "/qhse/kpi-department/dashboard",
-      },
-      {
-        title: "Kompetensi Perusahaan",
-        icon: "Award",
-        path: "/qhse/kompetensi-perusahaan",
-      },
-      {
-        title: "Alat Pelindung Diri (APD)",
-        icon: "Shield",
-        path: "/qhse/alat-pelindung-diri",
-      },
-      {
-        title: "Nomor Report",
-        icon: "FileText",
-        path: "/qhse/nomor-report",
-      },
-      {
-        title: "Log in Log Out Log Book RAT",
-        icon: "BookOpen",
-        path: "/qhse/log-book-rat",
-      },
-      {
-        title: "Log In Log out TLD",
-        icon: "BookOpenCheck",
-        path: "/qhse/log-book-tld",
-      },
-      {
-        title: "Monitoring Report",
-        icon: "FileSearch",
-        path: "/qhse/monitoring-report",
-      },
-    ],
+    title: "Daftar Induk Dokumen Internal",
+    icon: "FileText",
+    items: [],
+    directPath: "/qhse/daftar-induk-dokumen-internal",
   },
   {
-    title: "Monitoring Gudang",
-    icon: "Warehouse",
-    items: [
-      {
-        title: "Pengadaan",
-        icon: "ShoppingCart",
-        path: "/qhse/pengadaan",
-      },
-      {
-        title: "Hydro Test",
-        icon: "Droplets",
-        path: "/qhse/hydro-test",
-      },
-      {
-        title: "Pembagian APD Record",
-        icon: "Package",
-        path: "/qhse/pembagian-apd-record",
-      },
-    ],
-  },
-  {
-    title: "General",
-    icon: "Settings",
-    items: [
-      {
-        title: "ISO System",
-        icon: "FileCheck",
-        path: "/qhse/general/iso-system",
-      },
-      {
-        title: "Daftar Induk Dokumen Internal",
-        icon: "FileText",
-        path: "/qhse/iso-system/daftar-induk-dokumen-internal",
-      },
-      {
-        title: "Perundangan K3L",
-        icon: "Scale",
-        path: "/qhse/perundangan-k3l",
-      },
-      {
-        title: "Daftar Induk Dokumen Eksternal",
-        icon: "FileCheck",
-        path: "/qhse/daftar-induk-dokumen-eksternal",
-      },
-      {
-        title: "Daftar Induk Rekaman Internal",
-        icon: "Archive",
-        path: "/qhse/daftar-induk-rekaman-internal",
-      },
-    ],
+    title: "Daftar Induk Dokumen Eksternal",
+    icon: "FileCheck",
+    items: [],
+    directPath: "/qhse/daftar-induk-dokumen-eksternal",
   },
   createGeneralMenu("qhse"),
 ];
