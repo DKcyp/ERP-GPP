@@ -135,6 +135,17 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
   const [selectedDokumen, setSelectedDokumen] = useState<DokumenInternal | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Form state
+  const [formData, setFormData] = useState<Partial<DokumenInternal>>({
+    namaDokumen: '',
+    nomorDokumen: '',
+    jenisDokumen: '',
+    noRevisi: '',
+    tanggalBerlaku: '',
+    lamaWaktuSimpan: '',
+    status: 'Aktif'
+  });
+
   // Format tanggal ke format Indonesia
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -243,18 +254,45 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
   // CRUD Functions
   const openAddModal = () => {
     setSelectedDokumen(null);
+    setFormData({
+      namaDokumen: '',
+      nomorDokumen: '',
+      jenisDokumen: '',
+      noRevisi: '',
+      tanggalBerlaku: '',
+      lamaWaktuSimpan: '',
+      status: 'Aktif'
+    });
     setModalMode('add');
     setShowModal(true);
   };
 
   const openEditModal = (dokumen: DokumenInternal) => {
     setSelectedDokumen(dokumen);
+    setFormData({
+      namaDokumen: dokumen.namaDokumen,
+      nomorDokumen: dokumen.nomorDokumen,
+      jenisDokumen: dokumen.jenisDokumen,
+      noRevisi: dokumen.noRevisi,
+      tanggalBerlaku: dokumen.tanggalBerlaku,
+      lamaWaktuSimpan: dokumen.lamaWaktuSimpan,
+      status: dokumen.status
+    });
     setModalMode('edit');
     setShowModal(true);
   };
 
   const openViewModal = (dokumen: DokumenInternal) => {
     setSelectedDokumen(dokumen);
+    setFormData({
+      namaDokumen: dokumen.namaDokumen,
+      nomorDokumen: dokumen.nomorDokumen,
+      jenisDokumen: dokumen.jenisDokumen,
+      noRevisi: dokumen.noRevisi,
+      tanggalBerlaku: dokumen.tanggalBerlaku,
+      lamaWaktuSimpan: dokumen.lamaWaktuSimpan,
+      status: dokumen.status
+    });
     setModalMode('view');
     setShowModal(true);
   };
@@ -262,32 +300,49 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
   const handleDelete = (id: number) => {
     setDokumenData(prev => prev.filter(item => item.id !== id));
     setShowDeleteConfirm(false);
+    setSelectedDokumen(null);
   };
 
-  const handleSave = (dokumenData: Partial<DokumenInternal>) => {
+  const handleSave = () => {
     if (modalMode === 'add') {
-      const newId = Math.max(...dokumenData.map(d => d.id)) + 1;
-      const newNo = Math.max(...dokumenData.map(d => d.no)) + 1;
+      const newId = dokumenData.length > 0 ? Math.max(...dokumenData.map(d => d.id)) + 1 : 1;
+      const newNo = dokumenData.length > 0 ? Math.max(...dokumenData.map(d => d.no)) + 1 : 1;
       const newDokumen: DokumenInternal = {
         id: newId,
         no: newNo,
-        namaDokumen: dokumenData.namaDokumen || '',
-        nomorDokumen: dokumenData.nomorDokumen || '',
-        jenisDokumen: dokumenData.jenisDokumen || '',
-        noRevisi: dokumenData.noRevisi || '',
-        tanggalBerlaku: dokumenData.tanggalBerlaku || '',
-        lamaWaktuSimpan: dokumenData.lamaWaktuSimpan || '',
-        status: dokumenData.status || 'Aktif'
+        namaDokumen: formData.namaDokumen || '',
+        nomorDokumen: formData.nomorDokumen || '',
+        jenisDokumen: formData.jenisDokumen || '',
+        noRevisi: formData.noRevisi || '',
+        tanggalBerlaku: formData.tanggalBerlaku || '',
+        lamaWaktuSimpan: formData.lamaWaktuSimpan || '',
+        status: formData.status || 'Aktif'
       };
       setDokumenData(prev => [...prev, newDokumen]);
     } else if (modalMode === 'edit' && selectedDokumen) {
       setDokumenData(prev => prev.map(item => 
         item.id === selectedDokumen.id 
-          ? { ...item, ...dokumenData }
+          ? { ...item, ...formData }
           : item
       ));
     }
     setShowModal(false);
+    setFormData({
+      namaDokumen: '',
+      nomorDokumen: '',
+      jenisDokumen: '',
+      noRevisi: '',
+      tanggalBerlaku: '',
+      lamaWaktuSimpan: '',
+      status: 'Aktif'
+    });
+  };
+
+  const handleInputChange = (field: keyof DokumenInternal, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -614,8 +669,214 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
         </div>
       </div>
     </div>
+    {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {modalMode === 'add' ? 'Tambah Dokumen Internal' : 
+                   modalMode === 'edit' ? 'Edit Dokumen Internal' : 'Detail Dokumen Internal'}
+                </h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <span className="sr-only">Close</span>
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nama Dokumen *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.namaDokumen || ''}
+                      onChange={(e) => handleInputChange('namaDokumen', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nomor Dokumen *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.nomorDokumen || ''}
+                      onChange={(e) => handleInputChange('nomorDokumen', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Jenis Dokumen *
+                    </label>
+                    <select
+                      value={formData.jenisDokumen || ''}
+                      onChange={(e) => handleInputChange('jenisDokumen', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    >
+                      <option value="">Pilih Jenis Dokumen</option>
+                      <option value="Formulir">Formulir</option>
+                      <option value="Prosedur">Prosedur</option>
+                      <option value="Instruksi Kerja">Instruksi Kerja</option>
+                      <option value="SOP">SOP</option>
+                      <option value="Manual">Manual</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      No. Revisi *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.noRevisi || ''}
+                      onChange={(e) => handleInputChange('noRevisi', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tanggal Berlaku *
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.tanggalBerlaku || ''}
+                      onChange={(e) => handleInputChange('tanggalBerlaku', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lama Waktu Simpan *
+                    </label>
+                    <select
+                      value={formData.lamaWaktuSimpan || ''}
+                      onChange={(e) => handleInputChange('lamaWaktuSimpan', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    >
+                      <option value="">Pilih Lama Waktu Simpan</option>
+                      <option value="1 tahun">1 tahun</option>
+                      <option value="2 tahun">2 tahun</option>
+                      <option value="3 tahun">3 tahun</option>
+                      <option value="5 tahun">5 tahun</option>
+                      <option value="10 tahun">10 tahun</option>
+                      <option value="Permanen">Permanen</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status *
+                    </label>
+                    <select
+                      value={formData.status || ''}
+                      onChange={(e) => handleInputChange('status', e.target.value as 'Aktif' | 'Mendekati Expired' | 'Tidak Berlaku')}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    >
+                      <option value="Aktif">Aktif</option>
+                      <option value="Mendekati Expired">Mendekati Expired</option>
+                      <option value="Tidak Berlaku">Tidak Berlaku</option>
+                    </select>
+                  </div>
+                </div>
+
+                {modalMode !== 'view' && (
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                      {modalMode === 'add' ? 'Tambah' : 'Simpan'}
+                    </button>
+                  </div>
+                )}
+
+                {modalMode === 'view' && (
+                  <div className="flex justify-end mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && selectedDokumen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mt-2">Hapus Dokumen</h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  Apakah Anda yakin ingin menghapus dokumen "{selectedDokumen.namaDokumen}"? 
+                  Tindakan ini tidak dapat dibatalkan.
+                </p>
+              </div>
+              <div className="flex gap-3 justify-center mt-4">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={() => handleDelete(selectedDokumen.id)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+    // </div>
+    
   );
 };
+
 
 export default QHSEDaftarIndukDokumenInternalDashboard;
