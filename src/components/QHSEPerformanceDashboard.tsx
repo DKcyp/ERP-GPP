@@ -456,7 +456,7 @@ const QHSEPerformanceDashboard: React.FC = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
+        {/* Headere */}
         <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-6 py-8">
             <div className="flex items-center justify-between">
