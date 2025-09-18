@@ -165,7 +165,7 @@ const ProconLRPExcelDashboard: React.FC = () => {
                     <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Plan</th>
                     <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Actual</th>
                     <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Actual + Forecast</th>
-                    <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Selisih</th>
+                    <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Actual Dari Plans</th>
                     <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">%</th>
                   </tr>
                 </thead>
@@ -174,11 +174,11 @@ const ProconLRPExcelDashboard: React.FC = () => {
                   <tr className="bg-gray-50 font-semibold">
                     <td className="px-4 py-2 text-sm">I</td>
                     <td className="px-4 py-2 text-sm">PENDAPATAN</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalPendPlan)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalPendActual)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalPendActual)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatSigned(totalPendActual - totalPendPlan)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{totalPendPlan ? (((totalPendActual - totalPendPlan) / totalPendPlan) * 100).toFixed(2) + '%' : '#DIV/0!'}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
 
                   {/* Pendapatan row(s) */}
@@ -218,11 +218,11 @@ const ProconLRPExcelDashboard: React.FC = () => {
                   <tr className="bg-gray-50 font-semibold">
                     <td className="px-4 py-2 text-sm">II</td>
                     <td className="px-4 py-2 text-sm">BIAYA</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalBiayaPlan)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalBiayaActual)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalBiayaActual)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{formatSigned(totalBiayaActual - totalBiayaPlan)}</td>
-                    <td className="px-4 py-2 text-sm text-right">{totalBiayaPlan ? (((totalBiayaActual - totalBiayaPlan) / totalBiayaPlan) * 100).toFixed(2) + '%' : '#DIV/0!'}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
 
                   {/* Grouped sections */}
@@ -241,7 +241,7 @@ const ProconLRPExcelDashboard: React.FC = () => {
                     <React.Fragment key={section}>
                       <tr className="bg-white">
                         <td className="px-4 py-2 text-sm"></td>
-                        <td className="px-4 py-2 text-sm font-medium">{section}</td>
+                        <td className="px-4 py-2 text-sm font-semibold">{section}</td>
                         <td></td>
                         <td></td>
                         <td></td>
