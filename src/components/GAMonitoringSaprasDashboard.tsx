@@ -1,13 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { Search, Eye, History as HistoryIcon, X, Clock } from 'lucide-react';
 
-interface SaprasItem { id: string; nama: string; lokasi: string; }
+interface SaprasItem { 
+  id: string; 
+  nama: string; 
+  lokasi: string; 
+  nomorAset: string;
+  tipe: string;
+  merek: string;
+}
+
 interface SaprasLog { date: string; status: 'OK' | 'Trouble'; note?: string; photo?: string; }
 
 const seedItems = (): SaprasItem[] => [
-  { id: 'sp1', nama: 'Genset Kantor', lokasi: 'Ruang Genset' },
-  { id: 'sp2', nama: 'AC Ruang Server', lokasi: 'Server Room' },
-  { id: 'sp3', nama: 'Lift Barang', lokasi: 'Gudang Lt.2' },
+  { id: 'sp1', nama: 'Genset Kantor', lokasi: 'Ruang Genset', nomorAset: 'AST-GEN-001', tipe: 'Generator', merek: 'Cummins' },
+  { id: 'sp2', nama: 'AC Ruang Server', lokasi: 'Server Room', nomorAset: 'AST-AC-002', tipe: 'Air Conditioner', merek: 'Daikin' },
+  { id: 'sp3', nama: 'Lift Barang', lokasi: 'Gudang Lt.2', nomorAset: 'AST-LFT-003', tipe: 'Cargo Lift', merek: 'Mitsubishi' },
 ];
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -74,21 +82,27 @@ const GAMonitoringSaprasDashboard: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-left p-2">No</th>
+                <th className="text-left p-2">Nomor Aset</th>
                 <th className="text-left p-2">Nama</th>
                 <th className="text-left p-2">Lokasi</th>
+                <th className="text-left p-2">Tipe</th>
+                <th className="text-left p-2">Merek</th>
                 <th className="text-center p-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((it, idx) => (
-                <tr key={it.id} className="border-t">
+                <tr key={it.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-25'}>
                   <td className="p-2">{idx + 1}</td>
+                  <td className="p-2">{it.nomorAset}</td>
                   <td className="p-2 font-medium">{it.nama}</td>
                   <td className="p-2">{it.lokasi}</td>
+                  <td className="p-2">{it.tipe}</td>
+                  <td className="p-2">{it.merek}</td>
                   <td className="p-2">
                     <div className="flex items-center justify-center gap-2">
                       <button onClick={()=>{ setMonitorId(it.id); setStatus('OK'); setNote(''); setPhoto(undefined); }} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Eye className="h-3 w-3"/>Monitor</button>
-                      <button onClick={()=>setHistoryId(it.id)} className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs flex items-center gap-1"><HistoryIcon className="h-3 w-3"/>History</button>
+                      <button onClick={()=>setHistoryId(it.id)} className="px-2 py-1 bg-gray-600 text-white rounded text-xs flex items-center gap-1"><HistoryIcon className="h-3 w-3"/>History</button>
                     </div>
                   </td>
                 </tr>
