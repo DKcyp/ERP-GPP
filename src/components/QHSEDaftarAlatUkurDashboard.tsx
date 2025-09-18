@@ -4,6 +4,10 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface AlatUkurItem {
   id: string;
+  equipmentName: string;
+  spec: string;
+  merk: string;
+  type: string;
   serialNumber: string;
   calibrationDate: string;
   validationDate: string;
@@ -11,7 +15,6 @@ interface AlatUkurItem {
   status: 'QC PASSED' | 'QC FAILED' | 'QUARANTINE';
   position: string;
   detailLocation: string;
-  pic: string;
   daysUntilExpiry?: number;
   isExpiringSoon?: boolean;
 }

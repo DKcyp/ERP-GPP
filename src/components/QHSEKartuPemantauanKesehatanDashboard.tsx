@@ -11,7 +11,7 @@ import {
 interface MCURecord {
   year: number;
   tanggalKesimpulan: string;
-  status: "Fit" | "Fit*" | "Unfit" | "Pending";
+  status: "Fit" | "Unfit" | "Pending";
 }
 
 interface PersonnelHealthData {
@@ -37,7 +37,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
         { year: 2020, tanggalKesimpulan: "23-10-2020", status: "Fit" },
         { year: 2021, tanggalKesimpulan: "19-12-2021", status: "Fit" },
         { year: 2022, tanggalKesimpulan: "22-12-2022", status: "Fit" },
-        { year: 2023, tanggalKesimpulan: "20-12-2023", status: "Fit*" },
+        { year: 2023, tanggalKesimpulan: "20-12-2023", status: "Unfit" },
         { year: 2024, tanggalKesimpulan: "19-11-2024", status: "Fit" },
       ]
     },
@@ -50,7 +50,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
       masaBerlakuSIB: "15-06-2025",
       mcuHistory: [
         { year: 2020, tanggalKesimpulan: "15-09-2020", status: "Fit" },
-        { year: 2021, tanggalKesimpulan: "20-10-2021", status: "Fit*" },
+        { year: 2021, tanggalKesimpulan: "20-10-2021", status: "Unfit" },
         { year: 2022, tanggalKesimpulan: "18-11-2022", status: "Fit" },
         { year: 2023, tanggalKesimpulan: "25-10-2023", status: "Fit" },
         { year: 2024, tanggalKesimpulan: "30-09-2024", status: "Fit" },
@@ -67,7 +67,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
         { year: 2020, tanggalKesimpulan: "10-08-2020", status: "Fit" },
         { year: 2021, tanggalKesimpulan: "15-09-2021", status: "Fit" },
         { year: 2022, tanggalKesimpulan: "12-08-2022", status: "Unfit" },
-        { year: 2023, tanggalKesimpulan: "28-07-2023", status: "Fit*" },
+        { year: 2023, tanggalKesimpulan: "28-07-2023", status: "Unfit" },
         { year: 2024, tanggalKesimpulan: "22-08-2024", status: "Fit" },
       ]
     },
@@ -96,7 +96,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
       mcuHistory: [
         { year: 2020, tanggalKesimpulan: "18-07-2020", status: "Fit" },
         { year: 2021, tanggalKesimpulan: "22-08-2021", status: "Fit" },
-        { year: 2022, tanggalKesimpulan: "30-07-2022", status: "Fit*" },
+        { year: 2022, tanggalKesimpulan: "30-07-2022", status: "Unfit" },
         { year: 2023, tanggalKesimpulan: "25-08-2023", status: "Fit" },
         { year: 2024, tanggalKesimpulan: "20-08-2024", status: "Fit" },
       ]
@@ -177,7 +177,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
       p.mcuHistory.length > 0 && p.mcuHistory[p.mcuHistory.length - 1].status === "Fit"
     ).length,
     fitWithCondition: personnelData.filter(p => 
-      p.mcuHistory.length > 0 && p.mcuHistory[p.mcuHistory.length - 1].status === "Fit*"
+      p.mcuHistory.length > 0 && p.mcuHistory[p.mcuHistory.length - 1].status === "Unfit"
     ).length,
     pendingMCU: personnelData.filter(p => 
       p.mcuHistory.length > 0 && p.mcuHistory[p.mcuHistory.length - 1].status === "Pending"
