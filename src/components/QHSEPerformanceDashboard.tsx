@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Clock, Search, PlusCircle, Download, FileText, Pencil, Trash2, AlertTriangle, TrendingUp, ExternalLink, Shield, Users } from 'lucide-react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import { useAuth } from '../context/AuthContext';
 
 interface PerformanceItem {
   id: string;
@@ -113,6 +114,38 @@ const QHSEPerformanceDashboard: React.FC = () => {
   const [targetForm, setTargetForm] = useState<Partial<TargetItem>>({});
   const [searchKPI, setSearchKPI] = useState('');
   const [searchTarget, setSearchTarget] = useState('');
+  const { user } = useAuth();
+
+  // Simple Indicator modal state
+  const [showIndicatorModal, setShowIndicatorModal] = useState(false);
+  const [indicatorContext, setIndicatorContext] = useState<'lagging' | 'leading' | 'training' | 'manhours' | null>(null);
+  const [indicatorForm, setIndicatorForm] = useState<{ name: string; description: string }>({ name: '', description: '' });
+
+  const openIndicatorAdd = (ctx: 'lagging' | 'leading' | 'training' | 'manhours') => {
+    setIndicatorContext(ctx);
+    setIndicatorForm({ name: '', description: '' });
+    setShowIndicatorModal(true);
+  };
+
+  const saveIndicator = () => {
+    // TODO: Integrate with specific list states if needed.
+    setShowIndicatorModal(false);
+  };
+
+  const getIndicatorModalTitle = () => {
+    switch (indicatorContext) {
+      case 'lagging':
+        return 'Tambah Indikator Lagging';
+      case 'leading':
+        return 'Tambah Indikator Leading';
+      case 'training':
+        return 'Tambah Safety Training';
+      case 'manhours':
+        return 'Tambah Manhours Worker';
+      default:
+        return 'Tambah Indikator';
+    }
+  };
 
   // Filter functions
   const filteredKPIs = useMemo(() => {
@@ -357,7 +390,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                   <AlertTriangle className="h-5 w-5 text-red-500" />
                   Lagging Indicators
                 </h3>
-                <span className="text-sm text-gray-500">Monitoring & Input Manual</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Monitoring & Input Manual</span>
+                  {user?.role === 'qhse' && (
+                    <button
+                      onClick={() => openIndicatorAdd('lagging')}
+                      className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1.5 text-sm"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Tambah
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -410,7 +454,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                   <TrendingUp className="h-5 w-5 text-green-500" />
                   Leading Indicators
                 </h3>
-                <span className="text-sm text-gray-500">Monitoring & Input Manual</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Monitoring & Input Manual</span>
+                  {user?.role === 'qhse' && (
+                    <button
+                      onClick={() => openIndicatorAdd('leading')}
+                      className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1.5 text-sm"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Tambah
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -485,7 +540,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                   <Shield className="h-5 w-5 text-blue-500" />
                   Safety Training
                 </h3>
-                <span className="text-sm text-gray-500">Link dari Matrik Training Inspector</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Link dari Matrik Training Inspector</span>
+                  {user?.role === 'qhse' && (
+                    <button
+                      onClick={() => openIndicatorAdd('training')}
+                      className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1.5 text-sm"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Tambah
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -526,7 +592,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                   <Users className="h-5 w-5 text-purple-500" />
                   Manhours Worker
                 </h3>
-                <span className="text-sm text-gray-500">Link dengan Absen</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Link dengan Absen</span>
+                  {user?.role === 'qhse' && (
+                    <button
+                      onClick={() => openIndicatorAdd('manhours')}
+                      className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1.5 text-sm"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Tambah
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
@@ -886,6 +963,54 @@ const QHSEPerformanceDashboard: React.FC = () => {
               </button>
               <button 
                 onClick={saveForm} 
+                className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Indicator Simple Modal */}
+      {showIndicatorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowIndicatorModal(false)} />
+          <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <h2 className="text-xl font-semibold mb-6">{getIndicatorModalTitle()}</h2>
+
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nama Indikator</label>
+                <input
+                  type="text"
+                  value={indicatorForm.name}
+                  onChange={e => setIndicatorForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Masukkan nama indikator"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                <textarea
+                  value={indicatorForm.description}
+                  onChange={e => setIndicatorForm(f => ({ ...f, description: e.target.value }))}
+                  placeholder="Masukkan keterangan"
+                  rows={3}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowIndicatorModal(false)}
+                className="px-4 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={saveIndicator}
                 className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               >
                 Simpan
