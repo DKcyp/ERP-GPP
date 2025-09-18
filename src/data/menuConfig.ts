@@ -551,11 +551,11 @@ export const gaMenu: MenuSection[] = [
       //   icon: "Banknote",
       //   path: "/hrd/general/cash-advance/dashboard",
       // },
-      {
-        title: "Monitoring Voucher",
-        icon: "Ticket",
-        path: "/qhse/monitoring/voucher",
-      },
+      // {
+      //   title: "Monitoring Voucher",
+      //   icon: "Ticket",
+      //   path: "/qhse/monitoring/voucher",
+      // },
       {
         title: "Monitoring Service Kendaraan",
         icon: "Wrench",

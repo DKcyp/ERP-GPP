@@ -20,7 +20,11 @@ import {
 import Alert from './Alert'; // Import the new Alert component
 import { AlertItem } from '../types'; // Import AlertItem type
 
-const PengadaanDashboard: React.FC = () => {
+interface PengadaanDashboardProps {
+  onNavigate?: (page: string) => void;
+}
+
+const PengadaanDashboard: React.FC<PengadaanDashboardProps> = ({ onNavigate }) => {
   const [animateCards, setAnimateCards] = useState(false);
   const [alerts, setAlerts] = useState<AlertItem[]>([
     { id: '1', message: 'PR212 belum dibuatkan PO', type: 'error', actionText: 'Kerjakan' },
@@ -46,8 +50,9 @@ const PengadaanDashboard: React.FC = () => {
   };
 
   const handlePenerimaanClick = () => {
-    // Use window.location to trigger navigation
-    window.location.hash = '/pengadaan/penerimaan-barang';
+    if (onNavigate) {
+      onNavigate('/pengadaan/penerimaan-barang');
+    }
   };
 
   return (
