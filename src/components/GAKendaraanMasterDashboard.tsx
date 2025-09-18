@@ -10,16 +10,18 @@ interface KendaraanItem {
   platNomor: string;
   noRangka?: string;
   noMesin?: string;
+  tahunPembelian: number;
+  warna: string;
 }
 
 const seedData = (): KendaraanItem[] => {
   const items: KendaraanItem[] = [];
-  const push = (merek: string, plats: string[]) => {
-    plats.forEach((p, idx) => items.push({ id: `${merek}-${idx}-${p}`, merek, platNomor: p, noRangka: '', noMesin: '' }));
+  const push = (merek: string, plats: string[], tahunPembelian: number, warna: string) => {
+    plats.forEach((p, idx) => items.push({ id: `${merek}-${idx}-${p}`, merek, platNomor: p, noRangka: '', noMesin: '', tahunPembelian, warna }));
   };
-  push('Expander', ['B 1875 ROB', 'B 1079 ROJ', 'B 1044 ROR']);
-  push('Rubicon', ['B 500 GBP', 'B 2141 UZT']);
-  push('Chery', ['B 1753 TNT', 'Triton 9319 TBB']);
+  push('Expander', ['B 1875 ROB', 'B 1079 ROJ', 'B 1044 ROR'], 2015, 'Putih');
+  push('Rubicon', ['B 500 GBP', 'B 2141 UZT'], 2018, 'Hitam');
+  push('Chery', ['B 1753 TNT', 'Triton 9319 TBB'], 2020, 'Merah');
   return items;
 };
 
@@ -70,11 +72,11 @@ const GAKendaraanMasterDashboard: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleSave = (item: { merek: string; platNomor: string }) => {
+  const handleSave = (item: { merek: string; platNomor: string; tahunPembelian: number; warna: string }) => {
     // Khusus modal tambah kendaraan (merek/plat)
     if (!editingItem) {
       // Add new
-      setData(prev => [{ id: `${Date.now()}`, merek: item.merek, platNomor: item.platNomor }, ...prev]);
+      setData(prev => [{ id: `${Date.now()}`, ...item, noRangka: '', noMesin: '' }, ...prev]);
       setCurrentPage(1);
     }
     setIsModalOpen(false);
@@ -83,7 +85,7 @@ const GAKendaraanMasterDashboard: React.FC = () => {
 
   const handleSaveRangkaMesin = (payload: { noRangka: string; noMesin: string }) => {
     if (editingItem) {
-      setData(prev => prev.map(x => x.id === editingItem.id ? { ...x, noRangka: payload.noRangka, noMesin: payload.noMesin } : x));
+      setData(prev => prev.map(x => x.id === editingItem.id ? { ...x, ...payload } : x));
     }
     setIsRangkaMesinOpen(false);
     setEditingItem(null);
@@ -122,7 +124,7 @@ const GAKendaraanMasterDashboard: React.FC = () => {
                 <span className="text-blue-600 font-semibold">Master Kendaraan</span>
               </nav>
             </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-500">
+            <div className="flex items-center justify-end gap-2 text-xs">
               <Clock className="h-4 w-4" />
               <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
             </div>
@@ -209,6 +211,8 @@ const GAKendaraanMasterDashboard: React.FC = () => {
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Plat Nomor</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No. Rangka</th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No. Mesin</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tahun Pembelian</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Warna</th>
                   <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -224,6 +228,8 @@ const GAKendaraanMasterDashboard: React.FC = () => {
                     <td className="px-2 py-1 text-gray-700">{item.platNomor}</td>
                     <td className="px-2 py-1 text-gray-700">{item.noRangka || '-'}</td>
                     <td className="px-2 py-1 text-gray-700">{item.noMesin || '-'}</td>
+                    <td className="px-2 py-1 text-gray-700">{item.tahunPembelian}</td>
+                    <td className="px-2 py-1 text-gray-700">{item.warna}</td>
                     <td className="px-2 py-1">
                       <div className="flex items-center justify-center space-x-1">
                         <button

@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 interface KendaraanModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { merek: string; platNomor: string }) => void;
-  initialData?: { merek: string; platNomor: string } | null;
+  onSave: (data: { merek: string; platNomor: string; tahunPembelian: number; warna: string }) => void;
+  initialData?: { merek: string; platNomor: string; tahunPembelian: number; warna: string } | null;
   title?: string;
   submitLabel?: string;
 }
@@ -12,11 +12,15 @@ interface KendaraanModalProps {
 const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave, initialData = null, title = 'Tambah Kendaraan', submitLabel = 'Simpan' }) => {
   const [merek, setMerek] = useState(initialData?.merek ?? '');
   const [platNomor, setPlatNomor] = useState(initialData?.platNomor ?? '');
+  const [tahunPembelian, setTahunPembelian] = useState(initialData?.tahunPembelian ?? 0);
+  const [warna, setWarna] = useState(initialData?.warna ?? '');
 
   useEffect(() => {
     if (isOpen) {
       setMerek(initialData?.merek ?? '');
       setPlatNomor(initialData?.platNomor ?? '');
+      setTahunPembelian(initialData?.tahunPembelian ?? 0);
+      setWarna(initialData?.warna ?? '');
     }
   }, [isOpen, initialData]);
 
@@ -24,8 +28,8 @@ const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!merek.trim() || !platNomor.trim()) return;
-    onSave({ merek: merek.trim(), platNomor: platNomor.trim() });
+    if (!merek.trim() || !platNomor.trim() || !tahunPembelian || !warna.trim()) return;
+    onSave({ merek: merek.trim(), platNomor: platNomor.trim(), tahunPembelian, warna: warna.trim() });
   };
 
   return (
@@ -53,6 +57,26 @@ const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave
               onChange={(e) => setPlatNomor(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Contoh: B 1875 ROB"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tahun Pembelian</label>
+            <input
+              type="number"
+              value={tahunPembelian}
+              onChange={(e) => setTahunPembelian(Number(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Contoh: 2020"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Warna</label>
+            <input
+              type="text"
+              value={warna}
+              onChange={(e) => setWarna(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Contoh: Hitam"
             />
           </div>
           <div className="flex items-center justify-end space-x-2 pt-2">
