@@ -187,23 +187,30 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Home className="h-4 w-4" />
-                <span>/</span>
-                <span>QHSE</span>
-                <span>/</span>
-                <span>Radiography</span>
-                <span>/</span>
-                <span className="text-blue-600 font-medium">Kartu Pemantauan Kesehatan</span>
+      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-6 py-8">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+                        Kartu Pemantauan Kesehatan
+                      </h1>
+                      <nav className="text-sm text-gray-600">
+                        <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                          QHSE
+                        </span>
+                        <span className="mx-2">›</span>
+                        <span className="text-blue-600 font-medium">
+                          Kartu Pemantauan Kesehatan
+                        </span>
+                      </nav>
+                    </div>
+                    <div className="flex items-center space-x-3 text-sm text-gray-500">
+                      <Clock className="h-4 w-4" />
+                      <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -214,65 +221,12 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
               <div className="bg-white/20 p-2 rounded-lg">
                 <CreditCard className="h-8 w-8 text-white" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Kartu Pemantauan Kesehatan</h1>
-                <p className="text-blue-100">Monitoring kesehatan personil radiografi</p>
-              </div>
             </div>
             <div className="flex space-x-3">
               <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                 <Download className="h-4 w-4" />
                 <span>Export</span>
               </button>
-              <button 
-                onClick={() => setShowAddModal(true)}
-                className="bg-white hover:bg-gray-100 text-blue-600 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Tambah Personil</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Personil</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalPersonnel}</p>
-              </div>
-              <User className="h-8 w-8 text-blue-500" />
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Fit</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.fitPersonnel}</p>
-              </div>
-              <div className="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">✓</span>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-yellow-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Fit*</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.fitWithCondition}</p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-yellow-500" />
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-gray-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending MCU</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.pendingMCU}</p>
-              </div>
-              <Clock className="h-8 w-8 text-gray-500" />
             </div>
           </div>
         </div>
@@ -307,7 +261,6 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SIB</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku SIB</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status MCU Terakhir</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -339,34 +292,6 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
                             {latestMCU.status}
                           </span>
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => openDetailModal(item)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Lihat Detail"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => setShowEditModal(true)}
-                            className="text-green-600 hover:text-green-900"
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setDeleteId(item.id);
-                              setShowDeleteConfirm(true);
-                            }}
-                            className="text-red-600 hover:text-red-900"
-                            title="Hapus"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
                       </td>
                     </tr>
                   );
