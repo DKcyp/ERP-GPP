@@ -669,6 +669,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/pengadaan/dashboard") {
       return <PengadaanDashboard />;
     }
+    if (currentPage === "/pengadaan/penerimaan-barang") {
+      return <PenerimaanBarangDashboard />;
+    }
     if (currentPage === "/pengadaan/po/dashboard") {
       return <PODashboard />;
     }

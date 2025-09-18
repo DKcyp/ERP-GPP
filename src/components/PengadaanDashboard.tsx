@@ -49,8 +49,10 @@ const PengadaanDashboard: React.FC<PengadaanDashboardProps> = () => {
   };
 
   const handlePenerimaanClick = () => {
+    console.log('handlePenerimaanClick called - navigating to penerimaan-barang');
     // Use window.location to trigger navigation
     window.location.hash = '/pengadaan/penerimaan-barang';
+    console.log('window.location.hash set to:', window.location.hash);
   };
 
   return (
@@ -125,7 +127,7 @@ const PengadaanDashboard: React.FC<PengadaanDashboardProps> = () => {
             </div>
           </div>
 
-          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 ${
+          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer ${
             animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
           }`} style={{ animationDelay: '400ms' }} onClick={handlePenerimaanClick}>
             <div className="flex items-center space-x-4">
