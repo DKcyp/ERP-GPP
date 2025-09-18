@@ -225,6 +225,7 @@ import ProconApprovalPBGDashboard from "./ProconApprovalPBGDashboard";
 import ISOSystemDaftarIndukDokumenInternalDashboard from "./ISOSystemDaftarIndukDokumenInternalDashboard";
 import QHSELogBookTLDDashboard from "./QHSELogBookTLDDashboard";
 import QHSEGeneralISOSystemDashboard from "./QHSEGeneralISOSystemDashboard";
+import QHSEKartuPemantauanKesehatanDashboard from "./QHSEKartuPemantauanKesehatanDashboard";
 
 // Accounting Dashboards
 import AccountingMainDashboard from "./AccountingMainDashboard";
@@ -1859,6 +1860,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/radiography/qhse/uji-usap-kamera") {
       return <QHSEUjiUsapKameraDashboard />;
+    }
+    if (currentPage === "/qhse/radiography/qhse/kartu-pemantauan-kesehatan") {
+      return <QHSEKartuPemantauanKesehatanDashboard />;
     }
 
     // Accounting Routes

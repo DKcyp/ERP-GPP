@@ -1717,6 +1717,21 @@ export const qhseMenu: MenuSection[] = [
         icon: "TestTube",
         path: "/qhse/radiography/qhse/uji-usap-kamera",
       },
+      {
+        title: "Kartu Dosis",
+        icon: "Tag",
+        path: "/qhse/radiography/qhse/kartu-dosis",
+      },
+      {
+        title: "Kartu Pemantauan Kesehatan",
+        icon: "CreditCard",
+        path: "/qhse/radiography/qhse/kartu-pemantauan-kesehatan",
+      },
+      {
+        title: "Daftar Inventaris Isotop",
+        icon: "List",
+        path: "/qhse/radiography/qhse/daftar-inventaris-isotop",
+      },
     ],
   },
   {

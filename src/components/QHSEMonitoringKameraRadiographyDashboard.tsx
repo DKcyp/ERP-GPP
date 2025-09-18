@@ -13,7 +13,6 @@ interface PersonilData {
   nama: string;
   validSIB: string;
   endKontrak: string;
-  keterangan: "BARU" | "PERPANJANG" | "OFF";
   dosimeterSaku: string;
   validCertDosimeter: string;
   surveymeter: string;
@@ -56,7 +55,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
           nama: "OR YULI ANTONI",
           validSIB: "2024-12-31",
           endKontrak: "2024-11-30",
-          keterangan: "PERPANJANG",
           dosimeterSaku: "DS001",
           validCertDosimeter: "2024-11-15",
           surveymeter: "SM001",
@@ -67,7 +65,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
           nama: "AR SUTOPO BIMA VICTOR",
           validSIB: "2024-06-15",
           endKontrak: "2024-05-20",
-          keterangan: "OFF",
           dosimeterSaku: "DS002",
           validCertDosimeter: "2024-04-20",
           surveymeter: "SM002",
@@ -78,7 +75,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
           nama: "PPR EKA SURYA FACHRIZA",
           validSIB: "2025-01-15",
           endKontrak: "2024-12-31",
-          keterangan: "BARU",
           dosimeterSaku: "DS003",
           validCertDosimeter: "2024-12-01",
           surveymeter: "SM003",
@@ -114,7 +110,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
           nama: "OR SLAMET PARYANTO",
           validSIB: "2024-04-15",
           endKontrak: "2024-03-30",
-          keterangan: "OFF",
           dosimeterSaku: "DS004",
           validCertDosimeter: "2024-02-20",
           surveymeter: "SM004",
@@ -125,7 +120,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
           nama: "AR AHMAD",
           validSIB: "2024-08-20",
           endKontrak: "2024-07-15",
-          keterangan: "PERPANJANG",
           dosimeterSaku: "DS005",
           validCertDosimeter: "2024-06-30",
           surveymeter: "SM005",
@@ -174,7 +168,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       nama: "",
       validSIB: "",
       endKontrak: "",
-      keterangan: "BARU",
       dosimeterSaku: "",
       validCertDosimeter: "",
       surveymeter: "",
@@ -274,11 +267,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                 month: '2-digit', 
                 year: 'numeric' 
               })}
-            </td>
-            
-            {/* Keterangan - individual with status color */}
-            <td className={`px-2 py-2 text-center text-xs font-bold border-r border-gray-300 ${getKeteranganColor(person.keterangan)}`}>
-              {person.keterangan}
             </td>
             
             {/* Dosimeter Saku - individual */}
@@ -438,7 +426,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
         nama: "",
         validSIB: "",
         endKontrak: "",
-        keterangan: "BARU",
         dosimeterSaku: "",
         validCertDosimeter: "",
         surveymeter: "",
@@ -526,7 +513,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
         nama: "",
         validSIB: "",
         endKontrak: "",
-        keterangan: "BARU",
         dosimeterSaku: "",
         validCertDosimeter: "",
         surveymeter: "",
