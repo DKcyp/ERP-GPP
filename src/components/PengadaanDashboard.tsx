@@ -50,9 +50,128 @@ const PengadaanDashboard: React.FC<PengadaanDashboardProps> = () => {
 
   const handlePenerimaanClick = () => {
     console.log('handlePenerimaanClick called - navigating to penerimaan-barang');
-    // Use window.location to trigger navigation
-    window.location.hash = '/pengadaan/penerimaan-barang';
-    console.log('window.location.hash set to:', window.location.hash);
+    
+    try {
+      // Method 1: Direct hash change
+      window.location.hash = '/pengadaan/penerimaan-barang';
+      console.log('Method 1 - window.location.hash set to:', window.location.hash);
+      
+      // Method 2: Force page reload with new hash (backup)
+      setTimeout(() => {
+        if (window.location.hash !== '#/pengadaan/penerimaan-barang') {
+          console.log('Method 2 - Forcing navigation with replace');
+          window.location.replace('#/pengadaan/penerimaan-barang');
+        } 
+      }, 100);
+      
+      // Method 3: Dispatch hashchange event manually (backup)
+      setTimeout(() => {
+        if (window.location.hash === '#/pengadaan/penerimaan-barang') {
+          console.log('Method 3 - Dispatching hashchange event');
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+      }, 200);
+      
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Method 4: Last resort - full page reload
+      window.location.href = window.location.origin + window.location.pathname + '#/pengadaan/penerimaan-barang';
+    }
+  };
+
+  const handleActivePOClick = () => {
+    console.log('handleActivePOClick called - navigating to approval-pr');
+    
+    try {
+      // Method 1: Direct hash change
+      window.location.hash = '/pengadaan/po/approval_pr';
+      console.log('Method 1 - window.location.hash set to:', window.location.hash);
+      
+      // Method 2: Force page reload with new hash (backup)
+      setTimeout(() => {
+        if (window.location.hash !== '#/pengadaan/po/approval_pr') {
+          console.log('Method 2 - Forcing navigation with replace');
+          window.location.replace('#/procon/approval/purchase-request');
+        }
+      }, 100);
+      
+      // Method 3: Dispatch hashchange event manually (backup)
+      setTimeout(() => {
+        if (window.location.hash === '#/procon/approval/purchase-request') {
+          console.log('Method 3 - Dispatching hashchange event');
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+      }, 200);
+      
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Method 4: Last resort - full page reload
+      window.location.href = window.location.origin + window.location.pathname + '#/procon/approval/purchase-request';
+    }
+  };
+
+  // Card Bidding -> Daftar Seleksi Bidding
+  const handleDaftarSeleksiBiddingClick = () => {
+    console.log('handleDaftarSeleksiBiddingClick called - navigating to approval-pr');
+    
+    try {
+      // Method 1: Direct hash change
+      window.location.hash = '/pengadaan/seleksi/daftar';
+      console.log('Method 1 - window.location.hash set to:', window.location.hash);
+      
+      // Method 2: Force page reload with new hash (backup)
+      setTimeout(() => {
+        if (window.location.hash !== '#/pengadaan/seleksi/daftar') {
+          console.log('Method 2 - Forcing navigation with replace');
+          window.location.replace('#/procon/approval/purchase-request');
+        }
+      }, 100);
+      
+      // Method 3: Dispatch hashchange event manually (backup)
+      setTimeout(() => {
+        if (window.location.hash === '#/pengadaan/seleksi/daftar') {
+          console.log('Method 3 - Dispatching hashchange event');
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+      }, 200);
+      
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Method 4: Last resort - full page reload
+      window.location.href = window.location.origin + window.location.pathname + '#/procon/approval/purchase-request';
+    }
+  };
+
+  // Card Total Vendor -> Master Vendor
+  const handleMasterVendorClick = () => {
+    console.log('handleMasterVendorClick called - navigating to approval-pr');
+    
+    try {
+      // Method 1: Direct hash change
+      window.location.hash = '/pengadaan/vendor/master';
+      console.log('Method 1 - window.location.hash set to:', window.location.hash);
+      
+      // Method 2: Force page reload with new hash (backup)
+      setTimeout(() => {
+        if (window.location.hash !== '#/pengadaan/vendor/master') {
+          console.log('Method 2 - Forcing navigation with replace');
+          window.location.replace('#/procon/approval/purchase-request');
+        }
+      }, 100);
+      
+      // Method 3: Dispatch hashchange event manually (backup)
+      setTimeout(() => {
+        if (window.location.hash === '#/pengadaan/vendor/master') {
+          console.log('Method 3 - Dispatching hashchange event');
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+      }, 200);
+      
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Method 4: Last resort - full page reload
+      window.location.href = window.location.origin + window.location.pathname + '#/procon/approval/purchase-request';
+    }
   };
 
   return (
@@ -97,9 +216,9 @@ const PengadaanDashboard: React.FC<PengadaanDashboardProps> = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 ${
+          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer ${
             animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-          }`}>
+          }`} style={{ animationDelay: '200ms' }} onClick={handleMasterVendorClick}>
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-blue-100 rounded-xl">
                 <Factory className="h-8 w-8 text-blue-600" />
@@ -112,9 +231,9 @@ const PengadaanDashboard: React.FC<PengadaanDashboardProps> = () => {
             </div>
           </div>
 
-          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 ${
+          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer ${
             animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-          }`} style={{ animationDelay: '200ms' }}>
+          }`} style={{ animationDelay: '200ms' }} onClick={handleActivePOClick}>
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-green-100 rounded-xl">
                 <FileBox className="h-8 w-8 text-green-600" />
@@ -142,9 +261,9 @@ const PengadaanDashboard: React.FC<PengadaanDashboardProps> = () => {
             </div>
           </div>
 
-          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 ${
+          <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer ${
             animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-          }`} style={{ animationDelay: '600ms' }}>
+          }`} style={{ animationDelay: '600ms' }} onClick={handleDaftarSeleksiBiddingClick}>
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-yellow-100 rounded-xl">
                 <Handshake className="h-8 w-8 text-yellow-600" />
