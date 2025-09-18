@@ -15,18 +15,18 @@ const EvaluasiVendorDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [evaluations, setEvaluations] = useState<EvaluasiVendorData[]>([
-    { id: '1', no: 1, namaVendor: 'Vendor A', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 95, tanggalEvaluasi: '20/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '2', no: 2, namaVendor: 'Vendor B', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 100, tanggalEvaluasi: '19/02/2025', mutu: 'Cukup', k3: 'Tidak' },
-    { id: '3', no: 3, namaVendor: 'Vendor C', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 80, tanggalEvaluasi: '21/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '4', no: 4, namaVendor: 'Vendor D', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 110, tanggalEvaluasi: '22/02/2025', mutu: 'Kurang', k3: 'Tidak' },
-    { id: '5', no: 5, namaVendor: 'Vendor E', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 90, tanggalEvaluasi: '23/02/2025', mutu: 'Cukup', k3: 'Ya' },
-    { id: '6', no: 6, namaVendor: 'Vendor F', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 105, tanggalEvaluasi: '24/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '7', no: 7, namaVendor: 'Vendor G', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 75, tanggalEvaluasi: '25/02/2025', mutu: 'Kurang', k3: 'Tidak' },
-    { id: '8', no: 8, namaVendor: 'Vendor H', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 120, tanggalEvaluasi: '26/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '9', no: 9, namaVendor: 'Vendor I', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 88, tanggalEvaluasi: '27/02/2025', mutu: 'Cukup', k3: 'Ya' },
-    { id: '10', no: 10, namaVendor: 'Vendor J', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 98, tanggalEvaluasi: '28/02/2025', mutu: 'Baik', k3: 'Tidak' },
-    { id: '11', no: 11, namaVendor: 'Vendor K', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 115, tanggalEvaluasi: '01/03/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '12', no: 12, namaVendor: 'Vendor L', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 82, tanggalEvaluasi: '02/03/2025', mutu: 'Kurang', k3: 'Tidak' },
+    { id: '1', no: 1, namaVendor: 'Vendor A', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 95, tanggalEvaluasi: '20/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '20/02/2026', keteranganAdministrasiVendor: 'Dokumen lengkap, NPWP aktif' },
+    { id: '2', no: 2, namaVendor: 'Vendor B', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 100, tanggalEvaluasi: '19/02/2025', mutu: 'Cukup', k3: 'Tidak', tanggalGaransi: '19/08/2025', keteranganAdministrasiVendor: 'Perlu update SIUP' },
+    { id: '3', no: 3, namaVendor: 'Vendor C', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 80, tanggalEvaluasi: '21/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '21/02/2027', keteranganAdministrasiVendor: 'Semua dokumen valid' },
+    { id: '4', no: 4, namaVendor: 'Vendor D', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 110, tanggalEvaluasi: '22/02/2025', mutu: 'Kurang', k3: 'Tidak', tanggalGaransi: '22/05/2025', keteranganAdministrasiVendor: 'Dokumen tidak lengkap' },
+    { id: '5', no: 5, namaVendor: 'Vendor E', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 90, tanggalEvaluasi: '23/02/2025', mutu: 'Cukup', k3: 'Ya', tanggalGaransi: '23/02/2026', keteranganAdministrasiVendor: 'Administrasi baik' },
+    { id: '6', no: 6, namaVendor: 'Vendor F', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 105, tanggalEvaluasi: '24/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '24/02/2026', keteranganAdministrasiVendor: 'Excellent vendor' },
+    { id: '7', no: 7, namaVendor: 'Vendor G', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 75, tanggalEvaluasi: '25/02/2025', mutu: 'Kurang', k3: 'Tidak', tanggalGaransi: '25/05/2025', keteranganAdministrasiVendor: 'Perlu perbaikan administrasi' },
+    { id: '8', no: 8, namaVendor: 'Vendor H', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 120, tanggalEvaluasi: '26/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '26/02/2027', keteranganAdministrasiVendor: 'Vendor terpercaya' },
+    { id: '9', no: 9, namaVendor: 'Vendor I', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 88, tanggalEvaluasi: '27/02/2025', mutu: 'Cukup', k3: 'Ya', tanggalGaransi: '27/08/2025', keteranganAdministrasiVendor: 'Dokumen standar' },
+    { id: '10', no: 10, namaVendor: 'Vendor J', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 98, tanggalEvaluasi: '28/02/2025', mutu: 'Baik', k3: 'Tidak', tanggalGaransi: '28/02/2026', keteranganAdministrasiVendor: 'Perlu follow up K3' },
+    { id: '11', no: 11, namaVendor: 'Vendor K', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 115, tanggalEvaluasi: '01/03/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '01/03/2027', keteranganAdministrasiVendor: 'Top performance vendor' },
+    { id: '12', no: 12, namaVendor: 'Vendor L', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 82, tanggalEvaluasi: '02/03/2025', mutu: 'Kurang', k3: 'Tidak', tanggalGaransi: '02/06/2025', keteranganAdministrasiVendor: 'Evaluasi ulang diperlukan' },
   ]);
 
   const filteredEvaluations = evaluations.filter(evalItem =>
@@ -61,6 +61,9 @@ const EvaluasiVendorDashboard: React.FC = () => {
       tanggalEvaluasi: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
       mutu: formData.mutu,
       k3: formData.k3,
+      // After Sales fields
+      tanggalGaransi: formData.tanggalGaransi,
+      keteranganAdministrasiVendor: formData.keteranganAdministrasiVendor,
     };
     setEvaluations((prev) => [...prev, newEvaluation]);
   };
@@ -160,6 +163,12 @@ const EvaluasiVendorDashboard: React.FC = () => {
             <p>Mutu: ${vendor.mutu}</p>
             <p>K3: ${vendor.k3}</p>
             <p>Jumlah Barang Sesuai PO: ${vendor.jumlahBarangSesuaiPO}%</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <p><strong>After Sales:</strong></p>
+            <p>Tanggal Garansi: ${vendor.tanggalGaransi || 'Tidak ada'}</p>
+            <p>Keterangan Administrasi Vendor: ${vendor.keteranganAdministrasiVendor || 'Tidak ada keterangan'}</p>
           </div>
         </body>
       </html>
@@ -309,6 +318,12 @@ const EvaluasiVendorDashboard: React.FC = () => {
                   Tanggal Evaluasi
                 </th>
                 <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal Garansi
+                </th>
+                <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Keterangan Administrasi
+                </th>
+                <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -324,6 +339,8 @@ const EvaluasiVendorDashboard: React.FC = () => {
                   <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.k3}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.jumlahBarangSesuaiPO}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.tanggalEvaluasi}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.tanggalGaransi}</td>
+                  <td className="px-3 py-2 text-xs text-gray-600 max-w-xs truncate" title={item.keteranganAdministrasiVendor}>{item.keteranganAdministrasiVendor}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-xs">
                     <div className="flex space-x-2">
                       <button

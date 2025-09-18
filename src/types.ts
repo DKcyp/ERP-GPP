@@ -223,6 +223,9 @@ export interface EvaluasiVendorData {
   tanggalEvaluasi: string;
   mutu: MutuKategori;
   k3: YaTidak;
+  // After Sales fields
+  tanggalGaransi?: string;
+  keteranganAdministrasiVendor?: string;
 }
 
 export interface EvaluasiVendorFormData {
@@ -232,6 +235,9 @@ export interface EvaluasiVendorFormData {
   jumlahBarangSesuaiPO: string; // keep as string for input, parse to number on save
   mutu: MutuKategori;
   k3: YaTidak;
+  // After Sales fields
+  tanggalGaransi?: string;
+  keteranganAdministrasiVendor?: string;
 }
 
 // ================= App Shared Types (Auth + Menu) =================

@@ -48,6 +48,10 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
     jumlahBarangSesuaiPO: '',
     mutu: 'Baik',
     k3: 'Ya',
+    
+    // After Sales fields
+    tanggalGaransi: '',
+    keteranganAdministrasiVendor: '',
   });
 
   const vendorOptions = [
@@ -77,11 +81,13 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
     // Convert to legacy format for compatibility
     const legacyData: EvaluasiVendorFormData = {
       namaVendor: formData.namaVendor,
-      barangOnTime: formData.barangOnTime,
-      sesuaiSpesifikasi: formData.sesuaiSpesifikasi,
+      barangOnTime: formData.barangOnTime as 'Ya' | 'Tidak',
+      sesuaiSpesifikasi: formData.sesuaiSpesifikasi as 'Ya' | 'Tidak',
       jumlahBarangSesuaiPO: formData.jumlahBarangSesuaiPO,
-      mutu: formData.mutu,
-      k3: formData.k3,
+      mutu: formData.mutu as 'Baik' | 'Cukup' | 'Kurang',
+      k3: formData.k3 as 'Ya' | 'Tidak',
+      tanggalGaransi: formData.tanggalGaransi,
+      keteranganAdministrasiVendor: formData.keteranganAdministrasiVendor,
     };
     onSubmit(legacyData);
     
@@ -116,6 +122,8 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
       jumlahBarangSesuaiPO: '',
       mutu: 'Baik',
       k3: 'Ya',
+      tanggalGaransi: '',
+      keteranganAdministrasiVendor: '',
     });
     onClose();
   };
@@ -177,6 +185,34 @@ const EvaluasiVendorModal: React.FC<EvaluasiVendorModalProps> = ({ isOpen, onClo
                   <div className="text-center"><input type="checkbox" checked={formData[item.toLowerCase().replace(' ', '')]?.tidakAda || false} onChange={() => handleCheckboxChange(item.toLowerCase().replace(' ', ''), 'tidakAda')} /></div>
                 </React.Fragment>
               ))}
+            </div>
+          </div>
+
+          {/* After Sales Section */}
+          <div className="space-y-2">
+            <h3 className="font-bold text-sm">AFTER SALES</h3>
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Garansi</label>
+                <input
+                  type="date"
+                  name="tanggalGaransi"
+                  value={formData.tanggalGaransi}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan Administrasi Vendor</label>
+                <textarea
+                  name="keteranganAdministrasiVendor"
+                  value={formData.keteranganAdministrasiVendor}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  placeholder="Masukkan keterangan administrasi vendor..."
+                />
+              </div>
             </div>
           </div>
 

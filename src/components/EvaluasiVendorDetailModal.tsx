@@ -187,6 +187,14 @@ const EvaluasiVendorDetailModal: React.FC<EvaluasiVendorDetailModalProps> = ({ i
               <p><strong>K3:</strong> {vendor.k3}</p>
               <p><strong>Jumlah Barang Sesuai PO:</strong> {vendor.jumlahBarangSesuaiPO}%</p>
             </div>
+            <div>
+              <h3 className="font-bold mb-2">After Sales:</h3>
+              <p><strong>Tanggal Garansi:</strong> {vendor.tanggalGaransi || 'Tidak ada'}</p>
+              <p><strong>Keterangan Administrasi:</strong></p>
+              <div className="mt-1 p-2 bg-gray-50 rounded text-xs">
+                {vendor.keteranganAdministrasiVendor || 'Tidak ada keterangan'}
+              </div>
+            </div>
           </div>
         </div>
 
