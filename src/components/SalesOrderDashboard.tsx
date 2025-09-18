@@ -9,7 +9,13 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Plus,
+  Edit,
+  Eye,
+  Trash2,
+  X,
+  Save
 } from 'lucide-react';
 
 interface ProconSalesOrder {
@@ -66,9 +72,16 @@ const ProconSalesOrderDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [goToPageInput, setGoToPageInput] = useState<string>('');
+  // CRUD Modal States
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ProconSalesOrder | null>(null);
+  const [formData, setFormData] = useState<Partial<ProconSalesOrder>>({});
 
   // Sample data matching the Excel structure
-  const [salesOrders] = useState<ProconSalesOrder[]>([
+  const [salesOrders, setSalesOrders] = useState<ProconSalesOrder[]>([
     // Red rows - Critical/Overdue status
     {
       id: '1',
@@ -470,27 +483,107 @@ const ProconSalesOrderDashboard: React.FC = () => {
     }
   };
 
+  // CRUD Functions
+  const handleAdd = () => {
+    setFormData({
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }),
+      yearSheet: '2025',
+      status: 'IN PROGRESS',
+      keterangan: 'IN PROGRESS',
+      statusPekerjaan: 'PROGRESS',
+      statusAR: 'NOT STARTED',
+      statusAP: 'NOT STARTED',
+      lir: 'NO',
+      reported: 'NO',
+      equipmentReceived: 'PARTIAL',
+      equipmentScopeLocation: 'ONSHORE',
+      delaySubmitReport: '0',
+      delaySubmitToFinance: '0',
+      delayPayment: '0',
+      logDataPak: 'PENDING',
+      logMekanik: 'PENDING'
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleEdit = (item: ProconSalesOrder) => {
+    setSelectedItem(item);
+    setFormData({ ...item });
+    setIsEditModalOpen(true);
+  };
+
+  const handleView = (item: ProconSalesOrder) => {
+    setSelectedItem(item);
+    setIsViewModalOpen(true);
+  };
+
+  const handleDelete = (item: ProconSalesOrder) => {
+    setSelectedItem(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleSave = () => {
+    if (isAddModalOpen) {
+      const newId = (salesOrders.length + 1).toString();
+      const newNo = salesOrders.length + 1;
+      const newSoNo = `SO-2025-${String(newNo).padStart(3, '0')}`;
+      const newPiNo = `PI-2025-${String(newNo).padStart(3, '0')}`;
+      
+      const newItem: ProconSalesOrder = {
+        ...formData as ProconSalesOrder,
+        id: newId,
+        no: newNo,
+        soNo: newSoNo,
+        piNo: newPiNo
+      };
+      
+      setSalesOrders(prev => [newItem, ...prev]);
+      setIsAddModalOpen(false);
+    } else if (isEditModalOpen && selectedItem) {
+      setSalesOrders(prev => 
+        prev.map(item => 
+          item.id === selectedItem.id ? { ...formData as ProconSalesOrder, id: selectedItem.id, no: selectedItem.no } : item
+        )
+      );
+      setIsEditModalOpen(false);
+    }
+    setFormData({});
+    setSelectedItem(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedItem) {
+      setSalesOrders(prev => prev.filter(item => item.id !== selectedItem.id));
+      setIsDeleteModalOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleInputChange = (field: keyof ProconSalesOrder, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                DAFTAR SALES ORDER
-              </h1>
-              <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Procon</span>
-                <span className="mx-2">›</span>
-                <span className="text-blue-600 font-semibold">Sales Order</span>
-              </nav>
+        <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+                  DAFTAR SALES ORDER
+                </h1>
+                <nav className="text-sm text-gray-600">
+                  <span className="hover:text-blue-600 cursor-pointer transition-colors">Procon</span>
+                  <span className="mx-2">›</span>
+                  <span className="text-blue-600 font-semibold">Sales Order</span>
+                </nav>
+              </div>
+              <div className="flex items-center justify-end gap-3 text-sm">
+                <Clock className="h-4 w-4" />
+                <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -647,45 +740,48 @@ const ProconSalesOrderDashboard: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-xs">
               <thead className="bg-yellow-400 border-b border-gray-200 sticky top-0">
+                {/* First row - Main headers */}
                 <tr>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]">NO</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DATE</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">SO NO</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[200px]">CLIENT</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">EQUIPMENT/SCOPE/LOCATION</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">EQUIPMENT RECEIVED</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]">SCOPE OF WORK</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">MAN POWER</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">LOCATION</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">PERIOD BY HOUR</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]" rowSpan={2}>NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]" rowSpan={2}>DATE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>SO NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[200px]" rowSpan={2}>CLIENT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>QUO/PO/WO/RO/SPK/CONTRACT NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>PO/KONTRAK RECEIVED</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]" rowSpan={2}>SCOPE OF WORK</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]" rowSpan={2}>MAN POWER</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>LOCATION</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300" colSpan={3}>PERIOD BY EMAIL</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300" colSpan={3}>PERIOD BY REPORT & TS</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]" rowSpan={2}>REPORTED</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]" rowSpan={2}>DUE DATE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>DELAY SUBMIT REPORT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>REPORT RECEIVED</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>DUE DATE FINANCE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>DELAY SUBMIT TO FINANCE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>PI AMOUNT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>KETERANGAN</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>PI NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]" rowSpan={2}>REMARK PROJECT CONTROL</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>INVOICE NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>INVOICE AMOUNT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>INVOICE AMOUNT PPN 11%</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>DUE DATE PAYMENT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]" rowSpan={2}>PAID DATE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>DELAY PAYMENT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]" rowSpan={2}>REMARK FINANCE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>STATUS</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]" rowSpan={2}>L/R</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]" rowSpan={2}>ACTIONS</th>
+                </tr>
+                {/* Second row - Sub headers */}
+                <tr>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]">MOB</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]">DEMOB</th>
                   <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DURATION</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">PERIOD BY REPORT TO</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">REPORTED</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DUE DATE</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DELAY SUBMIT REPORT</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">REPORT RECEIVED</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DUE DATE FINANCE</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">DELAY SUBMIT TO FINANCE</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">PI AMOUNT</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">KETERANGAN</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">PI NO</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]">REMARK PROJECT CONTROL</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">INVOICE NO</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">INVOICE AMOUNT</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">INVOICE AMOUNT PPN 11%</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DUE DATE PAYMENT</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">PAID DATE</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DELAY PAYMENT</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">REMARK FINANCE</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">STATUS</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]">LIR</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">YEAR SHEET</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">STATUS PEKERJAAN</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">STATUS AR</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">STATUS AP</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[200px]">REMARK</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">LOG DATA PAK</th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">LOG MEKANIK</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]">MOB</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]">DEMOB</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DURATION</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -724,8 +820,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.periodByReportTo}</td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                        item.reported === 'YES' ? 'bg-green-100 text-green-800' : 
-                        item.reported === 'NO' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                        item.reported === 'YES' ? 'text-green-600 bg-green-100' : 
+                        item.reported === 'NO' ? 'text-red-600 bg-red-100' : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {item.reported}
                       </span>
@@ -790,40 +886,38 @@ const ProconSalesOrderDashboard: React.FC = () => {
                         {item.lir}
                       </span>
                     </td>
+                    {/* L/R Column */}
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-bold">{item.yearSheet}</td>
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.statusPekerjaan)}`}>
                         {item.statusPekerjaan}
                       </span>
                     </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.statusAR)}`}>
-                        {item.statusAR}
-                      </span>
-                    </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.statusAP)}`}>
-                        {item.statusAP}
-                      </span>
-                    </td>
-                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">{item.remark}</td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span className={`font-bold px-2 py-1 rounded-full ${
-                        item.logDataPak === 'COMPLETE' || item.logDataPak === 'EXCELLENT' ? 'text-green-600 bg-green-100' : 
-                        item.logDataPak === 'DELAYED' || item.logDataPak === 'PENDING' ? 'text-red-600 bg-red-100' : 
-                        'text-yellow-600 bg-yellow-100'
-                      }`}>
-                        {item.logDataPak}
-                      </span>
-                    </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span className={`font-bold px-2 py-1 rounded-full ${
-                        item.logMekanik === 'COMPLETE' || item.logMekanik === 'EXCELLENT' ? 'text-green-600 bg-green-100' : 
-                        item.logMekanik === 'DELAYED' || item.logMekanik === 'PENDING' ? 'text-red-600 bg-red-100' : 
-                        'text-yellow-600 bg-yellow-100'
-                      }`}>
-                        {item.logMekanik}
-                      </span>
+                    <td></td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
+                      <div className="flex items-center justify-center space-x-1">
+                        <button 
+                          onClick={() => handleView(item)}
+                          className="px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs"
+                          title="View"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </button>
+                        <button 
+                          onClick={() => handleEdit(item)}
+                          className="px-2 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-xs"
+                          title="Edit"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(item)}
+                          className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-xs"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -928,6 +1022,315 @@ const ProconSalesOrderDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Add Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Add New Sales Order</h2>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                <input
+                  type="date"
+                  value={formData.date || ''}
+                  onChange={(e) => handleInputChange('date', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
+                <input
+                  type="text"
+                  value={formData.client || ''}
+                  onChange={(e) => handleInputChange('client', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Scope Location</label>
+                <select
+                  value={formData.equipmentScopeLocation || ''}
+                  onChange={(e) => handleInputChange('equipmentScopeLocation', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Location</option>
+                  <option value="ONSHORE">ONSHORE</option>
+                  <option value="OFFSHORE">OFFSHORE</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Received</label>
+                <select
+                  value={formData.equipmentReceived || ''}
+                  onChange={(e) => handleInputChange('equipmentReceived', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Status</option>
+                  <option value="COMPLETE">COMPLETE</option>
+                  <option value="PARTIAL">PARTIAL</option>
+                  <option value="PENDING">PENDING</option>
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Scope of Work</label>
+                <textarea
+                  value={formData.scopeOfWork || ''}
+                  onChange={(e) => handleInputChange('scopeOfWork', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Man Power</label>
+                <input
+                  type="text"
+                  value={formData.manPower || ''}
+                  onChange={(e) => handleInputChange('manPower', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={formData.location || ''}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 mt-6">
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
+              >
+                <Save className="h-4 w-4" />
+                <span>Save</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Edit Sales Order</h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                <input
+                  type="date"
+                  value={formData.date || ''}
+                  onChange={(e) => handleInputChange('date', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
+                <input
+                  type="text"
+                  value={formData.client || ''}
+                  onChange={(e) => handleInputChange('client', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Scope Location</label>
+                <select
+                  value={formData.equipmentScopeLocation || ''}
+                  onChange={(e) => handleInputChange('equipmentScopeLocation', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Location</option>
+                  <option value="ONSHORE">ONSHORE</option>
+                  <option value="OFFSHORE">OFFSHORE</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Received</label>
+                <select
+                  value={formData.equipmentReceived || ''}
+                  onChange={(e) => handleInputChange('equipmentReceived', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Status</option>
+                  <option value="COMPLETE">COMPLETE</option>
+                  <option value="PARTIAL">PARTIAL</option>
+                  <option value="PENDING">PENDING</option>
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Scope of Work</label>
+                <textarea
+                  value={formData.scopeOfWork || ''}
+                  onChange={(e) => handleInputChange('scopeOfWork', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Man Power</label>
+                <input
+                  type="text"
+                  value={formData.manPower || ''}
+                  onChange={(e) => handleInputChange('manPower', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={formData.location || ''}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 mt-6">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center space-x-2"
+              >
+                <Save className="h-4 w-4" />
+                <span>Update</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Modal */}
+      {isViewModalOpen && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">View Sales Order</h2>
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">SO Number</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.soNo}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.date}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.client}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Scope Location</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.equipmentScopeLocation}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Received</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.equipmentReceived}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Man Power</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.manPower}</p>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Scope of Work</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.scopeOfWork}</p>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.location}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.status}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">PI Amount</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedItem.piAmount}</p>
+              </div>
+            </div>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Confirm Delete</h2>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete Sales Order <strong>{selectedItem.soNo}</strong>? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center space-x-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
