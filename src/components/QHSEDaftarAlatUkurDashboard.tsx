@@ -4,20 +4,14 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface AlatUkurItem {
   id: string;
-  namaAlat: string;
-  spec: string;
-  merkAlat: string;
-  tipeAlat: string;
-  snAlat: string;
-  noSeriAlat: string;
-  tahunPembelian: number;
-  posisiAlat: 'Office' | 'Project' | 'Medco Corridor' | 'Medco SSB' | 'PHE ONWJ' | 'Kalibrasi' | 'Lainnya';
-  statusAlat: 'QC Passed' | 'Quarantine' | 'QC Failed';
-  tanggalKalibrasi: string;
-  tanggalExpiredKalibrasi: string;
-  vendorKalibrasi: string;
-  documentSertifikat?: string;
-  statusProses: 'Pengajuan' | 'Proses' | 'Selesai';
+  serialNumber: string;
+  calibrationDate: string;
+  validationDate: string;
+  notes: string;
+  status: 'QC PASSED' | 'QC FAILED' | 'QUARANTINE';
+  position: string;
+  detailLocation: string;
+  pic: string;
   daysUntilExpiry?: number;
   isExpiringSoon?: boolean;
 }
@@ -25,8 +19,7 @@ interface AlatUkurItem {
 const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('');
-  const [filterPosisi, setFilterPosisi] = useState<string>('');
-  const [filterProses, setFilterProses] = useState<string>('');
+  const [filterPosition, setFilterPosition] = useState<string>('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<AlatUkurItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<AlatUkurItem | null>(null);
@@ -34,79 +27,200 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
   const [formData, setFormData] = useState<Partial<AlatUkurItem>>({});
 
-  // Sample data with calculated expiry days
+  // Sample data matching the image
   const [alatUkurData, setAlatUkurData] = useState<AlatUkurItem[]>([
     {
       id: '1',
-      namaAlat: 'Digital Multimeter',
-      spec: 'AC/DC Voltage 1000V',
-      merkAlat: 'Fluke',
-      tipeAlat: '87V',
-      snAlat: 'FLK-001',
-      noSeriAlat: '2024001',
-      tahunPembelian: 2023,
-      posisiAlat: 'Office',
-      statusAlat: 'QC Passed',
-      tanggalKalibrasi: '2024-06-01',
-      tanggalExpiredKalibrasi: '2025-06-01',
-      vendorKalibrasi: 'PT Kalibrasi Indonesia',
-      documentSertifikat: 'cert_fluke_2024.pdf',
-      statusProses: 'Selesai',
-      daysUntilExpiry: 258,
-      isExpiringSoon: false
+      serialNumber: '44540',
+      calibrationDate: '20 Jan 25',
+      validationDate: '20 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : PHKT 14 Feb 2025'
     },
     {
       id: '2',
-      namaAlat: 'Pressure Gauge',
-      spec: '0-100 PSI',
-      merkAlat: 'Wika',
-      tipeAlat: 'Model 232.53',
-      snAlat: 'WIK-002',
-      noSeriAlat: '2024002',
-      tahunPembelian: 2022,
-      posisiAlat: 'Project',
-      statusAlat: 'QC Passed',
-      tanggalKalibrasi: '2024-08-15',
-      tanggalExpiredKalibrasi: '2024-11-15',
-      vendorKalibrasi: 'PT Instrumentasi Teknik',
-      statusProses: 'Selesai',
-      daysUntilExpiry: 30,
-      isExpiringSoon: true
+      serialNumber: 'MP 9938',
+      calibrationDate: '15 Jan 25',
+      validationDate: '15 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: ''
     },
     {
       id: '3',
-      namaAlat: 'Temperature Sensor',
-      spec: '-50°C to +200°C',
-      merkAlat: 'Omega',
-      tipeAlat: 'RTD PT100',
-      snAlat: 'OMG-003',
-      noSeriAlat: '2024003',
-      tahunPembelian: 2024,
-      posisiAlat: 'Medco Corridor',
-      statusAlat: 'Quarantine',
-      tanggalKalibrasi: '2024-03-01',
-      tanggalExpiredKalibrasi: '2024-12-01',
-      vendorKalibrasi: 'PT Omega Indonesia',
-      statusProses: 'Proses',
-      daysUntilExpiry: 15,
-      isExpiringSoon: true
+      serialNumber: 'MP 9941',
+      calibrationDate: '23 Jan 25',
+      validationDate: '23 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: ''
+    },
+    {
+      id: '4',
+      serialNumber: '10901',
+      calibrationDate: '',
+      validationDate: '',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: ''
+    },
+    {
+      id: '5',
+      serialNumber: 'MP 2428',
+      calibrationDate: '04 Jan 25',
+      validationDate: '04 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : WSC 28 Nov 2025'
+    },
+    {
+      id: '6',
+      serialNumber: 'PMV/B13 (NA)',
+      calibrationDate: '12 Dec 24',
+      validationDate: '11 Dec 25',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'MEDCO',
+      detailLocation: '',
+      pic: 'keluar barang 27 Feb 2024'
+    },
+    {
+      id: '7',
+      serialNumber: '18026 (GBP-02)',
+      calibrationDate: '15 Jan 25',
+      validationDate: '15 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : RBI Foxtrof 22 Agustus 2025'
+    },
+    {
+      id: '8',
+      serialNumber: '18025 (GBP-03)',
+      calibrationDate: '05 Jan 25',
+      validationDate: '05 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : PHE ONWJ tanggal 27 Sept 2025'
+    },
+    {
+      id: '9',
+      serialNumber: '18030 (GBP-04)',
+      calibrationDate: '01 Nov 24',
+      validationDate: '31 Oct 25',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : MEDCO Nanda 24 Feb 2025'
+    },
+    {
+      id: '10',
+      serialNumber: '18039 (GBP-05)',
+      calibrationDate: '25 Sep 24',
+      validationDate: '24 Sep 25',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'MEDCO',
+      detailLocation: 'SUBAN',
+      pic: 'keluar barang 27 Feb 2025'
+    },
+    {
+      id: '11',
+      serialNumber: '1062',
+      calibrationDate: '19 Aug 25',
+      validationDate: '18 Aug 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: ''
+    },
+    {
+      id: '12',
+      serialNumber: '4601',
+      calibrationDate: '19 Sep 24',
+      validationDate: '19 Sep 25',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'PHE ONWJ',
+      detailLocation: 'UT BRAVO',
+      pic: 'keluar barang 15 Juli 2025'
+    },
+    {
+      id: '13',
+      serialNumber: '4603',
+      calibrationDate: '19 Aug 25',
+      validationDate: '19 Aug 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'PHE ONWJ',
+      detailLocation: 'AWPI ZULU',
+      pic: 'KELUAR BARANG 21 JULI 2025'
+    },
+    {
+      id: '14',
+      serialNumber: '4604',
+      calibrationDate: '11 Dec 24',
+      validationDate: '10 Oct 25',
+      notes: '',
+      status: 'QC PASSED',
+      position: '',
+      detailLocation: '',
+      pic: ''
+    },
+    {
+      id: '15',
+      serialNumber: '4843',
+      calibrationDate: '15 Jan 25',
+      validationDate: '15 Jan 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : BICONS 11 Nov 2024'
+    },
+    {
+      id: '16',
+      serialNumber: '4844',
+      calibrationDate: '10 Feb 25',
+      validationDate: '09 Feb 26',
+      notes: '',
+      status: 'QC PASSED',
+      position: 'Warehouse Jakarta',
+      detailLocation: '',
+      pic: 'HO : PHKT 03 Mar 2025'
     }
   ]);
 
   // Calculate statistics
   const stats = useMemo(() => {
     const totalAlat = alatUkurData.length;
-    const qcPassed = alatUkurData.filter(item => item.statusAlat === 'QC Passed').length;
-    const quarantine = alatUkurData.filter(item => item.statusAlat === 'Quarantine').length;
-    const qcFailed = alatUkurData.filter(item => item.statusAlat === 'QC Failed').length;
-    const expiringSoon = alatUkurData.filter(item => item.isExpiringSoon).length;
+    const qcPassed = alatUkurData.filter(item => item.status === 'QC PASSED').length;
+    const qcFailed = alatUkurData.filter(item => item.status === 'QC FAILED').length;
+    const quarantine = alatUkurData.filter(item => item.status === 'QUARANTINE').length;
+    const expiringSoon = alatUkurData.filter(item => item.daysUntilExpiry && item.daysUntilExpiry <= 60).length;
     const needsCalibration = alatUkurData.filter(item => (item.daysUntilExpiry || 0) <= 60).length;
 
     return {
       totalAlat,
       qcPassed,
-      quarantine,
       qcFailed,
+      quarantine,
       expiringSoon,
       needsCalibration
     };
@@ -116,36 +230,29 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   const filteredData = useMemo(() => {
     return alatUkurData.filter(item => {
       const matchesSearch = 
-        item.namaAlat.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.spec.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.merkAlat.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.tipeAlat.toLowerCase().includes(searchTerm.toLowerCase());
+        item.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.calibrationDate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.validationDate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.notes.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.detailLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.pic.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesStatus = !filterStatus || item.statusAlat === filterStatus;
-      const matchesPosisi = !filterPosisi || item.posisiAlat === filterPosisi;
-      const matchesProses = !filterProses || item.statusProses === filterProses;
+      const matchesStatus = !filterStatus || item.status === filterStatus;
+      const matchesPosition = !filterPosition || item.position === filterPosition;
 
-      return matchesSearch && matchesStatus && matchesPosisi && matchesProses;
+      return matchesSearch && matchesStatus && matchesPosition;
     });
-  }, [alatUkurData, searchTerm, filterStatus, filterPosisi, filterProses]);
+  }, [alatUkurData, searchTerm, filterStatus, filterPosition]);
 
-  const getStatusBadge = (status: string, type: 'alat' | 'proses') => {
+  const getStatusBadge = (status: string) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
     
-    if (type === 'alat') {
-      switch (status) {
-        case 'QC Passed': return `${baseClasses} bg-green-100 text-green-800`;
-        case 'Quarantine': return `${baseClasses} bg-yellow-100 text-yellow-800`;
-        case 'QC Failed': return `${baseClasses} bg-red-100 text-red-800`;
-        default: return `${baseClasses} bg-gray-100 text-gray-800`;
-      }
-    } else {
-      switch (status) {
-        case 'Selesai': return `${baseClasses} bg-green-100 text-green-800`;
-        case 'Proses': return `${baseClasses} bg-blue-100 text-blue-800`;
-        case 'Pengajuan': return `${baseClasses} bg-yellow-100 text-yellow-800`;
-        default: return `${baseClasses} bg-gray-100 text-gray-800`;
-      }
+    switch (status) {
+      case 'QC PASSED': return `${baseClasses} bg-green-100 text-green-800`;
+      case 'QC FAILED': return `${baseClasses} bg-red-100 text-red-800`;
+      case 'QUARANTINE': return `${baseClasses} bg-yellow-100 text-yellow-800`;
+      default: return `${baseClasses} bg-gray-100 text-gray-800`;
     }
   };
 
@@ -178,19 +285,14 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   // CRUD Functions
   const openAddModal = () => {
     setFormData({
-      namaAlat: '',
-      spec: '',
-      merkAlat: '',
-      tipeAlat: '',
-      snAlat: '',
-      noSeriAlat: '',
-      tahunPembelian: new Date().getFullYear(),
-      posisiAlat: 'Office',
-      statusAlat: 'QC Passed',
-      tanggalKalibrasi: '',
-      tanggalExpiredKalibrasi: '',
-      vendorKalibrasi: '',
-      statusProses: 'Pengajuan'
+      serialNumber: '',
+      calibrationDate: '',
+      validationDate: '',
+      notes: '',
+      status: 'QC PASSED',
+      position: '',
+      detailLocation: '',
+      pic: ''
     });
     setModalMode('add');
     setShowAddModal(true);
@@ -223,9 +325,9 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       };
       
       // Calculate expiry days
-      if (newItem.tanggalExpiredKalibrasi) {
+      if (newItem.validationDate) {
         const today = new Date();
-        const expiryDate = new Date(newItem.tanggalExpiredKalibrasi);
+        const expiryDate = new Date(newItem.validationDate);
         const diffTime = expiryDate.getTime() - today.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         newItem.daysUntilExpiry = diffDays;
@@ -237,9 +339,9 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       const updatedItem = { ...formData as AlatUkurItem, id: editingItem.id };
       
       // Calculate expiry days
-      if (updatedItem.tanggalExpiredKalibrasi) {
+      if (updatedItem.validationDate) {
         const today = new Date();
-        const expiryDate = new Date(updatedItem.tanggalExpiredKalibrasi);
+        const expiryDate = new Date(updatedItem.validationDate);
         const diffTime = expiryDate.getTime() - today.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         updatedItem.daysUntilExpiry = diffDays;
@@ -296,7 +398,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="text"
-                  placeholder="Cari nama alat, spec, merk..."
+                  placeholder="Cari serial number, tanggal kalibrasi..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
@@ -336,46 +438,29 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status QC</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Semua Status</option>
-                    <option value="QC Passed">QC Passed</option>
-                    <option value="Quarantine">Quarantine</option>
-                    <option value="QC Failed">QC Failed</option>
+                    <option value="QC PASSED">QC PASSED</option>
+                    <option value="QC FAILED">QC FAILED</option>
+                    <option value="QUARANTINE">QUARANTINE</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Posisi Alat</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Posisi</label>
                   <select
-                    value={filterPosisi}
-                    onChange={(e) => setFilterPosisi(e.target.value)}
+                    value={filterPosition}
+                    onChange={(e) => setFilterPosition(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Semua Posisi</option>
-                    <option value="Office">Office</option>
-                    <option value="Project">Project</option>
-                    <option value="Medco Corridor">Medco Corridor</option>
-                    <option value="Medco SSB">Medco SSB</option>
+                    <option value="Warehouse Jakarta">Warehouse Jakarta</option>
+                    <option value="MEDCO">MEDCO</option>
                     <option value="PHE ONWJ">PHE ONWJ</option>
-                    <option value="Kalibrasi">Kalibrasi</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
-                  <select
-                    value={filterProses}
-                    onChange={(e) => setFilterProses(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Semua Proses</option>
-                    <option value="Pengajuan">Pengajuan</option>
-                    <option value="Proses">Proses</option>
-                    <option value="Selesai">Selesai</option>
                   </select>
                 </div>
               </div>
@@ -389,14 +474,14 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spec</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merk/Tipe</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SN/No Seri</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status QC</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kalibrasi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Proses</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Calibration Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validation Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PIC</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -404,39 +489,17 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                 {filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.namaAlat}</div>
-                      <div className="text-sm text-gray-500">Tahun: {item.tahunPembelian}</div>
+                      <div className="text-sm font-medium text-gray-900">{item.serialNumber}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.spec}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.calibrationDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.validationDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.notes}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.merkAlat}</div>
-                      <div className="text-sm text-gray-500">{item.tipeAlat}</div>
+                      <span className={getStatusBadge(item.status)}>{item.status}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.snAlat}</div>
-                      <div className="text-sm text-gray-500">{item.noSeriAlat}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm text-gray-900">{item.posisiAlat}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getStatusBadge(item.statusAlat, 'alat')}>{item.statusAlat}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.tanggalExpiredKalibrasi}</div>
-                      <div className="flex items-center gap-1">
-                        <span className={getExpiryBadge(item.daysUntilExpiry || 0)}>
-                          {formatExpiryText(item.daysUntilExpiry || 0)}
-                        </span>
-                        {item.isExpiringSoon && <Bell className="h-4 w-4 text-orange-500" />}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getStatusBadge(item.statusProses, 'proses')}>{item.statusProses}</span>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.position}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.detailLocation}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.pic}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
@@ -486,7 +549,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
             setDeleteItem(null);
           }}
           title="Hapus Alat Ukur"
-          message={`Apakah Anda yakin ingin menghapus alat ukur "${deleteItem.namaAlat}"?`}
+          message={`Apakah Anda yakin ingin menghapus alat ukur "${deleteItem.serialNumber}"?`}
         />
       )}
 
@@ -506,172 +569,103 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                 <h4 className="text-md font-medium text-gray-900 mb-4">Basic Information</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Alat</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
                     <input
                       type="text"
-                      value={formData.namaAlat || ''}
-                      onChange={(e) => handleInputChange('namaAlat', e.target.value)}
+                      value={formData.serialNumber || ''}
+                      onChange={(e) => handleInputChange('serialNumber', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="Digital Multimeter"
+                      placeholder="44540"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Specification</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Calibration Date</label>
                     <input
                       type="text"
-                      value={formData.spec || ''}
-                      onChange={(e) => handleInputChange('spec', e.target.value)}
+                      value={formData.calibrationDate || ''}
+                      onChange={(e) => handleInputChange('calibrationDate', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="AC/DC Voltage 1000V"
+                      placeholder="20 Jan 25"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Merk Alat</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Validation Date</label>
                     <input
                       type="text"
-                      value={formData.merkAlat || ''}
-                      onChange={(e) => handleInputChange('merkAlat', e.target.value)}
+                      value={formData.validationDate || ''}
+                      onChange={(e) => handleInputChange('validationDate', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="Fluke"
+                      placeholder="20 Jan 26"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tipe Alat</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <input
                       type="text"
-                      value={formData.tipeAlat || ''}
-                      onChange={(e) => handleInputChange('tipeAlat', e.target.value)}
+                      value={formData.notes || ''}
+                      onChange={(e) => handleInputChange('notes', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="87V"
+                      placeholder=""
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">SN Alat</label>
-                    <input
-                      type="text"
-                      value={formData.snAlat || ''}
-                      onChange={(e) => handleInputChange('snAlat', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="FLK-001"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">No Seri Alat</label>
-                    <input
-                      type="text"
-                      value={formData.noSeriAlat || ''}
-                      onChange={(e) => handleInputChange('noSeriAlat', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="2024001"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tahun Pembelian</label>
-                    <input
-                      type="number"
-                      value={formData.tahunPembelian || ''}
-                      onChange={(e) => handleInputChange('tahunPembelian', parseInt(e.target.value))}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="2024"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Posisi Alat</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select
-                      value={formData.posisiAlat || 'Office'}
-                      onChange={(e) => handleInputChange('posisiAlat', e.target.value)}
+                      value={formData.status || 'QC PASSED'}
+                      onChange={(e) => handleInputChange('status', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     >
-                      <option value="Office">Office</option>
-                      <option value="Project">Project</option>
-                      <option value="Medco Corridor">Medco Corridor</option>
-                      <option value="Medco SSB">Medco SSB</option>
+                      <option value="QC PASSED">QC PASSED</option>
+                      <option value="QC FAILED">QC FAILED</option>
+                      <option value="QUARANTINE">QUARANTINE</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                    <select
+                      value={formData.position || ''}
+                      onChange={(e) => handleInputChange('position', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    >
+                      <option value="">Pilih Posisi</option>
+                      <option value="Warehouse Jakarta">Warehouse Jakarta</option>
+                      <option value="MEDCO">MEDCO</option>
                       <option value="PHE ONWJ">PHE ONWJ</option>
-                      <option value="Kalibrasi">Kalibrasi</option>
-                      <option value="Lainnya">Lainnya</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status & Calibration */}
-              <div>
-                <h4 className="text-md font-medium text-gray-900 mb-4">Status & Calibration</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status QC</label>
-                    <select
-                      value={formData.statusAlat || 'QC Passed'}
-                      onChange={(e) => handleInputChange('statusAlat', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                    >
-                      <option value="QC Passed">QC Passed</option>
-                      <option value="Quarantine">Quarantine</option>
-                      <option value="QC Failed">QC Failed</option>
                     </select>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
-                    <select
-                      value={formData.statusProses || 'Pengajuan'}
-                      onChange={(e) => handleInputChange('statusProses', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                    >
-                      <option value="Pengajuan">Pengajuan</option>
-                      <option value="Proses">Proses</option>
-                      <option value="Selesai">Selesai</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Kalibrasi</label>
-                    <input
-                      type="date"
-                      value={formData.tanggalKalibrasi || ''}
-                      onChange={(e) => handleInputChange('tanggalKalibrasi', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Expired Kalibrasi</label>
-                    <input
-                      type="date"
-                      value={formData.tanggalExpiredKalibrasi || ''}
-                      onChange={(e) => handleInputChange('tanggalExpiredKalibrasi', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Vendor Kalibrasi</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Detail Location</label>
                     <input
                       type="text"
-                      value={formData.vendorKalibrasi || ''}
-                      onChange={(e) => handleInputChange('vendorKalibrasi', e.target.value)}
+                      value={formData.detailLocation || ''}
+                      onChange={(e) => handleInputChange('detailLocation', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="PT Kalibrasi Indonesia"
+                      placeholder=""
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">PIC</label>
+                    <input
+                      type="text"
+                      value={formData.pic || ''}
+                      onChange={(e) => handleInputChange('pic', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="HO : PHKT 14 Feb 2025"
                     />
                   </div>
                 </div>
