@@ -226,6 +226,9 @@ import ISOSystemDaftarIndukDokumenInternalDashboard from "./ISOSystemDaftarInduk
 import QHSELogBookTLDDashboard from "./QHSELogBookTLDDashboard";
 import QHSEGeneralISOSystemDashboard from "./QHSEGeneralISOSystemDashboard";
 import QHSEKartuPemantauanKesehatanDashboard from "./QHSEKartuPemantauanKesehatanDashboard";
+import QHSEMonitoringPersonilDashboard from "./QHSEMonitoringPersonilDashboard";
+import QHSELogBookTKPKDashboard from "./QHSELogBookTKPKDashboard";
+
 
 // Accounting Dashboards
 import AccountingMainDashboard from "./AccountingMainDashboard";
@@ -1671,6 +1674,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if(currentPage === "/qhse/kamera-radiography") {
       return <QHSEKameraRadiographyDashboard />;
     }
+
+    if(currentPage === "/qhse/log-book-rat") {
+      return <QHSELogBookRATDashboard />;
+    }
     
 
     if (currentPage === "/qhse/perizinan-alat") {
@@ -1863,6 +1870,31 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/radiography/qhse/kartu-pemantauan-kesehatan") {
       return <QHSEKartuPemantauanKesehatanDashboard />;
+    }
+
+    // Monitoring Personil Routes
+    if (currentPage === "/qhse/monitoring-personil") {
+      return <QHSEMonitoringPersonilDashboard />;
+    }
+    if (currentPage === "/qhse/monitoring-personil/logbook-rat") {
+      return <QHSELogBookRATDashboard />;
+    }
+    if (currentPage === "/qhse/monitoring-personil/logbook-tkpk") {
+      return <QHSELogBookTKPKDashboard />;
+    }
+    if (currentPage === "/qhse/monitoring-personil/logbook-tld") {
+      return <QHSELogBookTLDDashboard />;
+    }
+
+    // Additional QHSE Routes
+    if (currentPage === "/qhse/daftar-alat-ukur") {
+      return <QHSEDaftarAlatUkurDashboard />;
+    }
+    if (currentPage === "/qhse/monitoring-apd") {
+      return <QHSEMonitoringAPDDashboard />;
+    }
+    if (currentPage === "/qhse/legalitas-perusahaan") {
+      return <LegalitasPerusahaanDashboard />;
     }
 
     // Accounting Routes

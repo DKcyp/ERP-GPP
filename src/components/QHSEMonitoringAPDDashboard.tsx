@@ -332,6 +332,9 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                     COVERALL<br/>(BIRU)
                   </th>
                   <th className="border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 text-center" rowSpan={2}>
+                    KETERANGAN
+                  </th>
+                  <th className="border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 text-center" rowSpan={2}>
                     AKSI
                   </th>
                 </tr>
@@ -382,6 +385,12 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                     </td>
                     <td className="border border-gray-300 px-2 py-2 text-sm text-center">
                       {record.coverallBiru.jumlah}
+                    </td>
+                    {/* Keterangan */}
+                    <td className="border border-gray-300 px-2 py-2 text-sm text-left">
+                      <div className="max-w-xs truncate" title={record.safetyShoes.keterangan || record.coverallMerah.keterangan || record.coverallBiru.keterangan || '-'}>
+                        {record.safetyShoes.keterangan || record.coverallMerah.keterangan || record.coverallBiru.keterangan || '-'}
+                      </div>
                     </td>
                     {/* Actions */}
                     <td className="border border-gray-300 px-2 py-2 text-sm text-center">
@@ -816,6 +825,38 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                       <option value="Mendekati Expired">Mendekati Expired</option>
                       <option value="Expired">Expired</option>
                     </select>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                    <textarea
+                      value={formData.coverallBiru?.keterangan || ''}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        coverallBiru: { ...prev.coverallBiru, keterangan: e.target.value }
+                      }))}
+                      disabled={modalMode === 'view'}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      placeholder="Catatan tambahan..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload File</label>
+                    <input
+                      type="file"
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        coverallBiru: { ...prev.coverallBiru, uploadFile: e.target.files?.[0]?.name || '' }
+                      }))}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    />
+                    {formData.coverallBiru?.uploadFile && (
+                      <p className="text-sm text-gray-600 mt-1">File: {formData.coverallBiru.uploadFile}</p>
+                    )}
                   </div>
                 </div>
               </div>

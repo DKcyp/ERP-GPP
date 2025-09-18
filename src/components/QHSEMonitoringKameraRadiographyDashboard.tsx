@@ -152,6 +152,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
   ]);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -232,7 +233,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
   // Create table rows with multi-row structure
   const createTableRows = () => {
     const rows: JSX.Element[] = [];
-    monitoringData.forEach((kamera) => {
+    filteredData.forEach((kamera) => {
       kamera.personil.forEach((person, personIndex) => {
         const isFirstRow = personIndex === 0;
         const rowSpan = kamera.personil.length;
@@ -586,6 +587,21 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     }
   };
 
+  // Filtered data based on search term and status filter
+  const filteredData = monitoringData.filter(item => {
+    const matchesSearch = searchTerm === "" || 
+      item.kamera.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.isotop.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.ktun.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.personil.some(p => p.nama.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      item.lokasiPemanfaatan.some(l => l.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      item.posisiKamera.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = filterStatus === "" || item.progress.mainStatus === filterStatus;
+    
+    return matchesSearch && matchesStatus;
+  });
+
   // Statistics
   const totalPersonil = monitoringData.reduce((sum, kamera) => sum + kamera.personil.length, 0);
   const validPersonil = monitoringData.reduce((sum, kamera) => 
@@ -658,6 +674,21 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
+                </div>
+                <div className="w-full sm:w-48">
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Semua Status</option>
+                    <option value="Pengajuan">Pengajuan</option>
+                    <option value="Pelimbahan">Pelimbahan</option>
+                    <option value="Penghentian">Penghentian</option>
+                    <option value="Permohonan Ijin Baru">Permohonan Ijin Baru</option>
+                    <option value="Izin Transport">Izin Transport</option>
+                    <option value="Loading ISOTOP">Loading ISOTOP</option>
+                  </select>
                 </div>
               </div>
 

@@ -1770,6 +1770,21 @@ export const qhseMenu: MenuSection[] = [
         icon: "BookOpen",
         path: "/qhse/monitoring-personnel/training-matrix",
       },
+      {
+        title: "Logbook RAT",
+        icon: "BookOpen",
+        path: "/qhse/monitoring-personil/logbook-rat",
+      },
+      {
+        title: "Logbook TKPK",
+        icon: "Wrench",
+        path: "/qhse/monitoring-personil/logbook-tkpk",
+      },
+      {
+        title: "Logbook TLD",
+        icon: "CreditCard",
+        path: "/qhse/monitoring-personil/logbook-tld",
+      },
     ],
   },
   {
