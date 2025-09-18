@@ -646,18 +646,6 @@ const QHSEMonitoringPersonnelReportDashboard: React.FC = () => {
                 ))}
               </select>
 
-              {/* Filter Status */}
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="">Semua Status</option>
-                {uniqueStatus.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-
               {/* Filter Periode */}
               <select
                 value={filterPeriode}
@@ -724,7 +712,7 @@ const QHSEMonitoringPersonnelReportDashboard: React.FC = () => {
                   <th className="px-4 py-3 border border-gray-400 text-left font-semibold">Nama Personel</th>
                   <th className="px-4 py-3 border border-gray-400 text-left font-semibold">Lokasi Kerja</th>
                   <th className="px-4 py-3 border border-gray-400 text-left font-semibold">Aktivitas/Tugas QHSE</th>
-                  <th className="px-4 py-3 border border-gray-400 text-left font-semibold">Status</th>
+                  {/* <th className="px-4 py-3 border border-gray-400 text-left font-semibold">Status</th> */}
                   <th className="px-4 py-3 border border-gray-400 text-left font-semibold">Keterangan</th>
                   <th className="px-4 py-3 border border-gray-400 text-center font-semibold">Aksi</th>
                 </tr>
@@ -751,11 +739,11 @@ const QHSEMonitoringPersonnelReportDashboard: React.FC = () => {
                         <td className="px-4 py-3 border border-gray-300 font-medium">{item.namaPersonel}</td>
                         <td className="px-4 py-3 border border-gray-300">{item.lokasiKerja}</td>
                         <td className="px-4 py-3 border border-gray-300">{item.aktivitasQHSE}</td>
-                        <td className="px-4 py-3 border border-gray-300">
+                        {/* <td className="px-4 py-3 border border-gray-300">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(item.status)}`}>
                             {item.status}
                           </span>
-                        </td>
+                        </td> */}
                         <td className="px-4 py-3 border border-gray-300">{item.keterangan}</td>
                         <td className="px-4 py-3 border border-gray-300">
                           <div className="flex items-center justify-center gap-2">

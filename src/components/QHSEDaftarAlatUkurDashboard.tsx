@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Settings, Search, PlusCircle, Download, FileText, Pencil, Trash2, AlertTriangle, Calendar, Bell, Upload, Eye, CheckCircle, Clock, XCircle, MapPin, Filter } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, Plus, Edit, Eye, Trash2, Download, Settings, Calendar, Filter, PlusCircle, Pencil, Upload } from 'lucide-react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface AlatUkurItem {
@@ -34,179 +34,227 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   const [alatUkurData, setAlatUkurData] = useState<AlatUkurItem[]>([
     {
       id: '1',
+      equipmentName: 'Digital Multimeter',
+      spec: 'AC/DC Voltage 1000V',
+      merk: 'Fluke',
+      type: '87V',
       serialNumber: '44540',
       calibrationDate: '20 Jan 25',
       validationDate: '20 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : PHKT 14 Feb 2025'
+      detailLocation: ''
     },
     {
       id: '2',
+      equipmentName: 'Pressure Gauge',
+      spec: '0-100 PSI',
+      merk: 'Ashcroft',
+      type: 'MP 9938',
       serialNumber: 'MP 9938',
       calibrationDate: '15 Jan 25',
       validationDate: '15 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: ''
+      detailLocation: ''
     },
     {
       id: '3',
+      equipmentName: 'Pressure Gauge',
+      spec: '0-150 PSI',
+      merk: 'Ashcroft',
+      type: 'MP 9941',
       serialNumber: 'MP 9941',
       calibrationDate: '23 Jan 25',
       validationDate: '23 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: ''
+      detailLocation: ''
     },
     {
       id: '4',
+      equipmentName: 'Temperature Sensor',
+      spec: '-50°C to 200°C',
+      merk: 'Omega',
+      type: 'RTD',
       serialNumber: '10901',
       calibrationDate: '',
       validationDate: '',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: ''
+      detailLocation: ''
     },
     {
       id: '5',
+      equipmentName: 'Pressure Gauge',
+      spec: '0-200 PSI',
+      merk: 'Ashcroft',
+      type: 'MP 2428',
       serialNumber: 'MP 2428',
       calibrationDate: '04 Jan 25',
       validationDate: '04 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : WSC 28 Nov 2025'
+      detailLocation: ''
     },
     {
       id: '6',
+      equipmentName: 'Flow Meter',
+      spec: '0-100 GPM',
+      merk: 'Endress+Hauser',
+      type: 'PMV/B13',
       serialNumber: 'PMV/B13 (NA)',
       calibrationDate: '12 Dec 24',
       validationDate: '11 Dec 25',
       notes: '',
       status: 'QC PASSED',
       position: 'MEDCO',
-      detailLocation: '',
-      pic: 'keluar barang 27 Feb 2024'
+      detailLocation: ''
     },
     {
       id: '7',
+      equipmentName: 'Ultrasonic Thickness Gauge',
+      spec: '0.5-300mm',
+      merk: 'GE',
+      type: 'DM5E',
       serialNumber: '18026 (GBP-02)',
       calibrationDate: '15 Jan 25',
       validationDate: '15 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : RBI Foxtrof 22 Agustus 2025'
+      detailLocation: ''
     },
     {
       id: '8',
+      equipmentName: 'Ultrasonic Thickness Gauge',
+      spec: '0.5-300mm',
+      merk: 'GE',
+      type: 'DM5E',
       serialNumber: '18025 (GBP-03)',
       calibrationDate: '05 Jan 25',
       validationDate: '05 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : PHE ONWJ tanggal 27 Sept 2025'
+      detailLocation: ''
     },
     {
       id: '9',
+      equipmentName: 'Ultrasonic Thickness Gauge',
+      spec: '0.5-300mm',
+      merk: 'GE',
+      type: 'DM5E',
       serialNumber: '18030 (GBP-04)',
       calibrationDate: '01 Nov 24',
       validationDate: '31 Oct 25',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : MEDCO Nanda 24 Feb 2025'
+      detailLocation: ''
     },
     {
       id: '10',
+      equipmentName: 'Ultrasonic Thickness Gauge',
+      spec: '0.5-300mm',
+      merk: 'GE',
+      type: 'DM5E',
       serialNumber: '18039 (GBP-05)',
       calibrationDate: '25 Sep 24',
       validationDate: '24 Sep 25',
       notes: '',
       status: 'QC PASSED',
       position: 'MEDCO',
-      detailLocation: 'SUBAN',
-      pic: 'keluar barang 27 Feb 2025'
+      detailLocation: 'SUBAN'
     },
     {
       id: '11',
+      equipmentName: 'Vibration Meter',
+      spec: '10Hz-10kHz',
+      merk: 'SKF',
+      type: 'CMVA65',
       serialNumber: '1062',
       calibrationDate: '19 Aug 25',
       validationDate: '18 Aug 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: ''
+      detailLocation: ''
     },
     {
       id: '12',
+      equipmentName: 'Torque Wrench',
+      spec: '50-500 Nm',
+      merk: 'Norbar',
+      type: 'TTi 1000',
       serialNumber: '4601',
       calibrationDate: '19 Sep 24',
       validationDate: '19 Sep 25',
       notes: '',
       status: 'QC PASSED',
       position: 'PHE ONWJ',
-      detailLocation: 'UT BRAVO',
-      pic: 'keluar barang 15 Juli 2025'
+      detailLocation: 'UT BRAVO'
     },
     {
       id: '13',
+      equipmentName: 'Torque Wrench',
+      spec: '50-500 Nm',
+      merk: 'Norbar',
+      type: 'TTi 1000',
       serialNumber: '4603',
       calibrationDate: '19 Aug 25',
       validationDate: '19 Aug 26',
       notes: '',
       status: 'QC PASSED',
       position: 'PHE ONWJ',
-      detailLocation: 'AWPI ZULU',
-      pic: 'KELUAR BARANG 21 JULI 2025'
+      detailLocation: 'AWPI ZULU'
     },
     {
       id: '14',
+      equipmentName: 'Torque Wrench',
+      spec: '50-500 Nm',
+      merk: 'Norbar',
+      type: 'TTi 1000',
       serialNumber: '4604',
       calibrationDate: '11 Dec 24',
       validationDate: '10 Oct 25',
       notes: '',
       status: 'QC PASSED',
       position: '',
-      detailLocation: '',
-      pic: ''
+      detailLocation: ''
     },
     {
       id: '15',
+      equipmentName: 'Digital Multimeter',
+      spec: '1000V AC/DC',
+      merk: 'Fluke',
+      type: '87V',
       serialNumber: '4843',
       calibrationDate: '15 Jan 25',
       validationDate: '15 Jan 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : BICONS 11 Nov 2024'
+      detailLocation: ''
     },
     {
       id: '16',
+      equipmentName: 'Digital Multimeter',
+      spec: '1000V AC/DC',
+      merk: 'Fluke',
+      type: '87V',
       serialNumber: '4844',
       calibrationDate: '10 Feb 25',
       validationDate: '09 Feb 26',
       notes: '',
       status: 'QC PASSED',
       position: 'Warehouse Jakarta',
-      detailLocation: '',
-      pic: 'HO : PHKT 03 Mar 2025'
+      detailLocation: ''
     }
   ]);
 
@@ -288,14 +336,17 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   // CRUD Functions
   const openAddModal = () => {
     setFormData({
+      equipmentName: '',
+      spec: '',
+      merk: '',
+      type: '',
       serialNumber: '',
       calibrationDate: '',
       validationDate: '',
       notes: '',
       status: 'QC PASSED',
       position: '',
-      detailLocation: '',
-      pic: ''
+      detailLocation: ''
     });
     setModalMode('add');
     setShowAddModal(true);
@@ -477,6 +528,10 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipment Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spec</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merk</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Calibration Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validation Date</th>
@@ -484,13 +539,18 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail Location</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PIC</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{item.equipmentName}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.spec}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.merk}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.type}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item.serialNumber}</div>
                     </td>
@@ -502,7 +562,6 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.position}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.detailLocation}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.pic}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
@@ -571,6 +630,54 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
               <div>
                 <h4 className="text-md font-medium text-gray-900 mb-4">Basic Information</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Equipment Name</label>
+                    <input
+                      type="text"
+                      value={formData.equipmentName || ''}
+                      onChange={(e) => handleInputChange('equipmentName', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="Digital Multimeter"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Spec</label>
+                    <input
+                      type="text"
+                      value={formData.spec || ''}
+                      onChange={(e) => handleInputChange('spec', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="1000V AC/DC"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Merk</label>
+                    <input
+                      type="text"
+                      value={formData.merk || ''}
+                      onChange={(e) => handleInputChange('merk', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="Fluke"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                    <input
+                      type="text"
+                      value={formData.type || ''}
+                      onChange={(e) => handleInputChange('type', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="87V"
+                    />
+                  </div>
+                  
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
                     <input
@@ -660,17 +767,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                     />
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">PIC</label>
-                    <input
-                      type="text"
-                      value={formData.pic || ''}
-                      onChange={(e) => handleInputChange('pic', e.target.value)}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="HO : PHKT 14 Feb 2025"
-                    />
-                  </div>
+
                 </div>
               </div>
             </div>
