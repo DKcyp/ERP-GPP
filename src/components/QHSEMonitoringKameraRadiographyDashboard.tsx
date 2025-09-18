@@ -6,7 +6,8 @@ import {
   Clock, User,
   XCircle, AlertTriangle,
   Home,
-  FileText
+  FileText,
+  RefreshCw
 } from 'lucide-react';
 
 interface PersonilData {
@@ -31,6 +32,7 @@ interface MonitoringKameraData {
   no: number;
   kamera: string;
   isotop: string;
+  ktun: string;
   personil: PersonilData[];
   ujiUsapKamera: string;
   serumberW1: number;
@@ -50,6 +52,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       no: 1,
       kamera: "S5055",
       isotop: "AZ562",
+      ktun: "KTUN001",
       personil: [
         {
           nama: "OR YULI ANTONI",
@@ -105,6 +108,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       no: 2,
       kamera: "AZ563",
       isotop: "AZ563",
+      ktun: "KTUN002",
       personil: [
         {
           nama: "OR SLAMET PARYANTO",
@@ -157,6 +161,15 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
   const [selectedData, setSelectedData] = useState<MonitoringKameraData | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState<string>("");
+  
+  // Progress update modal states
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [progressUpdateData, setProgressUpdateData] = useState<MonitoringKameraData | null>(null);
+  const [newProgress, setNewProgress] = useState<ProgressDetail>({
+    mainStatus: "Pengajuan",
+    subStatus: "",
+    completed: false
+  });
 
   // Form states
   const [formData, setFormData] = useState<MonitoringKameraData>({
@@ -164,6 +177,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     no: 0,
     kamera: "",
     isotop: "",
+    ktun: "",
     personil: [{
       nama: "",
       validSIB: "",
@@ -243,6 +257,13 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
             {isFirstRow && (
               <td rowSpan={rowSpan} className="px-2 py-2 text-center text-sm font-medium border-r border-gray-300 bg-blue-50">
                 {kamera.isotop}
+              </td>
+            )}
+            
+            {/* Ktun - merged for all personnel */}
+            {isFirstRow && (
+              <td rowSpan={rowSpan} className="px-2 py-2 text-center text-sm font-medium border-r border-gray-300 bg-yellow-50">
+                {kamera.ktun}
               </td>
             )}
             
@@ -398,6 +419,13 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
+                    onClick={() => openProgressModal(kamera)}
+                    className="text-orange-600 hover:text-orange-800 p-1"
+                    title="Update Progress"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </button>
+                  <button
                     onClick={() => handleDelete(kamera.id)}
                     className="text-red-600 hover:text-red-800 p-1"
                     title="Delete"
@@ -422,6 +450,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       no: monitoringData.length + 1,
       kamera: "",
       isotop: "",
+      ktun: "",
       personil: [{
         nama: "",
         validSIB: "",
@@ -466,6 +495,34 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
   const closeModal = () => {
     setShowModal(false);
     setSelectedData(null);
+  };
+
+  // Progress update handlers
+  const openProgressModal = (data: MonitoringKameraData) => {
+    setProgressUpdateData(data);
+    setNewProgress({ ...data.progress });
+    setShowProgressModal(true);
+  };
+
+  const closeProgressModal = () => {
+    setShowProgressModal(false);
+    setProgressUpdateData(null);
+    setNewProgress({
+      mainStatus: "Pengajuan",
+      subStatus: "",
+      completed: false
+    });
+  };
+
+  const handleProgressUpdate = () => {
+    if (progressUpdateData) {
+      setMonitoringData(monitoringData.map(item => 
+        item.id === progressUpdateData.id 
+          ? { ...item, progress: newProgress }
+          : item
+      ));
+      closeProgressModal();
+    }
   };
 
   // CRUD operations
@@ -641,6 +698,9 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     ISOTOP
                   </th>
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider border-r border-blue-500">
+                    KTUN
+                  </th>
+                  <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider border-r border-blue-500">
                     PERSONIL
                   </th>
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider border-r border-blue-500">
@@ -769,6 +829,18 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                       type="text"
                       value={formData.isotop}
                       onChange={(e) => handleInputChange('isotop', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ktun
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.ktun}
+                      onChange={(e) => handleInputChange('ktun', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                     />
@@ -1174,6 +1246,121 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     Hapus
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Progress Update Modal */}
+        {showProgressModal && progressUpdateData && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Update Progress Status
+                </h3>
+                <button
+                  onClick={closeProgressModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {/* Current Status Display */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Current Status:</h4>
+                  <div className="space-y-2">
+                    <div className="text-sm">
+                      <span className="font-medium">Kamera:</span> {progressUpdateData.kamera}
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-medium">Main Status:</span>
+                      <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
+                        progressUpdateData.progress.completed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {progressUpdateData.progress.mainStatus}
+                      </span>
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-medium">Sub Status:</span> {progressUpdateData.progress.subStatus}
+                    </div>
+                  </div>
+                </div>
+
+                {/* New Status Form */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Main Status
+                    </label>
+                    <select
+                      value={newProgress.mainStatus}
+                      onChange={(e) => setNewProgress({
+                        ...newProgress,
+                        mainStatus: e.target.value as ProgressDetail['mainStatus']
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="Pengajuan">Pengajuan</option>
+                      <option value="Pelimbahan">Pelimbahan</option>
+                      <option value="Penghentian">Penghentian</option>
+                      <option value="Permohonan Ijin Baru">Permohonan Ijin Baru</option>
+                      <option value="Izin Transport">Izin Transport</option>
+                      <option value="Loading ISOTOP">Loading ISOTOP</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Sub Status
+                    </label>
+                    <input
+                      type="text"
+                      value={newProgress.subStatus}
+                      onChange={(e) => setNewProgress({
+                        ...newProgress,
+                        subStatus: e.target.value
+                      })}
+                      placeholder="Enter sub status (e.g., PR, PO, BAST, etc.)"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="completed"
+                      checked={newProgress.completed}
+                      onChange={(e) => setNewProgress({
+                        ...newProgress,
+                        completed: e.target.checked
+                      })}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="completed" className="ml-2 block text-sm text-gray-700">
+                      Mark as Completed
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+                <button
+                  onClick={closeProgressModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleProgressUpdate}
+                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Update Progress
+                </button>
               </div>
             </div>
           </div>
