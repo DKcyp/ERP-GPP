@@ -25,6 +25,12 @@ interface LaggingIndicators {
   nearMiss: number;
 }
 
+interface SimpleIndicator {
+  id: string;
+  name: string;
+  description: string;
+}
+
 interface KPIItem {
   id: string;
   kpiName: string;
@@ -82,6 +88,55 @@ const initialTargetData: TargetItem[] = [
   { id: '2', description: 'Target 2', target: 200, targetYTD: 200, jan: 20, feb: 40, mar: 60, apr: 80, may: 100, jun: 120, jul: 140, aug: 160, sep: 180, oct: 200, nov: 220, dec: 240, last12MthTotal: 2400, jumlahHariHilang: 20, category: 'LEADING' },
 ];
 
+// Default indicator lists for each card so every row is editable/deletable
+const defaultLaggingList: SimpleIndicator[] = [
+  { id: 'lag-1', name: 'Fatality', description: '' },
+  { id: 'lag-2', name: 'Restricted Work Case (RWC)', description: '' },
+  { id: 'lag-3', name: 'First Aid Case (FAC)', description: '' },
+  { id: 'lag-4', name: 'Medical Treatment Case (MTC)', description: '' },
+  { id: 'lag-5', name: 'Lost Work Day Case (LWDC)', description: '' },
+  { id: 'lag-6', name: 'Property Damage', description: '' },
+  { id: 'lag-7', name: 'Environment', description: '' },
+  { id: 'lag-8', name: 'Motor Vehicle Accident', description: '' },
+  { id: 'lag-9', name: 'Occupational Illness', description: '' },
+  { id: 'lag-10', name: 'Near Miss', description: '' },
+];
+
+const defaultLeadingList: SimpleIndicator[] = [
+  { id: 'lead-1', name: 'HSE Audit (Internal)', description: '' },
+  { id: 'lead-2', name: 'HSE Audit (Eksternal)', description: '' },
+  { id: 'lead-3', name: 'Medical Check Up', description: '' },
+  { id: 'lead-4', name: 'PPE Inspection', description: '' },
+  { id: 'lead-5', name: 'Fire Extinguisher Inspection', description: '' },
+  { id: 'lead-6', name: 'First Aid Inspection', description: '' },
+  { id: 'lead-7', name: 'HSE Meeting', description: '' },
+  { id: 'lead-8', name: 'HSE Induction', description: '' },
+  { id: 'lead-9', name: 'Management Visit', description: '' },
+  { id: 'lead-10', name: 'Vehicle Inspection', description: '' },
+  { id: 'lead-11', name: 'Emergency Drill', description: '' },
+  { id: 'lead-12', name: 'Hazard Observation', description: '' },
+  { id: 'lead-13', name: 'Healthy Week', description: '' },
+  { id: 'lead-14', name: 'HSE Bulletin', description: '' },
+];
+
+const defaultTrainingList: SimpleIndicator[] = [
+  { id: 'train-1', name: 'Sea Survival Training', description: '' },
+  { id: 'train-2', name: 'Fire Fighting Training', description: '' },
+  { id: 'train-3', name: 'First Aid Training', description: '' },
+  { id: 'train-4', name: 'Confined Space Entry Other', description: '' },
+];
+
+const defaultManhoursList: SimpleIndicator[] = [
+  { id: 'mh-1', name: 'Office', description: '' },
+  { id: 'mh-2', name: 'PHE ONWJ', description: '' },
+  { id: 'mh-3', name: 'Medco Corridor', description: '' },
+  { id: 'mh-4', name: 'PHM', description: '' },
+  { id: 'mh-5', name: 'Medco Indonesia (SSB)', description: '' },
+  { id: 'mh-6', name: 'ENI Muara Bakau', description: '' },
+  { id: 'mh-7', name: 'PHE OSES', description: '' },
+  { id: 'mh-8', name: 'Plus Kolam Tambahan', description: '' },
+];
+
 const QHSEPerformanceDashboard: React.FC = () => {
   // table state
   const [rows, setRows] = useState<PerformanceItem[]>(initialData);
@@ -120,30 +175,108 @@ const QHSEPerformanceDashboard: React.FC = () => {
   const [showIndicatorModal, setShowIndicatorModal] = useState(false);
   const [indicatorContext, setIndicatorContext] = useState<'lagging' | 'leading' | 'training' | 'manhours' | null>(null);
   const [indicatorForm, setIndicatorForm] = useState<{ name: string; description: string }>({ name: '', description: '' });
+  const [indicatorMode, setIndicatorMode] = useState<'add' | 'edit'>('add');
+  const [selectedIndicatorId, setSelectedIndicatorId] = useState<string | null>(null);
+
+  // Per-card indicator lists
+  const [laggingList, setLaggingList] = useState<SimpleIndicator[]>(defaultLaggingList);
+  const [leadingList, setLeadingList] = useState<SimpleIndicator[]>(defaultLeadingList);
+  const [trainingList, setTrainingList] = useState<SimpleIndicator[]>(defaultTrainingList);
+  const [manhoursList, setManhoursList] = useState<SimpleIndicator[]>(defaultManhoursList);
+
+  // Confirm delete state for indicators
+  const [indicatorConfirm, setIndicatorConfirm] = useState<{ open: boolean; ctx: 'lagging' | 'leading' | 'training' | 'manhours' | null; id: string | null; name?: string }>({ open: false, ctx: null, id: null });
 
   const openIndicatorAdd = (ctx: 'lagging' | 'leading' | 'training' | 'manhours') => {
+    setIndicatorMode('add');
+    setSelectedIndicatorId(null);
     setIndicatorContext(ctx);
     setIndicatorForm({ name: '', description: '' });
     setShowIndicatorModal(true);
   };
 
+  const openIndicatorEdit = (ctx: 'lagging' | 'leading' | 'training' | 'manhours', item: SimpleIndicator) => {
+    setIndicatorMode('edit');
+    setSelectedIndicatorId(item.id);
+    setIndicatorContext(ctx);
+    setIndicatorForm({ name: item.name, description: item.description });
+    setShowIndicatorModal(true);
+  };
+
+  const openIndicatorDelete = (ctx: 'lagging' | 'leading' | 'training' | 'manhours', item: SimpleIndicator) => {
+    setIndicatorConfirm({ open: true, ctx, id: item.id, name: item.name });
+  };
+
   const saveIndicator = () => {
-    // TODO: Integrate with specific list states if needed.
+    if (!indicatorContext) return;
+    const payload: SimpleIndicator = {
+      id: selectedIndicatorId ?? String(Date.now()),
+      name: indicatorForm.name.trim(),
+      description: indicatorForm.description.trim(),
+    };
+    if (!payload.name) return;
+
+    const upsert = (setList: React.Dispatch<React.SetStateAction<SimpleIndicator[]>>) => {
+      setList(prev => {
+        if (indicatorMode === 'add') return [payload, ...prev];
+        return prev.map(it => (it.id === payload.id ? payload : it));
+      });
+    };
+
+    switch (indicatorContext) {
+      case 'lagging':
+        upsert(setLaggingList);
+        break;
+      case 'leading':
+        upsert(setLeadingList);
+        break;
+      case 'training':
+        upsert(setTrainingList);
+        break;
+      case 'manhours':
+        upsert(setManhoursList);
+        break;
+    }
+
     setShowIndicatorModal(false);
   };
 
+  const confirmDeleteIndicator = () => {
+    if (!indicatorConfirm.open || !indicatorConfirm.ctx || !indicatorConfirm.id) {
+      setIndicatorConfirm({ open: false, ctx: null, id: null });
+      return;
+    }
+    const id = indicatorConfirm.id;
+    switch (indicatorConfirm.ctx) {
+      case 'lagging':
+        setLaggingList(prev => prev.filter(it => it.id !== id));
+        break;
+      case 'leading':
+        setLeadingList(prev => prev.filter(it => it.id !== id));
+        break;
+      case 'training':
+        setTrainingList(prev => prev.filter(it => it.id !== id));
+        break;
+      case 'manhours':
+        setManhoursList(prev => prev.filter(it => it.id !== id));
+        break;
+    }
+    setIndicatorConfirm({ open: false, ctx: null, id: null });
+  };
+
   const getIndicatorModalTitle = () => {
+    const prefix = indicatorMode === 'edit' ? 'Edit' : 'Tambah';
     switch (indicatorContext) {
       case 'lagging':
-        return 'Tambah Indikator Lagging';
+        return `${prefix} Indikator Lagging`;
       case 'leading':
-        return 'Tambah Indikator Leading';
+        return `${prefix} Indikator Leading`;
       case 'training':
-        return 'Tambah Safety Training';
+        return `${prefix} Safety Training`;
       case 'manhours':
-        return 'Tambah Manhours Worker';
+        return `${prefix} Manhours Worker`;
       default:
-        return 'Tambah Indikator';
+        return `${prefix} Indikator`;
     }
   };
 
@@ -404,46 +537,24 @@ const QHSEPerformanceDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Fatality</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Restricted Work Case (RWC)</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">First Aid Case (FAC)</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Medical Treatment Case (MTC)</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Lost Work Day Case (LWDC)</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Property Damage</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Environment</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Motor Vehicle Accident</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Occupational Illness</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Near Miss</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
+                {laggingList.map(item => (
+                  <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">0</span>
+                      {user?.role === 'qhse' && (
+                        <div className="flex gap-2">
+                          <button onClick={() => openIndicatorEdit('lagging', item)} className="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1">
+                            <Pencil className="h-4 w-4" /> Edit
+                          </button>
+                          <button onClick={() => openIndicatorDelete('lagging', item)} className="text-red-600 hover:text-red-800 text-xs flex items-center gap-1">
+                            <Trash2 className="h-4 w-4" /> Hapus
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -468,120 +579,24 @@ const QHSEPerformanceDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">HSE Audit (Internal)</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">HSE Audit (Eksternal)</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">Medical Check Up</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-blue-500 cursor-pointer" />
+                {leadingList.map(item => (
+                  <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">0</span>
+                      {user?.role === 'qhse' && (
+                        <div className="flex gap-2">
+                          <button onClick={() => openIndicatorEdit('leading', item)} className="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1">
+                            <Pencil className="h-4 w-4" /> Edit
+                          </button>
+                          <button onClick={() => openIndicatorDelete('leading', item)} className="text-red-600 hover:text-red-800 text-xs flex items-center gap-1">
+                            <Trash2 className="h-4 w-4" /> Hapus
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">PPE Inspection</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Fire Extinguisher Inspection</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">First Aid Inspection</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">HSE Meeting</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">HSE Induction</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Management Visit</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Vehicle Inspection</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Emergency Drill</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Hazard Observation</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Healthy Week</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">HSE Bulletin</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Safety Training & Manhours Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Safety Training Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-blue-500" />
-                  Safety Training
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Link dari Matrik Training Inspector</span>
-                  {user?.role === 'qhse' && (
-                    <button
-                      onClick={() => openIndicatorAdd('training')}
-                      className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1.5 text-sm"
-                    >
-                      <PlusCircle className="h-4 w-4" />
-                      Tambah
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">Sea Survival Training</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-blue-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">Fire Fighting Training</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-blue-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">First Aid Training</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-blue-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">Confined Space Entry Other</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-blue-500 cursor-pointer" />
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -606,59 +621,24 @@ const QHSEPerformanceDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">Office</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
+                {manhoursList.map(item => (
+                  <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">0</span>
+                      {user?.role === 'qhse' && (
+                        <div className="flex gap-2">
+                          <button onClick={() => openIndicatorEdit('manhours', item)} className="text-blue-600 hover:text-blue-800 text-xs flex items-center gap-1">
+                            <Pencil className="h-4 w-4" /> Edit
+                          </button>
+                          <button onClick={() => openIndicatorDelete('manhours', item)} className="text-red-600 hover:text-red-800 text-xs flex items-center gap-1">
+                            <Trash2 className="h-4 w-4" /> Hapus
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">PHE ONWJ</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">Medco Corridor</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">PHM</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">Medco Indonesia (SSB)</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">ENI Muara Bakau</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
-                  <span className="text-sm font-medium text-gray-700">PHE OSES</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">0</span>
-                    <ExternalLink className="h-4 w-4 text-purple-500 cursor-pointer" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Plus Kolam Tambahan</span>
-                  <span className="text-sm text-gray-600">0</span>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -1313,6 +1293,16 @@ const QHSEPerformanceDashboard: React.FC = () => {
         title="Konfirmasi Hapus"
         message="Apakah Anda yakin ingin menghapus data performance ini?"
         itemName={confirmId ? (() => { const i = rows.find(r => r.id === confirmId); return i ? `${i.bulan} ${i.tahun}` : undefined; })() : undefined}
+      />
+
+      {/* Confirm Delete Modal - Indicator */}
+      <ConfirmDeleteModal
+        isOpen={indicatorConfirm.open}
+        onClose={() => setIndicatorConfirm({ open: false, ctx: null, id: null })}
+        onConfirm={confirmDeleteIndicator}
+        title="Konfirmasi Hapus Indikator"
+        message="Apakah Anda yakin ingin menghapus indikator ini?"
+        itemName={indicatorConfirm.name}
       />
     </>
   );
