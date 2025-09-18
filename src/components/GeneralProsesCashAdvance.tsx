@@ -12,6 +12,8 @@ import {
   History,
   Edit,
   Trash2,
+  Upload,
+  Paperclip,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
@@ -113,6 +115,7 @@ const GeneralProsesCashAdvance: React.FC = () => {
     keperluan: "",
     tglPembayaran: "",
     tglLaporanExpense: "",
+    lampiranDokumen: null as File | null,
   });
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyItem, setHistoryItem] = useState<any | null>(null);
@@ -133,6 +136,7 @@ const GeneralProsesCashAdvance: React.FC = () => {
       keperluan: "",
       tglPembayaran: "",
       tglLaporanExpense: "",
+      lampiranDokumen: null,
     });
     setIsEntryOpen(true);
   };
@@ -151,6 +155,7 @@ const GeneralProsesCashAdvance: React.FC = () => {
       keperluan: item.keperluan,
       tglPembayaran: item.tglPembayaran,
       tglLaporanExpense: item.tglLaporanExpense,
+      lampiranDokumen: item.lampiranDokumen,
     });
     setIsEntryOpen(true);
   };
@@ -187,6 +192,12 @@ const GeneralProsesCashAdvance: React.FC = () => {
     if (deleteItem) {
       setData((prev) => prev.filter((row: any) => row.id !== deleteItem.id));
       setDeleteItem(null);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setForm({ ...form, lampiranDokumen: event.target.files[0] });
     }
   };
 
@@ -708,6 +719,56 @@ const GeneralProsesCashAdvance: React.FC = () => {
                     }
                     className="w-full px-3 py-2 border rounded-lg text-sm"
                   />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    <Paperclip className="inline h-4 w-4 mr-1" />
+                    Lampiran Dokumen
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      id="file-upload"
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="flex items-center justify-center w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                    >
+                      <div className="text-center">
+                        <Upload className="mx-auto h-6 w-6 text-gray-400 mb-1" />
+                        <div className="text-sm text-gray-600">
+                          {form.lampiranDokumen ? (
+                            <span className="text-blue-600 font-medium">
+                              {form.lampiranDokumen.name}
+                            </span>
+                          ) : (
+                            <>
+                              <span className="font-medium text-blue-600">
+                                Klik untuk upload
+                              </span>
+                              <span className="text-gray-500"> atau drag & drop</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          PDF, DOC, JPG, PNG, XLSX (Max. 10MB)
+                        </div>
+                      </div>
+                    </label>
+                    {form.lampiranDokumen && (
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, lampiranDokumen: null })}
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                        title="Hapus file"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
