@@ -6,21 +6,36 @@ interface IuranItem {
   organisasi: string;
   nomorAnggota: string;
   iuran: number;
-  periode: string; // e.g., 2025-01
+  masaBerlaku: string; // e.g., 2025-01 (month and year)
+  periode: string; // e.g., 2025 (year only)
   status: "Aktif" | "Non Aktif";
 }
 
 const currency = (v: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v);
 
+const formatMasaBerlaku = (masaBerlaku: string) => {
+  if (!masaBerlaku) return '-';
+  try {
+    const [year, month] = masaBerlaku.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString('id-ID', { 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  } catch {
+    return masaBerlaku;
+  }
+};
+
 const GAIuranKeanggotaanDashboard: React.FC = () => {
   const [items, setItems] = useState<IuranItem[]>([
-    { id: crypto.randomUUID(), organisasi: "APTI", nomorAnggota: "APT-001", iuran: 500000, periode: "2025-01", status: "Aktif" },
+    { id: crypto.randomUUID(), organisasi: "APTI", nomorAnggota: "APT-001", iuran: 500000, masaBerlaku: "2025-01", periode: "2025", status: "Aktif" },
   ]);
   const [q, setQ] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<IuranItem>({ id: "", organisasi: "", nomorAnggota: "", iuran: 0, periode: "", status: "Aktif" });
+  const [form, setForm] = useState<IuranItem>({ id: "", organisasi: "", nomorAnggota: "", iuran: 0, masaBerlaku: "", periode: "", status: "Aktif" });
   const [saving, setSaving] = useState(false);
 
   const filtered = useMemo(() => {
@@ -30,7 +45,7 @@ const GAIuranKeanggotaanDashboard: React.FC = () => {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ id: crypto.randomUUID(), organisasi: "", nomorAnggota: "", iuran: 0, periode: "", status: "Aktif" });
+    setForm({ id: crypto.randomUUID(), organisasi: "", nomorAnggota: "", iuran: 0, masaBerlaku: "", periode: "", status: "Aktif" });
     setIsOpen(true);
   };
 
@@ -48,8 +63,8 @@ const GAIuranKeanggotaanDashboard: React.FC = () => {
   };
 
   const exportCSV = () => {
-    const header = ["Organisasi", "No. Anggota", "Iuran", "Periode", "Status"]; 
-    const rows = filtered.map((r) => [r.organisasi, r.nomorAnggota, r.iuran, r.periode, r.status]);
+    const header = ["Organisasi", "No. Anggota", "Iuran", "Masa Berlaku", "Periode", "Status"]; 
+    const rows = filtered.map((r) => [r.organisasi, r.nomorAnggota, r.iuran, r.masaBerlaku, r.periode, r.status]);
     const csv = [header, ...rows]
       .map((row) => row.map((c) => (typeof c === "string" ? `"${c.replace(/"/g, '""')}"` : c)).join(","))
       .join("\n");
@@ -118,6 +133,7 @@ const GAIuranKeanggotaanDashboard: React.FC = () => {
                 <th className="px-3 py-2 text-left">Organisasi</th>
                 <th className="px-3 py-2 text-left">No. Anggota</th>
                 <th className="px-3 py-2 text-right">Iuran</th>
+                <th className="px-3 py-2 text-left">Masa Berlaku</th>
                 <th className="px-3 py-2 text-left">Periode</th>
                 <th className="px-3 py-2 text-left">Status</th>
                 <th className="px-3 py-2 text-right">Aksi</th>
@@ -130,6 +146,7 @@ const GAIuranKeanggotaanDashboard: React.FC = () => {
                   <td className="px-3 py-2 font-medium text-gray-900">{r.organisasi}</td>
                   <td className="px-3 py-2 text-gray-800">{r.nomorAnggota}</td>
                   <td className="px-3 py-2 text-gray-800 text-right">{currency(r.iuran)}</td>
+                  <td className="px-3 py-2 text-gray-800">{formatMasaBerlaku(r.masaBerlaku)}</td>
                   <td className="px-3 py-2 text-gray-800">{r.periode}</td>
                   <td className="px-3 py-2">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${
@@ -201,9 +218,19 @@ const GAIuranKeanggotaanDashboard: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Periode</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Masa Berlaku</label>
                   <input
                     type="month"
+                    value={form.masaBerlaku}
+                    onChange={(e) => setForm((f) => ({ ...f, masaBerlaku: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Periode</label>
+                  <input
+                    type="number"
                     value={form.periode}
                     onChange={(e) => setForm((f) => ({ ...f, periode: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
