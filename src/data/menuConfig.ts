@@ -2064,7 +2064,7 @@ export const proconMenu: MenuSection[] = [
     title: "Sales Order",
     icon: "ShoppingCart",
     items: [],
-    directPath: "/marketing/sales-order/dashboard",
+    directPath: "/procon/sales-order/dashboard",
   },
   {
     title: "Proforma Invoice",
