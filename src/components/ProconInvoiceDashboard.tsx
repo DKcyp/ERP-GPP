@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Clock, ReceiptText, BarChart2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface PIEntry {
   id: string;
@@ -18,7 +17,6 @@ const formatRupiah = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
 const ProconInvoiceDashboard: React.FC = () => {
   const [data, setData] = useState<PIEntry[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -118,7 +116,8 @@ const ProconInvoiceDashboard: React.FC = () => {
   }, [data, currentYear]);
 
   const handleBarClick = () => {
-    navigate('/procon/proforma-invoice/pembuatan');
+    // Use window.location to trigger navigation
+    window.location.hash = '/procon/proforma-invoice/pembuatan';
   };
 
   return (
