@@ -654,7 +654,7 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
 
               {/* Coverall Merah */}
               <div className="border rounded-lg p-4 bg-red-50">
-                <h4 className="font-medium text-gray-900 mb-3">Coverall (Merah)</h4>
+                <h4 className="font-medium text-gray-900 mb-3">Coverall</h4>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
@@ -718,11 +718,43 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                     </select>
                   </div>
                 </div>
+                <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                    <textarea
+                      value={formData.coverallMerah?.keterangan || ''}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        coverallMerah: { ...prev.coverallMerah, keterangan: e.target.value }
+                      }))}
+                      disabled={modalMode === 'view'}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      placeholder="Catatan tambahan..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload File</label>
+                    <input
+                      type="file"
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        coverallMerah: { ...prev.coverallMerah, uploadFile: e.target.files?.[0]?.name || '' }
+                      }))}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    />
+                    {formData.coverallMerah?.uploadFile && (
+                      <p className="text-sm text-gray-600 mt-1">File: {formData.coverallMerah.uploadFile}</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Coverall Biru */}
               <div className="border rounded-lg p-4 bg-blue-50">
-                <h4 className="font-medium text-gray-900 mb-3">Coverall (Biru)</h4>
+                <h4 className="font-medium text-gray-900 mb-3">Coverall</h4>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>

@@ -528,6 +528,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipment Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spec</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merk</th>
@@ -543,8 +544,10 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map((item) => (
+                {filteredData.map((item, index) => (
                   <tr key={item.id} className="hover:bg-gray-50">
+                    {/* Nomor Urut */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index+1}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item.equipmentName}</div>
                     </td>
