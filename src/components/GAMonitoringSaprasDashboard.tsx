@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Search, Eye, History as HistoryIcon, X, Clock } from 'lucide-react';
+import { Search, Eye, History as HistoryIcon, X, Clock, FileSpreadsheet, FileText } from 'lucide-react';
 
 interface SaprasItem { 
   id: string; 
@@ -36,6 +36,107 @@ const GAMonitoringSaprasDashboard: React.FC = () => {
   }, [data, q]);
   const get = (id: string | null) => data.find(d => d.id === id);
 
+  // Export functions
+  const exportToExcel = () => {
+    const exportData = [];
+    
+    // Header
+    exportData.push(['Monitoring Sarana & Prasarana']);
+    exportData.push(['Tanggal Export:', new Date().toLocaleString('id-ID')]);
+    exportData.push([]);
+    
+    // Table header
+    exportData.push(['No', 'Nomor Aset', 'Nama', 'Lokasi', 'Tipe', 'Merek']);
+    
+    // Data rows
+    filtered.forEach((item, index) => {
+      exportData.push([
+        index + 1,
+        item.nomorAset,
+        item.nama,
+        item.lokasi,
+        item.tipe,
+        item.merek
+      ]);
+    });
+
+    // Convert to CSV and download
+    const csvContent = exportData.map(row => 
+      row.map(cell => `"${cell.toString().replace(/"/g, '""')}"`)
+        .join(',')
+    ).join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Monitoring_Sarana_Prasarana_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToPDF = () => {
+    // Create a simple HTML content for PDF
+    const htmlContent = `
+      <html>
+        <head>
+          <title>Monitoring Sarana & Prasarana</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .header { text-align: center; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Monitoring Sarana & Prasarana</h1>
+            <p>Tanggal Export: ${new Date().toLocaleString('id-ID')}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nomor Aset</th>
+                <th>Nama</th>
+                <th>Lokasi</th>
+                <th>Tipe</th>
+                <th>Merek</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.map((item, index) => `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${item.nomorAset}</td>
+                  <td>${item.nama}</td>
+                  <td>${item.lokasi}</td>
+                  <td>${item.tipe}</td>
+                  <td>${item.merek}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+        </body>
+      </html>
+    `;
+
+    // Open in new window for printing/saving as PDF
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header */}
@@ -60,19 +161,53 @@ const GAMonitoringSaprasDashboard: React.FC = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
-        {/* Filter Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div className="md:col-span-2 lg:col-span-3">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Cari Sarana/Prasarana atau Lokasi</label>
+        {/* Filter & Action Panel */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16" />
+
+          <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-6">
+            {/* Cari Sarana/Prasarana atau Lokasi */}
+            <div className="md:col-span-3 lg:col-span-4 space-y-2">
+              <label className="block text-xs font-medium text-gray-700">Cari Sarana/Prasarana atau Lokasi</label>
               <div className="relative">
-                <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Contoh: Genset, Server Room" className="w-full pl-3 pr-10 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs" />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  className="w-full pl-3 pr-10 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                  placeholder="Contoh: Genset, Server Room, AC Ruang Meeting, Lift Barang"
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
+
+            {/* Search Button */}
             <div className="flex items-end">
-              <button className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs">Cari</button>
+              <button
+                className="w-full px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2 text-xs"
+              >
+                <Search className="h-4 w-4" />
+                <span>Cari</span>
+              </button>
             </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-2 mt-6">
+            <button 
+              onClick={exportToExcel}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>Export Excel</span>
+            </button>
+            <button 
+              onClick={exportToPDF}
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-600/25 flex items-center space-x-2 text-xs"
+            >
+              <FileText className="h-4 w-4" />
+              <span>Export PDF</span>
+            </button>
           </div>
         </div>
 
