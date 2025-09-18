@@ -1,13 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { Search, Gauge, History as HistoryIcon, X, Camera, Clock } from 'lucide-react';
 
-interface KendaraanItem { id: string; merek: string; platNomor: string; }
+interface KendaraanItem { 
+  id: string; 
+  merek: string; 
+  platNomor: string; 
+  namaDriver: string;
+  lokasi: string;
+}
+
 interface KendaraanLog { date: string; km: number; note?: string; photo?: string; }
 
 const seedKendaraan = (): KendaraanItem[] => [
-  { id: 'v1', merek: 'Expander', platNomor: 'B 1875 ROB' },
-  { id: 'v2', merek: 'Rubicon', platNomor: 'B 500 GBP' },
-  { id: 'v3', merek: 'Chery', platNomor: 'B 1753 TNT' },
+  { id: 'v1', merek: 'Expander', platNomor: 'B 1875 ROB', namaDriver: 'Ahmad Sutrisno', lokasi: 'Jakarta Pusat' },
+  { id: 'v2', merek: 'Rubicon', platNomor: 'B 500 GBP', namaDriver: 'Budi Santoso', lokasi: 'Bekasi' },
+  { id: 'v3', merek: 'Chery', platNomor: 'B 1753 TNT', namaDriver: 'Candra Wijaya', lokasi: 'Tangerang' },
 ];
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -79,6 +86,8 @@ const GAMonitoringKendaraanDashboard: React.FC = () => {
                 <th className="text-left p-2">No</th>
                 <th className="text-left p-2">Merek</th>
                 <th className="text-left p-2">Plat Nomor</th>
+                <th className="text-left p-2">Nama Driver</th>
+                <th className="text-left p-2">Lokasi</th>
                 <th className="text-center p-2">Aksi</th>
               </tr>
             </thead>
@@ -88,6 +97,8 @@ const GAMonitoringKendaraanDashboard: React.FC = () => {
                   <td className="p-2">{idx + 1}</td>
                   <td className="p-2 font-medium">{it.merek}</td>
                   <td className="p-2">{it.platNomor}</td>
+                  <td className="p-2">{it.namaDriver}</td>
+                  <td className="p-2">{it.lokasi}</td>
                   <td className="p-2">
                     <div className="flex items-center justify-center gap-2">
                       <button onClick={()=>{ setInputId(it.id); setKm(''); setNote(''); setPhoto(undefined); }} className="px-2 py-1 bg-blue-600 text-white rounded text-xs flex items-center gap-1"><Gauge className="h-3 w-3"/>Input KM</button>
