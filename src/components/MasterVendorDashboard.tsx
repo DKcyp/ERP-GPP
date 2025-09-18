@@ -34,6 +34,7 @@ const MasterVendorDashboard: React.FC = () => {
   const [dateTo, setDateTo] = useState('03/03/2025');
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingVendor, setEditingVendor] = useState<MasterVendorData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -122,6 +123,27 @@ const MasterVendorDashboard: React.FC = () => {
     setMasterVendorData(prev => [newVendor, ...prev.map(v => ({ ...v, no: v.no + 1 }))]);
   };
 
+  const handleSaveVendor = (data: VendorFormData) => {
+    if (editingVendor) {
+      // Update existing vendor
+      setMasterVendorData(prev => prev.map(v => v.id === editingVendor.id ? {
+        ...v,
+        tanggal: data.tanggal || v.tanggal,
+        namaVendor: data.namaVendor || v.namaVendor,
+        kodeVendor: data.kodeVendor || v.kodeVendor,
+        alamatVendor: data.alamatVendor || v.alamatVendor,
+        picVendor: data.picVendor || v.picVendor,
+        noTelp: data.noTelp || v.noTelp,
+        status: data.status || v.status,
+        barang: data.barang ?? v.barang,
+      } : v));
+      setEditingVendor(null);
+    } else {
+      // Create new vendor
+      handleAddVendor(data);
+    }
+  };
+
   const handleSort = (field: keyof MasterVendorData) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -194,7 +216,7 @@ const MasterVendorDashboard: React.FC = () => {
               DAFTAR MASTER VENDOR
             </h1>
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => { setEditingVendor(null); setIsModalOpen(true); }}
               className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs"
             >
               <Plus className="h-4 w-4" />
@@ -432,6 +454,17 @@ const MasterVendorDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('barang')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Barang / Jasa Terkait</span>
+                      {sortField === 'barang' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center space-x-1">
@@ -465,6 +498,9 @@ const MasterVendorDashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-2 text-xs text-gray-900">{item.picVendor}</td>
                     <td className="px-3 py-2 text-xs text-gray-900">{item.noTelp}</td>
+                    <td className="px-3 py-2 text-xs text-gray-700 max-w-xs truncate" title={item.barang || ''}>
+                      {item.barang || '-'}
+                    </td>
                     <td className="px-3 py-2 text-xs">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'}`}>
                         {item.status}
@@ -487,7 +523,10 @@ const MasterVendorDashboard: React.FC = () => {
                           <FileText className="h-3.5 w-3.5" />
                         </button>
                         <button 
-                          onClick={() => setIsModalOpen(true)}
+                          onClick={() => {
+                            setEditingVendor(item);
+                            setIsModalOpen(true);
+                          }}
                           className="p-1 bg-blue-600 text-white rounded transition-all duration-200 hover:scale-110 hover:bg-blue-700"
                           title="Edit"
                         >
@@ -550,8 +589,19 @@ const MasterVendorDashboard: React.FC = () => {
       {/* Vendor Modal */}
       <VendorModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleAddVendor}
+        onClose={() => { setIsModalOpen(false); setEditingVendor(null); }}
+        onSave={handleSaveVendor}
+        initialData={editingVendor ? {
+          tanggal: editingVendor.tanggal,
+          namaVendor: editingVendor.namaVendor,
+          kodeVendor: editingVendor.kodeVendor,
+          alamatVendor: editingVendor.alamatVendor,
+          picVendor: editingVendor.picVendor,
+          noTelp: editingVendor.noTelp,
+          status: editingVendor.status,
+          barang: editingVendor.barang || '',
+        } : undefined}
+        title={editingVendor ? 'Edit Vendor' : 'Entry Vendor'}
       />
 
       {/* Delete Confirmation Modal */}

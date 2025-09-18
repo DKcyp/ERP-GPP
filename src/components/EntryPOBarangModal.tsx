@@ -13,6 +13,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
     noPR: '',
     noSO: '',
     metodePembayaran: '',
+    termOfPayment: '',
     tanggalPO: '',
     kodeVendor: '',
     tanggalPengiriman: '',
@@ -41,6 +42,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
     discAkhir: 'Rp 50.000',
     subTotal: 'Rp 1.450.000',
     ppn: 'Rp 145.000',
+    uangMukaNominal: '',
     ongkosKirim: '',
     grandTotal: 'Rp 1.595.000',
     // new fields
@@ -127,6 +129,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
       noPR: '',
       noSO: '',
       metodePembayaran: '',
+      termOfPayment: '',
       tanggalPO: '',
       kodeVendor: '',
       tanggalPengiriman: '',
@@ -155,6 +158,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
       discAkhir: 'Rp 50.000',
       subTotal: 'Rp 1.450.000',
       ppn: 'Rp 145.000',
+      uangMukaNominal: '',
       ongkosKirim: '',
       grandTotal: 'Rp 1.595.000',
       grossUp: false,
@@ -284,6 +288,7 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
                 </select>
               </div>
 
+              {/* Metode Pembayaran */}
               <div>
                 <label htmlFor="metodePembayaran" className="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
                 <select
@@ -301,6 +306,22 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
                   ))}
                 </select>
               </div>
+
+              {/* Term Of Payment (free text) */}
+              <div>
+                <label htmlFor="termOfPayment" className="block text-sm font-medium text-gray-700 mb-1">Term Of Payment</label>
+                <input
+                  type="text"
+                  id="termOfPayment"
+                  name="termOfPayment"
+                  value={formData.termOfPayment || ''}
+                  onChange={handleChange}
+                  placeholder="Contoh: 30 hari setelah invoice"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+
+              {/* Tanggal Pengiriman */}
               <div>
                 <label htmlFor="tanggalPengiriman" className="block text-sm font-medium text-gray-700 mb-1">Tanggal Pengiriman</label>
                 <div className="relative">
@@ -519,6 +540,18 @@ const EntryPOBarangModal: React.FC<EntryPOBarangModalProps> = ({ isOpen, onClose
               <div className="flex justify-between items-center text-sm font-medium text-gray-700">
                 <span>PPN:</span>
                 <input type="text" value={formData.ppn} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              </div>
+              {/* Uang Muka Nominal (baru) */}
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Uang Muka:</span>
+                <input
+                  type="text"
+                  name="uangMukaNominal"
+                  value={formData.uangMukaNominal || ''}
+                  onChange={handleChange}
+                  placeholder="Rp 0"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
               </div>
               <div className="flex justify-between items-center text-sm font-medium text-gray-700">
                 <span>Ongkos Kirim:</span>

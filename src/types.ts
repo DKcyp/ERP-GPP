@@ -300,6 +300,8 @@ export interface EntryPOBarangFormData {
   discAkhir: string;
   subTotal: string;
   ppn: string;
+  uangMukaNominal?: string; // new: uang muka nominal (rupiah)
+  termOfPayment?: string; // new: free text term of payment
   ongkosKirim: string;
   grandTotal: string;
   // New fields for dashboard requirements
