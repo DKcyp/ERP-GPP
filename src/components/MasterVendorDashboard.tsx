@@ -432,6 +432,17 @@ const MasterVendorDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('barang')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Barang / Jasa Terkait</span>
+                      {sortField === 'barang' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-3 py-2 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center space-x-1">
@@ -465,6 +476,9 @@ const MasterVendorDashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-2 text-xs text-gray-900">{item.picVendor}</td>
                     <td className="px-3 py-2 text-xs text-gray-900">{item.noTelp}</td>
+                    <td className="px-3 py-2 text-xs text-gray-700 max-w-xs truncate" title={item.barang || ''}>
+                      {item.barang || '-'}
+                    </td>
                     <td className="px-3 py-2 text-xs">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'}`}>
                         {item.status}
