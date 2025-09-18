@@ -1223,7 +1223,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     // GA Routes
     if (currentPage === "/ga/dashboard") {
-      return <GATemplate title="GA Main Dashboard" />;
+      return <GAPerformanceDashboard />;
     }
     // Monitoring Pajak Kendaraan
     if (currentPage === "/ga/pajak-kendaraan/master-kendaraan") {

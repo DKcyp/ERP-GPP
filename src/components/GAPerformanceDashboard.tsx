@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Building, Wrench, Zap } from 'lucide-react';
 import GAPerformanceModal, { GAPerformanceForm } from './GAPerformanceModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
@@ -105,6 +105,125 @@ const GAPerformanceDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        {/* Dashboard Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Legal Card */}
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <FileText className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Legal Habis</h3>
+                  <p className="text-xs text-gray-600">Kendaraan & Perusahaan</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-red-600">25%</div>
+                <div className="text-xs text-gray-500">Critical</div>
+              </div>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span>Expired</span>
+                <span className="font-medium text-red-600">2 items</span>
+              </div>
+              <div className="flex justify-between">
+                <span>&lt; 30 hari</span>
+                <span className="font-medium text-orange-600">3 items</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sarana Prasarana Card */}
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Building className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Sarana & Prasarana</h3>
+                  <p className="text-xs text-gray-600">Monitoring Kondisi</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-green-600">75%</div>
+                <div className="text-xs text-gray-500">Baik</div>
+              </div>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span>Baik</span>
+                <span className="font-medium text-green-600">12 items</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Maintenance</span>
+                <span className="font-medium text-yellow-600">3 items</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Maintenance Kendaraan Card */}
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Wrench className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Maintenance Kendaraan</h3>
+                  <p className="text-xs text-gray-600">Jadwal Service</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-orange-600">40%</div>
+                <div className="text-xs text-gray-500">Due</div>
+              </div>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span>Overdue</span>
+                <span className="font-medium text-red-600">2 units</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Due Soon</span>
+                <span className="font-medium text-orange-600">3 units</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Utility Card */}
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Zap className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Monitoring Utility</h3>
+                  <p className="text-xs text-gray-600">Listrik, Air, Internet</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-purple-600">85%</div>
+                <div className="text-xs text-gray-500">Usage</div>
+              </div>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span>Over Target</span>
+                <span className="font-medium text-red-600">1 item</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Normal</span>
+                <span className="font-medium text-green-600">2 items</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Filter & Action Panel */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16" />
