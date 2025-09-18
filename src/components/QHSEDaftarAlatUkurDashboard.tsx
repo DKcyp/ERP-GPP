@@ -535,7 +535,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Calibration Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validation Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th> */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail Location</th>
@@ -556,7 +556,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.calibrationDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.validationDate}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.notes}</td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.notes}</td> */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={getStatusBadge(item.status)}>{item.status}</span>
                     </td>
@@ -713,7 +713,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                       placeholder="20 Jan 26"
                     />
                   </div>
-                  
+{/*                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <input
@@ -724,7 +724,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder=""
                     />
-                  </div>
+                  </div> */}
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
