@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, Search } from 'lucide-react';
 
 const formatRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 const formatSigned = (n: number) => (n >= 0 ? formatRp(n) : `(${formatRp(Math.abs(n))})`);
@@ -94,10 +94,41 @@ const dummyActual: Record<string, number> = {
   accountDiffExample: 0
 };
 
+// Opsi SO Induk untuk autocomplete (mock, sinkron dengan halaman Procon lainnya)
+const SO_OPTIONS = ['SO-IND-001', 'SO-IND-002', 'SO-IND-003'];
+
 const ProconLRPExcelDashboard: React.FC = () => {
-  const [selectedSO, setSelectedSO] = useState('SO-IND-001');
+  const [selectedSO, setSelectedSO] = useState<string>('');
   const [values, setValues] = useState<Record<string, number>>(dummyActual);
   const [plan, setPlan] = useState<Record<string, number>>(dummyPlan);
+
+  // Autocomplete states
+  const [query, setQuery] = useState<string>('');
+  const [open, setOpen] = useState<boolean>(false);
+  const [highlightIdx, setHighlightIdx] = useState<number>(-1);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
+
+  const filteredSO = useMemo(
+    () => SO_OPTIONS.filter((opt) => opt.toLowerCase().includes(query.toLowerCase())),
+    [query]
+  );
+
+  const handleSearch = () => {
+    const chosen = highlightIdx >= 0 && filteredSO[highlightIdx] ? filteredSO[highlightIdx] : query.trim();
+    if (!chosen) return;
+    setSelectedSO(chosen);
+    setHasSearched(true);
+    setOpen(false);
+    setHighlightIdx(-1);
+  };
+
+  const handleSelect = (val: string) => {
+    setQuery(val);
+    setSelectedSO(val);
+    setHasSearched(true);
+    setOpen(false);
+    setHighlightIdx(-1);
+  };
 
   const onChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues((prev) => ({ ...prev, [key]: parseNumber(e.target.value) }));
@@ -107,8 +138,9 @@ const ProconLRPExcelDashboard: React.FC = () => {
   };
 
   // Hitung total pendapatan dan biaya
-  const totalPendPlan = plan['pendapatanKontrak'] || 0;
-  const totalPendActual = values['pendapatanKontrak'] || 0;
+  const pendapatanKeys = rows.filter((r) => r.section === 'PENDAPATAN').map((r) => r.id);
+  const totalPendPlan = useMemo(() => pendapatanKeys.reduce((s, k) => s + (plan[k] || 0), 0), [plan]);
+  const totalPendActual = useMemo(() => pendapatanKeys.reduce((s, k) => s + (values[k] || 0), 0), [values]);
 
   const biayaKeys = rows.filter((r) => r.section !== 'PENDAPATAN').map((r) => r.id);
 
@@ -139,17 +171,68 @@ const ProconLRPExcelDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         {/* Filter No SO (tetap ditampilkan supaya bisa ganti) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Pilih No SO terlebih dahulu</label>
-          <input
-            value={selectedSO}
-            onChange={(e) => setSelectedSO(e.target.value)}
-            placeholder="Masukkan Nomor SO (mis. SO-IND-001)"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <label className="block text-sm font-medium text-gray-700 mb-2">Cari Nomor SO Induk</label>
+          <div className="flex items-start gap-3">
+            <div className="relative flex-1">
+              <input
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setOpen(true);
+                  setHighlightIdx(-1);
+                }}
+                onFocus={() => setOpen(true)}
+                onBlur={() => setTimeout(() => setOpen(false), 100)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setOpen(true);
+                    setHighlightIdx((prev) => Math.min(prev + 1, Math.max(0, filteredSO.length - 1)));
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setHighlightIdx((prev) => Math.max(prev - 1, 0));
+                  } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSearch();
+                  } else if (e.key === 'Escape') {
+                    setOpen(false);
+                  }
+                }}
+                placeholder="Ketik Nomor SO (mis. SO-IND-001), lalu Enter atau klik Cari"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {/* Dropdown */}
+              {open && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  {filteredSO.length === 0 && (
+                    <div className="px-3 py-2 text-sm text-gray-500">Tidak ada hasil</div>
+                  )}
+                  {filteredSO.map((opt, idx) => (
+                    <div
+                      key={opt}
+                      className={`px-3 py-2 text-sm cursor-pointer ${idx === highlightIdx ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-50'}`}
+                      onMouseDown={() => handleSelect(opt)}
+                    >
+                      {opt}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
+            <button
+              onClick={handleSearch}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            >
+              <Search className="h-4 w-4" />
+              Cari
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">Pilih dari daftar atau tekan Enter untuk menampilkan data.</p>
         </div>
 
         {/* Excel-like summary */}
-        {selectedSO && (
+        {hasSearched && selectedSO && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Ringkasan Laba Rugi</h2>
@@ -213,6 +296,19 @@ const ProconLRPExcelDashboard: React.FC = () => {
                       <td className="px-4 py-2 text-sm text-right">{plan[r.id] ? ((((values[r.id] || 0) - (plan[r.id] || 0)) / plan[r.id]) * 100).toFixed(2) + '%' : '#DIV/0!'}</td>
                     </tr>
                   ))}
+
+                  {/* Total Pendapatan */}
+                  <tr className="font-semibold">
+                    <td></td>
+                    <td className="px-4 py-2 text-sm">Total Pendapatan</td>
+                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalPendPlan)}</td>
+                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalPendActual)}</td>
+                    <td className="px-4 py-2 text-sm text-right">{formatRp(totalPendActual)}</td>
+                    <td className={`px-4 py-2 text-sm text-right ${totalPendActual - totalPendPlan < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {formatSigned(totalPendActual - totalPendPlan)}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-right">{totalPendPlan ? (((totalPendActual - totalPendPlan) / totalPendPlan) * 100).toFixed(2) + '%' : '#DIV/0!'}</td>
+                  </tr>
 
                   {/* BIAYA header */}
                   <tr className="bg-gray-50 font-semibold">
