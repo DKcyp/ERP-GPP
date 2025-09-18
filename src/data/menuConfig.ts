@@ -1753,7 +1753,7 @@ export const qhseMenu: MenuSection[] = [
       {
         title: "Matrix Training",
         icon: "BookOpen",
-        path: "/qhse/matrix-training",
+        path: "/qhse/monitoring-personnel/training-matrix",
       },
     ],
   },
