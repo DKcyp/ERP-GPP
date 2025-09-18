@@ -45,6 +45,11 @@ const PengadaanDashboard: React.FC = () => {
     handleCloseAlert(id);
   };
 
+  const handlePenerimaanClick = () => {
+    // Use window.location to trigger navigation
+    window.location.hash = '/pengadaan/penerimaan-barang';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Alert Container */}
@@ -119,7 +124,7 @@ const PengadaanDashboard: React.FC = () => {
 
           <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 ${
             animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-          }`} style={{ animationDelay: '400ms' }}>
+          }`} style={{ animationDelay: '400ms' }} onClick={handlePenerimaanClick}>
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-purple-100 rounded-xl">
                 <Truck className="h-8 w-8 text-purple-600" />

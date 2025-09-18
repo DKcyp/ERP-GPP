@@ -806,10 +806,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        item.equipmentReceived === 'COMPLETE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {item.equipmentReceived}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium`}>
+                        S36819200A
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">{item.scopeOfWork}</td>
