@@ -1,34 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 import {
-  Camera,
-  Search,
-  Filter,
-  Plus,
-  Edit,
-  Eye,
-  Upload,
-  FileText,
-  Calendar,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Building2,
-  Package,
-  Atom,
-  Bell,
-  Download,
-  RefreshCw,
-  MapPin,
-  Users,
-  Gauge,
-  TestTube,
-  Trash2,
-  FileUp,
-  SortAsc,
-  SortDesc,
-  X,
-  Save,
-} from "lucide-react";
+  Search, Plus, Edit, Eye, Trash2,
+  Download, ChevronLeft, ChevronRight,
+  X, Save, AlertCircle,
+  Clock, User,
+  XCircle, AlertTriangle,
+  Home,
+  FileText
+} from 'lucide-react';
 
 interface PersonilData {
   nama: string;
@@ -40,6 +19,12 @@ interface PersonilData {
   surveymeter: string;
   validCertSurveymeter: string;
   tld: string;
+}
+
+interface ProgressDetail {
+  mainStatus: "Pengajuan" | "Pelimbahan" | "Penghentian" | "Permohonan Ijin Baru" | "Izin Transport" | "Loading ISOTOP";
+  subStatus: string;
+  completed: boolean;
 }
 
 interface MonitoringKameraData {
@@ -56,7 +41,7 @@ interface MonitoringKameraData {
   lokasiPemanfaatan: string[];
   posisiKamera: string;
   posisiColor: string;
-  dedicated: string;
+  progress: ProgressDetail;
 }
 
 const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
@@ -113,7 +98,11 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       ],
       posisiKamera: "PHE ONWJ",
       posisiColor: "bg-blue-600 text-white",
-      dedicated: "Medco EP",
+      progress: {
+        mainStatus: "Pengajuan",
+        subStatus: "PR",
+        completed: false
+      },
     },
     {
       id: "2",
@@ -156,7 +145,11 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       ],
       posisiKamera: "MEDCO EPG",
       posisiColor: "bg-green-600 text-white",
-      dedicated: "Medco EP",
+      progress: {
+        mainStatus: "Pelimbahan",
+        subStatus: "Izin Transport",
+        completed: true
+      },
     },
   ]);
 
@@ -196,7 +189,11 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     lokasiPemanfaatan: [""],
     posisiKamera: "",
     posisiColor: "bg-blue-600 text-white",
-    dedicated: "",
+    progress: {
+      mainStatus: "Pengajuan",
+      subStatus: "PR",
+      completed: false
+    },
   });
 
   // Get expiry status with color coding
@@ -378,10 +375,19 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
               </td>
             )}
             
-            {/* Dedicated - merged for all personnel */}
+            {/* Progress - merged for all personnel */}
             {isFirstRow && (
               <td rowSpan={rowSpan} className="px-2 py-2 text-center text-sm">
-                {kamera.dedicated}
+                <div className="space-y-1">
+                  <div className={`px-2 py-1 rounded text-xs font-medium ${
+                    kamera.progress.completed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {kamera.progress.mainStatus}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {kamera.progress.subStatus}
+                  </div>
+                </div>
               </td>
             )}
             
@@ -447,7 +453,11 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       lokasiPemanfaatan: [""],
       posisiKamera: "",
       posisiColor: "bg-blue-600 text-white",
-      dedicated: "",
+      progress: {
+        mainStatus: "Pengajuan",
+        subStatus: "PR",
+        completed: false
+      },
     });
     setShowModal(true);
   };
@@ -653,9 +663,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider border-r border-blue-500">
                     END<br/>KONTRAK
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider border-r border-blue-500">
-                    KETERANGAN
-                  </th>
+
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider border-r border-blue-500">
                     DOSIMETER<br/>SAKU
                   </th>
@@ -693,7 +701,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     POSISI<br/>KAMERA
                   </th>
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider">
-                    DEDICATED
+                    PROGRESS
                   </th>
                   <th className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wider">
                     ACTIONS
@@ -874,15 +882,48 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Dedicated
+                      Progress Status
                     </label>
+                    <select
+                      value={formData.progress.mainStatus}
+                      onChange={(e) => handleInputChange('progress', {
+                        ...formData.progress,
+                        mainStatus: e.target.value
+                      })}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 mb-2"
+                    >
+                      <option value="Pengajuan">Pengajuan</option>
+                      <option value="Pelimbahan">Pelimbahan</option>
+                      <option value="Penghentian">Penghentian</option>
+                      <option value="Permohonan Ijin Baru">Permohonan Ijin Baru</option>
+                      <option value="Izin Transport">Izin Transport</option>
+                      <option value="Loading ISOTOP">Loading ISOTOP</option>
+                    </select>
                     <input
                       type="text"
-                      value={formData.dedicated}
-                      onChange={(e) => handleInputChange('dedicated', e.target.value)}
+                      placeholder="Sub Status (PR, PO, Pembayaran DP, dll)"
+                      value={formData.progress.subStatus}
+                      onChange={(e) => handleInputChange('progress', {
+                        ...formData.progress,
+                        subStatus: e.target.value
+                      })}
                       disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 mb-2"
                     />
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.progress.completed}
+                        onChange={(e) => handleInputChange('progress', {
+                          ...formData.progress,
+                          completed: e.target.checked
+                        })}
+                        disabled={modalMode === 'view'}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Completed</span>
+                    </label>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
