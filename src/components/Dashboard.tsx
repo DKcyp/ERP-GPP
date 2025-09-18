@@ -287,6 +287,7 @@ import GAKendaraanMasterDashboard from "./GAKendaraanMasterDashboard";
 import GAPajakKendaraanDashboard from "./GAPajakKendaraanDashboard";
 import GALegalitasPerusahaanDashboard from "./GALegalitasPerusahaanDashboard";
 import GAPerformanceDashboard from "./GAPerformanceDashboard";
+import GABASerahTerimaAssetDashboard from "./GABASerahTerimaAssetDashboard";
 // GA Monitoring pages
 import GAMonitoringSaprasDashboard from "./GAMonitoringSaprasDashboard";
 import GAMonitoringKendaraanDashboard from "./GAMonitoringKendaraanDashboard";
@@ -1242,6 +1243,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // GA Master Aset
     if (currentPage === "/ga/aset/master") {
       return <GAMasterAsetDashboard />;
+    }
+    if (currentPage === "/ga/ba-serah-terima-asset") {
+      return <GABASerahTerimaAssetDashboard />;
     }
     if (currentPage === "/ga/legalitas/monitoring") {
       return <GALegalitasPerusahaanDashboard />;
