@@ -30,10 +30,11 @@ const ProconOverviewDashboard: React.FC = () => {
       contractValue: 125000000,
       absorbKontrak: 105000000,
       remainingKontrak: 60000000,
-      nextEstimasiTagihan: '15/09/2025',
+      nextEstimasiTagihan: '980000000',
       delayPenagihan: 0,
       paidDate: '-',
       keterangan: 'Implementasi sistem modul A',
+      jenisKontrak: 'Tender',
     },
     {
       clientName: 'PT. XYZ Mandiri',
@@ -44,10 +45,11 @@ const ProconOverviewDashboard: React.FC = () => {
       contractValue: 98500000,
       absorbKontrak: 85000000,
       remainingKontrak: 48500000,
-      nextEstimasiTagihan: '25/09/2025',
+      nextEstimasiTagihan: '1200000000',
       delayPenagihan: 7,
       paidDate: '05/08/2025',
       keterangan: 'Pengembangan integrasi API',
+      jenisKontrak: 'On Call',
     },
     {
       clientName: 'CV. Jaya Abadi',
@@ -58,10 +60,11 @@ const ProconOverviewDashboard: React.FC = () => {
       contractValue: 75250000,
       absorbKontrak: 30000000,
       remainingKontrak: 45250000,
-      nextEstimasiTagihan: '10/10/2025',
+      nextEstimasiTagihan: '1000000000',
       delayPenagihan: 14,
       paidDate: '-',
       keterangan: 'Maintenance dan support',
+      jenisKontrak: 'On Call',
     },
   ];
 
@@ -169,6 +172,7 @@ const ProconOverviewDashboard: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. SO</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Client</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Kontrak</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Laba Rugi</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status project - Profit/Loss</th>
@@ -180,10 +184,16 @@ const ProconOverviewDashboard: React.FC = () => {
                   const labaRugi = row.absorbKontrak - row.contractValue * 0.8; // mock calc
                   const status = labaRugi >= 0 ? 'Profit' : 'Loss';
                   const statusClass = labaRugi >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                  const jenisKontrakClass = row.jenisKontrak === 'Tender' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800';
                   return (
                     <tr key={`${row.soInduk}-${row.soTurunan}-${idx}`} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.soInduk}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.clientName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${jenisKontrakClass}`}>
+                          {row.jenisKontrak}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         <div className="flex items-center gap-3">
                           <div className="w-32 bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -240,7 +250,7 @@ const ProconOverviewDashboard: React.FC = () => {
                     <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.contractValue)}</td>
                     <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.absorbKontrak)}</td>
                     <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(row.remainingKontrak)}</td>
-                    <td className="px-3 py-2 text-gray-700">{row.nextEstimasiTagihan}</td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">{formatRupiah(Number(row.nextEstimasiTagihan))}</td>
                     <td className="px-3 py-2">
                       <span className={`px-2 py-0.5 inline-flex text-[10px] leading-5 font-semibold rounded-full ${row.delayPenagihan <= 0 ? 'bg-green-100 text-green-800' : row.delayPenagihan <= 7 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
                         {row.delayPenagihan > 0 ? `${row.delayPenagihan} hari` : 'On time'}
