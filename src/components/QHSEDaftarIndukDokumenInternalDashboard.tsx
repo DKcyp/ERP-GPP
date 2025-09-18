@@ -13,7 +13,10 @@ import {
   Calendar,
   Building2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Upload,
+  X,
+  File
 } from 'lucide-react';
 
 // Interface untuk data dokumen internal
@@ -22,10 +25,13 @@ interface DokumenInternal {
   no: number;
   namaDokumen: string;
   nomorDokumen: string;
-  jenisDokumen: string;
+  jenisDokumen: 'Kebijakan' | 'SOP' | 'IK' | 'Formulir';
   noRevisi: string;
+  tanggalDibuat: string;
   tanggalBerlaku: string;
+  hasilReview: string;
   lamaWaktuSimpan: string;
+  uploadDokumen: string;
   status: 'Aktif' | 'Mendekati Expired' | 'Tidak Berlaku';
 }
 
@@ -38,8 +44,11 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-MR-FM-06",
     jenisDokumen: "Formulir",
     noRevisi: "02",
+    tanggalDibuat: "2015-02-01",
     tanggalBerlaku: "2015-03-04",
+    hasilReview: "Dokumen sudah sesuai standar dan dapat diimplementasikan",
     lamaWaktuSimpan: "5 tahun",
+    uploadDokumen: "GBP-MR-FM-06_v02.pdf",
     status: "Aktif"
   },
   {
@@ -49,8 +58,11 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-MR-FM-06",
     jenisDokumen: "Formulir",
     noRevisi: "02",
+    tanggalDibuat: "2015-02-01",
     tanggalBerlaku: "2015-03-04",
+    hasilReview: "Perlu penyesuaian format sesuai regulasi terbaru",
     lamaWaktuSimpan: "5 tahun",
+    uploadDokumen: "GBP-MR-FM-06_mapping.pdf",
     status: "Aktif"
   },
   {
@@ -60,8 +72,11 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-MR-FM-06",
     jenisDokumen: "Formulir",
     noRevisi: "02",
+    tanggalDibuat: "2015-02-01",
     tanggalBerlaku: "2015-03-04",
+    hasilReview: "Dokumen akan segera expired, perlu review ulang",
     lamaWaktuSimpan: "5 tahun",
+    uploadDokumen: "GBP-MR-FM-06_asset.pdf",
     status: "Mendekati Expired"
   },
   {
@@ -71,8 +86,11 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-FA-FM-01-01",
     jenisDokumen: "Formulir",
     noRevisi: "0",
+    tanggalDibuat: "2022-12-01",
     tanggalBerlaku: "2023-01-01",
+    hasilReview: "Dokumen baru, sudah sesuai dengan kebutuhan operasional",
     lamaWaktuSimpan: "3 tahun",
+    uploadDokumen: "GBP-FA-FM-01-01_v0.pdf",
     status: "Aktif"
   },
   {
@@ -82,8 +100,11 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-FA-FM-01-02",
     jenisDokumen: "Formulir",
     noRevisi: "0",
+    tanggalDibuat: "2022-12-01",
     tanggalBerlaku: "2023-01-01",
+    hasilReview: "Dokumen penting untuk arsip permanen",
     lamaWaktuSimpan: "Permanen",
+    uploadDokumen: "GBP-FA-FM-01-02_v0.pdf",
     status: "Aktif"
   },
   {
@@ -93,8 +114,11 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-FA-FM-01-03",
     jenisDokumen: "Formulir",
     noRevisi: "0",
+    tanggalDibuat: "2022-12-01",
     tanggalBerlaku: "2023-01-01",
+    hasilReview: "Dokumen sudah tidak berlaku, perlu diganti dengan format baru",
     lamaWaktuSimpan: "5 tahun",
+    uploadDokumen: "GBP-FA-FM-01-03_v0.pdf",
     status: "Tidak Berlaku"
   },
   {
@@ -104,19 +128,25 @@ const sampleDokumenInternal: DokumenInternal[] = [
     nomorDokumen: "GBP-FA-FM-01-04",
     jenisDokumen: "Formulir",
     noRevisi: "0",
+    tanggalDibuat: "2022-12-01",
     tanggalBerlaku: "2023-01-01",
+    hasilReview: "Dokumen aktif dan sesuai dengan kebutuhan laporan keuangan",
     lamaWaktuSimpan: "5 tahun",
+    uploadDokumen: "GBP-FA-FM-01-04_v0.pdf",
     status: "Aktif"
   },
   {
     id: 8,
     no: 8,
-    namaDokumen: "Form Laporan Pembelian Barang Gudang (LPB)",
-    nomorDokumen: "GBP-FA-FM-01-05",
-    jenisDokumen: "Formulir",
-    noRevisi: "0",
-    tanggalBerlaku: "2023-01-01",
-    lamaWaktuSimpan: "3 tahun",
+    namaDokumen: "Prosedur Pengelolaan Keuangan",
+    nomorDokumen: "GBP-FA-PR-01",
+    jenisDokumen: "SOP",
+    noRevisi: "1",
+    tanggalDibuat: "2023-05-01",
+    tanggalBerlaku: "2023-06-01",
+    hasilReview: "Prosedur perlu diperbarui sesuai regulasi terbaru",
+    lamaWaktuSimpan: "7 tahun",
+    uploadDokumen: "GBP-FA-PR-01_v1.pdf",
     status: "Mendekati Expired"
   }
 ];
@@ -139,12 +169,20 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
   const [formData, setFormData] = useState<Partial<DokumenInternal>>({
     namaDokumen: '',
     nomorDokumen: '',
-    jenisDokumen: '',
+    jenisDokumen: 'Formulir',
     noRevisi: '',
+    tanggalDibuat: '',
     tanggalBerlaku: '',
+    hasilReview: '',
     lamaWaktuSimpan: '',
+    uploadDokumen: '',
     status: 'Aktif'
   });
+
+  // File upload state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Format tanggal ke format Indonesia
   const formatDate = (dateString: string) => {
@@ -257,10 +295,13 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
     setFormData({
       namaDokumen: '',
       nomorDokumen: '',
-      jenisDokumen: '',
+      jenisDokumen: 'Formulir',
       noRevisi: '',
+      tanggalDibuat: '',
       tanggalBerlaku: '',
+      hasilReview: '',
       lamaWaktuSimpan: '',
+      uploadDokumen: '',
       status: 'Aktif'
     });
     setModalMode('add');
@@ -274,8 +315,11 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
       nomorDokumen: dokumen.nomorDokumen,
       jenisDokumen: dokumen.jenisDokumen,
       noRevisi: dokumen.noRevisi,
+      tanggalDibuat: dokumen.tanggalDibuat,
       tanggalBerlaku: dokumen.tanggalBerlaku,
+      hasilReview: dokumen.hasilReview,
       lamaWaktuSimpan: dokumen.lamaWaktuSimpan,
+      uploadDokumen: dokumen.uploadDokumen,
       status: dokumen.status
     });
     setModalMode('edit');
@@ -289,8 +333,11 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
       nomorDokumen: dokumen.nomorDokumen,
       jenisDokumen: dokumen.jenisDokumen,
       noRevisi: dokumen.noRevisi,
+      tanggalDibuat: dokumen.tanggalDibuat,
       tanggalBerlaku: dokumen.tanggalBerlaku,
+      hasilReview: dokumen.hasilReview,
       lamaWaktuSimpan: dokumen.lamaWaktuSimpan,
+      uploadDokumen: dokumen.uploadDokumen,
       status: dokumen.status
     });
     setModalMode('view');
@@ -312,10 +359,13 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
         no: newNo,
         namaDokumen: formData.namaDokumen || '',
         nomorDokumen: formData.nomorDokumen || '',
-        jenisDokumen: formData.jenisDokumen || '',
+        jenisDokumen: formData.jenisDokumen || 'Formulir',
         noRevisi: formData.noRevisi || '',
+        tanggalDibuat: formData.tanggalDibuat || '',
         tanggalBerlaku: formData.tanggalBerlaku || '',
+        hasilReview: formData.hasilReview || '',
         lamaWaktuSimpan: formData.lamaWaktuSimpan || '',
+        uploadDokumen: formData.uploadDokumen || '',
         status: formData.status || 'Aktif'
       };
       setDokumenData(prev => [...prev, newDokumen]);
@@ -330,7 +380,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
     setFormData({
       namaDokumen: '',
       nomorDokumen: '',
-      jenisDokumen: '',
+      jenisDokumen: 'Formulir', // Changed from '' to 'Formulir'
       noRevisi: '',
       tanggalBerlaku: '',
       lamaWaktuSimpan: '',
@@ -343,6 +393,69 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  // File upload handlers
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type (PDF, DOC, DOCX)
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (allowedTypes.includes(file.type)) {
+        setSelectedFile(file);
+        setFormData(prev => ({ ...prev, uploadDokumen: file.name }));
+      } else {
+        alert('Hanya file PDF, DOC, atau DOCX yang diizinkan!');
+      }
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+    
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    // Simulate file upload progress
+    const uploadInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(uploadInterval);
+          setIsUploading(false);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+    
+    // In real implementation, this would be an API call
+    // await uploadFileToServer(selectedFile);
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setFormData(prev => ({ ...prev, uploadDokumen: '' }));
+    setUploadProgress(0);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedDokumen(null);
+    setFormData({
+      namaDokumen: '',
+      nomorDokumen: '',
+      jenisDokumen: 'Formulir',
+      noRevisi: '',
+      tanggalDibuat: '',
+      tanggalBerlaku: '',
+      hasilReview: '',
+      lamaWaktuSimpan: '',
+      uploadDokumen: '',
+      status: 'Aktif'
+    });
+    setSelectedFile(null);
+    setUploadProgress(0);
+    setIsUploading(false);
   };
 
   return (
@@ -497,11 +610,33 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleSort('tanggalDibuat')}
+                >
+                  <div className="flex items-center gap-1">
+                    Tanggal Dibuat
+                    {sortField === 'tanggalDibuat' && (
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+                    )}
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-gray-200"
                   onClick={() => handleSort('tanggalBerlaku')}
                 >
                   <div className="flex items-center gap-1">
                     Tanggal Berlaku
                     {sortField === 'tanggalBerlaku' && (
+                      sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+                    )}
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleSort('hasilReview')}
+                >
+                  <div className="flex items-center gap-1">
+                    Hasil Review
+                    {sortField === 'hasilReview' && (
                       sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
                     )}
                   </div>
@@ -546,7 +681,15 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                     {dokumen.noRevisi}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {formatDate(dokumen.tanggalDibuat)}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatDate(dokumen.tanggalBerlaku)}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900 max-w-xs">
+                    <div className="truncate" title={dokumen.hasilReview}>
+                      {dokumen.hasilReview}
+                    </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {dokumen.lamaWaktuSimpan}
@@ -767,6 +910,20 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tanggal Dibuat *
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.tanggalDibuat || ''}
+                      onChange={(e) => handleInputChange('tanggalDibuat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Lama Waktu Simpan *
                     </label>
                     <select
@@ -784,6 +941,84 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                       <option value="10 tahun">10 tahun</option>
                       <option value="Permanen">Permanen</option>
                     </select>
+                  </div>
+
+                  {/* Hasil Review */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Hasil Review
+                    </label>
+                    <textarea
+                      value={formData.hasilReview || ''}
+                      onChange={(e) => handleInputChange('hasilReview', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="Masukkan hasil review dokumen..."
+                    />
+                  </div>
+
+                  {/* Upload Dokumen */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Upload Dokumen
+                    </label>
+                    {modalMode !== 'view' && (
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                            id="file-upload-internal"
+                          />
+                          <label
+                            htmlFor="file-upload-internal"
+                            className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Pilih File
+                          </label>
+                          {selectedFile && (
+                            <div className="flex items-center space-x-2">
+                              <File className="h-4 w-4 text-red-600" />
+                              <span className="text-sm text-gray-700">{selectedFile.name}</span>
+                              <button
+                                type="button"
+                                onClick={removeFile}
+                                className="text-red-600 hover:text-red-800"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        {selectedFile && !isUploading && uploadProgress < 100 && (
+                          <button
+                            type="button"
+                            onClick={handleFileUpload}
+                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          >
+                            Upload File
+                          </button>
+                        )}
+                        {isUploading && (
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-red-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${uploadProgress}%` }}
+                            ></div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {modalMode === 'view' && formData.uploadDokumen && (
+                      <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
+                        <File className="h-4 w-4 text-red-600" />
+                        <span className="text-sm text-gray-700">{formData.uploadDokumen}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -808,7 +1043,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                   <div className="flex justify-end gap-3 mt-6">
                     <button
                       type="button"
-                      onClick={() => setShowModal(false)}
+                      onClick={closeModal}
                       className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       Batal
@@ -826,7 +1061,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                   <div className="flex justify-end mt-6">
                     <button
                       type="button"
-                      onClick={() => setShowModal(false)}
+                      onClick={closeModal}
                       className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                       Tutup

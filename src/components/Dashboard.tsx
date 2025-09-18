@@ -373,6 +373,7 @@ import QHSEMonitoringKameraRadiographyDashboard from "./QHSEMonitoringKameraRadi
 import QHSEUjiUsapKameraDashboard from "./QHSEUjiUsapKameraDashboard";
 import QHSEDaftarIndukDokumenInternalDashboard from "./QHSEDaftarIndukDokumenInternalDashboard";
 import QHSEMonitoringPersonnelReportDashboard from "./QHSEMonitoringPersonnelReportDashboard";
+import QHSEDaftarInventarisIsotopDashboard from "./QHSEDaftarInventarisIsotopDashboard";
 
 interface DashboardProps {
   currentPage: string;

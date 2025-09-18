@@ -242,6 +242,20 @@ const createGeneralMenu = (role: string): MenuSection => ({
           icon: "ClipboardList",
           path: "/pengadaan/tracking/monitoring",
         },
+        ...(role === "qhse"
+          ? [
+            {
+              title: "Daftar Induk Dokumen Internal",
+              icon: "FileText",
+              path: "/qhse/daftar-induk-dokumen-internal",
+            },
+            {
+              title: "Daftar Induk Dokumen Eksternal",
+              icon: "FileCheck",
+              path: "/qhse/daftar-induk-dokumen-eksternal",
+            },
+            ]
+          : [] )      
       ],
     },
     // Procon-only: PBG submenu replaces Purchase Request
@@ -1793,22 +1807,7 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Daftar Induk Dokumen",
-    icon: "FileText",
-    items: [
-      {
-        title: "Internal",
-        icon: "FileText",
-        path: "/qhse/daftar-induk-dokumen-internal",
-      },
-      {
-        title: "Eksternal",
-        icon: "FileCheck",
-        path: "/qhse/daftar-induk-dokumen-eksternal",
-      },
-    ],
-  },
+  
   createGeneralMenu("qhse"),
 ];
 

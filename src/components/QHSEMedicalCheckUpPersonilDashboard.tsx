@@ -11,8 +11,8 @@ interface MCUPersonilItem {
   tanggalMCU: string;
   tanggalExpiredMCU: string;
   masaBerlakuMCUReviewUser: string; // e.g., "Medco Corridor", "PHE ONWJ"
-  paketMCU: string;
-  keterangan: 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'P7';
+  paketMCU: string; // Paket yang diambil
+  hasilMCU: 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'P7'; // Hasil dari MCU
   providerTambahan?: string;
   statusMCU: 'Valid' | 'Mendekati Expired' | 'Expired';
   approvalOps: 'Pending' | 'Approved' | 'Rejected';
@@ -29,11 +29,12 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterProses, setFilterProses] = useState<string>('');
-  const [filterKeterangan, setFilterKeterangan] = useState<string>('');
+  const [filterHasilMCU, setFilterHasilMCU] = useState<string>('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<MCUPersonilItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<MCUPersonilItem | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [formData, setFormData] = useState<Partial<MCUPersonilItem>>({});
 
   // Sample data with calculated expiry days
   const [mcuData, setMCUData] = useState<MCUPersonilItem[]>([
@@ -47,7 +48,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       tanggalExpiredMCU: '2025-01-15',
       masaBerlakuMCUReviewUser: 'Medco Corridor',
       paketMCU: 'Paket Lengkap',
-      keterangan: 'P1',
+      hasilMCU: 'P1',
       statusMCU: 'Valid',
       approvalOps: 'Approved',
       approvalHRD: 'Approved',
@@ -68,7 +69,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       tanggalExpiredMCU: '2024-12-01',
       masaBerlakuMCUReviewUser: 'PHE ONWJ',
       paketMCU: 'Paket Executive',
-      keterangan: 'P3',
+      hasilMCU: 'P3',
       statusMCU: 'Mendekati Expired',
       approvalOps: 'Approved',
       approvalHRD: 'Pending',
@@ -89,7 +90,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       tanggalExpiredMCU: '2024-10-15',
       masaBerlakuMCUReviewUser: 'Office',
       paketMCU: 'Paket Standard',
-      keterangan: 'P5',
+      hasilMCU: 'P5',
       statusMCU: 'Expired',
       approvalOps: 'Pending',
       approvalHRD: 'Pending',
@@ -126,14 +127,15 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
   // Filter data
   const filteredData = useMemo(() => {
     return mcuData.filter(item => {
-      const matchesSearch = item.namaPersonil.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = !filterStatus || item.statusMCU === filterStatus;
-      const matchesProses = !filterProses || item.statusProses === filterProses;
-      const matchesKeterangan = !filterKeterangan || item.keterangan === filterKeterangan;
-
-      return matchesSearch && matchesStatus && matchesProses && matchesKeterangan;
+      const matchesSearch = item.namaPersonil.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.no.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = filterStatus === '' || item.statusMCU === filterStatus;
+      const matchesProses = filterProses === '' || item.statusProses === filterProses;
+      const matchesHasilMCU = filterHasilMCU === '' || item.hasilMCU === filterHasilMCU;
+      
+      return matchesSearch && matchesStatus && matchesProses && matchesHasilMCU;
     });
-  }, [mcuData, searchTerm, filterStatus, filterProses, filterKeterangan]);
+  }, [mcuData, searchTerm, filterStatus, filterProses, filterHasilMCU]);
 
   const getStatusBadge = (status: string, type: 'mcu' | 'approval' | 'proses') => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
@@ -201,6 +203,60 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
     } else {
       return `${daysUntilExpiry} hari lagi`;
     }
+  };
+
+  // Form handlers
+  const handleOpenAddModal = () => {
+    setFormData({
+      namaPersonil: '',
+      posisiJabatan: '',
+      providerMCU: '',
+      tanggalMCU: '',
+      tanggalExpiredMCU: '',
+      masaBerlakuMCUReviewUser: '',
+      paketMCU: '',
+      hasilMCU: 'P1',
+      statusMCU: 'Valid',
+      approvalOps: 'Pending',
+      approvalHRD: 'Pending',
+      permintaanByOps: false,
+      cekKontrakByHRD: false,
+      statusProses: 'Permintaan Ops'
+    });
+    setShowAddModal(true);
+  };
+
+  const handleOpenEditModal = (item: MCUPersonilItem) => {
+    setFormData(item);
+    setEditingItem(item);
+  };
+
+  const handleCloseModal = () => {
+    setShowAddModal(false);
+    setEditingItem(null);
+    setFormData({});
+  };
+
+  const handleInputChange = (field: keyof MCUPersonilItem, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    if (editingItem) {
+      // Edit existing item
+      setMCUData(prev => prev.map(item => 
+        item.id === editingItem.id ? { ...item, ...formData } as MCUPersonilItem : item
+      ));
+    } else {
+      // Add new item
+      const newItem: MCUPersonilItem = {
+        id: Date.now().toString(),
+        no: `MCU-${String(mcuData.length + 1).padStart(3, '0')}`,
+        ...formData
+      } as MCUPersonilItem;
+      setMCUData(prev => [...prev, newItem]);
+    }
+    handleCloseModal();
   };
 
   return (
@@ -310,7 +366,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                 Filter
               </button>
               <button
-                onClick={() => setShowAddModal(true)}
+                onClick={handleOpenAddModal}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
                 <PlusCircle className="h-4 w-4" />
@@ -356,13 +412,13 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Hasil MCU</label>
                 <select
-                  value={filterKeterangan}
-                  onChange={(e) => setFilterKeterangan(e.target.value)}
+                  value={filterHasilMCU}
+                  onChange={(e) => setFilterHasilMCU(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
-                  <option value="">Semua Keterangan</option>
+                  <option value="">Semua Hasil MCU</option>
                   <option value="P1">P1</option>
                   <option value="P2">P2</option>
                   <option value="P3">P3</option>
@@ -377,7 +433,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                   onClick={() => {
                     setFilterStatus('');
                     setFilterProses('');
-                    setFilterKeterangan('');
+                    setFilterHasilMCU('');
                   }}
                   className="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
                 >
@@ -400,7 +456,8 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expired MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Review User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket/Ket</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket MCU</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hasil MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Proses</th>
@@ -439,7 +496,9 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.masaBerlakuMCUReviewUser}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{item.paketMCU}</div>
-                      <span className={getKeteranganBadge(item.keterangan)}>{item.keterangan}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={getKeteranganBadge(item.hasilMCU)}>{item.hasilMCU}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={getStatusBadge(item.statusMCU, 'mcu')}>{item.statusMCU}</span>
@@ -456,7 +515,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => setEditingItem(item)}
+                          onClick={() => handleOpenEditModal(item)}
                           className="text-blue-600 hover:text-blue-900"
                           title="Edit"
                         >
@@ -497,6 +556,243 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
           title="Hapus Data MCU"
           message={`Apakah Anda yakin ingin menghapus data MCU untuk "${deleteItem.namaPersonil}"?`}
         />
+      )}
+
+      {/* Add/Edit Modal */}
+      {(showAddModal || editingItem) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {editingItem ? 'Edit Data MCU' : 'Tambah Data MCU'}
+                </h3>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Personil</label>
+                    <input
+                      type="text"
+                      value={formData.namaPersonil || ''}
+                      onChange={(e) => handleInputChange('namaPersonil', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      placeholder="Masukkan nama personil"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Posisi/Jabatan</label>
+                    <input
+                      type="text"
+                      value={formData.posisiJabatan || ''}
+                      onChange={(e) => handleInputChange('posisiJabatan', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      placeholder="Masukkan posisi/jabatan"
+                    />
+                  </div>
+                </div>
+
+                {/* MCU Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Provider MCU</label>
+                    <select
+                      value={formData.providerMCU || ''}
+                      onChange={(e) => handleInputChange('providerMCU', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="">Pilih Provider MCU</option>
+                      <option value="RS Siloam">RS Siloam</option>
+                      <option value="RS Hermina">RS Hermina</option>
+                      <option value="RS Mayapada">RS Mayapada</option>
+                      <option value="RS Pondok Indah">RS Pondok Indah</option>
+                      <option value="RS Premier Bintaro">RS Premier Bintaro</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Paket MCU</label>
+                    <select
+                      value={formData.paketMCU || ''}
+                      onChange={(e) => handleInputChange('paketMCU', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="">Pilih Paket MCU</option>
+                      <option value="Paket Basic">Paket Basic</option>
+                      <option value="Paket Standard">Paket Standard</option>
+                      <option value="Paket Lengkap">Paket Lengkap</option>
+                      <option value="Paket Executive">Paket Executive</option>
+                      <option value="Paket Premium">Paket Premium</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Dates */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal MCU</label>
+                    <input
+                      type="date"
+                      value={formData.tanggalMCU || ''}
+                      onChange={(e) => handleInputChange('tanggalMCU', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Expired MCU</label>
+                    <input
+                      type="date"
+                      value={formData.tanggalExpiredMCU || ''}
+                      onChange={(e) => handleInputChange('tanggalExpiredMCU', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Review User & Results */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Review User</label>
+                    <select
+                      value={formData.masaBerlakuMCUReviewUser || ''}
+                      onChange={(e) => handleInputChange('masaBerlakuMCUReviewUser', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="">Pilih Review User</option>
+                      <option value="Medco Corridor">Medco Corridor</option>
+                      <option value="PHE ONWJ">PHE ONWJ</option>
+                      <option value="Office">Office</option>
+                      <option value="Medco SSB">Medco SSB</option>
+                      <option value="ENI Muara Bakau">ENI Muara Bakau</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Hasil MCU</label>
+                    <select
+                      value={formData.hasilMCU || 'P1'}
+                      onChange={(e) => handleInputChange('hasilMCU', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="P1">P1</option>
+                      <option value="P2">P2</option>
+                      <option value="P3">P3</option>
+                      <option value="P4">P4</option>
+                      <option value="P5">P5</option>
+                      <option value="P6">P6</option>
+                      <option value="P7">P7</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Status Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status MCU</label>
+                    <select
+                      value={formData.statusMCU || 'Valid'}
+                      onChange={(e) => handleInputChange('statusMCU', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="Valid">Valid</option>
+                      <option value="Mendekati Expired">Mendekati Expired</option>
+                      <option value="Expired">Expired</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Approval Ops</label>
+                    <select
+                      value={formData.approvalOps || 'Pending'}
+                      onChange={(e) => handleInputChange('approvalOps', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Approval HRD</label>
+                    <select
+                      value={formData.approvalHRD || 'Pending'}
+                      onChange={(e) => handleInputChange('approvalHRD', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Process Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
+                  <select
+                    value={formData.statusProses || 'Permintaan Ops'}
+                    onChange={(e) => handleInputChange('statusProses', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  >
+                    <option value="Permintaan Ops">Permintaan Ops</option>
+                    <option value="Pengajuan">Pengajuan</option>
+                    <option value="Proses">Proses</option>
+                    <option value="Selesai">Selesai</option>
+                  </select>
+                </div>
+
+                {/* Checkboxes */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="permintaanByOps"
+                      checked={formData.permintaanByOps || false}
+                      onChange={(e) => handleInputChange('permintaanByOps', e.target.checked)}
+                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="permintaanByOps" className="ml-2 block text-sm text-gray-900">
+                      Permintaan by Ops
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="cekKontrakByHRD"
+                      checked={formData.cekKontrakByHRD || false}
+                      onChange={(e) => handleInputChange('cekKontrakByHRD', e.target.checked)}
+                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="cekKontrakByHRD" className="ml-2 block text-sm text-gray-900">
+                      Cek Kontrak by HRD
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  {editingItem ? 'Update' : 'Simpan'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
