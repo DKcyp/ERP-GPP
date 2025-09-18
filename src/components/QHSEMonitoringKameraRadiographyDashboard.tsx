@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 interface PersonilData {
+  [x: string]: string | number | readonly string[] | undefined;
   nama: string;
   validSIB: string;
   endKontrak: string;
@@ -171,6 +172,29 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     subStatus: "",
     completed: false
   });
+
+  const subStatusOptions: Record<string, string[]> = {
+    Pengajuan: ["PR", "PO", "Pembayaran DP", "Pelunasan"],
+    Pelimbahan: ["Izin Transport", "Billing", "PR", "PO", "Pembayaran"],
+    Penghentian: [
+      "Pengembalian ISOTOP ke importir",
+      "Permohonan ke Bapeten",
+      "Billing",
+      "PR",
+      "PO",
+      "Pembayaran"
+    ],
+    "Permohonan Izin Baru": [
+      "Terima dokumen vendor",
+      "Permohonan ke Bapeten",
+      "Billing",
+      "PR",
+      "PO",
+      "Pembayaran"
+    ],
+    "Izin Transport": ["-"],
+    "Loading ISOTOP": ["-"]
+  };
 
   // Form states
   const [formData, setFormData] = useState<MonitoringKameraData>({
@@ -562,6 +586,28 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     const updatedPersonil = [...formData.personil];
     updatedPersonil[index] = { ...updatedPersonil[index], [field]: value };
     setFormData({ ...formData, personil: updatedPersonil });
+  };
+
+  // Handle sub-status change
+  const handleSubStatusChange = (subStatus: string) => {
+    setFormData({
+      ...formData,
+      progress: {
+        ...formData.progress,
+        subStatus: subStatus
+      }
+    });
+  };
+
+  const handleMainStatusChange = (value: string) => {
+    setFormData({
+      ...formData,
+      progress: {
+        ...formData.progress,
+        mainStatus: value,
+        subStatus: "", // reset sub status setiap ganti main status
+      },
+    });
   };
 
   const addPersonil = () => {
@@ -973,33 +1019,34 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Progress Status
                     </label>
-                    <select
-                      value={formData.progress.mainStatus}
-                      onChange={(e) => handleInputChange('progress', {
-                        ...formData.progress,
-                        mainStatus: e.target.value
-                      })}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 mb-2"
-                    >
-                      <option value="Pengajuan">Pengajuan</option>
-                      <option value="Pelimbahan">Pelimbahan</option>
-                      <option value="Penghentian">Penghentian</option>
-                      <option value="Permohonan Ijin Baru">Permohonan Ijin Baru</option>
-                      <option value="Izin Transport">Izin Transport</option>
-                      <option value="Loading ISOTOP">Loading ISOTOP</option>
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="Sub Status (PR, PO, Pembayaran DP, dll)"
-                      value={formData.progress.subStatus}
-                      onChange={(e) => handleInputChange('progress', {
-                        ...formData.progress,
-                        subStatus: e.target.value
-                      })}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 mb-2"
-                    />
+                   <select
+  value={formData.progress.mainStatus}
+  onChange={(e) => handleMainStatusChange(e.target.value)}
+  disabled={modalMode === "view"}
+  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 mb-2"
+>
+  <option value="Pengajuan">Pengajuan</option>
+  <option value="Pelimbahan">Pelimbahan</option>
+  <option value="Penghentian">Penghentian</option>
+  <option value="Permohonan Izin Baru">Permohonan Izin Baru</option>
+  <option value="Izin Transport">Izin Transport</option>
+  <option value="Loading ISOTOP">Loading ISOTOP</option>
+</select>
+
+{/* Sub Status Select */}
+<select
+  value={formData.progress.subStatus || ""}
+  onChange={(e) => handleSubStatusChange(e.target.value)}
+  disabled={modalMode === "view"}
+  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">-- Pilih Sub Status --</option>
+  {(subStatusOptions[formData.progress.mainStatus] || []).map((opt) => (
+    <option key={opt} value={opt}>
+      {opt}
+    </option>
+  ))}
+</select>
                     <label className="flex items-center">
                       <input
                         type="checkbox"
@@ -1327,36 +1374,33 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                       Main Status
                     </label>
                     <select
-                      value={newProgress.mainStatus}
-                      onChange={(e) => setNewProgress({
-                        ...newProgress,
-                        mainStatus: e.target.value as ProgressDetail['mainStatus']
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="Pengajuan">Pengajuan</option>
-                      <option value="Pelimbahan">Pelimbahan</option>
-                      <option value="Penghentian">Penghentian</option>
-                      <option value="Permohonan Ijin Baru">Permohonan Ijin Baru</option>
-                      <option value="Izin Transport">Izin Transport</option>
-                      <option value="Loading ISOTOP">Loading ISOTOP</option>
-                    </select>
-                  </div>
+  value={formData.progress.mainStatus}
+  onChange={(e) => handleMainStatusChange(e.target.value)}
+  disabled={modalMode === "view"}
+  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 mb-2"
+>
+  <option value="Pengajuan">Pengajuan</option>
+  <option value="Pelimbahan">Pelimbahan</option>
+  <option value="Penghentian">Penghentian</option>
+  <option value="Permohonan Izin Baru">Permohonan Izin Baru</option>
+  <option value="Izin Transport">Izin Transport</option>
+  <option value="Loading ISOTOP">Loading ISOTOP</option>
+</select>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Sub Status
-                    </label>
-                    <input
-                      type="text"
-                      value={newProgress.subStatus}
-                      onChange={(e) => setNewProgress({
-                        ...newProgress,
-                        subStatus: e.target.value
-                      })}
-                      placeholder="Enter sub status (e.g., PR, PO, BAST, etc.)"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+{/* Sub Status Select */}
+<select
+  value={formData.progress.subStatus || ""}
+  onChange={(e) => handleSubStatusChange(e.target.value)}
+  disabled={modalMode === "view"}
+  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">-- Pilih Sub Status --</option>
+  {(subStatusOptions[formData.progress.mainStatus] || []).map((opt) => (
+    <option key={opt} value={opt}>
+      {opt}
+    </option>
+  ))}
+</select>
                   </div>
 
                   <div className="flex items-center">
