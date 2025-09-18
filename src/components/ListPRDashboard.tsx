@@ -60,7 +60,17 @@ const ListPRDashboard: React.FC = () => {
 
   const handleExportCSV = () => {
     const headers = ['Tanggal PR','No PR','No PO','No SO','Departemen','Keterangan','Status PR','Status PO','Status DO'];
-    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noPO, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO, r.statusDO]);
+    const rows = data.map((r) => [
+      r.tanggalPR,
+      r.noPR,
+      r.noPO,
+      r.noSO,
+      r.departemen,
+      r.keterangan,
+      r.statusPR,
+      r.statusPO === 'PO' ? 'Lengkap' : 'Belum Lengkap',
+      r.statusDO,
+    ]);
     const escape = (v: any) => {
       const s = String(v ?? '');
       if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
@@ -108,7 +118,7 @@ const ListPRDashboard: React.FC = () => {
               <td>${r.departemen}</td>
               <td>${r.keterangan}</td>
               <td>${r.statusPR}</td>
-              <td>${r.statusPO}</td>
+              <td>${r.statusPO === 'PO' ? 'Lengkap' : 'Belum Lengkap'}</td>
               <td>${r.statusDO}</td>
             </tr>
           `).join('')}
@@ -250,10 +260,10 @@ const ListPRDashboard: React.FC = () => {
                     <td className="px-6 py-3 text-sm">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          row.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                          row.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
-                        {row.statusPO}
+                        {row.statusPO === 'PO' ? 'Lengkap' : 'Belum Lengkap'}
                       </span>
                     </td>
                     <td className="px-6 py-3 text-sm">

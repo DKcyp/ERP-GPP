@@ -7,21 +7,22 @@ interface PurchasingRequest {
   id: number;
   tanggalPR: string;
   noPR: string;
+  noPO: string;
   noSO: string;
   departemen: string;
   keterangan: string;
   statusPR: 'Approve' | 'Rejected' | 'Pending'; // Added 'Pending' for form options
   statusPO: 'PO' | '-';
-  statusBA: 'BA' | '-';
+  statusDO: 'Delivered' | 'Received' | 'BA' | '-';
 }
 
 const GeneralProsesPurchasingRequest: React.FC = () => {
   const [purchasingRequests, setPurchasingRequests] = useState<PurchasingRequest[]>([
-    { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
-    { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-', statusBA: '-' },
-    { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-', statusBA: '-' },
-    { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
-    { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-', statusBA: '-' },
+    { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noPO: 'PO-001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusDO: 'Delivered' },
+    { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noPO: '-',      noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-',  statusDO: '-' },
+    { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noPO: '-',      noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-',  statusDO: 'BA' },
+    { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noPO: 'PO-002', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusDO: 'Received' },
+    { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noPO: '-',      noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-',  statusDO: '-' },
   ]);
 
   const [alert, setAlert] = useState<{ type: 'success' | 'info' | 'warning' | 'error'; message: string } | null>(null);
@@ -68,22 +69,23 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
       id: newId,
       tanggalPR: newData.tanggalPR,
       noPR: newData.noPR,
+      noPO: '-',
       noSO: newData.noSO,
       departemen: newData.departemen,
       keterangan: newData.keterangan,
       // Default statuses for new PR since inputs removed from modal
       statusPR: 'Pending',
       statusPO: '-',
-      statusBA: '-',
+      statusDO: '-',
     };
     setPurchasingRequests((prev) => [...prev, newRequest]);
     console.log('New Purchasing Request Added:', newRequest);
   };
 
   const handleGenerateBA = (id: number) => {
-    setPurchasingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, statusBA: 'BA' } : req)));
+    setPurchasingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, statusDO: 'BA' } : req)));
     const pr = purchasingRequests.find((r) => r.id === id);
-    setAlert({ type: 'success', message: `Berita Acara berhasil dibuat untuk PR ${pr?.noPR ?? id}.` });
+    setAlert({ type: 'success', message: `Status DO (BA) berhasil diset untuk PR ${pr?.noPR ?? id}.` });
     // Auto dismiss after 4 seconds
     setTimeout(() => setAlert(null), 4000);
   };
@@ -194,6 +196,9 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     <div className="flex items-center">No PR <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">No PO <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">No SO <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -209,7 +214,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     <div className="flex items-center">Status PO <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Status BA <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">Status DO <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">Aksi <ChevronDown className="ml-1 h-3 w-3" /></div>
@@ -233,6 +238,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.tanggalPR}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPR}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPO}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noSO}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.departemen}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.keterangan}</td>
@@ -245,21 +251,27 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          request.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                          request.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {request.statusPO}
+                          {request.statusPO === 'PO' ? 'Lengkap' : 'Belum Lengkap'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          request.statusBA === 'BA' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                          request.statusDO === 'Delivered'
+                            ? 'bg-green-100 text-green-800'
+                            : request.statusDO === 'Received'
+                            ? 'bg-blue-100 text-blue-800'
+                            : request.statusDO === 'BA'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {request.statusBA}
+                          {request.statusDO}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center space-x-2">
-                          {request.statusBA === 'BA' ? (
+                          {request.statusDO === 'BA' ? (
                             <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="BA sudah dibuat">
                               <FileCheck className="h-4 w-4" />
                             </button>
@@ -292,7 +304,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     </tr>
                     {expanded.has(request.id) && (
                       <tr className="bg-gray-50">
-                        <td colSpan={11} className="px-6 py-4">
+                        <td colSpan={12} className="px-6 py-4">
                           <div className="border border-gray-200 rounded-lg overflow-hidden">
                             <table className="w-full text-xs">
                               <thead className="bg-gray-100">
