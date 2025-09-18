@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Clock, Plus, Search, X, Edit, Trash2, Printer } from 'lucide-react';
+import { Clock, Plus, Search, X, Edit, Trash2, Printer, UploadCloud } from 'lucide-react';
 import HPPDetailTabs from './HPPDetailTabs';
 
 interface PIEntry {
@@ -520,6 +520,15 @@ const ProconPembuatanPIDashboard: React.FC = () => {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Kode Bank</label>
                 <input type="text" value={form.bankCode} onChange={(e) => setForm(prev => ({...prev, bankCode: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+              </div>
+              {/* Lampiran */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Lampiran</label>
+                <label className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 cursor-pointer w-fit">
+                  <UploadCloud className="h-4 w-4" />
+                  <span className="text-xs">Upload file</span>
+                  <input type="file" multiple className="hidden"  />
+                </label>
               </div>
             </div>
 

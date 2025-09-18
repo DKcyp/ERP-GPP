@@ -82,6 +82,35 @@ const FinanceBuktiKasMasukModal: React.FC<FinanceBuktiKasMasukModalProps> = ({ i
     'Kas Tampungan',
   ];
 
+  const karyawanOptions = [
+    'Ahmad Rizki',
+    'Siti Nurhaliza',
+    'Budi Santoso',
+    'Dewi Sartika',
+    'Eko Prasetyo',
+    'Fitri Handayani',
+    'Gunawan Wijaya',
+    'Hesti Purwanti',
+    'Indra Kusuma',
+    'Joko Widodo',
+    'Kartika Sari',
+    'Lukman Hakim',
+    'Maya Sari',
+    'Nanda Pratama',
+    'Oki Setiawan',
+    'Putri Maharani',
+    'Qori Sumantri',
+    'Rina Susanti',
+    'Surya Dinata',
+    'Tina Kartini',
+    'Usman Harun',
+    'Vina Melinda',
+    'Wahyu Nugroho',
+    'Xenia Putri',
+    'Yudi Setiawan',
+    'Zahra Amelia'
+  ];
+
   const namaKasToKode = (nama: string): string => {
     switch (nama) {
       case 'Kas HealthyWeek':
@@ -234,7 +263,10 @@ const FinanceBuktiKasMasukModal: React.FC<FinanceBuktiKasMasukModalProps> = ({ i
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Terima Dari <span className="text-red-500">*</span></label>
-                <input type="text" value={formData.terimaDari} onChange={e => setFormData(prev => ({ ...prev, terimaDari: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm ${errors.terimaDari ? 'border-red-300' : 'border-gray-300'}`} />
+                <select value={formData.terimaDari} onChange={e => setFormData(prev => ({ ...prev, terimaDari: e.target.value }))} className={`block w-full border rounded-lg px-4 py-2 text-sm appearance-none ${errors.terimaDari ? 'border-red-300' : 'border-gray-300'}`}>
+                  <option value="">Pilih Nama Karyawan</option>
+                  {karyawanOptions.map(opt => (<option key={opt} value={opt}>{opt}</option>))}
+                </select>
                 {errors.terimaDari && <p className="mt-1 text-sm text-red-600">{errors.terimaDari}</p>}
               </div>
               <div className="md:col-span-2">

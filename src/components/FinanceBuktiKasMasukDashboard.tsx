@@ -28,6 +28,7 @@ const FinanceBuktiKasMasukDashboard: React.FC = () => {
   const [searchNoBKM, setSearchNoBKM] = useState('');
   const [searchKeterangan, setSearchKeterangan] = useState('');
   const [filterDivisi, setFilterDivisi] = useState('');
+  const [filterTanggalBKM, setFilterTanggalBKM] = useState('');
 
   const [rows, setRows] = useState<BKMSummaryRow[]>([
     { id: 1, tanggal: '2025-09-01', noBKM: 'BKM-2025-09-001', divisi: 'Finance', jenisTransaksi: 'Penerimaan Pendapatan', noDokumen: 'DOC-001', terimaDari: 'Client A', keterangan: 'Pembayaran proyek', total: 3500000 },
@@ -101,8 +102,9 @@ const FinanceBuktiKasMasukDashboard: React.FC = () => {
     const okBKM = searchNoBKM ? r.noBKM.toLowerCase().includes(searchNoBKM.toLowerCase()) : true;
     const okKet = searchKeterangan ? r.keterangan.toLowerCase().includes(searchKeterangan.toLowerCase()) : true;
     const okDiv = filterDivisi ? r.divisi === filterDivisi : true;
-    return okBKM && okKet && okDiv;
-  }), [rows, searchNoBKM, searchKeterangan, filterDivisi]);
+    const okTgl = filterTanggalBKM ? r.tanggal === filterTanggalBKM : true;
+    return okBKM && okKet && okDiv && okTgl;
+  }), [rows, searchNoBKM, searchKeterangan, filterDivisi, filterTanggalBKM]);
 
   const exportExcel = () => alert('Export Excel belum diimplementasikan');
   const exportPDF = () => alert('Export PDF belum diimplementasikan');
@@ -147,14 +149,16 @@ const FinanceBuktiKasMasukDashboard: React.FC = () => {
                 {['Marketing','HRD','GA','Procurement','Project Control','Operasional','QHSE','Finance','Accounting','Tax','Gudang'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="flex items-end">
-              <button onClick={() => { /* trigger memo */ }} className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none h-[42px]">
-                <Search className="h-4 w-4 mr-2" /> Cari Data
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal BKM</label>
+              <input type="date" value={filterTanggalBKM} onChange={e => setFilterTanggalBKM(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
             </div>
           </div>
 
           <div className="flex flex-col md:flex-row justify-end items-center space-y-3 md:space-y-0 md:space-x-3 mt-6">
+            <button onClick={() => { setSearchNoBKM(''); setSearchKeterangan(''); setFilterDivisi(''); setFilterTanggalBKM(''); }} className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none">
+              Reset Filter
+            </button>
             <button onClick={handleAdd} className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 w-full md:w-auto">
               <PlusCircle className="h-5 w-5 mr-2" /> Tambah BKM
             </button>
