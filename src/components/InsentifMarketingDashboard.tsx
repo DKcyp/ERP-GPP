@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Search, Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
 
 interface InsentifItem {
+  sales: string;
   id: string;
   soNumber: string;
   client: string;
@@ -42,6 +43,7 @@ const InsentifMarketingDashboard: React.FC = () => {
       id: "1",
       soNumber: "SO001",
       client: "Client A",
+      sales: "Sales A",
       invoiceValue: 25000000,
       margin: 12,
       jobDesc: "Maintenance Server",
@@ -57,6 +59,7 @@ const InsentifMarketingDashboard: React.FC = () => {
       id: "2",
       soNumber: "SO023",
       client: "Client B",
+      sales: "Sales B",
       invoiceValue: 50000000,
       margin: 10,
       jobDesc: "Network Setup",
@@ -198,6 +201,7 @@ const InsentifMarketingDashboard: React.FC = () => {
                 </th>
                 <th className="px-2 py-2 text-left">SO Number</th>
                 <th className="px-2 py-2 text-left">Client</th>
+                <th className="px-2 py-2 text-left">Sales</th>
                 <th className="px-2 py-2 text-left">Invoice Value</th>
                 <th className="px-2 py-2 text-left">Margin</th>
                 <th className="px-2 py-2 text-left">Job Desc</th>
@@ -222,6 +226,7 @@ const InsentifMarketingDashboard: React.FC = () => {
                   </td>
                   <td className="px-2 py-2 font-medium text-gray-900">{row.soNumber}</td>
                   <td className="px-2 py-2 text-gray-800">{row.client}</td>
+                  <td className="px-2 py-2 text-gray-800">{row.sales}</td>
                   <td className="px-2 py-2 text-gray-800">{currency(row.invoiceValue)}</td>
                   <td className="px-2 py-2 text-gray-800">{row.margin}%</td>
                   <td className="px-2 py-2 text-gray-800">{row.jobDesc}</td>
