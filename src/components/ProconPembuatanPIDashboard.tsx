@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Clock, Plus, Search, X, Edit, Trash2, Printer, UploadCloud } from 'lucide-react';
+import { Clock, Plus, Search, X, Edit, Trash2, Printer, UploadCloud, FileText, Download } from 'lucide-react';
 import HPPDetailTabs from './HPPDetailTabs';
 
 interface PIEntry {
@@ -17,6 +17,9 @@ interface PIEntry {
   dueDays?: number;       // Jumlah hari jatuh tempo dari tanggal dokumen
   contractOrPO: string;   // nomor kontrak / PO
   bankCode: string;       // Kode Bank
+  attachmentTugas?: File; // File attachment
+  attachmentFileName?: string; // Store filename for display
+  attachmentFileSize?: number; // Store file size
   // Legacy fields (optional)
   contractStart?: string; // dd/MM/yyyy
   contractEnd?: string;   // dd/MM/yyyy
@@ -179,6 +182,9 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     nilaiKontrak: 0,
     absorbKontrak: 0,
     remainingKontrak: 0,
+    attachmentTugas: undefined,
+    attachmentFileName: '',
+    attachmentFileSize: 0,
   });
 
   // New: Estimasi Nilai Kontrak field (tab content uses shared HPPDetailTabs)
@@ -197,6 +203,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       clientName: '', soInduk: '', soTurunan: '',
       documentDate: '', salesName: '', item: '', taxType: 'PPN', dueDate: '', dueDays: 0, contractOrPO: '', bankCode: '',
       contractStart: '', contractEnd: '', nilaiKontrak: 0, absorbKontrak: 0, remainingKontrak: 0,
+      attachmentTugas: undefined, attachmentFileName: '', attachmentFileSize: 0,
     });
     setEditId(null);
     setIsAddOpen(true);
@@ -250,6 +257,9 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       nilaiKontrak: found.nilaiKontrak || 0,
       absorbKontrak: found.absorbKontrak || 0,
       remainingKontrak: found.remainingKontrak || 0,
+      attachmentTugas: found.attachmentTugas,
+      attachmentFileName: found.attachmentFileName || '',
+      attachmentFileSize: found.attachmentFileSize || 0,
     });
     setEditId(id);
     setIsAddOpen(true);
@@ -314,6 +324,79 @@ const ProconPembuatanPIDashboard: React.FC = () => {
 
   // onAbsorbChange removed (legacy, no longer used in modal)
 
+  // File handling functions
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran file terlalu besar. Maksimal 10MB.');
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png',
+        'image/jpg'
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        alert('Tipe file tidak didukung. Gunakan PDF, DOC, DOCX, XLS, XLSX, JPG, atau PNG.');
+        return;
+      }
+
+      setForm(prev => ({
+        ...prev,
+        attachmentTugas: file,
+        attachmentFileName: file.name,
+        attachmentFileSize: file.size
+      }));
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setForm(prev => ({
+      ...prev,
+      attachmentTugas: undefined,
+      attachmentFileName: '',
+      attachmentFileSize: 0
+    }));
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return <FileText className="h-5 w-5 text-red-500" />;
+      case 'doc':
+      case 'docx':
+        return <FileText className="h-5 w-5 text-blue-500" />;
+      case 'xls':
+      case 'xlsx':
+        return <FileText className="h-5 w-5 text-green-500" />;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return <FileText className="h-5 w-5 text-purple-500" />;
+      default:
+        return <FileText className="h-5 w-5 text-gray-500" />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header */}
@@ -377,11 +460,11 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">Tanggal Dokumen</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">No. SO / SO Turunan</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">Nama Sales</th>
-                  
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">Pajak</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">Due Pembayaran</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">No. Kontrak / PO</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">Kode Bank</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">Lampiran</th>
                   <th className="px-3 py-2 text-right font-semibold text-gray-900">Aksi</th>
                 </tr>
               </thead>
@@ -391,11 +474,23 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                     <td className="px-3 py-2 text-gray-900 font-medium">{row.documentDate}</td>
                     <td className="px-3 py-2 text-gray-900 font-medium">{row.soInduk} / {row.soTurunan}</td>
                     <td className="px-3 py-2 text-gray-900 font-medium">{row.salesName}</td>
-                    
                     <td className="px-3 py-2 text-gray-700">{row.taxType}</td>
                     <td className="px-3 py-2 text-gray-700">{row.dueDate}</td>
                     <td className="px-3 py-2 text-gray-700">{row.contractOrPO}</td>
                     <td className="px-3 py-2 text-gray-700">{row.bankCode}</td>
+                    <td className="px-3 py-2 text-gray-700">
+                      {row.attachmentFileName ? (
+                        <div className="flex items-center gap-1">
+                          {getFileIcon(row.attachmentFileName)}
+                          <span className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer truncate max-w-[100px]" 
+                                title={row.attachmentFileName}>
+                            {row.attachmentFileName}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">Tidak ada</span>
+                      )}
+                    </td>
                     <td className="px-3 py-2 text-right">
                       <div className="flex items-center gap-2 justify-end">
                         <button className="text-blue-600 hover:text-blue-700" onClick={() => handlePrint(row.id)} title="Cetak">
@@ -413,7 +508,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-3 py-6 text-center text-gray-500">Tidak ada data</td>
+                    <td colSpan={9} className="px-3 py-6 text-center text-gray-500">Tidak ada data</td>
                   </tr>
                 )}
               </tbody>
@@ -521,16 +616,66 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Kode Bank</label>
                 <input type="text" value={form.bankCode} onChange={(e) => setForm(prev => ({...prev, bankCode: e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
               </div>
-              {/* Lampiran */}
-              <div>
+               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Lampiran</label>
                 <label className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 cursor-pointer w-fit">
                   <UploadCloud className="h-4 w-4" />
                   <span className="text-xs">Upload file</span>
-                  <input type="file" multiple className="hidden"  />
+                  <input type="file" multiple className="hidden" onChange={handleFileChange} />
                 </label>
               </div>
             </div>
+
+            {/* File Upload Section */}
+            {/* <div className="mt-6 border-t pt-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Lampiran File</h4>
+               */}
+              {/* File Upload Area */}
+              {/* <div className="space-y-4">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                  <input
+                    type="file"
+                    id="file-upload"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <UploadCloud className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-sm text-gray-600 mb-2">
+                      Klik untuk upload file atau drag & drop
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Mendukung: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max: 10MB)
+                    </p>
+                  </label>
+                </div>
+
+                {/* File Preview */}
+                {form.attachmentFileName && (
+                  <div className="bg-gray-50 rounded-lg p-4 border">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {getFileIcon(form.attachmentFileName)}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{form.attachmentFileName}</p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(form.attachmentFileSize || 0)}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleRemoveFile}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Hapus file"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              {/* </div>            */}
+               {/* </div> */}
 
             {/* HPP Detail Tabs (shared across modules) */}
             <div className="mt-4">
