@@ -8,7 +8,7 @@ interface PenerimaanBarangItem {
   tanggalPo: string; // dd-mm-yyyy
   tanggalDiterima: string; // dd-mm-yyyy
   namaSupplier: string;
-  status: 'Diterima' | 'Sebagian' | 'Belum Diterima';
+  status: 'Diterima' | 'Belum Diterima';
 }
 
 const initialData: PenerimaanBarangItem[] = [
@@ -40,15 +40,13 @@ const initialData: PenerimaanBarangItem[] = [
     tanggalPo: '15-03-2025',
     tanggalDiterima: '18-03-2025',
     namaSupplier: 'UD. Cahaya Abadi',
-    status: 'Sebagian',
+    status: 'Diterima',
   },
 ];
 
 const badgeClass = (status: PenerimaanBarangItem['status']) =>
   status === 'Diterima'
     ? 'bg-green-100 text-green-800'
-    : status === 'Sebagian'
-    ? 'bg-yellow-100 text-yellow-800'
     : 'bg-red-100 text-red-800';
 
 const PenerimaanBarangDashboard: React.FC = () => {

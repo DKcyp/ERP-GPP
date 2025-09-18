@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Clock, Search } from 'lucide-react';
+import { Clock, Search, Download } from 'lucide-react';
 
 const formatRp = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 const formatSigned = (n: number) => (n >= 0 ? formatRp(n) : `(${formatRp(Math.abs(n))})`);
@@ -152,6 +152,138 @@ const ProconLRPExcelDashboard: React.FC = () => {
   const marginPlan = totalPendPlan ? (labaPlan / totalPendPlan) * 100 : 0;
   const marginActual = totalPendActual ? (labaActual / totalPendActual) * 100 : 0;
 
+  // Fungsi export ke Excel
+  const exportToExcel = () => {
+    if (!selectedSO) {
+      alert('Pilih nomor SO terlebih dahulu');
+      return;
+    }
+
+    // Buat data untuk export
+    const exportData = [];
+    
+    // Header
+    exportData.push(['Laba Rugi Project - ' + selectedSO]);
+    exportData.push(['Tanggal Export:', new Date().toLocaleString('id-ID')]);
+    exportData.push([]);
+    
+    // Table header
+    exportData.push(['No.', 'Uraian', 'Plan', 'Actual', 'Actual + Forecast', 'Actual Dari Plans', '%']);
+    
+    // Pendapatan
+    exportData.push(['I', 'PENDAPATAN', '', '', '', '', '']);
+    rows.filter(r => r.section === 'PENDAPATAN').forEach((r, idx) => {
+      const planVal = plan[r.id] || 0;
+      const actualVal = values[r.id] || 0;
+      const diff = actualVal - planVal;
+      const percentage = planVal ? ((diff / planVal) * 100).toFixed(2) + '%' : '#DIV/0!';
+      
+      exportData.push([
+        idx + 1,
+        r.label,
+        planVal,
+        actualVal,
+        actualVal,
+        diff,
+        percentage
+      ]);
+    });
+    
+    // Total Pendapatan
+    exportData.push([
+      '',
+      'Total Pendapatan',
+      totalPendPlan,
+      totalPendActual,
+      totalPendActual,
+      totalPendActual - totalPendPlan,
+      totalPendPlan ? (((totalPendActual - totalPendPlan) / totalPendPlan) * 100).toFixed(2) + '%' : '#DIV/0!'
+    ]);
+    
+    // Biaya
+    exportData.push(['II', 'BIAYA', '', '', '', '', '']);
+    
+    const sections = [
+      'Tenaga Kerja', 'Material Langsung', 'ATK', 'Sewa',
+      'Perbaikan dan Kalibrasi', 'HSE', 'Administrasi',
+      'Transportasi', 'Lain-lain', 'FOH rate'
+    ];
+    
+    sections.forEach(section => {
+      exportData.push(['', section, '', '', '', '', '']);
+      
+      rows.filter(r => r.section === section).forEach((r, idx) => {
+        const planVal = plan[r.id] || 0;
+        const actualVal = values[r.id] || 0;
+        const diff = actualVal - planVal;
+        const percentage = planVal ? ((diff / planVal) * 100).toFixed(2) + '%' : '#DIV/0!';
+        
+        exportData.push([
+          idx + 1,
+          '  ' + r.label,
+          planVal,
+          actualVal,
+          actualVal,
+          diff,
+          percentage
+        ]);
+      });
+    });
+    
+    // Total Biaya
+    exportData.push([
+      '',
+      'Total Biaya Pengeluaran',
+      totalBiayaPlan,
+      totalBiayaActual,
+      totalBiayaActual,
+      totalBiayaActual - totalBiayaPlan,
+      totalBiayaPlan ? (((totalBiayaActual - totalBiayaPlan) / totalBiayaPlan) * 100).toFixed(2) + '%' : '#DIV/0!'
+    ]);
+    
+    // Laba Rugi
+    exportData.push([
+      '',
+      'LABA - RUGI',
+      labaPlan,
+      labaActual,
+      labaActual,
+      labaActual - labaPlan,
+      labaPlan ? (((labaActual - labaPlan) / labaPlan) * 100).toFixed(2) + '%' : '#DIV/0!'
+    ]);
+    
+    // Margin
+    exportData.push([
+      '',
+      'MARGIN',
+      marginPlan.toFixed(2) + '%',
+      marginActual.toFixed(2) + '%',
+      marginActual.toFixed(2) + '%',
+      '',
+      ''
+    ]);
+
+    // Convert ke CSV dan download
+    const csvContent = exportData.map(row => 
+      row.map(cell => {
+        if (typeof cell === 'number') {
+          return cell.toString();
+        }
+        return `"${cell.toString().replace(/"/g, '""')}"`;
+      }).join(',')
+    ).join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Laba_Rugi_${selectedSO}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header */}
@@ -161,9 +293,23 @@ const ProconLRPExcelDashboard: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900">Laba Rugi Project</h1>
             <div className="text-sm text-gray-600">Procon › Laba Rugi Project</div>
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <Clock className="h-4 w-4" />
-            <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={exportToExcel}
+              disabled={!hasSearched || !selectedSO}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                hasSearched && selectedSO
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              <Download className="h-4 w-4" />
+              Export Excel
+            </button>
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <Clock className="h-4 w-4" />
+              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -236,7 +382,16 @@ const ProconLRPExcelDashboard: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Ringkasan Laba Rugi</h2>
-              <div className="text-sm text-gray-600">SO: <span className="font-semibold">{selectedSO}</span></div>
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-gray-600">SO: <span className="font-semibold">{selectedSO}</span></div>
+                <button
+                  onClick={exportToExcel}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                >
+                  <Download className="h-4 w-4" />
+                  Export Excel
+                </button>
+              </div>
             </div>
 
             <div className="overflow-x-auto">
