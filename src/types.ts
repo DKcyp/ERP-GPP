@@ -350,3 +350,48 @@ export interface ApprovalPOBarangFormData {
   action: 'approve' | 'reject';
   keterangan: string;
 }
+
+// ================= PO Jasa Types =================
+export interface EntryPOJasaItem {
+  id: string;
+  namaJasa: string;
+  kodeJasa: string;
+  qty: string; // keep as string in form, parse as needed when saving
+  satuan: string;
+  hargaSatuan: string;
+  pajakItem?: string;
+  discRp?: string;
+  jumlah: string;
+  keterangan: string;
+  sertifikat?: boolean;
+}
+
+export interface EntryPOJasaFormData {
+  noPR: string;
+  noSO: string;
+  metodePembayaran: string;
+  tanggalPO: string;
+  kodeVendor: string;
+  tanggalPengiriman: string;
+  noPO: string;
+  departemen: string;
+  vendor: string;
+  pajak: string;
+  tandaBukti: File | null;
+  daftarFile: File[];
+  items: EntryPOJasaItem[];
+  total: string;
+  discAkhir: string;
+  subTotal: string;
+  ppn: string;
+  uangMukaNominal?: string; // new: uang muka nominal (rupiah)
+  termOfPayment?: string; // new: free text term of payment
+  ongkosKirim: string;
+  grandTotal: string;
+  // New fields for dashboard requirements
+  grossUp?: boolean; // pilihan gross up atau tidak
+  pphSummary?: string; // pilihan PPh ringkas (misal: 'Tidak', 'PPh 21', 'PPh 23')
+  biayaLainLain?: string;
+  biayaMaterai?: string;
+  estimasiKedatangan?: string; // optional manual entry if needed
+}

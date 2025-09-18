@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Modal from './Modal';
-import { Calendar, Plus, Trash2 } from 'lucide-react';
+import { X, CalendarDays, Upload, Plus } from 'lucide-react';
 import { EntryPOJasaFormData, EntryPOJasaItem } from '../types';
 
 interface EntryPOJasaModalProps {
@@ -11,30 +10,97 @@ interface EntryPOJasaModalProps {
 
 const EntryPOJasaModal: React.FC<EntryPOJasaModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState<EntryPOJasaFormData>({
-    noPr: '',
-    tanggalPo: '',
-    noPo: 'PO0091', // Default value from image
-    vendor: '',
-    noSo: '',
-    kodeVendor: '',
-    departemen: '',
-    pajak: '',
+    noPR: '',
+    noSO: '',
     metodePembayaran: '',
-    items: [],
-    daftarFile: null,
+    termOfPayment: '',
+    tanggalPO: '',
+    kodeVendor: '',
+    tanggalPengiriman: '',
+    noPO: 'PO0091', // Pre-filled as per original
+    departemen: '',
+    vendor: '',
+    pajak: '',
+    tandaBukti: null,
+    daftarFile: [],
+    items: [
+      {
+        id: '1',
+        namaJasa: '',
+        kodeJasa: '',
+        qty: '',
+        satuan: '',
+        hargaSatuan: '',
+        pajakItem: '',
+        discRp: '',
+        jumlah: '',
+        keterangan: '',
+        sertifikat: false,
+      },
+    ],
+    total: 'Rp 1.500.000',
+    discAkhir: 'Rp 50.000',
+    subTotal: 'Rp 1.450.000',
+    ppn: 'Rp 145.000',
+    uangMukaNominal: '',
+    ongkosKirim: '',
+    grandTotal: 'Rp 1.595.000',
+    grossUp: false,
+    pphSummary: '',
+    biayaLainLain: '',
+    biayaMaterai: '',
+    estimasiKedatangan: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const metodePembayaranOptions = [
+    { value: 'Transfer Bank', label: 'Transfer Bank' },
+    { value: 'Cash', label: 'Cash' },
+    { value: 'Giro', label: 'Giro' },
+  ];
+
+  const pajakOptions = [
+    { value: 'PPN', label: 'PPN' },
+    { value: 'Non PPN', label: 'Non PPN' },
+  ];
+
+  const pphSummaryOptions = [
+    { value: 'Tidak', label: 'Tidak' },
+    { value: 'PPh 21', label: 'PPh 21' },
+    { value: 'PPh 23', label: 'PPh 23' },
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFormData((prev) => ({ ...prev, daftarFile: e.target.files![0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, daftarFile: null }));
+    const { name, files } = e.target;
+    if (files && files.length > 0) {
+      if (name === 'tandaBukti') {
+        setFormData((prev) => ({ ...prev, tandaBukti: files[0] }));
+      } else if (name === 'daftarFile') {
+        setFormData((prev) => ({ ...prev, daftarFile: Array.from(files) }));
+      }
     }
+  };
+
+  const handleItemChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    const newItems = [...formData.items];
+    const itemToUpdate = { ...newItems[index] };
+    
+    // This type assertion is safe because we are accessing keys of EntryPOJasaItem
+    (itemToUpdate as any)[name] = value;
+    newItems[index] = itemToUpdate;
+
+    setFormData((prev) => ({ ...prev, items: newItems }));
+  };
+
+  const handleItemCheckboxChange = (index: number, name: keyof EntryPOJasaItem, checked: boolean) => {
+    const newItems = [...formData.items];
+    (newItems[index] as any)[name] = checked;
+    setFormData((prev) => ({ ...prev, items: newItems }));
   };
 
   const handleAddItem = () => {
@@ -43,319 +109,442 @@ const EntryPOJasaModal: React.FC<EntryPOJasaModalProps> = ({ isOpen, onClose, on
       items: [
         ...prev.items,
         {
-          id: Date.now().toString(), // Simple unique ID
+          id: (prev.items.length + 1).toString(),
           namaJasa: '',
           kodeJasa: '',
-          qty: 0,
+          qty: '',
           satuan: '',
-          hargaSatuan: 0,
-          disc: 0,
-          jumlah: 0,
+          hargaSatuan: '',
+          pajakItem: '',
+          discRp: '',
+          jumlah: '',
           keterangan: '',
+          sertifikat: false,
         },
       ],
-    }));
-  };
-
-  const handleItemChange = (id: string, field: keyof EntryPOJasaItem, value: any) => {
-    setFormData((prev) => {
-      const updatedItems = prev.items.map((item) => {
-        if (item.id === id) {
-          const updatedItem = { ...item, [field]: value };
-          // Recalculate 'jumlah' if 'qty', 'hargaSatuan', or 'disc' changes
-          if (field === 'qty' || field === 'hargaSatuan' || field === 'disc') {
-            const qty = updatedItem.qty || 0;
-            const hargaSatuan = updatedItem.hargaSatuan || 0;
-            const disc = updatedItem.disc || 0;
-            updatedItem.jumlah = (qty * hargaSatuan) * (1 - disc / 100); // Assuming disc is percentage
-          }
-          return updatedItem;
-        }
-        return item;
-      });
-      return { ...prev, items: updatedItems };
-    });
-  };
-
-  const handleRemoveItem = (id: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.filter((item) => item.id !== id),
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+    // You might want to reset the form here if needed, similar to the Barang modal.
     onClose();
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-  };
+  if (!isOpen) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Entry PO Jasa" size="5xl">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Top Form Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="noPr" className="block text-sm font-medium text-gray-700 mb-1">No PR</label>
-              <select
-                id="noPr"
-                name="noPr"
-                value={formData.noPr}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              >
-                <option value="">Pilih No PR</option>
-                <option value="PR001">PR001</option>
-                <option value="PR002">PR002</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="noPo" className="block text-sm font-medium text-gray-700 mb-1">No PO</label>
-              <input
-                type="text"
-                id="noPo"
-                name="noPo"
-                value={formData.noPo}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label htmlFor="noSo" className="block text-sm font-medium text-gray-700 mb-1">No SO</label>
-              <input
-                type="text"
-                id="noSo"
-                name="noSo"
-                value={formData.noSo}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label htmlFor="departemen" className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-              <input
-                type="text"
-                id="departemen"
-                name="departemen"
-                value={formData.departemen}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label htmlFor="metodePembayaran" className="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
-              <select
-                id="metodePembayaran"
-                name="metodePembayaran"
-                value={formData.metodePembayaran}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              >
-                <option value="">Pilih Metode Pembayaran</option>
-                <option value="Transfer">Transfer</option>
-                <option value="Cash">Cash</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="tanggalPo" className="block text-sm font-medium text-gray-700 mb-1">Tanggal PO</label>
-              <div className="relative">
-                <input
-                  type="date" // Use type="date" for date picker
-                  id="tanggalPo"
-                  name="tanggalPo"
-                  value={formData.tanggalPo}
-                  onChange={handleInputChange}
-                  className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-                />
-                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <Calendar size={18} className="text-gray-400" />
-                </span>
-              </div>
-            </div>
-            <div>
-              <label htmlFor="vendor" className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
-              <input
-                type="text"
-                id="vendor"
-                name="vendor"
-                value={formData.vendor}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label htmlFor="kodeVendor" className="block text-sm font-medium text-gray-700 mb-1">Kode Vendor</label>
-              <input
-                type="text"
-                id="kodeVendor"
-                name="kodeVendor"
-                value={formData.kodeVendor}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              />
-            </div>
-            <div>
-              <label htmlFor="pajak" className="block text-sm font-medium text-gray-700 mb-1">Pajak</label>
-              <select
-                id="pajak"
-                name="pajak"
-                value={formData.pajak}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-              >
-                <option value="">Pilih Pajak</option>
-                <option value="PPN 11%">PPN 11%</option>
-                <option value="Non PPN">Non PPN</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Jasa Items Table */}
-        <h4 className="text-lg font-semibold text-text mb-4">Daftar Jasa</h4>
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="min-w-full divide-y divide-border">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nama Jasa</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Kode Jasa</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Qty</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Satuan</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Harga Satuan</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Disc (Rp)</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Jumlah</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Keterangan</th>
-                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-border">
-              {formData.items.map((item) => (
-                <tr key={item.id}>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="text"
-                      value={item.namaJasa}
-                      onChange={(e) => handleItemChange(item.id, 'namaJasa', e.target.value)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="text"
-                      value={item.kodeJasa}
-                      onChange={(e) => handleItemChange(item.id, 'kodeJasa', e.target.value)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="number"
-                      value={item.qty}
-                      onChange={(e) => handleItemChange(item.id, 'qty', parseInt(e.target.value) || 0)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="text"
-                      value={item.satuan}
-                      onChange={(e) => handleItemChange(item.id, 'satuan', e.target.value)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="number"
-                      value={item.hargaSatuan}
-                      onChange={(e) => handleItemChange(item.id, 'hargaSatuan', parseFloat(e.target.value) || 0)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="number"
-                      value={item.disc}
-                      onChange={(e) => handleItemChange(item.id, 'disc', parseFloat(e.target.value) || 0)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {formatCurrency(item.jumlah)}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <input
-                      type="text"
-                      value={item.keterangan}
-                      onChange={(e) => handleItemChange(item.id, 'keterangan', e.target.value)}
-                      className="w-full border-none focus:ring-0 text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItem(item.id)}
-                      className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <button
-          type="button"
-          onClick={handleAddItem}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm"
-        >
-          <Plus size={18} />
-          <span>Tambah Jasa</span>
-        </button>
-
-        {/* File Upload */}
-        <div className="mt-6">
-          <label htmlFor="daftarFile" className="block text-sm font-medium text-gray-700 mb-1">Daftar File</label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="file"
-              id="daftarFile"
-              name="daftarFile"
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
-            />
-            {formData.daftarFile && (
-              <span className="text-sm text-gray-600">{formData.daftarFile.name}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex justify-end pt-4 border-t border-border mt-6">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
-          >
-            Simpan
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl mx-auto max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800">Entry PO Jasa</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <X size={24} />
           </button>
         </div>
-      </form>
-    </Modal>
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+          <div className="p-6 space-y-6 overflow-y-auto">
+            {/* Top Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label htmlFor="noPR" className="block text-sm font-medium text-gray-700 mb-1">No PR</label>
+                <input
+                  type="text"
+                  id="noPR"
+                  name="noPR"
+                  value={formData.noPR}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label htmlFor="tanggalPO" className="block text-sm font-medium text-gray-700 mb-1">Tanggal PO</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="tanggalPO"
+                    name="tanggalPO"
+                    value={formData.tanggalPO}
+                    onChange={handleChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="dd/mm/yyyy"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <CalendarDays className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label htmlFor="noPO" className="block text-sm font-medium text-gray-700 mb-1">No PO</label>
+                <input
+                  type="text"
+                  id="noPO"
+                  name="noPO"
+                  value={formData.noPO}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-600 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+              <div>
+                <label htmlFor="vendor" className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
+                <input
+                  type="text"
+                  id="vendor"
+                  name="vendor"
+                  value={formData.vendor}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="noSO" className="block text-sm font-medium text-gray-700 mb-1">No SO</label>
+                <input
+                  type="text"
+                  id="noSO"
+                  name="noSO"
+                  value={formData.noSO}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label htmlFor="kodeVendor" className="block text-sm font-medium text-gray-700 mb-1">Kode Vendor</label>
+                <input
+                  type="text"
+                  id="kodeVendor"
+                  name="kodeVendor"
+                  value={formData.kodeVendor}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label htmlFor="departemen" className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+                <input
+                  type="text"
+                  id="departemen"
+                  name="departemen"
+                  value={formData.departemen}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label htmlFor="pajak" className="block text-sm font-medium text-gray-700 mb-1">Pajak</label>
+                <select
+                  id="pajak"
+                  name="pajak"
+                  value={formData.pajak}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="">Pilih Pajak</option>
+                  {pajakOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Metode Pembayaran */}
+              <div>
+                <label htmlFor="metodePembayaran" className="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
+                <select
+                  id="metodePembayaran"
+                  name="metodePembayaran"
+                  value={formData.metodePembayaran}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="">Pilih Metode Pembayaran</option>
+                  {metodePembayaranOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Term Of Payment (free text) */}
+              <div>
+                <label htmlFor="termOfPayment" className="block text-sm font-medium text-gray-700 mb-1">Term Of Payment</label>
+                <input
+                  type="text"
+                  id="termOfPayment"
+                  name="termOfPayment"
+                  value={formData.termOfPayment || ''}
+                  onChange={handleChange}
+                  placeholder="Contoh: 30 hari setelah invoice"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+
+              {/* Tanggal Pengiriman */}
+              <div>
+                <label htmlFor="tanggalPengiriman" className="block text-sm font-medium text-gray-700 mb-1">Tanggal Pengiriman</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="tanggalPengiriman"
+                    name="tanggalPengiriman"
+                    value={formData.tanggalPengiriman}
+                    onChange={handleChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="dd/mm/yyyy"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <CalendarDays className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label htmlFor="estimasiKedatangan" className="block text-sm font-medium text-gray-700 mb-1">Estimasi Kedatangan</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="estimasiKedatangan"
+                    name="estimasiKedatangan"
+                    value={formData.estimasiKedatangan || ''}
+                    onChange={handleChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="dd/mm/yyyy"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <CalendarDays className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-2">
+                <label htmlFor="tandaBukti" className="block text-sm font-medium text-gray-700 mb-1">Tanda Bukti</label>
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="tandaBuktiInput" className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-md border border-gray-300 text-sm">
+                    Choose File
+                  </label>
+                  <input
+                    type="file"
+                    id="tandaBuktiInput"
+                    name="tandaBukti"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <span className="text-sm text-gray-500">
+                    {formData.tandaBukti ? formData.tandaBukti.name : 'No file chosen'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Daftar File Drag & Drop */}
+            <div className="col-span-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Daftar File</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600">
+                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span>Drag & Drop your files or Browse</span>
+                      <input id="file-upload" name="daftarFile" type="file" className="sr-only" multiple onChange={handleFileChange} />
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  {formData.daftarFile.length > 0 && (
+                    <ul className="text-sm text-gray-700 mt-2">
+                      {formData.daftarFile.map((file, index) => (
+                        <li key={index}>{file.name}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Items Table Section */}
+            <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Jasa</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Jasa</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sertifikat</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Satuan</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pajak</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Disc (Rp)</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {formData.items.map((item, index) => (
+                      <tr key={item.id}>
+                        <td className="p-2">
+                          <input type="text" name="namaJasa" value={item.namaJasa} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="kodeJasa" value={item.kodeJasa} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <select
+                            value={item.sertifikat ? 'Yes' : 'No'}
+                            onChange={(e) => handleItemCheckboxChange(index, 'sertifikat', e.target.value === 'Yes')}
+                            className="w-full border-0 focus:ring-0 text-sm"
+                          >
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                          </select>
+                        </td>
+                        <td className="p-2">
+                          <input type="number" name="qty" value={item.qty} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="satuan" value={item.satuan} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="hargaSatuan" value={item.hargaSatuan} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="pajakItem" value={item.pajakItem} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="discRp" value={item.discRp} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="jumlah" value={item.jumlah} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                        <td className="p-2">
+                          <input type="text" name="keterangan" value={item.keterangan} onChange={(e) => handleItemChange(index, e)} className="w-full border-0 focus:ring-0 text-sm" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="p-2 bg-gray-50 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="px-3 py-1 bg-blue-500 text-white rounded-md text-xs font-medium hover:bg-blue-600 transition-colors flex items-center space-x-1"
+                >
+                  <Plus size={14} />
+                  <span>Tambah Jasa</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Summary Totals */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 self-end w-full md:w-1/2 ml-auto">
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Gross Up:</span>
+                <select
+                  name="grossUp"
+                  value={formData.grossUp ? 'Yes' : 'No'}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, grossUp: e.target.value === 'Yes' }))}
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>PPh:</span>
+                <select
+                  name="pphSummary"
+                  value={formData.pphSummary || ''}
+                  onChange={handleChange}
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="">Pilih</option>
+                  {pphSummaryOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Biaya Lain-lain:</span>
+                <input
+                  type="text"
+                  name="biayaLainLain"
+                  value={formData.biayaLainLain || ''}
+                  onChange={handleChange}
+                  placeholder="Rp 0"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Biaya Materai:</span>
+                <input
+                  type="text"
+                  name="biayaMaterai"
+                  value={formData.biayaMaterai || ''}
+                  onChange={handleChange}
+                  placeholder="Rp 0"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Total:</span>
+                <input type="text" value={formData.total} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Disc Akhir:</span>
+                <input type="text" value={formData.discAkhir} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Sub Total:</span>
+                <input type="text" value={formData.subTotal} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>PPN:</span>
+                <input type="text" value={formData.ppn} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              </div>
+              {/* Uang Muka Nominal (baru) */}
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Uang Muka:</span>
+                <input
+                  type="text"
+                  name="uangMukaNominal"
+                  value={formData.uangMukaNominal || ''}
+                  onChange={handleChange}
+                  placeholder="Rp 0"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Ongkos Kirim:</span>
+                <input
+                  type="text"
+                  name="ongkosKirim"
+                  value={formData.ongkosKirim}
+                  onChange={handleChange}
+                  placeholder="Masukkan Ongkos Kirim"
+                  className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="flex justify-between items-center text-sm font-medium text-gray-700">
+                <span>Grand Total:</span>
+                <input type="text" value={formData.grandTotal} readOnly className="w-1/2 text-right px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end p-4 border-t border-gray-200">
+            <button
+              type="submit"
+              className="px-6 py-2 rounded-md text-sm font-medium text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            >
+              Simpan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
