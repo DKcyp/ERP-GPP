@@ -10,18 +10,32 @@ interface PRItem {
   keterangan: string;
   statusPR: 'Approve' | 'Rejected' | 'Pending';
   statusPO: 'PO' | '-';
-  statusBA: 'BA' | '-';
+  noPO: string;
+  statusDO: 'Delivered' | 'Received' | 'BA' | '-';
 }
 
 const initialData: PRItem[] = [
-  { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
-  { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', departemen: 'Finance',     keterangan: 'Pembelian Software Akuntansi', statusPR: 'Pending', statusPO: '-',  statusBA: '-'  },
-  { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Pending', statusPO: '-',  statusBA: 'BA' },
-  { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusBA: 'BA' },
-  { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-',  statusBA: '-'  },
-  { id: 6, tanggalPR: '12-02-2025', noPR: 'PR006', noSO: 'SO006.10', departemen: 'Operasional', keterangan: 'Pembelian Safety Shoes',      statusPR: 'Rejected', statusPO: '-',  statusBA: '-'  },
-  { id: 7, tanggalPR: '13-02-2025', noPR: 'PR007', noSO: 'SO007.21', departemen: 'Procurement', keterangan: 'Pembelian Laptop',               statusPR: 'Pending',  statusPO: '-',  statusBA: '-'  },
-  { id: 8, tanggalPR: '14-02-2025', noPR: 'PR008', noSO: 'SO008.08', departemen: 'IT',          keterangan: 'Langganan Software',            statusPR: 'Pending',  statusPO: '-',  statusBA: '-'  },
+  { id: 1,  tanggalPR: '07-02-2025', noPR: 'PR001', noSO: 'SO001.22', noPO: 'PO-001', departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan',         statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Delivered' },
+  { id: 2,  tanggalPR: '08-02-2025', noPR: 'PR002', noSO: 'SO002.12', noPO: '-',      departemen: 'Finance',     keterangan: 'Pembelian Software Akuntansi',    statusPR: 'Pending',  statusPO: '-',  statusDO: '-' },
+  { id: 3,  tanggalPR: '09-02-2025', noPR: 'PR003', noSO: 'SO003.33', noPO: '-',      departemen: 'HRD',         keterangan: 'Jasa Pelatihan Karyawan',         statusPR: 'Pending',  statusPO: '-',  statusDO: 'BA' },
+  { id: 4,  tanggalPR: '10-02-2025', noPR: 'PR004', noSO: 'SO004.90', noPO: 'PO-002', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor',   statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Received' },
+  { id: 5,  tanggalPR: '11-02-2025', noPR: 'PR005', noSO: 'SO005.55', noPO: '-',      departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor',   statusPR: 'Rejected', statusPO: '-',  statusDO: '-' },
+  { id: 6,  tanggalPR: '12-02-2025', noPR: 'PR006', noSO: 'SO006.10', noPO: '-',      departemen: 'Operasional', keterangan: 'Pembelian Safety Shoes',        statusPR: 'Rejected', statusPO: '-',  statusDO: '-' },
+  { id: 7,  tanggalPR: '13-02-2025', noPR: 'PR007', noSO: 'SO007.21', noPO: '-',      departemen: 'Procurement', keterangan: 'Pembelian Laptop',               statusPR: 'Pending',  statusPO: '-',  statusDO: '-' },
+  { id: 8,  tanggalPR: '14-02-2025', noPR: 'PR008', noSO: 'SO008.08', noPO: '-',      departemen: 'IT',          keterangan: 'Langganan Software',            statusPR: 'Pending',  statusPO: '-',  statusDO: '-' },
+  // tambahan dummy data
+  { id: 9,  tanggalPR: '15-02-2025', noPR: 'PR009', noSO: 'SO009.10', noPO: 'PO-003', departemen: 'Marketing',    keterangan: 'Material Promosi',              statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Delivered' },
+  { id: 10, tanggalPR: '16-02-2025', noPR: 'PR010', noSO: 'SO010.42', noPO: 'PO-004', departemen: 'GA',           keterangan: 'Perawatan Kendaraan',           statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Received' },
+  { id: 11, tanggalPR: '17-02-2025', noPR: 'PR011', noSO: 'SO011.77', noPO: '-',      departemen: 'QHSE',        keterangan: 'APD Proyek',                    statusPR: 'Pending',  statusPO: '-',  statusDO: 'BA' },
+  { id: 12, tanggalPR: '18-02-2025', noPR: 'PR012', noSO: 'SO012.05', noPO: '-',      departemen: 'IT',          keterangan: 'Pembelian Lisensi Software',    statusPR: 'Pending',  statusPO: '-',  statusDO: '-' },
+  { id: 13, tanggalPR: '19-02-2025', noPR: 'PR013', noSO: 'SO013.33', noPO: 'PO-005', departemen: 'Finance',     keterangan: 'Perlengkapan Arsip',           statusPR: 'Approve',  statusPO: 'PO', statusDO: 'BA' },
+  { id: 14, tanggalPR: '20-02-2025', noPR: 'PR014', noSO: 'SO014.66', noPO: '-',      departemen: 'Operasional', keterangan: 'Bahan Bakar Cadangan',          statusPR: 'Rejected', statusPO: '-',  statusDO: '-' },
+  { id: 15, tanggalPR: '21-02-2025', noPR: 'PR015', noSO: 'SO015.12', noPO: 'PO-006', departemen: 'HRD',         keterangan: 'Pelatihan K3',                  statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Delivered' },
+  { id: 16, tanggalPR: '22-02-2025', noPR: 'PR016', noSO: 'SO016.88', noPO: 'PO-007', departemen: 'Procurement', keterangan: 'Rak Gudang',                    statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Received' },
+  { id: 17, tanggalPR: '23-02-2025', noPR: 'PR017', noSO: 'SO017.90', noPO: '-',      departemen: 'GA',          keterangan: 'ATK Bulanan',                    statusPR: 'Pending',  statusPO: '-',  statusDO: '-' },
+  { id: 18, tanggalPR: '24-02-2025', noPR: 'PR018', noSO: 'SO018.44', noPO: '-',      departemen: 'Marketing',   keterangan: 'Souvenir Pelanggan',            statusPR: 'Pending',  statusPO: '-',  statusDO: 'BA' },
+  { id: 19, tanggalPR: '25-02-2025', noPR: 'PR019', noSO: 'SO019.71', noPO: 'PO-008', departemen: 'QHSE',        keterangan: 'Perlengkapan Audit Internal',  statusPR: 'Approve',  statusPO: 'PO', statusDO: 'Delivered' },
+  { id: 20, tanggalPR: '26-02-2025', noPR: 'PR020', noSO: 'SO020.39', noPO: 'PO-009', departemen: 'IT',          keterangan: 'Peningkatan Kapasitas Server', statusPR: 'Approve',  statusPO: 'PO', statusDO: 'BA' },
 ];
 
 const ListPRDashboard: React.FC = () => {
@@ -37,6 +51,7 @@ const ListPRDashboard: React.FC = () => {
     const s = search.toLowerCase();
     return filtered.filter((d) =>
       d.noPR.toLowerCase().includes(s) ||
+      d.noPO.toLowerCase().includes(s) ||
       d.noSO.toLowerCase().includes(s) ||
       d.departemen.toLowerCase().includes(s) ||
       d.keterangan.toLowerCase().includes(s)
@@ -44,8 +59,8 @@ const ListPRDashboard: React.FC = () => {
   }, [items, filterStatusPR, search]);
 
   const handleExportCSV = () => {
-    const headers = ['Tanggal PR','No PR','No SO','Departemen','Keterangan','Status PR','Status PO','Status BA'];
-    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO, r.statusBA]);
+    const headers = ['Tanggal PR','No PR','No PO','No SO','Departemen','Keterangan','Status PR','Status PO','Status DO'];
+    const rows = data.map((r) => [r.tanggalPR, r.noPR, r.noPO, r.noSO, r.departemen, r.keterangan, r.statusPR, r.statusPO, r.statusDO]);
     const escape = (v: any) => {
       const s = String(v ?? '');
       if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
@@ -79,7 +94,7 @@ const ListPRDashboard: React.FC = () => {
       <table>
         <thead>
           <tr>
-            <th>No</th><th>Tanggal PR</th><th>No PR</th><th>No SO</th><th>Departemen</th><th>Keterangan</th><th>Status PR</th><th>Status PO</th><th>Status BA</th>
+            <th>No</th><th>Tanggal PR</th><th>No PR</th><th>No PO</th><th>No SO</th><th>Departemen</th><th>Keterangan</th><th>Status PR</th><th>Status PO</th><th>Status DO</th>
           </tr>
         </thead>
         <tbody>
@@ -88,12 +103,13 @@ const ListPRDashboard: React.FC = () => {
               <td>${r.id}</td>
               <td>${r.tanggalPR}</td>
               <td>${r.noPR}</td>
+              <td>${r.noPO}</td>
               <td>${r.noSO}</td>
               <td>${r.departemen}</td>
               <td>${r.keterangan}</td>
               <td>${r.statusPR}</td>
               <td>${r.statusPO}</td>
-              <td>${r.statusBA}</td>
+              <td>${r.statusDO}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -198,12 +214,13 @@ const ListPRDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal PR</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No PR</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No PO</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departemen</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status PR</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status PO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status BA</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status DO</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -213,6 +230,7 @@ const ListPRDashboard: React.FC = () => {
                     <td className="px-6 py-3 text-sm text-gray-900">{row.id}</td>
                     <td className="px-6 py-3 text-sm text-gray-900">{row.tanggalPR}</td>
                     <td className="px-6 py-3 text-sm text-gray-900">{row.noPR}</td>
+                    <td className="px-6 py-3 text-sm text-gray-900">{row.noPO}</td>
                     <td className="px-6 py-3 text-sm text-gray-900">{row.noSO}</td>
                     <td className="px-6 py-3 text-sm text-gray-900">{row.departemen}</td>
                     <td className="px-6 py-3 text-sm text-gray-900">{row.keterangan}</td>
@@ -241,10 +259,16 @@ const ListPRDashboard: React.FC = () => {
                     <td className="px-6 py-3 text-sm">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          row.statusBA === 'BA' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                          row.statusDO === 'Delivered'
+                            ? 'bg-green-100 text-green-800'
+                            : row.statusDO === 'Received'
+                            ? 'bg-blue-100 text-blue-800'
+                            : row.statusDO === 'BA'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {row.statusBA}
+                        {row.statusDO}
                       </span>
                     </td>
                     <td className="px-6 py-3 text-sm text-right">
