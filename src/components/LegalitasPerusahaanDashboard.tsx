@@ -16,7 +16,7 @@ interface Sertifikat {
   no: number; // No urut
   noSertifikat: string; // No Sertifikat
   nama: string; // Nama Sertifikat
-  vendor: string; // Vendor
+  tempatPengurusan: string; // Vendor
   tanggalTerbit: string; // Tgl Terbit Sertifikat (ISO yyyy-mm-dd)
   tanggalExp: string; // Tgl Exp Sertifikat (ISO yyyy-mm-dd)
   uploadFile?: string; // Upload File (filename/url)
@@ -40,7 +40,7 @@ const initialData: Sertifikat[] = [
     no: 1,
     noSertifikat: "ISO-2024-001",
     nama: "ISO 9001:2015",
-    vendor: "TUV Rheinland",
+    tempatPengurusan: "Jakarta",
     tanggalTerbit: "2024-01-10",
     tanggalExp: "2025-01-09",
     uploadFile: "iso9001.pdf",
@@ -54,7 +54,7 @@ const initialData: Sertifikat[] = [
     no: 2,
     noSertifikat: "K3-2024-002",
     nama: "Sertifikat K3 Migas",
-    vendor: "SKKMigas",
+    tempatPengurusan: "Jakarta",
     tanggalTerbit: "2024-06-01",
     tanggalExp: "2024-12-01",
     uploadFile: "",
@@ -92,7 +92,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
     return rows.filter((r) => {
       const matchName =
         r.nama.toLowerCase().includes(search.toLowerCase()) ||
-        r.vendor.toLowerCase().includes(search.toLowerCase());
+        r.tempatPengurusan.toLowerCase().includes(search.toLowerCase());
       const withinRange = (() => {
         if (!startDate && !endDate) return true;
         const d = new Date(r.tanggalExp);
@@ -131,10 +131,10 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
 
   const onSubmit = () => {
     if (!modal.data) return;
-    const { id, noSertifikat, nama, vendor, tanggalTerbit, tanggalExp, keterangan, approval, uploadFile, status, approvedByDirector } =
+    const { id, noSertifikat, nama, tempatPengurusan, tanggalTerbit, tanggalExp, keterangan, approval, uploadFile, status, approvedByDirector } =
       modal.data as Sertifikat;
 
-    if (!nama || !tanggalTerbit || !tanggalExp || !vendor || !status) return;
+    if (!nama || !tanggalTerbit || !tanggalExp || !tempatPengurusan || !status) return;
 
     if (modal.mode === "add") {
       const newItem: Sertifikat = {
@@ -142,7 +142,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
         no: rows.length + 1,
         noSertifikat: noSertifikat || '',
         nama,
-        vendor,
+        tempatPengurusan,
         tanggalTerbit,
         tanggalExp,
         uploadFile,
@@ -156,7 +156,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
       setRows((prev) =>
         prev.map((p) =>
           p.id === id
-            ? { ...p, nama, vendor, tanggalTerbit, tanggalExp, keterangan, approval, uploadFile, status, approvedByDirector: approvedByDirector || false }
+            ? { ...p, nama, tempatPengurusan, tanggalTerbit, tanggalExp, keterangan, approval, uploadFile, status, approvedByDirector: approvedByDirector || false }
             : p
         )
       );
@@ -172,7 +172,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
         no: rows.length + 1,
         noSertifikat: "",
         nama: "",
-        vendor: "",
+        tempatPengurusan: "",
         tanggalTerbit: "",
         tanggalExp: "",
         uploadFile: "",
@@ -332,7 +332,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Sertifikat</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sertifikat</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tempat Pengurusan</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Terbit</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Exp</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload File</th>
@@ -378,7 +378,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {r.vendor}
+                          {r.tempatPengurusan}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {fmtDate(r.tanggalTerbit)}
@@ -494,15 +494,15 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
-                    Vendor
+                    Tempat Pengurusan
                   </label>
                   <input
                     type="text"
-                    value={modal.data?.vendor ?? ""}
+                    value={modal.data?.tempatPengurusan ?? ""}
                     onChange={(e) =>
                       setModal((m) => ({
                         ...m,
-                        data: { ...m.data, vendor: e.target.value },
+                        data: { ...m.data, tempatPengurusan: e.target.value },
                       }))
                     }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
