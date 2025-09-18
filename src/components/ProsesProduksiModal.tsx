@@ -15,6 +15,10 @@ export interface ProsesProduksiFormData {
   demob: string;
   tglPenerimaanReportTeknisi: string;
   tglPenerimaanFinalReport: string;
+  // New approval dates
+  tglApprovalReport?: string;
+  tglApprovalBAST?: string;
+  tglFinalApproval?: string;
   nilaiProduksi: string;
   statusReport: 'Approved' | 'Revisi';
   noKontrak?: string;
@@ -34,6 +38,9 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
     demob: '',
     tglPenerimaanReportTeknisi: '',
     tglPenerimaanFinalReport: '',
+    tglApprovalReport: '',
+    tglApprovalBAST: '',
+    tglFinalApproval: '',
     nilaiProduksi: '',
     statusReport: 'Approved',
     noKontrak: '',
@@ -368,6 +375,9 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
       demob: '',
       tglPenerimaanReportTeknisi: '',
       tglPenerimaanFinalReport: '',
+      tglApprovalReport: '',
+      tglApprovalBAST: '',
+      tglFinalApproval: '',
       nilaiProduksi: '',
       statusReport: 'Approved',
       noKontrak: '',
@@ -592,6 +602,54 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({ isOpen, onClo
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="001-00/GBP/UT/I/2025"
                 />
+              </div>
+
+              {/* Tgl Approval Report */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Tgl Approval Report
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={formData.tglApprovalReport || ''}
+                    onChange={(e) => handleInputChange('tglApprovalReport', e.target.value)}
+                    className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  />
+                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Tgl Approval BAST */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Tgl Approval BAST
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={formData.tglApprovalBAST || ''}
+                    onChange={(e) => handleInputChange('tglApprovalBAST', e.target.value)}
+                    className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  />
+                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Tgl Final Approval */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Tgl Final Approval
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={formData.tglFinalApproval || ''}
+                    onChange={(e) => handleInputChange('tglFinalApproval', e.target.value)}
+                    className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  />
+                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                </div>
               </div>
 
               {/* Upload File (Report/Attachment) */}

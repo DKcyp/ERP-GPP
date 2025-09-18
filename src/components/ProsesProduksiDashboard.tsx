@@ -27,6 +27,7 @@ interface ProsesProduksiData {
   statusReport: "Approved" | "Pending" | "Revisi";
   tanggalApprovalTeknisi?: string;
   tanggalApprovalBAST?: string;
+  tanggalFinalApproval?: string;
   fileUrl?: string;
   fileName?: string;
 }
@@ -156,8 +157,27 @@ const ProsesProduksiDashboard: React.FC = () => {
         : "-",
       nilaiProduksi: formData.nilaiProduksi,
       statusReport: formData.statusReport,
-      approvalTeknisi: 'Pending' as const,
-      approvalBAST: 'Pending' as const,
+      tanggalApprovalTeknisi: formData.tglApprovalReport
+        ? new Date(formData.tglApprovalReport).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "-",
+      tanggalApprovalBAST: formData.tglApprovalBAST
+        ? new Date(formData.tglApprovalBAST).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "-",
+      tanggalFinalApproval: formData.tglFinalApproval
+        ? new Date(formData.tglFinalApproval).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : undefined,
       fileUrl: formData.fileUrl,
       fileName: formData.fileName,
     };
