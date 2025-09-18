@@ -473,6 +473,12 @@ export const gaMenu: MenuSection[] = [
     directPath: "/ga/aset/master",
   },
   {
+    title: "BA Serah Terima Asset",
+    icon: "FileSignature",
+    items: [],
+    directPath: "/ga/ba-serah-terima-asset",
+  },
+  {
     title: "Monitoring Pajak GA",
     icon: "Car",
     subSections: [
