@@ -31,6 +31,8 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
   const [editingItem, setEditingItem] = useState<AlatUkurItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<AlatUkurItem | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [formData, setFormData] = useState<Partial<AlatUkurItem>>({});
 
   // Sample data with calculated expiry days
   const [alatUkurData, setAlatUkurData] = useState<AlatUkurItem[]>([
@@ -173,167 +175,213 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
     }
   };
 
+  // CRUD Functions
+  const openAddModal = () => {
+    setFormData({
+      namaAlat: '',
+      spec: '',
+      merkAlat: '',
+      tipeAlat: '',
+      snAlat: '',
+      noSeriAlat: '',
+      tahunPembelian: new Date().getFullYear(),
+      posisiAlat: 'Office',
+      statusAlat: 'QC Passed',
+      tanggalKalibrasi: '',
+      tanggalExpiredKalibrasi: '',
+      vendorKalibrasi: '',
+      statusProses: 'Pengajuan'
+    });
+    setModalMode('add');
+    setShowAddModal(true);
+  };
+
+  const openEditModal = (item: AlatUkurItem) => {
+    setFormData(item);
+    setEditingItem(item);
+    setModalMode('edit');
+    setShowAddModal(true);
+  };
+
+  const openViewModal = (item: AlatUkurItem) => {
+    setFormData(item);
+    setEditingItem(item);
+    setModalMode('view');
+    setShowAddModal(true);
+  };
+
+  const handleInputChange = (field: keyof AlatUkurItem, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    if (modalMode === 'add') {
+      const newId = (Math.max(...alatUkurData.map(item => parseInt(item.id))) + 1).toString();
+      const newItem: AlatUkurItem = {
+        ...formData as AlatUkurItem,
+        id: newId
+      };
+      
+      // Calculate expiry days
+      if (newItem.tanggalExpiredKalibrasi) {
+        const today = new Date();
+        const expiryDate = new Date(newItem.tanggalExpiredKalibrasi);
+        const diffTime = expiryDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        newItem.daysUntilExpiry = diffDays;
+        newItem.isExpiringSoon = diffDays <= 60;
+      }
+      
+      setAlatUkurData(prev => [...prev, newItem]);
+    } else if (modalMode === 'edit' && editingItem) {
+      const updatedItem = { ...formData as AlatUkurItem, id: editingItem.id };
+      
+      // Calculate expiry days
+      if (updatedItem.tanggalExpiredKalibrasi) {
+        const today = new Date();
+        const expiryDate = new Date(updatedItem.tanggalExpiredKalibrasi);
+        const diffTime = expiryDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        updatedItem.daysUntilExpiry = diffDays;
+        updatedItem.isExpiringSoon = diffDays <= 60;
+      }
+      
+      setAlatUkurData(prev => prev.map(item => item.id === editingItem.id ? updatedItem : item));
+    }
+    
+    setShowAddModal(false);
+    setEditingItem(null);
+  };
+
+  const closeModal = () => {
+    setShowAddModal(false);
+    setEditingItem(null);
+    setFormData({});
+  };
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Settings className="h-8 w-8 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Daftar Alat Ukur</h1>
-        </div>
-        <p className="text-gray-600">Monitoring dan manajemen alat ukur perusahaan, status QC, dan kalibrasi</p>
-      </div>
-
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100 mb-6">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Alat</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalAlat}</p>
+              <div className="flex items-center gap-3 mb-2">
+                <Settings className="h-8 w-8 text-blue-600" />
+                <h1 className="text-4xl font-bold text-gray-900 tracking-wide">
+                  MONITORING DAFTAR ALAT UKUR
+                </h1>
+              </div>
+              <nav className="text-sm text-gray-600">
+                <span>Dashboard</span> <span className="mx-2">›</span>
+                <span>QHSE</span> <span className="mx-2">›</span>
+                <span className="text-blue-600 font-medium">Monitoring Daftar Alat Ukur</span>
+              </nav>
             </div>
-            <Settings className="h-8 w-8 text-blue-500" />
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">QC Passed</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.qcPassed}</p>
+            <div className="flex items-center space-x-3 text-sm text-gray-500">
+              <Calendar className="h-4 w-4" />
+              <span>{new Date().toLocaleDateString('id-ID')}</span>
             </div>
-            <CheckCircle className="h-8 w-8 text-green-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Quarantine</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.quarantine}</p>
-            </div>
-            <Clock className="h-8 w-8 text-yellow-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">QC Failed</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.qcFailed}</p>
-            </div>
-            <XCircle className="h-8 w-8 text-red-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Expiring Soon</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.expiringSoon}</p>
-            </div>
-            <AlertTriangle className="h-8 w-8 text-orange-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Need Calibration</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.needsCalibration}</p>
-            </div>
-            <Bell className="h-8 w-8 text-purple-500" />
           </div>
         </div>
       </div>
 
-      {/* Search and Actions */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Cari nama alat, spec, merk, tipe..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2">
+      {/* Controls */}
+      <div className="bg-white rounded-lg shadow-sm mb-6">
+        <div className="p-4">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Cari nama alat, spec, merk..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
+                />
+              </div>
+
+              {/* Filter Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Filter className="h-4 w-4" />
                 Filter
               </button>
+            </div>
+
+            <div className="flex gap-2">
+              {/* Export Buttons */}
+              <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <Download className="h-4 w-4" />
+                Excel
+              </button>
+              
+              {/* Add Button */}
               <button
-                onClick={() => setShowAddModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                onClick={openAddModal}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <PlusCircle className="h-4 w-4" />
-                Tambah Alat
-              </button>
-              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                <Download className="h-4 w-4" />
-                Export
+                Add Equipment
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Filters */}
-        {showFilters && (
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status Alat</label>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Semua Status</option>
-                  <option value="QC Passed">QC Passed</option>
-                  <option value="Quarantine">Quarantine</option>
-                  <option value="QC Failed">QC Failed</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Posisi Alat</label>
-                <select
-                  value={filterPosisi}
-                  onChange={(e) => setFilterPosisi(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Semua Posisi</option>
-                  <option value="Office">Office</option>
-                  <option value="Project">Project</option>
-                  <option value="Medco Corridor">Medco Corridor</option>
-                  <option value="Medco SSB">Medco SSB</option>
-                  <option value="PHE ONWJ">PHE ONWJ</option>
-                  <option value="Kalibrasi">Kalibrasi</option>
-                  <option value="Lainnya">Lainnya</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
-                <select
-                  value={filterProses}
-                  onChange={(e) => setFilterProses(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Semua Proses</option>
-                  <option value="Pengajuan">Pengajuan</option>
-                  <option value="Proses">Proses</option>
-                  <option value="Selesai">Selesai</option>
-                </select>
+          {/* Filters */}
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status QC</label>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Semua Status</option>
+                    <option value="QC Passed">QC Passed</option>
+                    <option value="Quarantine">Quarantine</option>
+                    <option value="QC Failed">QC Failed</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Posisi Alat</label>
+                  <select
+                    value={filterPosisi}
+                    onChange={(e) => setFilterPosisi(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Semua Posisi</option>
+                    <option value="Office">Office</option>
+                    <option value="Project">Project</option>
+                    <option value="Medco Corridor">Medco Corridor</option>
+                    <option value="Medco SSB">Medco SSB</option>
+                    <option value="PHE ONWJ">PHE ONWJ</option>
+                    <option value="Kalibrasi">Kalibrasi</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
+                  <select
+                    value={filterProses}
+                    onChange={(e) => setFilterProses(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Semua Proses</option>
+                    <option value="Pengajuan">Pengajuan</option>
+                    <option value="Proses">Proses</option>
+                    <option value="Selesai">Selesai</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Data Table */}
         <div className="p-4">
@@ -392,17 +440,24 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => setEditingItem(item)}
+                          onClick={() => openViewModal(item)}
                           className="text-blue-600 hover:text-blue-900"
+                          title="View"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => openEditModal(item)}
+                          className="text-green-600 hover:text-green-900"
                           title="Edit"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
-                          className="text-green-600 hover:text-green-900"
-                          title="View Certificate"
+                          className="text-orange-600 hover:text-orange-900"
+                          title="Upload Certificate"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Upload className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setDeleteItem(item)}
@@ -433,6 +488,214 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
           title="Hapus Alat Ukur"
           message={`Apakah Anda yakin ingin menghapus alat ukur "${deleteItem.namaAlat}"?`}
         />
+      )}
+
+      {/* Modal Form */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {modalMode === 'add' ? 'Add New Equipment' : modalMode === 'edit' ? 'Edit Equipment' : 'View Equipment'}
+              </h3>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Basic Information */}
+              <div>
+                <h4 className="text-md font-medium text-gray-900 mb-4">Basic Information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Alat</label>
+                    <input
+                      type="text"
+                      value={formData.namaAlat || ''}
+                      onChange={(e) => handleInputChange('namaAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="Digital Multimeter"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Specification</label>
+                    <input
+                      type="text"
+                      value={formData.spec || ''}
+                      onChange={(e) => handleInputChange('spec', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="AC/DC Voltage 1000V"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Merk Alat</label>
+                    <input
+                      type="text"
+                      value={formData.merkAlat || ''}
+                      onChange={(e) => handleInputChange('merkAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="Fluke"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tipe Alat</label>
+                    <input
+                      type="text"
+                      value={formData.tipeAlat || ''}
+                      onChange={(e) => handleInputChange('tipeAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="87V"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">SN Alat</label>
+                    <input
+                      type="text"
+                      value={formData.snAlat || ''}
+                      onChange={(e) => handleInputChange('snAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="FLK-001"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">No Seri Alat</label>
+                    <input
+                      type="text"
+                      value={formData.noSeriAlat || ''}
+                      onChange={(e) => handleInputChange('noSeriAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="2024001"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tahun Pembelian</label>
+                    <input
+                      type="number"
+                      value={formData.tahunPembelian || ''}
+                      onChange={(e) => handleInputChange('tahunPembelian', parseInt(e.target.value))}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="2024"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Posisi Alat</label>
+                    <select
+                      value={formData.posisiAlat || 'Office'}
+                      onChange={(e) => handleInputChange('posisiAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    >
+                      <option value="Office">Office</option>
+                      <option value="Project">Project</option>
+                      <option value="Medco Corridor">Medco Corridor</option>
+                      <option value="Medco SSB">Medco SSB</option>
+                      <option value="PHE ONWJ">PHE ONWJ</option>
+                      <option value="Kalibrasi">Kalibrasi</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status & Calibration */}
+              <div>
+                <h4 className="text-md font-medium text-gray-900 mb-4">Status & Calibration</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status QC</label>
+                    <select
+                      value={formData.statusAlat || 'QC Passed'}
+                      onChange={(e) => handleInputChange('statusAlat', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    >
+                      <option value="QC Passed">QC Passed</option>
+                      <option value="Quarantine">Quarantine</option>
+                      <option value="QC Failed">QC Failed</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
+                    <select
+                      value={formData.statusProses || 'Pengajuan'}
+                      onChange={(e) => handleInputChange('statusProses', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    >
+                      <option value="Pengajuan">Pengajuan</option>
+                      <option value="Proses">Proses</option>
+                      <option value="Selesai">Selesai</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Kalibrasi</label>
+                    <input
+                      type="date"
+                      value={formData.tanggalKalibrasi || ''}
+                      onChange={(e) => handleInputChange('tanggalKalibrasi', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Expired Kalibrasi</label>
+                    <input
+                      type="date"
+                      value={formData.tanggalExpiredKalibrasi || ''}
+                      onChange={(e) => handleInputChange('tanggalExpiredKalibrasi', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Vendor Kalibrasi</label>
+                    <input
+                      type="text"
+                      value={formData.vendorKalibrasi || ''}
+                      onChange={(e) => handleInputChange('vendorKalibrasi', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="PT Kalibrasi Indonesia"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                {modalMode === 'view' ? 'Close' : 'Cancel'}
+              </button>
+              {modalMode !== 'view' && (
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {modalMode === 'add' ? 'Add Equipment' : 'Update Equipment'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

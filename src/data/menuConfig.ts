@@ -1744,6 +1744,12 @@ export const qhseMenu: MenuSection[] = [
         icon: "GraduationCap",
         path: "/qhse/kompetensi-personil",
       },
+      // Report
+      {
+        title: "Monitoring Personnel Report",
+        icon: "Computer",
+        path: "/qhse/monitoring-personnel-report",
+      },
       {
         title: "Matrix Training",
         icon: "BookOpen",
@@ -1752,16 +1758,20 @@ export const qhseMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Daftar Induk Dokumen Internal",
+    title: "Daftar Induk Dokumen",
     icon: "FileText",
-    items: [],
-    directPath: "/qhse/daftar-induk-dokumen-internal",
-  },
-  {
-    title: "Daftar Induk Dokumen Eksternal",
-    icon: "FileCheck",
-    items: [],
-    directPath: "/qhse/daftar-induk-dokumen-eksternal",
+    items: [
+      {
+        title: "Internal",
+        icon: "FileText",
+        path: "/qhse/daftar-induk-dokumen-internal",
+      },
+      {
+        title: "Eksternal",
+        icon: "FileCheck",
+        path: "/qhse/daftar-induk-dokumen-eksternal",
+      },
+    ],
   },
   createGeneralMenu("qhse"),
 ];
