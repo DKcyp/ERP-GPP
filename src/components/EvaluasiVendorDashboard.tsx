@@ -132,6 +132,12 @@ const EvaluasiVendorDashboard: React.FC = () => {
         {/* Action Buttons */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-2">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              <Plus size={16} className="mr-2" /> Tambah
+            </button>
             <button className="flex items-center px-3 py-1.5 bg-green-500 text-white rounded-md hover:bg-green-600">
               <FileSpreadsheet size={16} className="mr-2" /> Export Excel
             </button>
