@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Clock, ReceiptText, BarChart2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface PIEntry {
   id: string;
@@ -17,6 +18,7 @@ const formatRupiah = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
 
 const ProconInvoiceDashboard: React.FC = () => {
   const [data, setData] = useState<PIEntry[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -115,6 +117,10 @@ const ProconInvoiceDashboard: React.FC = () => {
     return init.map((it) => ({ label: monthNames[it.month], amount: it.amount }));
   }, [data, currentYear]);
 
+  const handleBarClick = () => {
+    navigate('/procon/proforma-invoice/pembuatan');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header */}
@@ -159,9 +165,10 @@ const ProconInvoiceDashboard: React.FC = () => {
             {monthlyTotals.map((m) => (
               <div key={m.label} className="flex flex-col items-center space-y-1">
                 <div
-                  className="w-8 md:w-10 bg-blue-500/80 hover:bg-blue-600 rounded-t-lg transition-all duration-300"
+                  className="w-8 md:w-10 bg-blue-500/80 hover:bg-blue-600 rounded-t-lg transition-all duration-300 cursor-pointer"
                   style={{ height: `${(m.amount / 1_000_000) * 0.6}px` }}
                   title={`${m.label}: ${formatRupiah(m.amount)}`}
+                  onClick={handleBarClick}
                 />
                 <span className="text-[10px] md:text-xs text-gray-600">{m.label}</span>
                 <span className="text-[10px] md:text-xs text-gray-400">{(m.amount/1_000_000).toFixed(0)} jt</span>
