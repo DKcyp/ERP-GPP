@@ -1,16 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import SalesOrderModal, { SalesOrderFormData } from './SalesOrderModal';
-import SalesOrderDetailModal, { SalesOrderDetailData } from './SalesOrderDetailModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useEffect, useState } from 'react';
 import {
   Search,
-  Plus,
   FileSpreadsheet,
   FileText,
-  Edit,
-  Trash2,
-  Truck,
-  Eye,
   ChevronDown,
   Calendar,
   Clock,
@@ -20,30 +12,49 @@ import {
   ChevronsRight
 } from 'lucide-react';
 
-interface SalesOrder {
+interface ProconSalesOrder {
   id: string;
   no: number;
-  noSO: string;
-  nomorKontrak: string;
-  namaClient: string;
-  namaProyek: string;
-  sow: string;
-  lokasi: string;
-  jenisPekerjaan: 'On Call' | 'Tender';
-  tanggalMOB: string;
-  tanggalDeMOB: string;
-  tanggalDibuat: string;
-  estimasiSO: string;
-  // Optional tab data captured at create/edit time
-  tenagaKerja?: Array<Record<string, string>>;
-  jasa?: Array<Record<string, string>>;
-  alat?: Array<Record<string, string>>;
-  barang?: Array<Record<string, string>>;
-  mobDemob?: Array<Record<string, string>>;
-  biayaLainLain?: Array<Record<string, string>>;
+  date: string;
+  soNo: string;
+  client: string;
+  equipmentScopeLocation: string;
+  equipmentReceived: string;
+  scopeOfWork: string;
+  manPower: string;
+  location: string;
+  periodByHour: string;
+  duration: string;
+  periodByReportTo: string;
+  reported: string;
+  dueDate: string;
+  delaySubmitReport: string;
+  reportReceived: string;
+  dueDateFinance: string;
+  delaySubmitToFinance: string;
+  piAmount: string;
+  keterangan: string;
+  piNo: string;
+  remarkProjectControl: string;
+  invoiceNo: string;
+  invoiceAmount: string;
+  invoiceAmountPpn: string;
+  dueDatePayment: string;
+  paidDate: string;
+  delayPayment: string;
+  remarkFinance: string;
+  status: string;
+  lir: string;
+  yearSheet: string;
+  statusPekerjaan: string;
+  statusAR: string;
+  statusAP: string;
+  remark: string;
+  logDataPak: string;
+  logMekanik: string;
 }
 
-const SalesOrderDashboard: React.FC = () => {
+const ProconSalesOrderDashboard: React.FC = () => {
   const [searchNoSO, setSearchNoSO] = useState('');
   const [searchNomorKontrak, setSearchNomorKontrak] = useState('');
   const [searchClient, setSearchClient] = useState('');
@@ -52,169 +63,309 @@ const SalesOrderDashboard: React.FC = () => {
   const [dateTo, setDateTo] = useState('');
   const [jenisPekerjaanDropdownOpen, setJenisPekerjaanDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [selectedDetail, setSelectedDetail] = useState<SalesOrderDetailData | null>(null);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<SalesOrder | null>(null);
   const [goToPageInput, setGoToPageInput] = useState<string>('');
 
-  // Sample data matching the image
-  const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([
+  // Sample data matching the Excel structure
+  const [salesOrders] = useState<ProconSalesOrder[]>([
+    // Red rows - Critical/Overdue status
     {
       id: '1',
       no: 1,
-      noSO: 'SO001',
-      nomorKontrak: '001/02/P0810',
-      namaClient: 'Client A',
-      namaProyek: 'Project Alpha',
-      sow: 'Maintenance Server',
-      lokasi: 'Jakarta',
-      jenisPekerjaan: 'On Call',
-      tanggalMOB: '01-01-2025',
-      tanggalDeMOB: '31-01-2025',
-      tanggalDibuat: '01-01-2025',
-      estimasiSO: 'Rp 20.000.000',
-      tenagaKerja: [
-        { tenaga: 'Teknisi', tunjangan: 'Uang Makan', projectRate: '250000', hari: '5', margin: '10', hargaAkhir: '1375000' },
-      ],
-      jasa: [
-        { jasa: 'Maintenance', tunjangan: 'Transport', projectRate: '500000', hari: '2', margin: '15', hargaAkhir: '1150000' },
-      ],
-      alat: [
-        { alat: 'Forklift', jumlah: '1', hari: '2', satuan: 'unit', hargaSatuan: '1500000', margin: '5', hargaAkhir: '1575000' },
-      ],
-      barang: [
-        { namaBarang: 'Kabel NYA', jumlah: '100', hari: '1', satuan: 'meter', hargaSatuan: '5000', margin: '10', hargaAkhir: '550000' },
-      ],
+      date: '01-Jan-25',
+      soNo: 'SO-2025-001',
+      client: 'PT PERTAMINA HULU ENERGI ONWJ',
+      equipmentScopeLocation: 'ONSHORE',
+      equipmentReceived: 'COMPLETE',
+      scopeOfWork: 'STAT',
+      manPower: '4',
+      location: 'KARAWANG',
+      periodByHour: '8',
+      duration: '1 DAY',
+      periodByReportTo: '01-Jan-25',
+      reported: 'YES',
+      dueDate: '02-Jan-25',
+      delaySubmitReport: '15',
+      reportReceived: '17-Jan-25',
+      dueDateFinance: '03-Jan-25',
+      delaySubmitToFinance: '14',
+      piAmount: '15,000,000',
+      keterangan: 'OVERDUE',
+      piNo: 'PI-2025-001',
+      remarkProjectControl: 'CRITICAL DELAY',
+      invoiceNo: 'INV-2025-001',
+      invoiceAmount: '15,000,000',
+      invoiceAmountPpn: '16,650,000',
+      dueDatePayment: '31-Jan-25',
+      paidDate: '',
+      delayPayment: '25',
+      remarkFinance: 'OVERDUE PAYMENT',
+      status: 'OVERDUE',
+      lir: 'NO',
+      yearSheet: '2025',
+      statusPekerjaan: 'OVERDUE',
+      statusAR: 'OVERDUE',
+      statusAP: 'OVERDUE',
+      remark: 'CRITICAL - IMMEDIATE ACTION REQUIRED',
+      logDataPak: 'DELAYED',
+      logMekanik: 'DELAYED'
     },
     {
       id: '2',
       no: 2,
-      noSO: 'SO032',
-      nomorKontrak: '001/03/P0811',
-      namaClient: 'Client B',
-      namaProyek: 'Project Beta',
-      sow: 'Software Development',
-      lokasi: 'Bandung',
-      jenisPekerjaan: 'Tender',
-      tanggalMOB: '03-01-2025',
-      tanggalDeMOB: '28-02-2025',
-      tanggalDibuat: '03-01-2025',
-      estimasiSO: 'Rp 15.500.000',
-      jasa: [
-        { jasa: 'Instalasi', tunjangan: 'Uang Makan', projectRate: '750000', hari: '3', margin: '12', hargaAkhir: '2520000' },
-      ],
+      date: '05-Jan-25',
+      soNo: 'SO-2025-002',
+      client: 'MEDCO E&P ONSHORE NORTH JAVA',
+      equipmentScopeLocation: 'ONSHORE',
+      equipmentReceived: 'PARTIAL',
+      scopeOfWork: 'NDT INSPECTION',
+      manPower: '6',
+      location: 'TUBAN',
+      periodByHour: '16',
+      duration: '2 DAYS',
+      periodByReportTo: '07-Jan-25',
+      reported: 'NO',
+      dueDate: '08-Jan-25',
+      delaySubmitReport: '12',
+      reportReceived: '',
+      dueDateFinance: '09-Jan-25',
+      delaySubmitToFinance: '11',
+      piAmount: '25,000,000',
+      keterangan: 'CRITICAL',
+      piNo: 'PI-2025-002',
+      remarkProjectControl: 'EQUIPMENT MISSING',
+      invoiceNo: '',
+      invoiceAmount: '',
+      invoiceAmountPpn: '',
+      dueDatePayment: '',
+      paidDate: '',
+      delayPayment: '0',
+      remarkFinance: 'NOT INVOICED',
+      status: 'CRITICAL',
+      lir: 'NO',
+      yearSheet: '2025',
+      statusPekerjaan: 'CRITICAL',
+      statusAR: 'NOT STARTED',
+      statusAP: 'NOT STARTED',
+      remark: 'URGENT - EQUIPMENT REQUIRED',
+      logDataPak: 'PENDING',
+      logMekanik: 'PENDING'
     },
+    // White/Light rows - Normal/Completed status
     {
       id: '3',
       no: 3,
-      noSO: 'SO023',
-      nomorKontrak: '001/04/P0810',
-      namaClient: 'Client C',
-      namaProyek: 'Project Gamma',
-      sow: 'Network Installation',
-      lokasi: 'Surabaya',
-      jenisPekerjaan: 'On Call',
-      tanggalMOB: '05-01-2025',
-      tanggalDeMOB: '30-03-2025',
-      tanggalDibuat: '05-01-2025',
-      estimasiSO: 'Rp 30.000.000',
-      alat: [
-        { alat: 'Crane', jumlah: '1', hari: '1', satuan: 'unit', hargaSatuan: '4000000', margin: '8', hargaAkhir: '4320000' },
-      ],
+      date: '10-Jan-25',
+      soNo: 'SO-2025-003',
+      client: 'MEDCO E&P ONSHORE NORTH JAVA',
+      equipmentScopeLocation: 'OFFSHORE',
+      equipmentReceived: 'COMPLETE',
+      scopeOfWork: 'ULTRASONIC INSPECTION',
+      manPower: '8',
+      location: 'OFFSHORE PLATFORM',
+      periodByHour: '24',
+      duration: '3 DAYS',
+      periodByReportTo: '13-Jan-25',
+      reported: 'YES',
+      dueDate: '14-Jan-25',
+      delaySubmitReport: '0',
+      reportReceived: '14-Jan-25',
+      dueDateFinance: '15-Jan-25',
+      delaySubmitToFinance: '0',
+      piAmount: '45,000,000',
+      keterangan: 'COMPLETED',
+      piNo: 'PI-2025-003',
+      remarkProjectControl: 'ON SCHEDULE',
+      invoiceNo: 'INV-2025-003',
+      invoiceAmount: '45,000,000',
+      invoiceAmountPpn: '49,950,000',
+      dueDatePayment: '28-Feb-25',
+      paidDate: '25-Feb-25',
+      delayPayment: '0',
+      remarkFinance: 'PAID ON TIME',
+      status: 'COMPLETED',
+      lir: 'YES',
+      yearSheet: '2025',
+      statusPekerjaan: 'SELESAI',
+      statusAR: 'LUNAS',
+      statusAP: 'PAID',
+      remark: 'EXCELLENT PERFORMANCE',
+      logDataPak: 'COMPLETE',
+      logMekanik: 'COMPLETE'
     },
     {
       id: '4',
       no: 4,
-      noSO: 'SO012',
-      nomorKontrak: '002/02/P0819',
-      namaClient: 'Client D',
-      namaProyek: 'Project Delta',
-      sow: 'Data Center Setup',
-      lokasi: 'Yogyakarta',
-      jenisPekerjaan: 'Tender',
-      tanggalMOB: '07-01-2025',
-      tanggalDeMOB: '30-04-2025',
-      tanggalDibuat: '07-01-2025',
-      estimasiSO: 'Rp 22.800.000',
-      barang: [
-        { namaBarang: 'Panel', jumlah: '3', hari: '1', satuan: 'unit', hargaSatuan: '500000', margin: '5', hargaAkhir: '1575000' },
-      ],
+      date: '12-Jan-25',
+      soNo: 'SO-2025-004',
+      client: 'PT PERTAMINA HULU ENERGI ONWJ',
+      equipmentScopeLocation: 'ONSHORE',
+      equipmentReceived: 'COMPLETE',
+      scopeOfWork: 'RADIOGRAPHIC INSPECTION',
+      manPower: '4',
+      location: 'GRESIK',
+      periodByHour: '12',
+      duration: '1.5 DAYS',
+      periodByReportTo: '14-Jan-25',
+      reported: 'YES',
+      dueDate: '15-Jan-25',
+      delaySubmitReport: '0',
+      reportReceived: '15-Jan-25',
+      dueDateFinance: '16-Jan-25',
+      delaySubmitToFinance: '0',
+      piAmount: '18,000,000',
+      keterangan: 'COMPLETED',
+      piNo: 'PI-2025-004',
+      remarkProjectControl: 'GOOD PERFORMANCE',
+      invoiceNo: 'INV-2025-004',
+      invoiceAmount: '18,000,000',
+      invoiceAmountPpn: '19,980,000',
+      dueDatePayment: '28-Feb-25',
+      paidDate: '20-Feb-25',
+      delayPayment: '0',
+      remarkFinance: 'PAID',
+      status: 'COMPLETED',
+      lir: 'YES',
+      yearSheet: '2025',
+      statusPekerjaan: 'SELESAI',
+      statusAR: 'LUNAS',
+      statusAP: 'PAID',
+      remark: 'GOOD QUALITY WORK',
+      logDataPak: 'COMPLETE',
+      logMekanik: 'COMPLETE'
+    },
+    // Pink/Salmon rows - Warning/Attention status
+    {
+      id: '5',
+      no: 5,
+      date: '15-Jan-25',
+      soNo: 'SO-2025-005',
+      client: 'ENI MUARA BAKAU B.V.',
+      equipmentScopeLocation: 'OFFSHORE',
+      equipmentReceived: 'COMPLETE',
+      scopeOfWork: 'STAT',
+      manPower: '6',
+      location: 'MUARA BAKAU',
+      periodByHour: '48',
+      duration: '6 DAYS',
+      periodByReportTo: '21-Jan-25',
+      reported: 'YES',
+      dueDate: '22-Jan-25',
+      delaySubmitReport: '3',
+      reportReceived: '25-Jan-25',
+      dueDateFinance: '23-Jan-25',
+      delaySubmitToFinance: '2',
+      piAmount: '75,000,000',
+      keterangan: 'MINOR DELAY',
+      piNo: 'PI-2025-005',
+      remarkProjectControl: 'SLIGHT DELAY',
+      invoiceNo: 'INV-2025-005',
+      invoiceAmount: '75,000,000',
+      invoiceAmountPpn: '83,250,000',
+      dueDatePayment: '31-Mar-25',
+      paidDate: '',
+      delayPayment: '5',
+      remarkFinance: 'PAYMENT PENDING',
+      status: 'WARNING',
+      lir: 'PARTIAL',
+      yearSheet: '2025',
+      statusPekerjaan: 'WARNING',
+      statusAR: 'OUTSTANDING',
+      statusAP: 'PENDING',
+      remark: 'MINOR DELAYS - MONITORING REQUIRED',
+      logDataPak: 'PARTIAL',
+      logMekanik: 'PARTIAL'
+    },
+    // Blue rows - In Progress status
+    {
+      id: '6',
+      no: 6,
+      date: '18-Jan-25',
+      soNo: 'SO-2025-006',
+      client: 'MEDCO E&P ONSHORE NORTH JAVA',
+      equipmentScopeLocation: 'ONSHORE',
+      equipmentReceived: 'COMPLETE',
+      scopeOfWork: 'MAGNETIC PARTICLE INSPECTION',
+      manPower: '5',
+      location: 'SURABAYA',
+      periodByHour: '20',
+      duration: '2.5 DAYS',
+      periodByReportTo: '21-Jan-25',
+      reported: 'PARTIAL',
+      dueDate: '22-Jan-25',
+      delaySubmitReport: '0',
+      reportReceived: '',
+      dueDateFinance: '23-Jan-25',
+      delaySubmitToFinance: '0',
+      piAmount: '32,000,000',
+      keterangan: 'IN PROGRESS',
+      piNo: 'PI-2025-006',
+      remarkProjectControl: 'ON TRACK',
+      invoiceNo: '',
+      invoiceAmount: '',
+      invoiceAmountPpn: '',
+      dueDatePayment: '',
+      paidDate: '',
+      delayPayment: '0',
+      remarkFinance: 'AWAITING COMPLETION',
+      status: 'IN PROGRESS',
+      lir: 'PARTIAL',
+      yearSheet: '2025',
+      statusPekerjaan: 'PROGRESS',
+      statusAR: 'NOT STARTED',
+      statusAP: 'NOT STARTED',
+      remark: 'WORK IN PROGRESS - ON SCHEDULE',
+      logDataPak: 'PROGRESS',
+      logMekanik: 'PROGRESS'
+    },
+    // Green rows - Good/Excellent status
+    {
+      id: '7',
+      no: 7,
+      date: '20-Jan-25',
+      soNo: 'SO-2025-007',
+      client: 'PT PERTAMINA HULU ENERGI ONWJ',
+      equipmentScopeLocation: 'OFFSHORE',
+      equipmentReceived: 'COMPLETE',
+      scopeOfWork: 'COMPREHENSIVE INSPECTION',
+      manPower: '10',
+      location: 'OFFSHORE RIG',
+      periodByHour: '72',
+      duration: '9 DAYS',
+      periodByReportTo: '29-Jan-25',
+      reported: 'YES',
+      dueDate: '30-Jan-25',
+      delaySubmitReport: '-2',
+      reportReceived: '28-Jan-25',
+      dueDateFinance: '31-Jan-25',
+      delaySubmitToFinance: '-3',
+      piAmount: '95,000,000',
+      keterangan: 'EXCELLENT',
+      piNo: 'PI-2025-007',
+      remarkProjectControl: 'AHEAD OF SCHEDULE',
+      invoiceNo: 'INV-2025-007',
+      invoiceAmount: '95,000,000',
+      invoiceAmountPpn: '105,450,000',
+      dueDatePayment: '31-Mar-25',
+      paidDate: '25-Mar-25',
+      delayPayment: '-6',
+      remarkFinance: 'EARLY PAYMENT',
+      status: 'EXCELLENT',
+      lir: 'YES',
+      yearSheet: '2025',
+      statusPekerjaan: 'EXCELLENT',
+      statusAR: 'LUNAS',
+      statusAP: 'PAID',
+      remark: 'OUTSTANDING PERFORMANCE - AHEAD OF SCHEDULE',
+      logDataPak: 'EXCELLENT',
+      logMekanik: 'EXCELLENT'
     }
   ]);
 
   useEffect(() => {
-    // Trigger animation on component mount
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
-
-  const handleAddSalesOrder = (formData: SalesOrderFormData) => {
-    const newSalesOrder: SalesOrder = {
-      id: (salesOrders.length + 1).toString(),
-      no: salesOrders.length + 1,
-      noSO: `SO${String(Date.now()).slice(-6)}`,
-      nomorKontrak: formData.nomorKontrak,
-      namaClient: formData.namaClient,
-      namaProyek: formData.namaProyek,
-      sow: formData.sow,
-      lokasi: formData.lokasi,
-      jenisPekerjaan: formData.jenisPekerjaan,
-      tanggalMOB: formData.tanggalMOB,
-      tanggalDeMOB: formData.tanggalDeMOB,
-      tanggalDibuat: new Date(formData.tanggalDibuat).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
-      estimasiSO: formData.estimasiSO,
-      tenagaKerja: formData.tenagaKerja,
-      jasa: formData.jasa,
-      alat: formData.alat,
-      barang: formData.barang,
-      mobDemob: formData.mobDemob,
-      biayaLainLain: formData.biayaLainLain,
-    };
-    setSalesOrders(prev => [newSalesOrder, ...prev.map(s => ({ ...s, no: s.no + 1 }))]);
-  };
-
-  const handleViewDetail = (item: SalesOrder) => {
-    const detail: SalesOrderDetailData = {
-      noSO: item.noSO,
-      nomorKontrak: item.nomorKontrak,
-      namaClient: item.namaClient,
-      namaProyek: item.namaProyek,
-      sow: item.sow,
-      lokasi: item.lokasi,
-      jenisPekerjaan: item.jenisPekerjaan,
-      tanggalMOB: item.tanggalMOB,
-      tanggalDeMOB: item.tanggalDeMOB,
-      tanggalDibuat: item.tanggalDibuat,
-      estimasiSO: item.estimasiSO,
-      tenagaKerja: item.tenagaKerja,
-      jasa: item.jasa,
-      alat: item.alat,
-      barang: item.barang,
-      mobDemob: item.mobDemob,
-      biayaLainLain: item.biayaLainLain,
-    };
-    setSelectedDetail(detail);
-    setIsDetailOpen(true);
-  };
-
-  const handleDeleteClick = (salesOrder: SalesOrder) => {
-    setItemToDelete(salesOrder);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      setSalesOrders(prev => prev.filter(s => s.id !== itemToDelete.id));
-      setItemToDelete(null);
-    }
-  };
 
   const getJenisPekerjaanColor = (jenis: string) => {
     switch (jenis) {
@@ -226,15 +377,15 @@ const SalesOrderDashboard: React.FC = () => {
 
   const jenisPekerjaanOptions = ['On Call', 'Tender'];
 
-  // Filter data based on search criteria
+  // Filtered data
   const filteredData = salesOrders.filter(item => {
-    const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
-    const matchesNomorKontrak = item.nomorKontrak.toLowerCase().includes(searchNomorKontrak.toLowerCase());
-    const matchesClient = item.namaClient.toLowerCase().includes(searchClient.toLowerCase());
-    const matchesJenisPekerjaan = selectedJenisPekerjaan ? item.jenisPekerjaan === selectedJenisPekerjaan : true;
-    
-    // Date filtering logic (if dates are provided)
-    const itemDate = new Date(item.tanggalDibuat.split('-').reverse().join('-')); // Assuming dd-mm-yyyy format
+    const matchesNoSO = item.soNo.toLowerCase().includes(searchNoSO.toLowerCase());
+    const matchesNomorKontrak = item.piNo.toLowerCase().includes(searchNomorKontrak.toLowerCase());
+    const matchesClient = item.client.toLowerCase().includes(searchClient.toLowerCase());
+    const matchesJenisPekerjaan = selectedJenisPekerjaan ? item.statusPekerjaan === selectedJenisPekerjaan : true;
+
+    // Date filtering
+    const itemDate = new Date(item.date.split('-').reverse().join('-'));
     const fromDate = dateFrom ? new Date(dateFrom) : null;
     const toDate = dateTo ? new Date(dateTo) : null;
 
@@ -243,7 +394,7 @@ const SalesOrderDashboard: React.FC = () => {
     return matchesNoSO && matchesNomorKontrak && matchesClient && matchesJenisPekerjaan && matchesDate;
   });
 
-  // Pagination logic
+  // Pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -269,7 +420,54 @@ const SalesOrderDashboard: React.FC = () => {
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
+  };
+
+  // Helper function to get row color based on status
+  const getRowColor = (item: ProconSalesOrder) => {
+    // Red rows - Critical/Overdue status
+    if (item.status === 'OVERDUE' || item.status === 'CRITICAL' || 
+        item.keterangan === 'OVERDUE' || item.keterangan === 'CRITICAL') {
+      return 'bg-red-100 hover:bg-red-200';
+    }
+    // Pink/Salmon rows - Warning/Attention status  
+    if (item.status === 'WARNING' || item.keterangan === 'MINOR DELAY') {
+      return 'bg-pink-100 hover:bg-pink-200';
+    }
+    // Blue rows - In Progress status
+    if (item.status === 'IN PROGRESS' || item.keterangan === 'IN PROGRESS') {
+      return 'bg-blue-100 hover:bg-blue-200';
+    }
+    // Green rows - Excellent/Good status
+    if (item.status === 'EXCELLENT' || item.keterangan === 'EXCELLENT') {
+      return 'bg-green-100 hover:bg-green-200';
+    }
+    // White/Light rows - Normal/Completed status (default)
+    return 'bg-white hover:bg-gray-50';
+  };
+
+  // Helper function to get status badge color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'IN PROGRESS':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'PENDING':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'INVOICED':
+        return 'bg-pink-100 text-pink-800 border-pink-200';
+      case 'OVERDUE':
+        return 'bg-red-200 text-red-800 border-red-300';
+      case 'CRITICAL':
+        return 'bg-red-300 text-red-800 border-red-400';
+      case 'WARNING':
+        return 'bg-pink-200 text-pink-800 border-pink-300';
+      case 'EXCELLENT':
+        return 'bg-green-200 text-green-800 border-green-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
   return (
@@ -283,7 +481,7 @@ const SalesOrderDashboard: React.FC = () => {
                 DAFTAR SALES ORDER
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">Procon</span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-semibold">Sales Order</span>
               </nav>
@@ -297,17 +495,15 @@ const SalesOrderDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
-        {/* Filter & Action Panel */}
+        {/* Filter Panel (same as Marketing) */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {/* Cari No SO */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Cari No SO
-              </label>
+              <label className="block text-xs font-medium text-gray-700">Cari No SO</label>
               <div className="relative">
                 <input
                   type="text"
@@ -322,9 +518,7 @@ const SalesOrderDashboard: React.FC = () => {
 
             {/* Cari Nomor Kontrak */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Cari Nomor Kontrak
-              </label>
+              <label className="block text-xs font-medium text-gray-700">Cari Nomor Kontrak</label>
               <div className="relative">
                 <input
                   type="text"
@@ -339,9 +533,7 @@ const SalesOrderDashboard: React.FC = () => {
 
             {/* Pilih Jenis Pekerjaan Dropdown */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Pilih Jenis Pekerjaan
-              </label>
+              <label className="block text-xs font-medium text-gray-700">Pilih Jenis Pekerjaan</label>
               <div className="relative">
                 <button
                   onClick={() => setJenisPekerjaanDropdownOpen(!jenisPekerjaanDropdownOpen)}
@@ -352,7 +544,7 @@ const SalesOrderDashboard: React.FC = () => {
                   </span>
                   <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisPekerjaanDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-                
+
                 {jenisPekerjaanDropdownOpen && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
                     <button
@@ -373,9 +565,7 @@ const SalesOrderDashboard: React.FC = () => {
                         }}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2 text-xs"
                       >
-                        <span className={`w-3 h-3 rounded-full ${
-                          jenis === 'On Call' ? 'bg-cyan-500' : 'bg-red-500'
-                        }`}></span>
+                        <span className={`w-3 h-3 rounded-full ${jenis === 'On Call' ? 'bg-cyan-500' : 'bg-red-500'}`}></span>
                         <span>{jenis}</span>
                       </button>
                     ))}
@@ -386,9 +576,7 @@ const SalesOrderDashboard: React.FC = () => {
 
             {/* Cari Client */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Cari Client
-              </label>
+              <label className="block text-xs font-medium text-gray-700">Cari Client</label>
               <div className="relative">
                 <input
                   type="text"
@@ -403,9 +591,7 @@ const SalesOrderDashboard: React.FC = () => {
 
             {/* Periode Dari */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Periode Dari
-              </label>
+              <label className="block text-xs font-medium text-gray-700">Periode Dari</label>
               <div className="relative">
                 <input
                   type="date"
@@ -419,9 +605,7 @@ const SalesOrderDashboard: React.FC = () => {
 
             {/* Periode Sampai */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-gray-700">
-                Periode Sampai
-              </label>
+              <label className="block text-xs font-medium text-gray-700">Periode Sampai</label>
               <div className="relative">
                 <input
                   type="date"
@@ -434,7 +618,6 @@ const SalesOrderDashboard: React.FC = () => {
             </div>
 
             {/* Search Button */}
-            {/* Changed lg:col-span-2 to lg:col-span-1 to match input width */}
             <div className="lg:col-span-1 flex items-end">
               <button 
                 onClick={handleSearch}
@@ -445,16 +628,9 @@ const SalesOrderDashboard: React.FC = () => {
               </button>
             </div>
           </div>
-          
-          {/* Action Buttons below filter panel */}
+
+          {/* Note: intentionally removed Add button and actions for Procon (read-only) */}
           <div className="flex justify-end space-x-2 mt-6">
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah Sales Order</span>
-            </button>
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
@@ -466,81 +642,188 @@ const SalesOrderDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Export Bar - REMOVED */}
-
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
+            <table className="min-w-full divide-y divide-gray-200 text-xs">
+              <thead className="bg-yellow-400 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nomor SO</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nomor Kontrak</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Client</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Proyek</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">SOW</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Lokasi</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jenis Pekerjaan</th>
-                  
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal Dibuat</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Estimasi SO</th>
-                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]">NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DATE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">SO NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[200px]">CLIENT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">EQUIPMENT/SCOPE/LOCATION</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">EQUIPMENT RECEIVED</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]">SCOPE OF WORK</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">MAN POWER</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">LOCATION</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">PERIOD BY HOUR</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DURATION</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">PERIOD BY REPORT TO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">REPORTED</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">DUE DATE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DELAY SUBMIT REPORT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">REPORT RECEIVED</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DUE DATE FINANCE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">DELAY SUBMIT TO FINANCE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">PI AMOUNT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">KETERANGAN</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">PI NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]">REMARK PROJECT CONTROL</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">INVOICE NO</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">INVOICE AMOUNT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">INVOICE AMOUNT PPN 11%</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DUE DATE PAYMENT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">PAID DATE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">DELAY PAYMENT</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]">REMARK FINANCE</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">STATUS</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]">LIR</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">YEAR SHEET</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">STATUS PEKERJAAN</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">STATUS AR</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">STATUS AP</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[200px]">REMARK</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">LOG DATA PAK</th>
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">LOG MEKANIK</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
-                    className={`hover:bg-gray-50 transition-all duration-200 ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
-                    }}
+                    className={`${getRowColor(item)} ${
+                      animateRows ? 'animate-pulse' : ''
+                    } transition-colors duration-200`}
                   >
-                    <td className="px-2 py-1">
-                      <span className="font-medium text-gray-900">{item.no}</span>
+                    <td className="px-2 py-3 border border-gray-300 text-center">
+                      <span className="font-bold text-gray-900 text-xs">{item.no}</span>
                     </td>
-                    <td className="px-2 py-1 font-medium text-gray-900">{item.noSO}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.nomorKontrak}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.namaClient}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.namaProyek}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.sow}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.lokasi}</td>
-                    <td className="px-2 py-1">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getJenisPekerjaanColor(item.jenisPekerjaan)}`}>
-                        {item.jenisPekerjaan}
+                    <td className="px-2 py-3 font-medium text-gray-900 text-xs border border-gray-300 text-center whitespace-nowrap">{item.date}</td>
+                    <td className="px-2 py-3 font-bold text-blue-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.soNo}</td>
+                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">{item.client}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item.equipmentScopeLocation === 'OFFSHORE' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                      }`}>
+                        {item.equipmentScopeLocation}
                       </span>
                     </td>
-                    
-                    <td className="px-2 py-1 text-gray-600">{item.tanggalDibuat}</td>
-                    <td className="px-2 py-1 text-gray-600 font-medium">{item.estimasiSO}</td>
-                    <td className="px-2 py-1">
-                      <div className="flex items-center justify-center space-x-1">
-                        <button 
-                          onClick={() => setIsModalOpen(true)}
-                          className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item)}
-                          className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleViewDetail(item)}
-                          className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 hover:scale-110"
-                          title="View Details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                      </div>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item.equipmentReceived === 'COMPLETE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {item.equipmentReceived}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">{item.scopeOfWork}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-bold">{item.manPower}</td>
+                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">{item.location}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-medium">{item.periodByHour}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-medium">{item.duration}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.periodByReportTo}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                        item.reported === 'YES' ? 'bg-green-100 text-green-800' : 
+                        item.reported === 'NO' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {item.reported}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.dueDate}</td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`font-bold ${
+                        parseInt(item.delaySubmitReport) > 0 ? 'text-red-600 bg-red-100 px-2 py-1 rounded-full' : 
+                        parseInt(item.delaySubmitReport) < 0 ? 'text-green-600 bg-green-100 px-2 py-1 rounded-full' : 'text-gray-600'
+                      }`}>
+                        {item.delaySubmitReport}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.reportReceived}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.dueDateFinance}</td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`font-bold ${
+                        parseInt(item.delaySubmitToFinance) > 0 ? 'text-red-600 bg-red-100 px-2 py-1 rounded-full' : 
+                        parseInt(item.delaySubmitToFinance) < 0 ? 'text-green-600 bg-green-100 px-2 py-1 rounded-full' : 'text-gray-600'
+                      }`}>
+                        {item.delaySubmitToFinance}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.piAmount && `Rp ${item.piAmount}`}
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.keterangan)}`}>
+                        {item.keterangan}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-blue-600 text-xs border border-gray-300 font-medium text-center">{item.piNo}</td>
+                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">{item.remarkProjectControl}</td>
+                    <td className="px-2 py-3 text-blue-600 text-xs border border-gray-300 font-medium text-center">{item.invoiceNo}</td>
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.invoiceAmount && `Rp ${item.invoiceAmount}`}
+                    </td>
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.invoiceAmountPpn && `Rp ${item.invoiceAmountPpn}`}
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.dueDatePayment}</td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">{item.paidDate}</td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`font-bold ${
+                        parseInt(item.delayPayment) > 0 ? 'text-red-600 bg-red-100 px-2 py-1 rounded-full' : 
+                        parseInt(item.delayPayment) < 0 ? 'text-green-600 bg-green-100 px-2 py-1 rounded-full' : 'text-gray-600'
+                      }`}>
+                        {item.delayPayment}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">{item.remarkFinance}</td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`font-bold px-2 py-1 rounded-full ${
+                        item.lir === 'YES' ? 'text-green-600 bg-green-100' : 
+                        item.lir === 'NO' ? 'text-red-600 bg-red-100' : 'text-yellow-600 bg-yellow-100'
+                      }`}>
+                        {item.lir}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-bold">{item.yearSheet}</td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.statusPekerjaan)}`}>
+                        {item.statusPekerjaan}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.statusAR)}`}>
+                        {item.statusAR}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(item.statusAP)}`}>
+                        {item.statusAP}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">{item.remark}</td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`font-bold px-2 py-1 rounded-full ${
+                        item.logDataPak === 'COMPLETE' || item.logDataPak === 'EXCELLENT' ? 'text-green-600 bg-green-100' : 
+                        item.logDataPak === 'DELAYED' || item.logDataPak === 'PENDING' ? 'text-red-600 bg-red-100' : 
+                        'text-yellow-600 bg-yellow-100'
+                      }`}>
+                        {item.logDataPak}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span className={`font-bold px-2 py-1 rounded-full ${
+                        item.logMekanik === 'COMPLETE' || item.logMekanik === 'EXCELLENT' ? 'text-green-600 bg-green-100' : 
+                        item.logMekanik === 'DELAYED' || item.logMekanik === 'PENDING' ? 'text-red-600 bg-red-100' : 
+                        'text-yellow-600 bg-yellow-100'
+                      }`}>
+                        {item.logMekanik}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -548,10 +831,9 @@ const SalesOrderDashboard: React.FC = () => {
             </table>
           </div>
 
-          {/* Action Buttons */}
+          {/* Footer controls */}
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              {/* Left: info and rows per page */}
               <div className="flex items-center flex-wrap gap-2 text-xs text-gray-700">
                 <span>
                   Showing {filteredData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
@@ -572,7 +854,6 @@ const SalesOrderDashboard: React.FC = () => {
                 </label>
               </div>
 
-              {/* Center: pagination controls */}
               <div className="flex items-center justify-center gap-1">
                 <button
                   onClick={() => handlePageChange(1)}
@@ -623,7 +904,6 @@ const SalesOrderDashboard: React.FC = () => {
                 </button>
               </div>
 
-              {/* Right: go to page */}
               <div className="flex items-center justify-end gap-2 text-xs">
                 <span className="text-gray-600">Go to page:</span>
                 <input
@@ -648,30 +928,8 @@ const SalesOrderDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Sales Order Modal */}
-      <SalesOrderModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleAddSalesOrder}
-      />
-
-      {/* Detail Modal */}
-      <SalesOrderDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-        data={selectedDetail}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmDeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaClient}
-      />
     </div>
   );
 };
 
-export default SalesOrderDashboard;
+export default ProconSalesOrderDashboard;
