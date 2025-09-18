@@ -541,16 +541,16 @@ export const gaMenu: MenuSection[] = [
     title: "Monitoring",
     icon: "Monitor",
     items: [
-      {
-        title: "Monitoring Purchase Request (PR)",
-        icon: "ShoppingCart",
-        path: "/qhse/monitoring/pr",
-      },
-      {
-        title: "Monitoring Cash Advance (CA)",
-        icon: "Banknote",
-        path: "/hrd/general/cash-advance/dashboard",
-      },
+      // {
+      //   title: "Monitoring Purchase Request (PR)",
+      //   icon: "ShoppingCart",
+      //   path: "/qhse/monitoring/pr",
+      // },
+      // {
+      //   title: "Monitoring Cash Advance (CA)",
+      //   icon: "Banknote",
+      //   path: "/hrd/general/cash-advance/dashboard",
+      // },
       {
         title: "Monitoring Voucher",
         icon: "Ticket",
