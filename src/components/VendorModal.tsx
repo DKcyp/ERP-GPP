@@ -5,6 +5,8 @@ interface VendorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: VendorFormData) => void;
+  initialData?: Partial<VendorFormData>;
+  title?: string;
 }
 
 export interface VendorFormData {
@@ -30,6 +32,8 @@ const VendorModal: React.FC<VendorModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  initialData,
+  title,
 }) => {
   const [formData, setFormData] = useState<VendorFormData>({
     tanggal: "",
@@ -80,6 +84,32 @@ const VendorModal: React.FC<VendorModalProps> = ({
       document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
+
+  // Prefill when opening in edit mode
+  useEffect(() => {
+    if (isOpen) {
+      setFormData((prev) => ({
+        ...prev,
+        tanggal: initialData?.tanggal ?? prev.tanggal,
+        namaVendor: initialData?.namaVendor ?? prev.namaVendor,
+        kodeVendor: initialData?.kodeVendor ?? prev.kodeVendor,
+        kodeGroupSupplier: initialData?.kodeGroupSupplier ?? prev.kodeGroupSupplier,
+        mataUang: initialData?.mataUang ?? prev.mataUang,
+        pajak: initialData?.pajak ?? prev.pajak,
+        alamatVendor: initialData?.alamatVendor ?? prev.alamatVendor,
+        kota: initialData?.kota ?? prev.kota,
+        negara: initialData?.negara ?? prev.negara,
+        picVendor: initialData?.picVendor ?? prev.picVendor,
+        noTelp: initialData?.noTelp ?? prev.noTelp,
+        email: initialData?.email ?? prev.email,
+        noNPWP: initialData?.noNPWP ?? prev.noNPWP,
+        status: initialData?.status ?? prev.status,
+        attachmentLegalitas: initialData?.attachmentLegalitas ?? prev.attachmentLegalitas,
+        barang: initialData?.barang ?? prev.barang,
+      }));
+      setErrors({});
+    }
+  }, [isOpen, initialData]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<VendorFormData> = {};
@@ -170,7 +200,7 @@ const VendorModal: React.FC<VendorModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in-0 duration-300 text-xs">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-          <h2 className="text-lg font-semibold text-gray-900">Entry Vendor</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{title || 'Entry Vendor'}</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
