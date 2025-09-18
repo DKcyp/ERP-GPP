@@ -31,9 +31,13 @@ const QHSELogBookRATDashboard: React.FC = () => {
   const [filterJenis, setFilterJenis] = useState<string>('all');
   const [filterProject, setFilterProject] = useState<string>('all');
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
   const [editingEntry, setEditingEntry] = useState<LogBookRATEntry | null>(null);
+  const [deletingEntry, setDeletingEntry] = useState<LogBookRATEntry | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [formData, setFormData] = useState<Partial<LogBookRATEntry>>({});
 
   // Mock data
   useEffect(() => {
@@ -109,14 +113,96 @@ const QHSELogBookRATDashboard: React.FC = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentEntries = filteredEntries.slice(startIndex, endIndex);
 
+  // CRUD Handlers
   const handleAddEntry = () => {
+    setModalMode('add');
     setEditingEntry(null);
+    setFormData({
+      namaPersonil: '',
+      namaProject: '',
+      noSO: '',
+      jenisLogBook: 'Operator',
+      tglKeluar: '',
+      tglMasuk: '',
+      qhseValidationKeluar: false,
+      qhseValidationMasuk: false,
+      mobDemobId: ''
+    });
     setShowModal(true);
   };
 
   const handleEditEntry = (entry: LogBookRATEntry) => {
+    setModalMode('edit');
     setEditingEntry(entry);
+    setFormData(entry);
     setShowModal(true);
+  };
+
+  const handleViewEntry = (entry: LogBookRATEntry) => {
+    setModalMode('view');
+    setEditingEntry(entry);
+    setFormData(entry);
+    setShowModal(true);
+  };
+
+  const handleDeleteEntry = (entry: LogBookRATEntry) => {
+    setDeletingEntry(entry);
+    setShowDeleteModal(true);
+  };
+
+  const handleSaveEntry = () => {
+    if (modalMode === 'add') {
+      const newEntry: LogBookRATEntry = {
+        id: Date.now().toString(),
+        no: entries.length + 1,
+        namaPersonil: formData.namaPersonil || '',
+        namaProject: formData.namaProject || '',
+        noSO: formData.noSO || '',
+        jenisLogBook: formData.jenisLogBook || 'Operator',
+        tglKeluar: formData.tglKeluar || '',
+        tglMasuk: formData.tglMasuk || '',
+        status: formData.tglMasuk ? 'Sudah Kembali' : 'Belum Kembali',
+        qhseValidationKeluar: formData.qhseValidationKeluar || false,
+        qhseValidationMasuk: formData.qhseValidationMasuk || false,
+        mobDemobId: formData.mobDemobId || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setEntries(prev => [...prev, newEntry]);
+    } else if (modalMode === 'edit' && editingEntry) {
+      setEntries(prev => prev.map(entry => 
+        entry.id === editingEntry.id 
+          ? {
+              ...entry,
+              namaPersonil: formData.namaPersonil || entry.namaPersonil,
+              namaProject: formData.namaProject || entry.namaProject,
+              noSO: formData.noSO || entry.noSO,
+              jenisLogBook: formData.jenisLogBook || entry.jenisLogBook,
+              tglKeluar: formData.tglKeluar || entry.tglKeluar,
+              tglMasuk: formData.tglMasuk || entry.tglMasuk,
+              status: formData.tglMasuk ? 'Sudah Kembali' : 'Belum Kembali',
+              qhseValidationKeluar: formData.qhseValidationKeluar ?? entry.qhseValidationKeluar,
+              qhseValidationMasuk: formData.qhseValidationMasuk ?? entry.qhseValidationMasuk,
+              mobDemobId: formData.mobDemobId || entry.mobDemobId,
+              updatedAt: new Date().toISOString()
+            }
+          : entry
+      ));
+    }
+    setShowModal(false);
+    setFormData({});
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingEntry) {
+      setEntries(prev => prev.filter(entry => entry.id !== deletingEntry.id));
+      setShowDeleteModal(false);
+      setDeletingEntry(null);
+    }
+  };
+
+  const handleInputChange = (field: keyof LogBookRATEntry, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleQHSEValidation = (entryId: string, type: 'keluar' | 'masuk') => {
@@ -286,71 +372,150 @@ const QHSELogBookRATDashboard: React.FC = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+          <div className="px-4 py-5 sm:px-6">
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              Log Book RAT Entries
+            </h3>
+            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              Daftar log in/out personil untuk pekerjaan RAT
+            </p>
+          </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Personil</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Keluar</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Masuk</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validasi QHSE</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Personil
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Project
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No SO
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jenis
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tgl Keluar
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tgl Masuk
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    QHSE Validation
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentEntries.map((entry) => (
                   <tr key={entry.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.no}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {entry.no}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <User className="w-4 h-4 text-gray-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-900">{entry.namaPersonil}</span>
+                        <User className="h-4 w-4 text-gray-400 mr-2" />
+                        <div className="text-sm font-medium text-gray-900">{entry.namaPersonil}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.namaProject}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.noSO}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getJenisBadge(entry.jenisLogBook)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {entry.tglKeluar ? new Date(entry.tglKeluar).toLocaleDateString('id-ID') : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {entry.tglMasuk ? new Date(entry.tglMasuk).toLocaleDateString('id-ID') : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(entry.status)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${entry.qhseValidationKeluar ? 'bg-green-500' : 'bg-red-500'}`} title={`Keluar: ${entry.qhseValidationKeluar ? 'Validated' : 'Not Validated'}`}></div>
-                        <div className={`w-2 h-2 rounded-full ${entry.qhseValidationMasuk ? 'bg-green-500' : 'bg-red-500'}`} title={`Masuk: ${entry.qhseValidationMasuk ? 'Validated' : 'Not Validated'}`}></div>
-                        {(!entry.qhseValidationKeluar || !entry.qhseValidationMasuk) && (
-                          <button
-                            onClick={() => handleQHSEValidation(entry.id, entry.qhseValidationKeluar ? 'masuk' : 'keluar')}
-                            className="text-xs px-2 py-1 bg-orange-100 text-orange-800 rounded hover:bg-orange-200"
-                          >
-                            Validasi
-                          </button>
-                        )}
+                      <div className="flex items-center">
+                        <Building className="h-4 w-4 text-gray-400 mr-2" />
+                        <div className="text-sm text-gray-900">{entry.namaProject}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Hash className="h-4 w-4 text-gray-400 mr-2" />
+                        <div className="text-sm text-gray-900">{entry.noSO}</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getJenisBadge(entry.jenisLogBook)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                        <div className="text-sm text-gray-900">
+                          {new Date(entry.tglKeluar).toLocaleDateString('id-ID')}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                        <div className="text-sm text-gray-900">
+                          {entry.tglMasuk ? new Date(entry.tglMasuk).toLocaleDateString('id-ID') : '-'}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getStatusBadge(entry.status)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <div className="flex items-center">
+                          <span className="text-xs text-gray-500 mr-1">Out:</span>
+                          {entry.qhseValidationKeluar ? (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <button
+                              onClick={() => handleQHSEValidation(entry.id, 'keluar')}
+                              className="h-4 w-4 text-red-500 hover:text-red-700"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-xs text-gray-500 mr-1">In:</span>
+                          {entry.qhseValidationMasuk ? (
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <button
+                              onClick={() => handleQHSEValidation(entry.id, 'masuk')}
+                              className="h-4 w-4 text-red-500 hover:text-red-700"
+                              disabled={!entry.tglMasuk}
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleViewEntry(entry)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => handleEditEntry(entry)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-green-600 hover:text-green-900"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          className="text-green-600 hover:text-green-900"
-                          title="View Details"
+                          onClick={() => handleDeleteEntry(entry)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete"
                         >
-                          <Eye className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -421,6 +586,222 @@ const QHSELogBookRATDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {modalMode === 'add' ? 'Tambah Log Book RAT' : 
+                   modalMode === 'edit' ? 'Edit Log Book RAT' : 'Detail Log Book RAT'}
+                </h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nama Personil
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.namaPersonil || ''}
+                    onChange={(e) => handleInputChange('namaPersonil', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan nama personil"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nama Project
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.namaProject || ''}
+                    onChange={(e) => handleInputChange('namaProject', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan nama project"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    No SO
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.noSO || ''}
+                    onChange={(e) => handleInputChange('noSO', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan nomor SO"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jenis Log Book
+                  </label>
+                  <select
+                    value={formData.jenisLogBook || 'Operator'}
+                    onChange={(e) => handleInputChange('jenisLogBook', e.target.value as 'Operator' | 'Trainer')}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  >
+                    <option value="Operator">Operator</option>
+                    <option value="Trainer">Trainer</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal Keluar
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tglKeluar || ''}
+                    onChange={(e) => handleInputChange('tglKeluar', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal Masuk
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tglMasuk || ''}
+                    onChange={(e) => handleInputChange('tglMasuk', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mob-Demob ID
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.mobDemobId || ''}
+                    onChange={(e) => handleInputChange('mobDemobId', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan Mob-Demob ID"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    QHSE Validation
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.qhseValidationKeluar || false}
+                        onChange={(e) => handleInputChange('qhseValidationKeluar', e.target.checked)}
+                        disabled={modalMode === 'view'}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">Keluar</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.qhseValidationMasuk || false}
+                        onChange={(e) => handleInputChange('qhseValidationMasuk', e.target.checked)}
+                        disabled={modalMode === 'view'}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">Masuk</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              {modalMode !== 'view' && (
+                <div className="flex justify-end space-x-3 mt-6">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleSaveEntry}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {modalMode === 'add' ? 'Tambah' : 'Simpan'}
+                  </button>
+                </div>
+              )}
+              
+              {modalMode === 'view' && (
+                <div className="flex justify-end mt-6">
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  >
+                    Tutup
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deletingEntry && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">
+                Hapus Log Book RAT
+              </h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  Apakah Anda yakin ingin menghapus log book untuk <strong>{deletingEntry.namaPersonil}</strong>?
+                  <br />
+                  Project: <strong>{deletingEntry.namaProject}</strong>
+                  <br />
+                  Tindakan ini tidak dapat dibatalkan.
+                </p>
+              </div>
+              <div className="flex justify-center space-x-3 mt-4">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, Plus, Filter, Download, Upload, Calendar, 
-  User, MapPin, FileText, Clock, CheckCircle, XCircle,
-  AlertTriangle, Eye, Edit, Trash2, Wrench, Users,
-  Building, Hash, UserCheck, ArrowRight, Bell
-} from 'lucide-react';
+import { Search, Plus, Edit, Eye, Calendar, User, Building, Hash, CheckCircle, XCircle, Trash2, AlertTriangle, X, Download, Users } from 'lucide-react';
 
 interface LogBookTKPKEntry {
   id: string;
@@ -31,9 +26,13 @@ const QHSELogBookTKPKDashboard: React.FC = () => {
   const [filterJenis, setFilterJenis] = useState<string>('all');
   const [filterProject, setFilterProject] = useState<string>('all');
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
   const [editingEntry, setEditingEntry] = useState<LogBookTKPKEntry | null>(null);
+  const [deletingEntry, setDeletingEntry] = useState<LogBookTKPKEntry | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [formData, setFormData] = useState<Partial<LogBookTKPKEntry>>({});
 
   // Mock data
   useEffect(() => {
@@ -125,15 +124,96 @@ const QHSELogBookTKPKDashboard: React.FC = () => {
   const endIndex = startIndex + itemsPerPage;
   const currentEntries = filteredEntries.slice(startIndex, endIndex);
 
-  // Handlers
+  // CRUD Handlers
   const handleAddEntry = () => {
+    setModalMode('add');
     setEditingEntry(null);
+    setFormData({
+      namaPersonil: '',
+      namaProject: '',
+      noSO: '',
+      jenisLogBook: 'Operator',
+      tglKeluar: '',
+      tglMasuk: '',
+      qhseValidationKeluar: false,
+      qhseValidationMasuk: false,
+      mobDemobId: ''
+    });
     setShowModal(true);
   };
 
   const handleEditEntry = (entry: LogBookTKPKEntry) => {
+    setModalMode('edit');
     setEditingEntry(entry);
+    setFormData(entry);
     setShowModal(true);
+  };
+
+  const handleViewEntry = (entry: LogBookTKPKEntry) => {
+    setModalMode('view');
+    setEditingEntry(entry);
+    setFormData(entry);
+    setShowModal(true);
+  };
+
+  const handleDeleteEntry = (entry: LogBookTKPKEntry) => {
+    setDeletingEntry(entry);
+    setShowDeleteModal(true);
+  };
+
+  const handleSaveEntry = () => {
+    if (modalMode === 'add') {
+      const newEntry: LogBookTKPKEntry = {
+        id: Date.now().toString(),
+        no: entries.length + 1,
+        namaPersonil: formData.namaPersonil || '',
+        namaProject: formData.namaProject || '',
+        noSO: formData.noSO || '',
+        jenisLogBook: formData.jenisLogBook || 'Operator',
+        tglKeluar: formData.tglKeluar || '',
+        tglMasuk: formData.tglMasuk || '',
+        status: formData.tglMasuk ? 'Sudah Kembali' : 'Belum Kembali',
+        qhseValidationKeluar: formData.qhseValidationKeluar || false,
+        qhseValidationMasuk: formData.qhseValidationMasuk || false,
+        mobDemobId: formData.mobDemobId || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setEntries(prev => [...prev, newEntry]);
+    } else if (modalMode === 'edit' && editingEntry) {
+      setEntries(prev => prev.map(entry => 
+        entry.id === editingEntry.id 
+          ? {
+              ...entry,
+              namaPersonil: formData.namaPersonil || entry.namaPersonil,
+              namaProject: formData.namaProject || entry.namaProject,
+              noSO: formData.noSO || entry.noSO,
+              jenisLogBook: formData.jenisLogBook || entry.jenisLogBook,
+              tglKeluar: formData.tglKeluar || entry.tglKeluar,
+              tglMasuk: formData.tglMasuk || entry.tglMasuk,
+              status: formData.tglMasuk ? 'Sudah Kembali' : 'Belum Kembali',
+              qhseValidationKeluar: formData.qhseValidationKeluar ?? entry.qhseValidationKeluar,
+              qhseValidationMasuk: formData.qhseValidationMasuk ?? entry.qhseValidationMasuk,
+              mobDemobId: formData.mobDemobId || entry.mobDemobId,
+              updatedAt: new Date().toISOString()
+            }
+          : entry
+      ));
+    }
+    setShowModal(false);
+    setFormData({});
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingEntry) {
+      setEntries(prev => prev.filter(entry => entry.id !== deletingEntry.id));
+      setShowDeleteModal(false);
+      setDeletingEntry(null);
+    }
+  };
+
+  const handleInputChange = (field: keyof LogBookTKPKEntry, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleQHSEValidation = (entryId: string, type: 'keluar' | 'masuk') => {
@@ -475,17 +555,25 @@ const QHSELogBookTKPKDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleEditEntry(entry)}
+                          onClick={() => handleViewEntry(entry)}
                           className="text-blue-600 hover:text-blue-900"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleEditEntry(entry)}
+                          className="text-green-600 hover:text-green-900"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          className="text-green-600 hover:text-green-900"
-                          title="View Details"
+                          onClick={() => handleDeleteEntry(entry)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete"
                         >
-                          <Eye className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -556,6 +644,210 @@ const QHSELogBookTKPKDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit/View Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {modalMode === 'add' ? 'Tambah Entry Baru' : 
+                   modalMode === 'edit' ? 'Edit Entry' : 'Detail Entry'}
+                </h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nama Personil
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.namaPersonil || ''}
+                    onChange={(e) => handleInputChange('namaPersonil', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan nama personil"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nama Project
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.namaProject || ''}
+                    onChange={(e) => handleInputChange('namaProject', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan nama project"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    No SO
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.noSO || ''}
+                    onChange={(e) => handleInputChange('noSO', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan nomor SO"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jenis Log Book
+                  </label>
+                  <select
+                    value={formData.jenisLogBook || 'Operator'}
+                    onChange={(e) => handleInputChange('jenisLogBook', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  >
+                    <option value="Operator">Operator</option>
+                    <option value="Trainer">Trainer</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal Keluar
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tglKeluar || ''}
+                    onChange={(e) => handleInputChange('tglKeluar', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal Masuk
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tglMasuk || ''}
+                    onChange={(e) => handleInputChange('tglMasuk', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mob-Demob ID
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.mobDemobId || ''}
+                    onChange={(e) => handleInputChange('mobDemobId', e.target.value)}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    placeholder="Masukkan Mob-Demob ID"
+                  />
+                </div>
+                
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    QHSE Validation
+                  </label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.qhseValidationKeluar || false}
+                        onChange={(e) => handleInputChange('qhseValidationKeluar', e.target.checked)}
+                        disabled={modalMode === 'view'}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Validasi Keluar</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.qhseValidationMasuk || false}
+                        onChange={(e) => handleInputChange('qhseValidationMasuk', e.target.checked)}
+                        disabled={modalMode === 'view'}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Validasi Masuk</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  {modalMode === 'view' ? 'Tutup' : 'Batal'}
+                </button>
+                {modalMode !== 'view' && (
+                  <button
+                    onClick={handleSaveEntry}
+                    className="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700"
+                  >
+                    {modalMode === 'add' ? 'Tambah' : 'Simpan'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deletingEntry && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mt-2">Hapus Entry</h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  Apakah Anda yakin ingin menghapus entry untuk <strong>{deletingEntry.namaPersonil}</strong>?
+                </p>
+                <div className="mt-3 text-left bg-gray-50 p-3 rounded">
+                  <p className="text-xs text-gray-600">Project: {deletingEntry.namaProject}</p>
+                  <p className="text-xs text-gray-600">No SO: {deletingEntry.noSO}</p>
+                  <p className="text-xs text-gray-600">Jenis: {deletingEntry.jenisLogBook}</p>
+                </div>
+              </div>
+              <div className="flex justify-center space-x-3 mt-4">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
