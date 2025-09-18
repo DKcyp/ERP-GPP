@@ -401,3 +401,34 @@ export interface EntryPOJasaFormData {
   biayaMaterai?: string;
   estimasiKedatangan?: string; // optional manual entry if needed
 }
+
+// ================= Penerimaan Barang Manual Types =================
+export interface PenerimaanBarangManualData {
+  id: string;
+  no: number;
+  tanggalPenerimaan: string;
+  noPO: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: number;
+  satuan: string;
+  kondisiBarang: 'Baik' | 'Rusak' | 'Expired';
+  tanggalExpired?: string;
+  alasanManual: string;
+  keterangan?: string;
+  statusPersetujuan: 'Pending' | 'Disetujui' | 'Ditolak';
+  disetujuiOleh?: string;
+  tanggalPersetujuan?: string;
+}
+
+export interface PenerimaanBarangManualFormData {
+  noPO: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: string; // keep as string for input
+  satuan: string;
+  kondisiBarang: 'Baik' | 'Rusak' | 'Expired';
+  tanggalExpired?: string;
+  alasanManual: string;
+  keterangan?: string;
+}

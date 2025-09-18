@@ -122,6 +122,7 @@ import RestockExpiredBarangDashboard from "./RestockExpiredBarangDashboard";
 import StockBarangDashboard from "./StockBarangDashboard";
 import GudangProyekDashboard from "./GudangProyekDashboard";
 import PenerimaanBarangMasukDashboard from "./PenerimaanBarangMasukDashboard";
+import PenerimaanBarangManualDashboard from "./PenerimaanBarangManualDashboard";
 import TrackingDokumenMonitoringDashboard from "./TrackingDokumenMonitoringDashboard";
 import MutasiBarangDashboard from "./MutasiBarangDashboard";
 import PengembalianBarangDashboard from "./PengembalianBarangDashboard";
@@ -210,6 +211,7 @@ import QHSEKompetensiPersonilDashboard from "./QHSEKompetensiPersonilDashboard";
 import QHSEAlatPelindungDiriDashboard from "./QHSEAlatPelindungDiriDashboard";
 import QHSEMonitoringAPDDashboard from "./QHSEMonitoringAPDDashboard";
 import QHSEDaftarIndukDokumenEksternalDashboard from "./QHSEDaftarIndukDokumenEksternalDashboard";
+import QHSEApprovalRFIDashboard from "./QHSEApprovalRFIDashboard";
 // New QHSE Components
 import KameraDashboard from "./KameraDashboard";
 import SIBPersonilDashboard from "./SIBPersonilDashboard";
@@ -493,6 +495,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/gudang/penerimaan-barang-masuk/dashboard") {
       return <PenerimaanBarangMasukDashboard />;
+    }
+    if (currentPage === "/gudang/penerimaan-barang-manual/dashboard") {
+      return <PenerimaanBarangManualDashboard />;
     }
     if (currentPage === "/gudang/mutasi-barang/dashboard") {
       return <MutasiBarangDashboard />;
@@ -1843,6 +1848,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/daftar-induk-dokumen-eksternal") {
       return <QHSEDaftarIndukDokumenEksternalDashboard />;
+    }
+    if (currentPage === "/qhse/approval-rfi/dashboard") {
+      return <QHSEApprovalRFIDashboard />;
     }
     if (currentPage === "/qhse/daftar-induk-rekaman-internal") {
       return <DaftarIndukRekamanInternalDashboard />;

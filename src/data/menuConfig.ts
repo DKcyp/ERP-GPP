@@ -1488,10 +1488,16 @@ export const gudangMenu: MenuSection[] = [
     directPath: "/gudang/gudang-proyek/dashboard",
   },
   {
-    title: "Penerimaan Barang Masuk",
+    title: "Request For Inspection (RFI)",
     icon: "Download",
     items: [],
     directPath: "/gudang/penerimaan-barang-masuk/dashboard",
+  },
+  {
+    title: "Penerimaan Barang Manual",
+    icon: "Edit",
+    items: [],
+    directPath: "/gudang/penerimaan-barang-manual/dashboard",
   },
   {
     title: "Mutasi Barang",
@@ -1808,6 +1814,12 @@ export const qhseMenu: MenuSection[] = [
         path: "/qhse/daftar-induk-dokumen-eksternal",
       },
     ],
+  },
+  {
+    title: "Approval RFI",
+    icon: "CheckCircle",
+    items: [],
+    directPath: "/qhse/approval-rfi/dashboard",
   },
   createGeneralMenu("qhse"),
 ];
