@@ -213,6 +213,7 @@ import QHSEDaftarIndukDokumenEksternalDashboard from "./QHSEDaftarIndukDokumenEk
 // New QHSE Components
 import KameraDashboard from "./KameraDashboard";
 import SIBPersonilDashboard from "./SIBPersonilDashboard";
+import QHSEKartuDosisDashboard from "./QHSEKartuDosisDashboard";
 import DosisCardDashboard from "./DosisCardDashboard";
 import RadiographyDashboard from "./RadiographyDashboard";
 import ProsesISOTOPDashboard from "./ProsesISOTOPDashboard";
@@ -372,6 +373,7 @@ import QHSEMonitoringKameraRadiographyDashboard from "./QHSEMonitoringKameraRadi
 import QHSEUjiUsapKameraDashboard from "./QHSEUjiUsapKameraDashboard";
 import QHSEDaftarIndukDokumenInternalDashboard from "./QHSEDaftarIndukDokumenInternalDashboard";
 import QHSEMonitoringPersonnelReportDashboard from "./QHSEMonitoringPersonnelReportDashboard";
+import QHSEDaftarInventarisIsotopDashboard from "./QHSEDaftarInventarisIsotopDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1872,8 +1874,14 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/radiography/qhse/uji-usap-kamera") {
       return <QHSEUjiUsapKameraDashboard />;
     }
+    if (currentPage === "/qhse/radiography/qhse/kartu-dosis") {
+      return <QHSEKartuDosisDashboard />;
+    }
     if (currentPage === "/qhse/radiography/qhse/kartu-pemantauan-kesehatan") {
       return <QHSEKartuPemantauanKesehatanDashboard />;
+    }
+    if (currentPage === "/qhse/radiography/qhse/daftar-inventaris-isotop") {
+      return <QHSEDaftarInventarisIsotopDashboard />;
     }
 
     // Monitoring Personil Routes
