@@ -16,6 +16,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface JurnalDetail {
   coa: string;
+  namaCoa: string;
   keterangan: string;
   debit: number;
   kredit: number;
@@ -42,12 +43,19 @@ const JurnalManualDashboard: React.FC = () => {
       keterangan: "Jurnal penyesuaian awal bulan",
       details: [
         {
-          coa: "1101 - Kas",
+          coa: "1101",
+          namaCoa: "Kas",
           keterangan: "Saldo awal kas",
           debit: 1000000,
           kredit: 0,
         },
-        { coa: "3101 - Modal", keterangan: "Modal", debit: 0, kredit: 1000000 },
+        {
+          coa: "3101",
+          namaCoa: "Modal",
+          keterangan: "Modal",
+          debit: 0,
+          kredit: 1000000,
+        },
       ],
     },
   ]);
@@ -87,7 +95,7 @@ const JurnalManualDashboard: React.FC = () => {
     tanggal: today.toISOString().slice(0, 10),
     user: "accounting",
     keterangan: "",
-    details: [{ coa: "", keterangan: "", debit: 0, kredit: 0 }],
+    details: [{ coa: "", namaCoa: "", keterangan: "", debit: 0, kredit: 0 }],
   });
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -100,7 +108,7 @@ const JurnalManualDashboard: React.FC = () => {
       tanggal: today.toISOString().slice(0, 10),
       user: "accounting",
       keterangan: "",
-      details: [{ coa: "", keterangan: "", debit: 0, kredit: 0 }],
+      details: [{ coa: "", namaCoa: "", keterangan: "", debit: 0, kredit: 0 }],
     });
     setIsFormOpen(true);
   };
@@ -402,6 +410,9 @@ const JurnalManualDashboard: React.FC = () => {
                                     COA
                                   </th>
                                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">
+                                    Nama COA
+                                  </th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">
                                     Keterangan
                                   </th>
                                   <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">
@@ -417,6 +428,9 @@ const JurnalManualDashboard: React.FC = () => {
                                   <tr key={idx}>
                                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                       {d.coa}
+                                    </td>
+                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                                      {d.namaCoa}
                                     </td>
                                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                       {d.keterangan}
@@ -439,7 +453,7 @@ const JurnalManualDashboard: React.FC = () => {
                                 ))}
                                 <tr className="font-bold bg-gray-50">
                                   <td
-                                    colSpan={2}
+                                    colSpan={3}
                                     className="px-4 py-2 text-right text-sm text-gray-900"
                                   >
                                     Total
@@ -550,7 +564,7 @@ const JurnalManualDashboard: React.FC = () => {
                     ...f,
                     details: [
                       ...f.details,
-                      { coa: "", keterangan: "", debit: 0, kredit: 0 },
+                      { coa: "", namaCoa: "", keterangan: "", debit: 0, kredit: 0 },
                     ],
                   }))
                 }
@@ -606,13 +620,13 @@ const JurnalManualDashboard: React.FC = () => {
                       <td className="px-3 py-2">
                         <input
                           type="text"
-                          value={d.coa}
+                          value={d.namaCoa}
                           onChange={(e) =>
                             setForm((f) => {
                               const details = [...f.details];
                               details[idx] = {
                                 ...details[idx],
-                                coa: e.target.value,
+                                namaCoa: e.target.value,
                               };
                               return { ...f, details };
                             })

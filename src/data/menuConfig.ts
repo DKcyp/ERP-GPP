@@ -32,7 +32,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
           path: `/${role}/general/voucher/dashboard`,
         },
         {
-          title: "Proses Voucher",
+          title: "Pengajuan Voucher",
           icon: "Workflow",
           path: `/${role}/general/voucher/proses`,
         },
@@ -97,7 +97,7 @@ const createGeneralMenu = (role: string): MenuSection => ({
       ],
     },
     {
-      title: "Budget",
+      title: "RAP",
       icon: "Wallet",
       items: [
         {
@@ -109,6 +109,11 @@ const createGeneralMenu = (role: string): MenuSection => ({
           title: "Laporan Penggunaan Budget",
           icon: "FileBarChart",
           path: `/${role}/general/budget/laporan`,
+        },
+        {
+          title: "Monitoring Anggaran Perusahaan",
+          icon: "Monitor",
+          path: `/${role}/general/budget/monitoring-anggaran`,
         },
       ],
     },
@@ -552,9 +557,21 @@ export const gaMenu: MenuSection[] = [
     title: "Monitoring Sarana dan Prasarana",
     icon: "Building2",
     items: [
-      { title: "Monitoring Sarana & Prasarana", icon: "Building2", path: "/ga/monitoring/sapras" },
-      { title: "Monitoring Kendaraan", icon: "Car", path: "/ga/monitoring/kendaraan" },
-      { title: "Permintaan Driver", icon: "User", path: "/ga/monitoring/permintaan-driver" },
+      {
+        title: "Monitoring Sarana & Prasarana",
+        icon: "Building2",
+        path: "/ga/monitoring/sapras",
+      },
+      {
+        title: "Monitoring Kendaraan",
+        icon: "Car",
+        path: "/ga/monitoring/kendaraan",
+      },
+      {
+        title: "Permintaan Driver",
+        icon: "User",
+        path: "/ga/monitoring/permintaan-driver",
+      },
     ],
   },
   {
@@ -1053,7 +1070,7 @@ export const pengadaanMenu: MenuSection[] = [
         title: "Daftar Seleksi Supplier / Bidding",
         icon: "ClipboardList",
         path: "/pengadaan/seleksi/daftar",
-      }
+      },
     ],
   },
   {
@@ -1065,7 +1082,11 @@ export const pengadaanMenu: MenuSection[] = [
       //   icon: "LayoutDashboard",
       //   path: "/pengadaan/po/dashboard",
       // },
-      { title: "Approval PR", icon: "FileBarChart", path: "/pengadaan/po/approval_pr" },
+      {
+        title: "Approval PR",
+        icon: "FileBarChart",
+        path: "/pengadaan/po/approval_pr",
+      },
       { title: "PO Barang", icon: "Package", path: "/pengadaan/po/barang" },
       { title: "PO Jasa", icon: "Wrench", path: "/pengadaan/po/jasa" },
     ],
@@ -1368,101 +1389,6 @@ export const financeMenu: MenuSection[] = [
         title: "Approval Reimburse",
         icon: "CheckSquare",
         path: "/finance/voucher-reimburse/approval-reimburse",
-      },
-    ],
-  },
-  {
-    title: "Pajak",
-    icon: "Scale", // Icon for general tax section
-    subSections: [
-      {
-        title: "Pajak", // Sub-section title, can be same as main section or more specific
-        icon: "Scale", // Sub-section icon
-        items: [
-          {
-            title: "Pajak Masukan",
-            icon: "ArrowDownCircle",
-            path: "/tax/pajak-masukan",
-          },
-          {
-            title: "Pajak Keluaran",
-            icon: "ArrowUpCircle",
-            path: "/tax/pajak-keluaran",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "PPH UNIFIKASI",
-    icon: "Layers",
-
-    subSections: [
-      {
-        title: "PPH 21",
-        icon: "FileText",
-        items: [
-          { title: "Karyawan", icon: "User", path: "/tax/pph-21/karyawan" },
-          {
-            title: "Non Karyawan",
-            icon: "Users",
-            path: "/tax/pph-21/non-karyawan",
-          },
-        ],
-      },
-      {
-        title: "PPH 23",
-        icon: "FileText",
-        items: [{ title: "PPh 23", icon: "FileText", path: "/tax/pph-23" }],
-      },
-      {
-        title: "PPH 22",
-        icon: "FileText",
-        items: [{ title: "PPh 22", icon: "FileText", path: "/tax/pph-22" }],
-      },
-      {
-        title: "PPH 4 Ayat 2",
-        icon: "FileText",
-        items: [
-          {
-            title: "PPh 4 Ayat 2",
-            icon: "FileText",
-            path: "/tax/pph-4-ayat-2",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "PPH BADAN",
-    icon: "Briefcase",
-    items: [
-      { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
-      { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
-    ],
-  },
-  {
-    title: "Tagihan Pajak Lainya",
-    icon: "Receipt",
-    items: [
-      { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
-      { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
-      { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
-    ],
-  },
-  {
-    title: "Voucher Lainya",
-    icon: "Ticket",
-    items: [
-      {
-        title: "Voucher",
-        icon: "FileText",
-        path: "/tax/voucher-lainya/voucher",
-      },
-      {
-        title: "Monitoring Voucher",
-        icon: "FileText",
-        path: "/tax/voucher-lainya/monitoring",
       },
     ],
   },
@@ -1905,9 +1831,17 @@ export const accountingMenu: MenuSection[] = [
     title: "Asset",
     icon: "Boxes",
     items: [
-      { title: "Asset", icon: "Package", path: "/accounting/asset" },
-      { title: "Master Kategori Asset", icon: "Tags", path: "/accounting/asset/master-kategori" },
-      { title: "Aktivasi Asset", icon: "CheckCircle", path: "/accounting/asset/aktivasi" },
+      // { title: "Asset", icon: "Package", path: "/accounting/asset" },
+      {
+        title: "Master Kategori Asset",
+        icon: "Tags",
+        path: "/accounting/asset/master-kategori",
+      },
+      {
+        title: "Aktivasi Asset",
+        icon: "CheckCircle",
+        path: "/accounting/asset/aktivasi",
+      },
     ],
   },
   {
@@ -1985,6 +1919,116 @@ export const accountingMenu: MenuSection[] = [
     icon: "Scale", // Icon for balance sheet
     items: [],
     directPath: "/accounting/neraca",
+  },
+  {
+    title: "Pajak",
+    icon: "Scale", // Icon for general tax section
+    subSections: [
+      {
+        title: "Pajak", // Sub-section title, can be same as main section or more specific
+        icon: "Scale", // Sub-section icon
+        items: [
+          {
+            title: "Pajak Masukan",
+            icon: "ArrowDownCircle",
+            path: "/tax/pajak-masukan",
+          },
+          {
+            title: "Pajak Keluaran",
+            icon: "ArrowUpCircle",
+            path: "/tax/pajak-keluaran",
+          },
+          {
+            title: "Laporan Pajak Rekonsiliasi Masukan",
+            icon: "FileText",
+            path: "/tax/pajak/laporan-rekonsiliasi-masukan",
+          },
+          {
+            title: "Laporan Pajak Rekonsiliasi Keluaran",
+            icon: "FileText",
+            path: "/tax/pajak/laporan-rekonsiliasi-keluaran",
+          },
+          {
+            title: "Proses Hutang Pajak",
+            icon: "Folder",
+            path: "/tax/pajak/proses-hutang-pajak",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "PPH UNIFIKASI",
+    icon: "Layers",
+
+    subSections: [
+      {
+        title: "PPH 21",
+        icon: "FileText",
+        items: [
+          { title: "Karyawan", icon: "User", path: "/tax/pph-21/karyawan" },
+          {
+            title: "Non Karyawan",
+            icon: "Users",
+            path: "/tax/pph-21/non-karyawan",
+          },
+        ],
+      },
+      {
+        title: "PPH 23",
+        icon: "FileText",
+        items: [{ title: "PPh 23", icon: "FileText", path: "/tax/pph-23" }],
+      },
+      {
+        title: "PPH 22",
+        icon: "FileText",
+        items: [{ title: "PPh 22", icon: "FileText", path: "/tax/pph-22" }],
+      },
+      {
+        title: "PPH 4 Ayat 2",
+        icon: "FileText",
+        items: [
+          {
+            title: "PPh 4 Ayat 2",
+            icon: "FileText",
+            path: "/tax/pph-4-ayat-2",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "PPH BADAN",
+    icon: "Briefcase",
+    items: [
+      { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
+      { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
+    ],
+  },
+  {
+    title: "Tagihan Pajak Lainya",
+    icon: "Receipt",
+    items: [
+      { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
+      { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
+      { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
+    ],
+  },
+  {
+    title: "Voucher Lainya",
+    icon: "Ticket",
+    items: [
+      {
+        title: "Voucher",
+        icon: "FileText",
+        path: "/tax/voucher-lainya/voucher",
+      },
+      {
+        title: "Monitoring Voucher",
+        icon: "FileText",
+        path: "/tax/voucher-lainya/monitoring",
+      },
+    ],
   },
   createGeneralMenu("gudang"),
 ];
