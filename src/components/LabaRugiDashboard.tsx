@@ -1,10 +1,48 @@
 import React, { useState } from 'react';
-import { Clock, Search, Filter, FileText, FileSpreadsheet, FileDown } from 'lucide-react';
+import { Clock, Search, Filter, FileText, FileSpreadsheet, FileDown, Plus, Edit, Trash2 } from 'lucide-react';
+import Modal from './Modal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+
+interface LabaRugiEntry {
+  id: string;
+  periode: string; // yyyy-mm
+  akun: string; // kode akun
+  namaAkun: string;
+  mu: string;
+  debitMu: number;
+  kreditMu: number;
+  debit: number; // Debet (Rp.)
+  kredit: number; // Kredit (Rp.)
+  keterangan: string;
+}
 
 const LabaRugiDashboard: React.FC = () => {
   const today = new Date();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPeriod, setFilterPeriod] = useState('Juli 2025'); // Default filter
+
+  // Form state
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<LabaRugiEntry>({
+    id: "",
+    periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
+    akun: "",
+    namaAkun: "",
+    mu: "IDR",
+    debitMu: 0,
+    kreditMu: 0,
+    debit: 0,
+    kredit: 0,
+    keterangan: "",
+  });
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<LabaRugiEntry | null>(null);
+  const [labaRugiData, setLabaRugiData] = useState<LabaRugiEntry[]>([
+    { id: "1", periode: "2025-07", akun: "40000000", namaAkun: "PENDAPATAN", mu: "IDR", debitMu: 0, kreditMu: 53827055, debit: 0, kredit: 53827055153, keterangan: "Pendapatan usaha" },
+    { id: "2", periode: "2025-07", akun: "50000000", namaAkun: "BEBAN POKOK PENJUALAN", mu: "IDR", debitMu: 49936553, kreditMu: 0, debit: 49936552991, kredit: 0, keterangan: "Beban pokok penjualan" },
+  ]);
 
   // Helper function to format numbers as per ID-ID locale (e.g., 123.456.789)
   const formatNumber = (num: number) => {
@@ -134,6 +172,63 @@ const LabaRugiDashboard: React.FC = () => {
     item.uraian.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Combined filtered data including new entries
+  const combinedFilteredData = [...filteredData, ...labaRugiData.filter(item =>
+    item.namaAkun.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.akun.toLowerCase().includes(searchTerm.toLowerCase())
+  )];
+
+  const openAdd = () => {
+    setEditingId(null);
+    setForm({
+      id: "",
+      periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
+      akun: "",
+      namaAkun: "",
+      mu: "IDR",
+      debitMu: 0,
+      kreditMu: 0,
+      debit: 0,
+      kredit: 0,
+      keterangan: "",
+    });
+    setIsFormOpen(true);
+  };
+
+  const openEdit = (entry: LabaRugiEntry) => {
+    setEditingId(entry.id);
+    setForm({ ...entry });
+    setIsFormOpen(true);
+  };
+
+  const submitForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.akun || !form.namaAkun) {
+      alert("Kode Akun dan Nama Akun wajib diisi");
+      return;
+    }
+
+    if (editingId) {
+      setLabaRugiData((prev) => prev.map((it) => (it.id === editingId ? { ...form, id: it.id } : it)));
+    } else {
+      setLabaRugiData((prev) => [{ ...form, id: `${Date.now()}` }, ...prev]);
+    }
+    setIsFormOpen(false);
+  };
+
+  const requestDelete = (entry: LabaRugiEntry) => {
+    setItemToDelete(entry);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      setLabaRugiData((prev) => prev.filter((d) => d.id !== itemToDelete.id));
+      setItemToDelete(null);
+    }
+    setDeleteModalOpen(false);
+  };
+
   const handleExport = (type: 'excel' | 'csv' | 'pdf') => {
     alert(`Mengekspor data Laba Rugi ke format ${type}... (Fungsionalitas ini adalah placeholder)`);
     // Di aplikasi nyata, Anda akan mengimplementasikan logika ekspor yang sebenarnya di sini.
@@ -195,28 +290,36 @@ const LabaRugiDashboard: React.FC = () => {
             </select>
           </div>
 
-          <div className="flex space-x-3 w-full md:w-auto justify-end">
+          <div className="flex justify-between items-center w-full">
             <button
-              onClick={() => handleExport('excel')}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl font-medium text-sm bg-green-500 text-white hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              onClick={openAdd}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
-              <FileSpreadsheet className="h-4 w-4" />
-              <span>Excel</span>
+              <Plus className="h-5 w-5 mr-2" /> Tambah Baris
             </button>
-            <button
-              onClick={() => handleExport('csv')}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl font-medium text-sm bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-              <FileText className="h-4 w-4" />
-              <span>CSV</span>
-            </button>
-            <button
-              onClick={() => handleExport('pdf')}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl font-medium text-sm bg-red-500 text-white hover:bg-red-600 transition-all duration-300 shadow-md hover:shadow-lg"
-            >
-              <FileDown className="h-4 w-4" />
-              <span>PDF</span>
-            </button>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => handleExport('excel')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl font-medium text-sm bg-green-500 text-white hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Excel</span>
+              </button>
+              <button
+                onClick={() => handleExport('csv')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl font-medium text-sm bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <FileText className="h-4 w-4" />
+                <span>CSV</span>
+              </button>
+              <button
+                onClick={() => handleExport('pdf')}
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl font-medium text-sm bg-red-500 text-white hover:bg-red-600 transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <FileDown className="h-4 w-4" />
+                <span>PDF</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -226,57 +329,63 @@ const LabaRugiDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th rowSpan={2} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">No</th>
-                  <th rowSpan={2} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">URAIAN</th>
-                  <th colSpan={3} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Juli 2025</th>
-                  <th colSpan={3} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">S.D Juli 2025</th>
-                  <th colSpan={2} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">RKAP</th>
-                </tr>
-                <tr>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">REAL</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">RKAP</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">%</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">REAL</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">RKAP</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">%</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">RKAP</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">%</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Kode Akun</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Nama Akun</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">MU</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Debet (MU)</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Kredit (MU)</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Debet (Rp.)</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Kredit (Rp.)</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Keterangan</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Periode</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map((row) => (
-                  <tr key={row.id} className={`${row.isSummary ? 'bg-blue-50 font-semibold text-blue-800' : 'hover:bg-gray-50'}`}>
+                {labaRugiData.map((row) => (
+                  <tr key={row.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                      {row.no}
+                      {row.akun}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
-                      <span style={{ paddingLeft: `${row.level * 1.5}rem` }} className={`${row.isBold ? 'font-bold' : ''}`}>
-                        {row.uraian}
-                      </span>
+                      {row.namaAkun}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
+                      {row.mu}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {formatNumber(row.juli.real)}
+                      {row.debitMu.toLocaleString("id-ID")}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {formatNumber(row.juli.rkap)}
+                      {row.kreditMu.toLocaleString("id-ID")}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {typeof row.juli.percentage === 'number' ? `${row.juli.percentage}%` : row.juli.percentage}
+                      Rp {row.debit.toLocaleString("id-ID")}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {formatNumber(row.sdJuli.real)}
+                      Rp {row.kredit.toLocaleString("id-ID")}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {formatNumber(row.sdJuli.rkap)}
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
+                      {row.keterangan}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {typeof row.sdJuli.percentage === 'number' ? `${row.sdJuli.percentage}%` : row.sdJuli.percentage}
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
+                      {row.periode.split("-").reverse().join("/")}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {formatNumber(row.rkapTotal.rkap)}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right">
-                      {typeof row.rkapTotal.percentage === 'number' ? `${row.rkapTotal.percentage}%` : row.rkapTotal.percentage}
+                    <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => openEdit(row)}
+                          className="px-2 py-1 text-xs rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center gap-1"
+                        >
+                          <Edit className="h-3.5 w-3.5" /> Edit
+                        </button>
+                        <button
+                          onClick={() => requestDelete(row)}
+                          className="px-2 py-1 text-xs rounded-md bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 inline-flex items-center gap-1"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Hapus
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -285,6 +394,59 @@ const LabaRugiDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Form Modal */}
+      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Baris Laba Rugi" : "Tambah Baris Laba Rugi"} size="xl">
+        <form onSubmit={submitForm} className="space-y-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-2 text-left min-w-[120px]">Kode Akun</th>
+                  <th className="px-3 py-2 text-left min-w-[150px]">Nama Akun</th>
+                  <th className="px-3 py-2 text-left min-w-[80px]">MU</th>
+                  <th className="px-3 py-2 text-right min-w-[100px]">Debet (MU)</th>
+                  <th className="px-3 py-2 text-right min-w-[100px]">Kredit (MU)</th>
+                  <th className="px-3 py-2 text-right min-w-[120px]">Debet (Rp.)</th>
+                  <th className="px-3 py-2 text-right min-w-[120px]">Kredit (Rp.)</th>
+                  <th className="px-3 py-2 text-left min-w-[150px]">Keterangan</th>
+                  <th className="px-3 py-2 text-left min-w-[120px]">Periode</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-3 py-2 min-w-[120px]"><input className="w-full border rounded-lg px-3 py-2" value={form.akun} onChange={(e)=>setForm(f=>({...f, akun: e.target.value}))} placeholder="40000000" /></td>
+                  <td className="px-3 py-2 min-w-[150px]"><input className="w-full border rounded-lg px-3 py-2" value={form.namaAkun} onChange={(e)=>setForm(f=>({...f, namaAkun: e.target.value}))} placeholder="Nama Akun" /></td>
+                  <td className="px-3 py-2 min-w-[80px]"><input className="w-full border rounded-lg px-3 py-2" value={form.mu} onChange={(e)=>setForm(f=>({...f, mu: e.target.value}))} placeholder="IDR" /></td>
+                  <td className="px-3 py-2 min-w-[100px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.debitMu} onChange={(e)=>setForm(f=>({...f, debitMu: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[100px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.kreditMu} onChange={(e)=>setForm(f=>({...f, kreditMu: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[120px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.debit} onChange={(e)=>setForm(f=>({...f, debit: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[120px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.kredit} onChange={(e)=>setForm(f=>({...f, kredit: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[150px]"><input className="w-full border rounded-lg px-3 py-2" value={form.keterangan} onChange={(e)=>setForm(f=>({...f, keterangan: e.target.value}))} placeholder="Keterangan" /></td>
+                  <td className="px-3 py-2 min-w-[120px]"><input type="month" className="w-full border rounded-lg px-3 py-2" value={form.periode} onChange={(e)=>setForm(f=>({...f, periode: e.target.value}))} /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <button type="button" onClick={() => setIsFormOpen(false)} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
+              Batal
+            </button>
+            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+              Simpan
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        itemName={`${itemToDelete?.akun} - ${itemToDelete?.namaAkun}`}
+      />
     </div>
   );
 };

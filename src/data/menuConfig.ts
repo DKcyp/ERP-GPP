@@ -249,18 +249,18 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
         ...(role === "qhse"
           ? [
-            {
-              title: "Daftar Induk Dokumen Internal",
-              icon: "FileText",
-              path: "/qhse/daftar-induk-dokumen-internal",
-            },
-            {
-              title: "Daftar Induk Dokumen Eksternal",
-              icon: "FileCheck",
-              path: "/qhse/daftar-induk-dokumen-eksternal",
-            },
+              {
+                title: "Daftar Induk Dokumen Internal",
+                icon: "FileText",
+                path: "/qhse/daftar-induk-dokumen-internal",
+              },
+              {
+                title: "Daftar Induk Dokumen Eksternal",
+                icon: "FileCheck",
+                path: "/qhse/daftar-induk-dokumen-eksternal",
+              },
             ]
-          : [] )      
+          : []),
       ],
     },
     // Procon-only: PBG submenu replaces Purchase Request
@@ -1132,7 +1132,7 @@ export const financeMenu: MenuSection[] = [
   //   title: "Kelola Bank",
   //   icon: "Banknote",
   //   items: [
-     
+
   //   ],
   // },
   // {
@@ -1905,12 +1905,12 @@ export const accountingMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Neraca",
-    icon: "Scale", // Icon for balance sheet
-    items: [],
-    directPath: "/accounting/neraca",
-  },
+  // {
+  //   title: "Neraca",
+  //   icon: "Scale", // Icon for balance sheet
+  //   items: [],
+  //   directPath: "/accounting/neraca",
+  // },
   {
     title: "Pajak",
     icon: "Scale", // Icon for general tax section
