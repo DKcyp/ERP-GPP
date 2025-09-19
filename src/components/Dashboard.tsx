@@ -107,6 +107,7 @@ import FinanceApprovalReimburseDashboard from "./FinanceApprovalReimburseDashboa
 import FinancePengajuanHutangUsahaDashboard from "./FinancePengajuanHutangUsahaDashboard";
 import FinancePengajuanVoucherDashboard from "./FinancePengajuanVoucherDashboard";
 import FinanceARInvoiceDashboard from "./FinanceARInvoiceDashboard";
+import FinanceLaporanARDashboard from "./FinanceLaporanARDashboard";
 import CollectionDashboardSO from "./CollectionDashboardSO";
 import CollectionDashboardProformaInvoice from "./CollectionDashboardProformaInvoice";
 import CollectionDashboardInvoice from "./CollectionDashboardInvoice";
@@ -1620,7 +1621,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <ProsesPembayaranARDashboard />;
     }
     if (currentPage === "/finance/ar/laporan") {
-      return <LaporanARDashboard />;
+      return <FinanceLaporanARDashboard />;
     }
     if (currentPage === "/finance/ap/pembayaran-gaji") {
       return <FinancePembayaranGajiPage />;
