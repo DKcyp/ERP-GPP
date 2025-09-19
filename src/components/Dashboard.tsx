@@ -112,6 +112,8 @@ import TrialBalanceDashboard from "./TrialBalanceDashboard";
 import AccountingAssetMasterKategoriDashboard from "./AccountingAssetMasterKategoriDashboard";
 import AccountingAssetAktivasiDashboard from "./AccountingAssetAktivasiDashboard";
 import BukuBesarDashboard from "./BukuBesarDashboard";
+import AccountingPph21KaryawanDashboard from "./AccountingPph21KaryawanDashboard";
+import AccountingPph21NonKaryawanDashboard from "./AccountingPph21NonKaryawanDashboard";
 
 // Gudang Dashboards
 import MasterBarangDashboard from "./MasterBarangDashboard";
@@ -259,6 +261,9 @@ import PPh25Dashboard from "./PPh25Dashboard";
 import SKPKBDashboard from "./SKPKBDashboard";
 import SP2DKDashboard from "./SP2DKDashboard";
 import STPDashboard from "./STPDashboard";
+import FinancePajakRekonsiliasiMasukanDashboard from "./FinancePajakRekonsiliasiMasukanDashboard";
+import FinancePajakRekonsiliasiKeluaranDashboard from "./FinancePajakRekonsiliasiKeluaranDashboard";
+import FinancePajakProsesHutangDashboard from "./FinancePajakProsesHutangDashboard";
 
 // Procon Dashboards
 import ProconMainDashboard from "./ProconMainDashboard";
@@ -1980,8 +1985,34 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/tax/pajak-keluaran") {
       return <PajakKeluaranDashboard />;
     }
+    if (currentPage === "/tax/pajak/laporan-rekonsiliasi-masukan") {
+      return <FinancePajakRekonsiliasiMasukanDashboard />;
+    }
+    if (currentPage === "/tax/pajak/laporan-rekonsiliasi-keluaran") {
+      return <FinancePajakRekonsiliasiKeluaranDashboard />;
+    }
+    if (currentPage === "/tax/pajak/proses-hutang-pajak") {
+      return <FinancePajakProsesHutangDashboard />;
+    }
+    // Finance aliases for the same Pajak pages
+    if (currentPage === "/finance/pajak/laporan-rekonsiliasi-masukan") {
+      return <FinancePajakRekonsiliasiMasukanDashboard />;
+    }
+    if (currentPage === "/finance/pajak/laporan-rekonsiliasi-keluaran") {
+      return <FinancePajakRekonsiliasiKeluaranDashboard />;
+    }
+    if (currentPage === "/finance/pajak/proses-hutang-pajak") {
+      return <FinancePajakProsesHutangDashboard />;
+    }
     if (currentPage === "/tax/pph-21") {
       return <PPh21Dashboard />;
+    }
+    // Accounting PPh 21 sub routes
+    if (currentPage === "/tax/pph-21/karyawan") {
+      return <AccountingPph21KaryawanDashboard />;
+    }
+    if (currentPage === "/tax/pph-21/non-karyawan") {
+      return <AccountingPph21NonKaryawanDashboard />;
     }
     if (currentPage === "/tax/pph-23") {
       return <PPh23Dashboard />;

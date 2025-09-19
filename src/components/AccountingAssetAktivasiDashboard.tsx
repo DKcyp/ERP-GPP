@@ -38,7 +38,32 @@ const mockPOs: PO[] = [
   },
 ];
 
-const seed: AktivasiAssetItem[] = [];
+const seed: AktivasiAssetItem[] = [
+  {
+    id: "aa-001",
+    tanggal: "2025-09-02",
+    noPO: "PO-001/2025",
+    vendor: "PT Sumber Makmur",
+    barangPOId: "it-1",
+    namaBarang: "Laptop A",
+    qty: 2,
+    harga: 15000000,
+    kategori: "Peralatan Kantor",
+    keterangan: "Aktivasi sebagian dari PO"
+  },
+  {
+    id: "aa-002",
+    tanggal: "2025-09-03",
+    noPO: "PO-002/2025",
+    vendor: "CV Elektronik Jaya",
+    barangPOId: "it-4",
+    namaBarang: "Kamera D",
+    qty: 1,
+    harga: 8000000,
+    kategori: "Elektronik",
+    keterangan: "Untuk dokumentasi proyek"
+  },
+];
 
 const AccountingAssetAktivasiDashboard: React.FC = () => {
   const [rows, setRows] = useState<AktivasiAssetItem[]>(seed);
