@@ -8,7 +8,8 @@ import {
   Banknote,
   TrendingUp,
   TrendingDown,
-  Clock
+  Clock,
+  Filter
 } from 'lucide-react';
 
 interface BankData {
@@ -24,13 +25,59 @@ interface BankData {
   saldoBank?: number; // Only for special report
 }
 
+interface KasData {
+  id: number;
+  namaKas: string;
+  lokasi: string;
+  penanggungJawab: string;
+  saldoAwal: number;
+  kasMasuk: number;
+  kasKeluar: number;
+  saldoAkhir: number;
+}
+
 const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [filterType, setFilterType] = useState<'kas' | 'bank'>('kas'); // Filter state
 
 
 
-  // Sample data for special daily report (with additional columns)
+  // Sample data for kas (cash) daily report
+  const kasData: KasData[] = [
+    {
+      id: 1,
+      namaKas: 'Kas Kecil Operasional',
+      lokasi: 'Kantor Pusat - Lantai 2',
+      penanggungJawab: 'Ahmad Rizki',
+      saldoAwal: 5000000,
+      kasMasuk: 2500000,
+      kasKeluar: 1800000,
+      saldoAkhir: 5700000
+    },
+    {
+      id: 2,
+      namaKas: 'Kas Proyek Site A',
+      lokasi: 'Site A - Container Office',
+      penanggungJawab: 'Siti Nurhaliza',
+      saldoAwal: 3000000,
+      kasMasuk: 1500000,
+      kasKeluar: 1200000,
+      saldoAkhir: 3300000
+    },
+    {
+      id: 3,
+      namaKas: 'Kas Proyek Site B',
+      lokasi: 'Site B - Field Office',
+      penanggungJawab: 'Budi Santoso',
+      saldoAwal: 2500000,
+      kasMasuk: 800000,
+      kasKeluar: 650000,
+      saldoAkhir: 2650000
+    }
+  ];
+
+  // Sample data for bank daily report (with additional columns)
   const bankDataKhusus: BankData[] = [
     {
       id: 1,
@@ -70,33 +117,55 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
     }
   ];
 
-  // Use only the special report data (bankDataKhusus)
+  // Filter data based on selected type (kas or bank)
   const filteredData = useMemo(() => {
-    return bankDataKhusus.filter(item =>
-      item.namaBank.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.noRek.includes(searchTerm) ||
-      item.alamat.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
+    if (filterType === 'kas') {
+      return kasData.filter(item =>
+        item.namaKas.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.lokasi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.penanggungJawab.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    } else {
+      return bankDataKhusus.filter(item =>
+        item.namaBank.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.noRek.includes(searchTerm) ||
+        item.alamat.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+  }, [searchTerm, filterType, kasData, bankDataKhusus]);
 
-  // Calculate totals
+  // Calculate totals based on filter type
   const totals = useMemo(() => {
-    return filteredData.reduce((acc, item) => ({
-      saldoAwal: acc.saldoAwal + item.saldoAwal,
-      bankMasuk: acc.bankMasuk + item.bankMasuk,
-      bankKeluar: acc.bankKeluar + item.bankKeluar,
-      saldoAkhir: acc.saldoAkhir + item.saldoAkhir,
-      saldoTertahan: acc.saldoTertahan + (item.saldoTertahan || 0),
-      saldoBank: acc.saldoBank + (item.saldoBank || 0)
-    }), {
-      saldoAwal: 0,
-      bankMasuk: 0,
-      bankKeluar: 0,
-      saldoAkhir: 0,
-      saldoTertahan: 0,
-      saldoBank: 0
-    });
-  }, [filteredData]);
+    if (filterType === 'kas') {
+      return (filteredData as KasData[]).reduce((acc, item) => ({
+        saldoAwal: acc.saldoAwal + item.saldoAwal,
+        kasMasuk: acc.kasMasuk + item.kasMasuk,
+        kasKeluar: acc.kasKeluar + item.kasKeluar,
+        saldoAkhir: acc.saldoAkhir + item.saldoAkhir
+      }), {
+        saldoAwal: 0,
+        kasMasuk: 0,
+        kasKeluar: 0,
+        saldoAkhir: 0
+      });
+    } else {
+      return (filteredData as BankData[]).reduce((acc, item) => ({
+        saldoAwal: acc.saldoAwal + item.saldoAwal,
+        bankMasuk: acc.bankMasuk + item.bankMasuk,
+        bankKeluar: acc.bankKeluar + item.bankKeluar,
+        saldoAkhir: acc.saldoAkhir + item.saldoAkhir,
+        saldoTertahan: acc.saldoTertahan + (item.saldoTertahan || 0),
+        saldoBank: acc.saldoBank + (item.saldoBank || 0)
+      }), {
+        saldoAwal: 0,
+        bankMasuk: 0,
+        bankKeluar: 0,
+        saldoAkhir: 0,
+        saldoTertahan: 0,
+        saldoBank: 0
+      });
+    }
+  }, [filteredData, filterType]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -144,9 +213,14 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Bank Masuk</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total {filterType === 'kas' ? 'Kas' : 'Bank'} Masuk
+                </p>
                 <p className="text-2xl font-bold text-green-600">
-                  Rp {totals.bankMasuk.toLocaleString('id-ID')}
+                  Rp {filterType === 'kas' 
+                    ? (totals as any).kasMasuk?.toLocaleString('id-ID') || '0'
+                    : (totals as any).bankMasuk?.toLocaleString('id-ID') || '0'
+                  }
                 </p>
               </div>
               <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -158,9 +232,14 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Bank Keluar</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total {filterType === 'kas' ? 'Kas' : 'Bank'} Keluar
+                </p>
                 <p className="text-2xl font-bold text-red-600">
-                  Rp {totals.bankKeluar.toLocaleString('id-ID')}
+                  Rp {filterType === 'kas' 
+                    ? (totals as any).kasKeluar?.toLocaleString('id-ID') || '0'
+                    : (totals as any).bankKeluar?.toLocaleString('id-ID') || '0'
+                  }
                 </p>
               </div>
               <div className="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -188,7 +267,21 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
 
           {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Filter className="h-4 w-4 inline mr-1" />
+                Filter Tipe
+              </label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value as 'kas' | 'bank')}
+                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="kas">Kas</option>
+                <option value="bank">Bank</option>
+              </select>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
               <div className="relative">
@@ -202,7 +295,9 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cari Bank</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cari {filterType === 'kas' ? 'Kas' : 'Bank'}
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -228,22 +323,101 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Laporan Bank Harian Khusus ({filteredData.length} bank)
-            </h3>
-            <div className="text-sm text-gray-500">
-              Tanggal: {new Date(selectedDate).toLocaleDateString('id-ID', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </div>
+       
+      {/* Data Table - Conditional rendering based on filter type */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Laporan {filterType === 'kas' ? 'Kas' : 'Bank'} Harian Khusus ({filteredData.length} {filterType === 'kas' ? 'kas' : 'bank'})
+          </h3>
+          <div className="text-sm text-gray-500">
+            Tanggal: {new Date(selectedDate).toLocaleDateString('id-ID', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
           </div>
+        </div>
 
-          <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
+          {filterType === 'kas' ? (
+            // Kas Table
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Kas
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Lokasi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Penanggung Jawab
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Saldo Awal
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kas Masuk
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kas Keluar
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Saldo Akhir
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {(filteredData as KasData[]).map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {item.namaKas}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.lokasi}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {item.penanggungJawab}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                      Rp {item.saldoAwal.toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 font-medium">
+                      Rp {item.kasMasuk.toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 font-medium">
+                      Rp {item.kasKeluar.toLocaleString('id-ID')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-blue-600 font-semibold">
+                      Rp {item.saldoAkhir.toLocaleString('id-ID')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-gray-50">
+                <tr>
+                  <td colSpan={3} className="px-6 py-3 text-sm font-semibold text-gray-900 text-right">
+                    Total:
+                  </td>
+                  <td className="px-6 py-3 text-sm font-semibold text-right text-gray-900">
+                    Rp {totals.saldoAwal.toLocaleString('id-ID')}
+                  </td>
+                  <td className="px-6 py-3 text-sm font-semibold text-right text-green-600">
+                    Rp {(totals as any).kasMasuk?.toLocaleString('id-ID') || '0'}
+                  </td>
+                  <td className="px-6 py-3 text-sm font-semibold text-right text-red-600">
+                    Rp {(totals as any).kasKeluar?.toLocaleString('id-ID') || '0'}
+                  </td>
+                  <td className="px-6 py-3 text-sm font-semibold text-right text-blue-600">
+                    Rp {totals.saldoAkhir.toLocaleString('id-ID')}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          ) : (
+            // Bank Table
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -251,7 +425,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                     Nama Bank
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    No. Rekening
+                    No Rekening
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Alamat
@@ -277,7 +451,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map((item) => (
+                {(filteredData as BankData[]).map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {item.namaBank}
@@ -318,26 +492,28 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                     Rp {totals.saldoAwal.toLocaleString('id-ID')}
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-green-600">
-                    Rp {totals.bankMasuk.toLocaleString('id-ID')}
+                    Rp {(totals as any).bankMasuk?.toLocaleString('id-ID') || '0'}
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-red-600">
-                    Rp {totals.bankKeluar.toLocaleString('id-ID')}
+                    Rp {(totals as any).bankKeluar?.toLocaleString('id-ID') || '0'}
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-blue-600">
                     Rp {totals.saldoAkhir.toLocaleString('id-ID')}
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-yellow-600">
-                    Rp {totals.saldoTertahan.toLocaleString('id-ID')}
+                    Rp {(totals as any).saldoTertahan?.toLocaleString('id-ID') || '0'}
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-purple-600">
-                    Rp {totals.saldoBank.toLocaleString('id-ID')}
+                    Rp {(totals as any).saldoBank?.toLocaleString('id-ID') || '0'}
                   </td>
                 </tr>
               </tfoot>
             </table>
-          </div>
+          )}
         </div>
       </div>
+      </div>
+
     </div>
   );
 };

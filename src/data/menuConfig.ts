@@ -1117,14 +1117,9 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/kas/kas-bank-entry",
       },
       {
-        title: "Laporan Kas Harian",
+        title: "Laporan Kas Bank Harian",
         icon: "FileText",
-        path: "/finance/kas/laporan-kas",
-      },
-      {
-        title: "Laporan Bank Harian",
-        icon: "FileText",
-        path: "/finance/bank/laporan-kas-bank-harian",
+        path: "/finance/kas/laporan-kas-bank-harian",
       },
     ],
   },
