@@ -101,7 +101,7 @@ import FinanceVoucherDashboard from "./FinanceVoucherDashboard";
 import FinanceKasBankEntryDashboard from "./FinanceKasBankEntryDashboard";
 import FinanceLaporanKasDashboard from "./FinanceLaporanKasDashboard";
 import FinanceLaporanBankDashboard from "./FinanceLaporanBankDashboard";
-import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumeniDashboard";
+
 import FinanceApprovalVoucherDashboard from "./FinanceApprovalVoucherDashboard";
 import FinanceApprovalReimburseDashboard from "./FinanceApprovalReimburseDashboard";
 import FinancePengajuanHutangUsahaDashboard from "./FinancePengajuanHutangUsahaDashboard";
@@ -115,6 +115,7 @@ import CollectionDashboardInvoiceOutstanding from "./CollectionDashboardInvoiceO
 import CollectionDatabaseCustomer from "./CollectionDatabaseCustomer";
 import CollectionDashboardCashIn from "./CollectionDashboardCashIn";
 import FinanceTandaTerimaDokumeniDashboard from "./FinanceTandaTerimaDokumeniDashboard";
+import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumenPembelianDashboard";
 import JurnalManualDashboard from "./JurnalManualDashboard";
 import AssetDashboard from "./AssetDashboard";
 import TrialBalanceDashboard from "./TrialBalanceDashboard";
@@ -1687,6 +1688,14 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/finance/voucher/laporan-hutang-usaha") {
       return <LaporanHutangUsahaDashboard />;
+    }
+
+    // Finance Tanda Terima Routes
+    if (currentPage === "/finance/tanda-terima-dokumeni") {
+      return <FinanceTandaTerimaDokumeniDashboard />;
+    }
+    if (currentPage === "/finance/tanda-terima-dokumen-pembelian") {
+      return <FinanceTandaTerimaDokumenPembelianDashboard />;
     }
 
     // Management Routes

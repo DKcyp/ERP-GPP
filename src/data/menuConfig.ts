@@ -1351,12 +1351,12 @@ export const financeMenu: MenuSection[] = [
     icon: "Wallet",
     items: [
       {
-        title: "Tanda Terima Dokumen Penagihan",
+        title: "Dokumen Penagihan",
         icon: "FileText",
         path: "/finance/tanda-terima-dokumeni",
       },
       {
-        title: "Tanda Terima Dokumen Pembelian",
+        title: "Dokumen Pembelian",
         icon: "FileText",
         path: "/finance/tanda-terima-dokumen-pembelian",
       },

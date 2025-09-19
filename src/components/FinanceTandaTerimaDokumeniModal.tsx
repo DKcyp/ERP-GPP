@@ -22,6 +22,10 @@ export interface TandaTerimaDokumeniFormData {
   pengirim: string;
   keteranganUmum: string;
   detailItems: TTDDetailItem[];
+  // New fields for Dokumen Penagihan requirements
+  tanggalDokumen?: Date | null;
+  uploadDokumen?: File | null;
+  noSO?: string;
 }
 
 interface FinanceTandaTerimaDokumeniModalProps {
@@ -45,6 +49,10 @@ const FinanceTandaTerimaDokumeniModal: React.FC<FinanceTandaTerimaDokumeniModalP
     pengirim: '',
     keteranganUmum: '',
     detailItems: [{ id: 1, jenisDokumen: '', noDokumen: '', namaDokumen: '', pengirim: '', jumlahBerkas: 1, keterangan: '' }],
+    // New fields for Dokumen Penagihan requirements
+    tanggalDokumen: null,
+    uploadDokumen: null,
+    noSO: '',
   };
 
   const [formData, setFormData] = useState<TandaTerimaDokumeniFormData>(initialEmpty);
@@ -138,6 +146,46 @@ const FinanceTandaTerimaDokumeniModal: React.FC<FinanceTandaTerimaDokumeniModalP
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
                 <textarea rows={3} value={formData.keteranganUmum} onChange={e => setFormData(prev => ({ ...prev, keteranganUmum: e.target.value }))} className="block w-full border rounded-lg px-4 py-2 text-sm" placeholder="Keterangan umum..."></textarea>
+              </div>
+            </div>
+
+            {/* New fields for Dokumen Penagihan requirements */}
+            <div className="border-t pt-6">
+              <h4 className="text-lg font-semibold text-gray-800 mb-4">Informasi Dokumen (Berdasarkan SO)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">No SO</label>
+                  <input 
+                    type="text" 
+                    value={formData.noSO || ''} 
+                    onChange={e => setFormData(prev => ({ ...prev, noSO: e.target.value }))} 
+                    className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" 
+                    placeholder="SO-2025-001"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Dokumen</label>
+                  <DatePicker 
+                    selected={formData.tanggalDokumen} 
+                    onChange={(date: Date | null) => setFormData(prev => ({ ...prev, tanggalDokumen: date }))} 
+                    dateFormat="dd/MM/yyyy" 
+                    className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" 
+                    placeholderText="Pilih tanggal dokumen"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Upload Dokumen</label>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" 
+                    onChange={e => setFormData(prev => ({ ...prev, uploadDokumen: e.target.files?.[0] || null }))} 
+                    className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  {formData.uploadDokumen && (
+                    <p className="mt-1 text-sm text-green-600">File terpilih: {formData.uploadDokumen.name}</p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">Format: PDF, DOC, DOCX, JPG, PNG (Max 10MB)</p>
+                </div>
               </div>
             </div>
 

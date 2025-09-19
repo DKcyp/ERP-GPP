@@ -38,7 +38,7 @@ const FinanceApprovalReimburseDashboard: React.FC = () => {
   const [approvalAction, setApprovalAction] = useState<'approve' | 'reject'>('approve');
   const [approvalNotes, setApprovalNotes] = useState('');
 
-  // Dummy data
+  // Dummy data with more comprehensive examples
   const [rows, setRows] = useState<ApprovalReimburseRow[]>([
     {
       id: 1,
@@ -73,6 +73,56 @@ const FinanceApprovalReimburseDashboard: React.FC = () => {
       keterangan: 'Reimburse biaya medical check up karyawan',
       catatan: 'Disetujui sesuai kebijakan medical',
       dokumenPendukung: 'Kwitansi rumah sakit, hasil MCU',
+    },
+    {
+      id: 3,
+      noReimburse: 'RMB-2025-0903',
+      tglReimburse: '2025-09-08',
+      namaDivisi: 'Finance',
+      noSO: 'SO-025',
+      nominalReimburse: 450000,
+      statusApproval: 'Pending',
+      namaKaryawan: 'Ahmad Wijaya',
+      jenisReimburse: 'Meal',
+      approver: 'Kepala Finance',
+      levelApproval: 1,
+      tglSubmit: '2025-09-08',
+      keterangan: 'Reimburse makan siang meeting dengan vendor',
+      dokumenPendukung: 'Kwitansi restoran, foto meeting',
+    },
+    {
+      id: 4,
+      noReimburse: 'RMB-2025-0904',
+      tglReimburse: '2025-09-10',
+      namaDivisi: 'Procurement',
+      noSO: 'SO-030',
+      nominalReimburse: 2500000,
+      statusApproval: 'Rejected',
+      namaKaryawan: 'Maya Sari',
+      jenisReimburse: 'Equipment',
+      approver: 'Direktur Operasional',
+      levelApproval: 3,
+      tglSubmit: '2025-09-10',
+      tglApproval: '2025-09-11',
+      keterangan: 'Reimburse pembelian laptop untuk project',
+      catatan: 'Ditolak karena melebihi budget yang disetujui',
+      dokumenPendukung: 'Invoice laptop, spesifikasi teknis',
+    },
+    {
+      id: 5,
+      noReimburse: 'RMB-2025-0905',
+      tglReimburse: '2025-09-12',
+      namaDivisi: 'QHSE',
+      noSO: 'SO-035',
+      nominalReimburse: 750000,
+      statusApproval: 'Pending',
+      namaKaryawan: 'Rina Dewi',
+      jenisReimburse: 'Training',
+      approver: 'Manajer QHSE',
+      levelApproval: 2,
+      tglSubmit: '2025-09-12',
+      keterangan: 'Reimburse biaya training safety untuk karyawan',
+      dokumenPendukung: 'Sertifikat training, kwitansi pembayaran',
     },
   ]);
 
@@ -392,6 +442,207 @@ const FinanceApprovalReimburseDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedReimburse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">Detail Reimburse</h3>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">No Reimburse</label>
+                  <p className="text-sm text-gray-900 font-semibold">{selectedReimburse.noReimburse}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Reimburse</label>
+                  <p className="text-sm text-gray-900">{new Date(selectedReimburse.tglReimburse).toLocaleDateString('id-ID')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Karyawan</label>
+                  <p className="text-sm text-gray-900">{selectedReimburse.namaKaryawan}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Divisi</label>
+                  <p className="text-sm text-gray-900">{selectedReimburse.namaDivisi}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">No SO</label>
+                  <p className="text-sm text-gray-900">{selectedReimburse.noSO}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Reimburse</label>
+                  <p className="text-sm text-gray-900">{selectedReimburse.jenisReimburse}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nominal</label>
+                  <p className="text-sm text-gray-900 font-semibold text-green-600">
+                    Rp {selectedReimburse.nominalReimburse.toLocaleString('id-ID')}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <div>{getStatusBadge(selectedReimburse.statusApproval)}</div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Approver</label>
+                  <p className="text-sm text-gray-900">{selectedReimburse.approver}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Level Approval</label>
+                  <p className="text-sm text-gray-900">Level {selectedReimburse.levelApproval}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Submit</label>
+                  <p className="text-sm text-gray-900">{new Date(selectedReimburse.tglSubmit).toLocaleDateString('id-ID')}</p>
+                </div>
+                {selectedReimburse.tglApproval && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Approval</label>
+                    <p className="text-sm text-gray-900">{new Date(selectedReimburse.tglApproval).toLocaleDateString('id-ID')}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">{selectedReimburse.keterangan}</p>
+              </div>
+              
+              {selectedReimburse.dokumenPendukung && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Dokumen Pendukung</label>
+                  <p className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">{selectedReimburse.dokumenPendukung}</p>
+                </div>
+              )}
+              
+              {selectedReimburse.catatan && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Catatan Approval</label>
+                  <p className="text-sm text-gray-900 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">{selectedReimburse.catatan}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-end space-x-4 mt-6 pt-6 border-t">
+              {selectedReimburse.statusApproval === 'Pending' && (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowDetailModal(false);
+                      handleApproval(selectedReimburse, 'reject');
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200"
+                  >
+                    <XCircle className="h-4 w-4 inline mr-2" />
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDetailModal(false);
+                      handleApproval(selectedReimburse, 'approve');
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+                  >
+                    <CheckCircle className="h-4 w-4 inline mr-2" />
+                    Approve
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approval Confirmation Modal */}
+      {showApprovalModal && selectedReimburse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center mb-4">
+              {approvalAction === 'approve' ? (
+                <CheckCircle className="h-8 w-8 text-green-600 mr-3" />
+              ) : (
+                <XCircle className="h-8 w-8 text-red-600 mr-3" />
+              )}
+              <h3 className="text-lg font-semibold text-gray-900">
+                {approvalAction === 'approve' ? 'Konfirmasi Approval' : 'Konfirmasi Rejection'}
+              </h3>
+            </div>
+            
+            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-2">No Reimburse:</p>
+              <p className="text-sm font-semibold text-gray-900">{selectedReimburse.noReimburse}</p>
+              <p className="text-sm text-gray-600 mb-2 mt-2">Karyawan:</p>
+              <p className="text-sm font-semibold text-gray-900">{selectedReimburse.namaKaryawan}</p>
+              <p className="text-sm text-gray-600 mb-2 mt-2">Nominal:</p>
+              <p className="text-sm font-semibold text-green-600">
+                Rp {selectedReimburse.nominalReimburse.toLocaleString('id-ID')}
+              </p>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Catatan {approvalAction === 'approve' ? 'Approval' : 'Rejection'}
+                {approvalAction === 'reject' && <span className="text-red-500"> *</span>}
+              </label>
+              <textarea
+                value={approvalNotes}
+                onChange={(e) => setApprovalNotes(e.target.value)}
+                placeholder={`Masukkan catatan ${approvalAction === 'approve' ? 'approval' : 'rejection'}...`}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                rows={3}
+                required={approvalAction === 'reject'}
+              />
+              {approvalAction === 'reject' && (
+                <p className="text-xs text-red-500 mt-1">Catatan wajib diisi untuk rejection</p>
+              )}
+            </div>
+            
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => {
+                  setShowApprovalModal(false);
+                  setApprovalNotes('');
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmApproval}
+                disabled={approvalAction === 'reject' && !approvalNotes.trim()}
+                className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                  approvalAction === 'approve'
+                    ? 'text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400'
+                    : 'text-white bg-red-600 hover:bg-red-700 disabled:bg-red-400'
+                } disabled:cursor-not-allowed`}
+              >
+                {approvalAction === 'approve' ? 'Approve' : 'Reject'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
