@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle } from 'lucide-react';
+import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle, CheckCircle, XCircle } from 'lucide-react';
 
 type Status = 'Pending' | 'Approved' | 'Rejected';
 
@@ -57,6 +57,39 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
         { id: 'it-1', kodeBarang: 'BRG-001', namaBarang: 'Kabel UTP Cat6', qty: 100, unit: 'meter' },
       ],
     },
+    {
+      id: 'PRG-20250719-002',
+      kodePermintaan: 'PRG-20250719-002',
+      tanggalInput: '2025-07-19',
+      gudangAsal: 'G002',
+      gudangTujuan: 'G003',
+      status: 'Approved',
+      items: [
+        { id: 'it-2', kodeBarang: 'BRG-002', namaBarang: 'Besi Beton 12mm', qty: 50, unit: 'batang' },
+      ],
+    },
+    {
+      id: 'PRG-20250719-003',
+      kodePermintaan: 'PRG-20250719-003',
+      tanggalInput: '2025-07-19',
+      gudangAsal: 'G001',
+      gudangTujuan: 'G003',
+      status: 'Pending',
+      items: [
+        { id: 'it-3', kodeBarang: 'BRG-003', namaBarang: 'Semen Portland', qty: 25, unit: 'sak' },
+      ],
+    },
+    {
+      id: 'PRG-20250719-004',
+      kodePermintaan: 'PRG-20250719-004',
+      tanggalInput: '2025-07-19',
+      gudangAsal: 'G003',
+      gudangTujuan: 'G001',
+      status: 'Rejected',
+      items: [
+        { id: 'it-4', kodeBarang: 'BRG-004', namaBarang: 'Cat Tembok Putih', qty: 10, unit: 'kaleng' },
+      ],
+    },
   ]);
 
   // Header form state
@@ -66,6 +99,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
     gudangAsal: '',
     gudangTujuan: '',
   });
+
 
   // Items input table state
   const [items, setItems] = useState<RequestItem[]>([
@@ -304,13 +338,31 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                         <button className="text-blue-600 hover:text-blue-900 transition-colors" title="Lihat Detail">
                           <Eye className="h-5 w-5" />
                         </button>
+                        {request.status === 'Pending' && (
+                          <>
+                            <button 
+                              onClick={() => handleApprove(request.kodePermintaan)}
+                              className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-5 w-5" />
+                            </button>
+                            <button 
+                              onClick={() => handleReject(request.kodePermintaan)}
+                              className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
+                              title="Reject"
+                            >
+                              <XCircle className="h-5 w-5" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
                     Tidak ada permintaan barang yang ditemukan.
                   </td>
                 </tr>

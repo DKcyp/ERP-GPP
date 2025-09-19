@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays, CheckCircle, XCircle } from 'lucide-react';
+import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays } from 'lucide-react';
 import EntryMutasiBarangModal from './EntryMutasiBarangModal'; // Import the new modal
 
 interface MutasiBarangItem {
@@ -58,36 +58,6 @@ const MutasiBarangDashboard: React.FC = () => {
     }
   };
 
-  const getApprovalStatusBadge = (status: string) => {
-    const config = {
-      'Waiting': { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-      'Approved': { color: 'bg-green-100 text-green-800', icon: CheckCircle },
-      'Rejected': { color: 'bg-red-100 text-red-800', icon: XCircle }
-    };
-    const { color, icon: Icon } = config[status as keyof typeof config];
-    return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${color}`}>
-        <Icon className="w-3 h-3 mr-1" />
-        {status}
-      </span>
-    );
-  };
-
-  const handleApprove = (id: number) => {
-    setMutasiBarangItems(prev => prev.map(item => 
-      item.no === id 
-        ? { ...item, status: 'Approved', approvalStatus: 'Approved' }
-        : item
-    ));
-  };
-
-  const handleReject = (id: number) => {
-    setMutasiBarangItems(prev => prev.map(item => 
-      item.no === id 
-        ? { ...item, status: 'Rejected', approvalStatus: 'Rejected' }
-        : item
-    ));
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -260,8 +230,6 @@ const MutasiBarangDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Tujuan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Mutasi</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -279,42 +247,11 @@ const MutasiBarangDashboard: React.FC = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getApprovalStatusBadge(item.approvalStatus)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex flex-col">
-                        <span className={`text-xs px-2 py-1 rounded ${item.sourceType === 'From_PBG' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {item.sourceType === 'From_PBG' ? 'From PBG' : 'Manual'}
-                        </span>
-                        {item.pbgReference && (
-                          <span className="text-xs text-gray-500 mt-1">{item.pbgReference}</span>
-                        )}
-                      </div>
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100">
                           <Eye className="h-5 w-5" />
                         </button>
-                        {item.approvalStatus === 'Waiting' && (
-                          <>
-                            <button 
-                              onClick={() => handleApprove(item.no)}
-                              className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100"
-                              title="Approve"
-                            >
-                              <CheckCircle className="h-5 w-5" />
-                            </button>
-                            <button 
-                              onClick={() => handleReject(item.no)}
-                              className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
-                              title="Reject"
-                            >
-                              <XCircle className="h-5 w-5" />
-                            </button>
-                          </>
-                        )}
                         <button className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100">
                           <Edit className="h-5 w-5" />
                         </button>
