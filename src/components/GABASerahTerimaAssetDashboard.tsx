@@ -11,6 +11,9 @@ interface BASerahTerimaItem {
   penerima: string;
   namaAsset: string;
   nomorAsset: string;
+  kodeAsset: string;
+  jumlah: number;
+  keterangan: string;
   kondisi: 'Baik' | 'Rusak' | 'Perlu Perbaikan';
   status: 'Draft' | 'Selesai' | 'Pending';
 }
@@ -24,6 +27,9 @@ const seedData = (): BASerahTerimaItem[] => [
     penerima: 'Jane Smith',
     namaAsset: 'Laptop Dell Latitude 5520',
     nomorAsset: 'AST-IT-001',
+    kodeAsset: 'LPT-001',
+    jumlah: 1,
+    keterangan: 'Serah terima laptop untuk karyawan baru',
     kondisi: 'Baik',
     status: 'Selesai'
   },
@@ -35,6 +41,9 @@ const seedData = (): BASerahTerimaItem[] => [
     penerima: 'Ahmad Rizki',
     namaAsset: 'Kursi Kantor Ergonomis',
     nomorAsset: 'AST-FUR-025',
+    kodeAsset: 'CHR-025',
+    jumlah: 2,
+    keterangan: 'Penggantian kursi lama dengan yang baru',
     kondisi: 'Baik',
     status: 'Selesai'
   },
@@ -46,6 +55,9 @@ const seedData = (): BASerahTerimaItem[] => [
     penerima: 'Budi Santoso',
     namaAsset: 'Monitor LG 24 inch',
     nomorAsset: 'AST-IT-015',
+    kodeAsset: 'MON-015',
+    jumlah: 1,
+    keterangan: 'Monitor tambahan untuk workstation',
     kondisi: 'Baik',
     status: 'Pending'
   },
@@ -57,7 +69,66 @@ const seedData = (): BASerahTerimaItem[] => [
     penerima: 'Sari Dewi',
     namaAsset: 'Printer Canon',
     nomorAsset: 'AST-IT-008',
+    kodeAsset: 'PRT-008',
+    jumlah: 1,
+    keterangan: 'Printer perlu diperbaiki sebelum diserahkan',
     kondisi: 'Perlu Perbaikan',
+    status: 'Draft'
+  },
+  {
+    id: '5',
+    nomorBA: 'BA-STA-005/2024',
+    tanggalBA: '2024-12-19',
+    penyerah: 'IT Support',
+    penerima: 'Andi Pratama',
+    namaAsset: 'Laptop Asus VivoBook',
+    nomorAsset: 'AST-IT-025',
+    kodeAsset: 'LPT-025',
+    jumlah: 1,
+    keterangan: 'Laptop untuk tim sales mobile',
+    kondisi: 'Baik',
+    status: 'Selesai'
+  },
+  {
+    id: '6',
+    nomorBA: 'BA-STA-006/2024',
+    tanggalBA: '2024-12-20',
+    penyerah: 'GA Officer',
+    penerima: 'Lisa Anggraini',
+    namaAsset: 'Meja Kerja L-Shape',
+    nomorAsset: 'AST-FUR-045',
+    kodeAsset: 'DSK-045',
+    jumlah: 1,
+    keterangan: 'Meja baru untuk ruang HR',
+    kondisi: 'Baik',
+    status: 'Selesai'
+  },
+  {
+    id: '7',
+    nomorBA: 'BA-STA-007/2024',
+    tanggalBA: '2024-12-21',
+    penyerah: 'IT Admin',
+    penerima: 'Rudi Hermawan',
+    namaAsset: 'Access Point Ubiquiti',
+    nomorAsset: 'AST-NET-012',
+    kodeAsset: 'AP-012',
+    jumlah: 3,
+    keterangan: 'Pemasangan AP untuk area operasional',
+    kondisi: 'Baik',
+    status: 'Pending'
+  },
+  {
+    id: '8',
+    nomorBA: 'BA-STA-008/2024',
+    tanggalBA: '2024-12-22',
+    penyerah: 'Facility Manager',
+    penerima: 'Dina Marlina',
+    namaAsset: 'Lemari Arsip 4 Laci',
+    nomorAsset: 'AST-FUR-067',
+    kodeAsset: 'CAB-067',
+    jumlah: 2,
+    keterangan: 'Lemari arsip untuk dokumen accounting',
+    kondisi: 'Baik',
     status: 'Draft'
   }
 ];
@@ -81,7 +152,7 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
   };
 
   const getKondisiBadge = (kondisi: string) => {
-    const baseClass = "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border";
+    const baseClass = "inline-flex items-center px-2 py-0.5 rounded-full text-xs text-center font-medium border";
     switch (kondisi) {
       case 'Baik': return `${baseClass} bg-green-100 text-green-800 border-green-200`;
       case 'Rusak': return `${baseClass} bg-red-100 text-red-800 border-red-200`;
@@ -217,7 +288,7 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-xs min-w-[1200px]">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold text-gray-900">No</th>
@@ -226,6 +297,9 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left font-semibold text-gray-900">Penyerah</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-900">Penerima</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-900">Nama Asset</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-900">Kode Asset</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-900">Jumlah</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-900">Keterangan</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-900">Kondisi</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-900">Status</th>
                   <th className="px-4 py-3 text-center font-semibold text-gray-900">Aksi</th>
@@ -240,6 +314,11 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
                     <td className="px-4 py-3">{item.penyerah}</td>
                     <td className="px-4 py-3">{item.penerima}</td>
                     <td className="px-4 py-3">{item.namaAsset}</td>
+                    <td className="px-4 py-3 text-blue-600">{item.kodeAsset}</td>
+                    <td className="px-4 py-3 text-center">{item.jumlah}</td>
+                    <td className="px-4 py-3 max-w-40 truncate text-gray-600" title={item.keterangan}>
+                      {item.keterangan || '-'}
+                    </td>
                     <td className="px-4 py-3">
                       <span className={getKondisiBadge(item.kondisi)}>
                         {item.kondisi}
