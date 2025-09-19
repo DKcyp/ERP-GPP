@@ -140,6 +140,26 @@ const ReconcilliationMatchDashboard: React.FC = () => {
     }).format(value);
   };
 
+  // Totals for selected items
+  const totalMutasi = selectedMutasi.reduce(
+    (sum, i) => sum + (i.debit || 0) + (i.credit || 0),
+    0
+  );
+  const totalJurnal = selectedJurnal.reduce(
+    (sum, i) => sum + (i.debit || 0) + (i.credit || 0),
+    0
+  );
+
+  const handleRekonsiliasi = () => {
+    console.log("Rekonsiliasi clicked", {
+      selectedMutasi,
+      selectedJurnal,
+      totalMutasi,
+      totalJurnal,
+    });
+    // TODO: Implement reconciliation action
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
       <div className="max-w-full mx-auto">
@@ -864,6 +884,29 @@ const ReconcilliationMatchDashboard: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+        {/* Bottom Summary Bar */}
+        <div className="mt-6 flex items-center justify-between">
+          <div className="flex items-center gap-12">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-500">Total Mutasi</span>
+              <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-md text-gray-700 min-w-[160px] text-right">
+                {formatCurrency(totalMutasi)}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-500">Total Jurnal</span>
+              <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-md text-gray-700 min-w-[160px] text-right">
+                {formatCurrency(totalJurnal)}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={handleRekonsiliasi}
+            className="px-5 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 shadow-sm"
+          >
+            Rekonsiliasi
+          </button>
         </div>
       </div>
     </div>

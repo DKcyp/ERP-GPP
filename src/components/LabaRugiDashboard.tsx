@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Clock, Search, Filter, FileText, FileSpreadsheet, FileDown, Plus, Edit, Trash2 } from 'lucide-react';
+import { Clock, Search, Filter, FileText, FileSpreadsheet, FileDown } from 'lucide-react';
 import Modal from './Modal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface LabaRugiEntry {
   id: string;
@@ -37,8 +36,6 @@ const LabaRugiDashboard: React.FC = () => {
     keterangan: "",
   });
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<LabaRugiEntry | null>(null);
   const [labaRugiData, setLabaRugiData] = useState<LabaRugiEntry[]>([
     { id: "1", periode: "2025-07", akun: "40000000", namaAkun: "PENDAPATAN", mu: "IDR", debitMu: 0, kreditMu: 53827055, debit: 0, kredit: 53827055153, keterangan: "Pendapatan usaha" },
     { id: "2", periode: "2025-07", akun: "50000000", namaAkun: "BEBAN POKOK PENJUALAN", mu: "IDR", debitMu: 49936553, kreditMu: 0, debit: 49936552991, kredit: 0, keterangan: "Beban pokok penjualan" },
@@ -178,28 +175,7 @@ const LabaRugiDashboard: React.FC = () => {
     item.akun.toLowerCase().includes(searchTerm.toLowerCase())
   )];
 
-  const openAdd = () => {
-    setEditingId(null);
-    setForm({
-      id: "",
-      periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
-      akun: "",
-      namaAkun: "",
-      mu: "IDR",
-      debitMu: 0,
-      kreditMu: 0,
-      debit: 0,
-      kredit: 0,
-      keterangan: "",
-    });
-    setIsFormOpen(true);
-  };
-
-  const openEdit = (entry: LabaRugiEntry) => {
-    setEditingId(entry.id);
-    setForm({ ...entry });
-    setIsFormOpen(true);
-  };
+  // Note: Add/Edit actions have been removed per request
 
   const submitForm = (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,18 +192,7 @@ const LabaRugiDashboard: React.FC = () => {
     setIsFormOpen(false);
   };
 
-  const requestDelete = (entry: LabaRugiEntry) => {
-    setItemToDelete(entry);
-    setDeleteModalOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (itemToDelete) {
-      setLabaRugiData((prev) => prev.filter((d) => d.id !== itemToDelete.id));
-      setItemToDelete(null);
-    }
-    setDeleteModalOpen(false);
-  };
+  // Delete action removed; keeping submit/export utilities intact
 
   const handleExport = (type: 'excel' | 'csv' | 'pdf') => {
     alert(`Mengekspor data Laba Rugi ke format ${type}... (Fungsionalitas ini adalah placeholder)`);
@@ -290,13 +255,7 @@ const LabaRugiDashboard: React.FC = () => {
             </select>
           </div>
 
-          <div className="flex justify-between items-center w-full">
-            <button
-              onClick={openAdd}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            >
-              <Plus className="h-5 w-5 mr-2" /> Tambah Baris
-            </button>
+          <div className="flex justify-end items-center w-full">
             <div className="flex space-x-3">
               <button
                 onClick={() => handleExport('excel')}
@@ -338,7 +297,6 @@ const LabaRugiDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Kredit (Rp.)</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Keterangan</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Periode</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -370,22 +328,6 @@ const LabaRugiDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
                       {row.periode.split("-").reverse().join("/")}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => openEdit(row)}
-                          className="px-2 py-1 text-xs rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center gap-1"
-                        >
-                          <Edit className="h-3.5 w-3.5" /> Edit
-                        </button>
-                        <button
-                          onClick={() => requestDelete(row)}
-                          className="px-2 py-1 text-xs rounded-md bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 inline-flex items-center gap-1"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" /> Hapus
-                        </button>
-                      </div>
                     </td>
                   </tr>
                 ))}
@@ -440,13 +382,7 @@ const LabaRugiDashboard: React.FC = () => {
         </form>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <ConfirmDeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-        itemName={`${itemToDelete?.akun} - ${itemToDelete?.namaAkun}`}
-      />
+      {/* Delete Confirmation Modal removed */}
     </div>
   );
 };
