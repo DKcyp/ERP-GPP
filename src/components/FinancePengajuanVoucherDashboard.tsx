@@ -210,7 +210,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Daftar Permintaan Pencairan Dana</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Daftar Permintaan Pengajuan Voucher</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
