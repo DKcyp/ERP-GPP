@@ -6,6 +6,10 @@ export interface PegawaiRow {
   kualifikasi: string;
   zona: string;
   hargaAkhir: string;
+  rate?: number;
+  startKerja?: string; // ISO date-time string
+  finishKerja?: string; // ISO date-time string
+  overtime?: number; // in hours
   file?: File | null;
 }
 
@@ -103,6 +107,10 @@ const TimesheetBarangPegawaiModal: React.FC<
           kualifikasi: "",
           zona: "",
           hargaAkhir: "",
+          rate: undefined,
+          startKerja: "",
+          finishKerja: "",
+          overtime: undefined,
           file: null,
         },
       ],
@@ -295,6 +303,10 @@ const TimesheetBarangPegawaiModal: React.FC<
                       <th className="px-3 py-2 text-left">Zona</th>
                       <th className="px-3 py-2 text-left">Durasi</th>
                       <th className="px-3 py-2 text-left">Actual</th>
+                      <th className="px-3 py-2 text-left">Rate</th>
+                      <th className="px-3 py-2 text-left">Start Kerja</th>
+                      <th className="px-3 py-2 text-left">Finish Kerja</th>
+                      <th className="px-3 py-2 text-left">Overtime</th>
                       <th className="px-3 py-2 text-left">Upload</th>
                       <th className="px-3 py-2 text-center">Aksi</th>
                     </tr>
@@ -348,6 +360,56 @@ const TimesheetBarangPegawaiModal: React.FC<
                         </td>
                         <td className="px-3 py-2">
                           <input className="w-full px-2 py-1 border rounded-lg" />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number"
+                            className="w-full px-2 py-1 border rounded-lg text-right"
+                            value={row.rate ?? ""}
+                            onChange={(e) =>
+                              updatePegawai(
+                                row.id,
+                                "rate",
+                                e.target.value === "" ? undefined : Number(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="datetime-local"
+                            className="w-full px-2 py-1 border rounded-lg"
+                            value={row.startKerja ?? ""}
+                            onChange={(e) =>
+                              updatePegawai(row.id, "startKerja", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="datetime-local"
+                            className="w-full px-2 py-1 border rounded-lg"
+                            value={row.finishKerja ?? ""}
+                            onChange={(e) =>
+                              updatePegawai(row.id, "finishKerja", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input
+                            type="number"
+                            className="w-full px-2 py-1 border rounded-lg text-right"
+                            value={row.overtime ?? ""}
+                            onChange={(e) =>
+                              updatePegawai(
+                                row.id,
+                                "overtime",
+                                e.target.value === "" ? undefined : Number(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
                         </td>
                         <td className="px-3 py-2">
                           <input
