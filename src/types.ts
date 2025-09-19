@@ -223,6 +223,9 @@ export interface EvaluasiVendorData {
   tanggalEvaluasi: string;
   mutu: MutuKategori;
   k3: YaTidak;
+  // After Sales fields
+  tanggalGaransi?: string;
+  keteranganAdministrasiVendor?: string;
 }
 
 export interface EvaluasiVendorFormData {
@@ -232,6 +235,9 @@ export interface EvaluasiVendorFormData {
   jumlahBarangSesuaiPO: string; // keep as string for input, parse to number on save
   mutu: MutuKategori;
   k3: YaTidak;
+  // After Sales fields
+  tanggalGaransi?: string;
+  keteranganAdministrasiVendor?: string;
 }
 
 // ================= App Shared Types (Auth + Menu) =================
@@ -394,4 +400,35 @@ export interface EntryPOJasaFormData {
   biayaLainLain?: string;
   biayaMaterai?: string;
   estimasiKedatangan?: string; // optional manual entry if needed
+}
+
+// ================= Penerimaan Barang Manual Types =================
+export interface PenerimaanBarangManualData {
+  id: string;
+  no: number;
+  tanggalPenerimaan: string;
+  noPO: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: number;
+  satuan: string;
+  kondisiBarang: 'Baik' | 'Rusak' | 'Expired';
+  tanggalExpired?: string;
+  alasanManual: string;
+  keterangan?: string;
+  statusPersetujuan: 'Pending' | 'Disetujui' | 'Ditolak';
+  disetujuiOleh?: string;
+  tanggalPersetujuan?: string;
+}
+
+export interface PenerimaanBarangManualFormData {
+  noPO: string;
+  namaBarang: string;
+  kodeBarang: string;
+  qty: string; // keep as string for input
+  satuan: string;
+  kondisiBarang: 'Baik' | 'Rusak' | 'Expired';
+  tanggalExpired?: string;
+  alasanManual: string;
+  keterangan?: string;
 }

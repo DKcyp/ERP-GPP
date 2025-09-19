@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Search, Plus, FileSpreadsheet, FileText, FileDown, CalendarDays } from 'lucide-react';
+import { Search, Plus, FileSpreadsheet, FileText, FileDown, CalendarDays, Eye, Printer } from 'lucide-react';
 import EvaluasiVendorModal from './EvaluasiVendorModal';
+import EvaluasiVendorDetailModal from './EvaluasiVendorDetailModal';
 import { EvaluasiVendorData, EvaluasiVendorFormData } from '../types';
 
 const EvaluasiVendorDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState<EvaluasiVendorData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('03/03/2025');
   const [endDate, setEndDate] = useState('03/03/2025');
@@ -12,18 +15,18 @@ const EvaluasiVendorDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [evaluations, setEvaluations] = useState<EvaluasiVendorData[]>([
-    { id: '1', no: 1, namaVendor: 'Vendor A', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 95, tanggalEvaluasi: '20/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '2', no: 2, namaVendor: 'Vendor B', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 100, tanggalEvaluasi: '19/02/2025', mutu: 'Cukup', k3: 'Tidak' },
-    { id: '3', no: 3, namaVendor: 'Vendor C', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 80, tanggalEvaluasi: '21/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '4', no: 4, namaVendor: 'Vendor D', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 110, tanggalEvaluasi: '22/02/2025', mutu: 'Kurang', k3: 'Tidak' },
-    { id: '5', no: 5, namaVendor: 'Vendor E', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 90, tanggalEvaluasi: '23/02/2025', mutu: 'Cukup', k3: 'Ya' },
-    { id: '6', no: 6, namaVendor: 'Vendor F', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 105, tanggalEvaluasi: '24/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '7', no: 7, namaVendor: 'Vendor G', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 75, tanggalEvaluasi: '25/02/2025', mutu: 'Kurang', k3: 'Tidak' },
-    { id: '8', no: 8, namaVendor: 'Vendor H', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 120, tanggalEvaluasi: '26/02/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '9', no: 9, namaVendor: 'Vendor I', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 88, tanggalEvaluasi: '27/02/2025', mutu: 'Cukup', k3: 'Ya' },
-    { id: '10', no: 10, namaVendor: 'Vendor J', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 98, tanggalEvaluasi: '28/02/2025', mutu: 'Baik', k3: 'Tidak' },
-    { id: '11', no: 11, namaVendor: 'Vendor K', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 115, tanggalEvaluasi: '01/03/2025', mutu: 'Baik', k3: 'Ya' },
-    { id: '12', no: 12, namaVendor: 'Vendor L', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 82, tanggalEvaluasi: '02/03/2025', mutu: 'Kurang', k3: 'Tidak' },
+    { id: '1', no: 1, namaVendor: 'Vendor A', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 95, tanggalEvaluasi: '20/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '20/02/2026', keteranganAdministrasiVendor: 'Dokumen lengkap, NPWP aktif' },
+    { id: '2', no: 2, namaVendor: 'Vendor B', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 100, tanggalEvaluasi: '19/02/2025', mutu: 'Cukup', k3: 'Tidak', tanggalGaransi: '19/08/2025', keteranganAdministrasiVendor: 'Perlu update SIUP' },
+    { id: '3', no: 3, namaVendor: 'Vendor C', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 80, tanggalEvaluasi: '21/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '21/02/2027', keteranganAdministrasiVendor: 'Semua dokumen valid' },
+    { id: '4', no: 4, namaVendor: 'Vendor D', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 110, tanggalEvaluasi: '22/02/2025', mutu: 'Kurang', k3: 'Tidak', tanggalGaransi: '22/05/2025', keteranganAdministrasiVendor: 'Dokumen tidak lengkap' },
+    { id: '5', no: 5, namaVendor: 'Vendor E', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 90, tanggalEvaluasi: '23/02/2025', mutu: 'Cukup', k3: 'Ya', tanggalGaransi: '23/02/2026', keteranganAdministrasiVendor: 'Administrasi baik' },
+    { id: '6', no: 6, namaVendor: 'Vendor F', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 105, tanggalEvaluasi: '24/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '24/02/2026', keteranganAdministrasiVendor: 'Excellent vendor' },
+    { id: '7', no: 7, namaVendor: 'Vendor G', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 75, tanggalEvaluasi: '25/02/2025', mutu: 'Kurang', k3: 'Tidak', tanggalGaransi: '25/05/2025', keteranganAdministrasiVendor: 'Perlu perbaikan administrasi' },
+    { id: '8', no: 8, namaVendor: 'Vendor H', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 120, tanggalEvaluasi: '26/02/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '26/02/2027', keteranganAdministrasiVendor: 'Vendor terpercaya' },
+    { id: '9', no: 9, namaVendor: 'Vendor I', onTime: 'Ya', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 88, tanggalEvaluasi: '27/02/2025', mutu: 'Cukup', k3: 'Ya', tanggalGaransi: '27/08/2025', keteranganAdministrasiVendor: 'Dokumen standar' },
+    { id: '10', no: 10, namaVendor: 'Vendor J', onTime: 'Tidak', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 98, tanggalEvaluasi: '28/02/2025', mutu: 'Baik', k3: 'Tidak', tanggalGaransi: '28/02/2026', keteranganAdministrasiVendor: 'Perlu follow up K3' },
+    { id: '11', no: 11, namaVendor: 'Vendor K', onTime: 'Ya', sesuaiSpesifikasi: 'Ya', jumlahBarangSesuaiPO: 115, tanggalEvaluasi: '01/03/2025', mutu: 'Baik', k3: 'Ya', tanggalGaransi: '01/03/2027', keteranganAdministrasiVendor: 'Top performance vendor' },
+    { id: '12', no: 12, namaVendor: 'Vendor L', onTime: 'Tidak', sesuaiSpesifikasi: 'Tidak', jumlahBarangSesuaiPO: 82, tanggalEvaluasi: '02/03/2025', mutu: 'Kurang', k3: 'Tidak', tanggalGaransi: '02/06/2025', keteranganAdministrasiVendor: 'Evaluasi ulang diperlukan' },
   ]);
 
   const filteredEvaluations = evaluations.filter(evalItem =>
@@ -58,8 +61,128 @@ const EvaluasiVendorDashboard: React.FC = () => {
       tanggalEvaluasi: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
       mutu: formData.mutu,
       k3: formData.k3,
+      // After Sales fields
+      tanggalGaransi: formData.tanggalGaransi,
+      keteranganAdministrasiVendor: formData.keteranganAdministrasiVendor,
     };
     setEvaluations((prev) => [...prev, newEvaluation]);
+  };
+
+  const handleViewDetail = (vendor: EvaluasiVendorData) => {
+    setSelectedVendor(vendor);
+    setIsDetailModalOpen(true);
+  };
+
+  const handlePrint = (vendor: EvaluasiVendorData) => {
+    // Create print content based on the evaluation form structure
+    const printContent = `
+      <html>
+        <head>
+          <title>Evaluasi Vendor - ${vendor.namaVendor}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }
+            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            th { background-color: #f0f0f0; font-weight: bold; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .criteria { font-weight: bold; }
+            .satisfaction { text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h2>EVALUASI VENDOR</h2>
+            <p>Vendor: ${vendor.namaVendor}</p>
+            <p>Tanggal Evaluasi: ${vendor.tanggalEvaluasi}</p>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">NO</th>
+                <th rowspan="2">CRITERIA</th>
+                <th colspan="4">SATISFACTION</th>
+                <th rowspan="2">POINT</th>
+              </tr>
+              <tr>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="5">1.</td>
+                <td class="criteria">SAFETY</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>a. Kebijakan K3L</td>
+                <td class="satisfaction">Mempunyai kebijakan K3L secara tertulis dilaksanakan setiap karyawan</td>
+                <td class="satisfaction">Mempunyai kebijakan K3L secara tertulis tetapi belum terlaksana dengan baik</td>
+                <td class="satisfaction">Mempunyai kebijakan K3L secara tertulis tetapi belum berjalan</td>
+                <td class="satisfaction">Tidak memiliki kebijakan K3L</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>b. Sistem Manajemen K3L</td>
+                <td class="satisfaction">Memiliki panduan K3L tertulis, dilaksanakan sesuai prosedur dan memiliki bukti dokumen.</td>
+                <td class="satisfaction">Memiliki panduan K3L tertulis, dilaksanakan sesuai prosedur tetapi tidak memiliki bukti dokumen.</td>
+                <td class="satisfaction">Memiliki panduan K3L tertulis, tetapi tidak dilaksanakan dengan baik</td>
+                <td class="satisfaction">Tidak memiliki standar pelaksanaan K3L.</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>c. Alat Perlindungan Diri (APD)</td>
+                <td class="satisfaction">Alat perlindungan diri standar untuk karyawan & terdapat bukti dokumen serah terima APD.</td>
+                <td class="satisfaction">Alat perlindungan diri standar untuk karyawan tetapi tidak ada dokumen serah terima.</td>
+                <td class="satisfaction">Alat perlindungan diri disediakan secara terbatas.</td>
+                <td class="satisfaction">Tidak tersedia alat perlindungan diri.</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>d. Alat Kerja</td>
+                <td class="satisfaction">Tersedia peralatan kerja yang memadai penggunaan dan pemeriksaannya dilakukan dengan baik dan dilengkapi dengan dokumen pendukung</td>
+                <td class="satisfaction">Tersedia peralatan kerja yang memadai penggunaan dan pemeriksaannya dilakukan dengan baik tetapi tidak dilengkapi dokumen</td>
+                <td class="satisfaction">Tersedia peralatan kerja yang memadai, tetapi penggunaan, pemeriksaan dan dokumentasinya tidak ada.</td>
+                <td class="satisfaction">Tidak tersedia alat kerja yang memadai dan tidak ada pengawasan.</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 20px;">
+            <p><strong>Hasil Evaluasi:</strong></p>
+            <p>On Time: ${vendor.onTime}</p>
+            <p>Sesuai Spesifikasi: ${vendor.sesuaiSpesifikasi}</p>
+            <p>Mutu: ${vendor.mutu}</p>
+            <p>K3: ${vendor.k3}</p>
+            <p>Jumlah Barang Sesuai PO: ${vendor.jumlahBarangSesuaiPO}%</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <p><strong>After Sales:</strong></p>
+            <p>Tanggal Garansi: ${vendor.tanggalGaransi || 'Tidak ada'}</p>
+            <p>Keterangan Administrasi Vendor: ${vendor.keteranganAdministrasiVendor || 'Tidak ada keterangan'}</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
   };
 
   return (
@@ -132,6 +255,12 @@ const EvaluasiVendorDashboard: React.FC = () => {
         {/* Action Buttons */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-2">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              <Plus size={16} className="mr-2" /> Tambah
+            </button>
             <button className="flex items-center px-3 py-1.5 bg-green-500 text-white rounded-md hover:bg-green-600">
               <FileSpreadsheet size={16} className="mr-2" /> Export Excel
             </button>
@@ -188,6 +317,15 @@ const EvaluasiVendorDashboard: React.FC = () => {
                 <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tanggal Evaluasi
                 </th>
+                <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal Garansi
+                </th>
+                <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Keterangan Administrasi
+                </th>
+                <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -201,6 +339,28 @@ const EvaluasiVendorDashboard: React.FC = () => {
                   <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.k3}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.jumlahBarangSesuaiPO}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.tanggalEvaluasi}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">{item.tanggalGaransi}</td>
+                  <td className="px-3 py-2 text-xs text-gray-600 max-w-xs truncate" title={item.keteranganAdministrasiVendor}>{item.keteranganAdministrasiVendor}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-xs">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleViewDetail(item)}
+                        className="inline-flex items-center px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        title="Detail"
+                      >
+                        <Eye size={12} className="mr-1" />
+                        Detail
+                      </button>
+                      <button
+                        onClick={() => handlePrint(item)}
+                        className="inline-flex items-center px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                        title="Print"
+                      >
+                        <Printer size={12} className="mr-1" />
+                        Print
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -246,6 +406,12 @@ const EvaluasiVendorDashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddEvaluation}
+      />
+
+      <EvaluasiVendorDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        vendor={selectedVendor}
       />
     </div>
   );

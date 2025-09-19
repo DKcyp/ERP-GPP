@@ -12,7 +12,8 @@ interface RowData {
   namaSupplier: string;
   tanggalPenerimaan: string; // yyyy-mm-dd
   jumlahItem: number;
-  totalHarga: string;
+  serialNumber: string;
+  keterangan: string;
 }
 
 const PenerimaanBarangMasukDashboard: React.FC = () => {
@@ -20,10 +21,10 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
   const [modalMode, setModalMode] = useState<Mode>('create');
   const [selectedHeader, setSelectedHeader] = useState<{ noInvoice?: string; noPo?: string; namaSupplier?: string; tanggalPenerimaan?: string; catatan?: string } | undefined>(undefined);
   const [items, setItems] = useState<RowData[]>([
-    { no: 1, noInvoice: 'INV-001', noPo: 'PO001', namaSupplier: 'Supplier A', tanggalPenerimaan: '2025-03-10', jumlahItem: 5, totalHarga: 'Rp 500.000' },
-    { no: 2, noInvoice: 'INV-002', noPo: 'PO002', namaSupplier: 'Supplier B', tanggalPenerimaan: '2025-03-09', jumlahItem: 8, totalHarga: 'Rp 1.200.000' },
-    { no: 3, noInvoice: 'INV-003', noPo: 'PO003', namaSupplier: 'Supplier C', tanggalPenerimaan: '2025-03-08', jumlahItem: 3, totalHarga: 'Rp 350.000' },
-    { no: 4, noInvoice: 'INV-004', noPo: 'PO004', namaSupplier: 'Supplier D', tanggalPenerimaan: '2025-03-07', jumlahItem: 10, totalHarga: 'Rp 2.000.000' },
+    { no: 1, noInvoice: 'INV-001', noPo: 'PO001', namaSupplier: 'Supplier A', tanggalPenerimaan: '2025-03-10', jumlahItem: 5, serialNumber: 'SN001-005', keterangan: 'Barang dalam kondisi baik' },
+    { no: 2, noInvoice: 'INV-002', noPo: 'PO002', namaSupplier: 'Supplier B', tanggalPenerimaan: '2025-03-09', jumlahItem: 8, serialNumber: 'SN002-008', keterangan: 'Perlu inspeksi lebih lanjut' },
+    { no: 3, noInvoice: 'INV-003', noPo: 'PO003', namaSupplier: 'Supplier C', tanggalPenerimaan: '2025-03-08', jumlahItem: 3, serialNumber: 'SN003-003', keterangan: 'Sesuai spesifikasi' },
+    { no: 4, noInvoice: 'INV-004', noPo: 'PO004', namaSupplier: 'Supplier D', tanggalPenerimaan: '2025-03-07', jumlahItem: 10, serialNumber: 'SN004-010', keterangan: 'Menunggu approval QC' },
   ]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<RowData | null>(null);
@@ -35,12 +36,12 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                PENERIMAAN BARANG
+                REQUEST FOR INSPECTION (RFI)
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Penerimaan Barang</span>
+                <span className="text-blue-600 font-medium">Request For Inspection (RFI)</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -128,7 +129,7 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
               className="flex items-center space-x-1.5 px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 text-xs shadow-sm"
             >
               <Plus className="h-4 w-4" />
-              <span>+ Penerimaan Barang</span>
+              <span>+ Request For Inspection</span>
             </button>
             <div className="flex space-x-3">
               <button className="flex items-center space-x-1.5 px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 text-xs shadow-sm">
@@ -176,7 +177,8 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Nama Supplier</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Tanggal Penerimaan</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Jumlah Item Barang</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Total Harga</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -189,7 +191,8 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.namaSupplier}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.tanggalPenerimaan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.jumlahItem}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.totalHarga}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.serialNumber}</td>
+                    <td className="px-3 py-2 text-xs text-gray-900 max-w-xs truncate" title={item.keterangan}>{item.keterangan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
                       <div className="flex items-center space-x-1.5">
                         <button

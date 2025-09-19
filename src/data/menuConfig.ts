@@ -1203,7 +1203,7 @@ export const financeMenu: MenuSection[] = [
       //   path: "/finance/permintaan-pencairan-dana",
       // },
       {
-        title: "List Pengajuan Hutang Usaha",
+        title: "Pengajuan Hutang Usaha",
         icon: "ClipboardList",
         path: "/finance/permintaan-pencairan-dana?view=list-hutang",
       },
@@ -1356,10 +1356,20 @@ export const financeMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Reimburse / Voucher",
-    icon: "Wallet", // Icon for Reimburse / Voucher
-    items: [],
-    directPath: "/finance/reimburse-voucher",
+    title: "Voucher dan Reimburse",
+    icon: "Wallet", // Icon for Voucher dan Reimburse
+    items: [
+      {
+        title: "Approval Voucher",
+        icon: "CheckCircle",
+        path: "/finance/voucher-reimburse/approval-voucher",
+      },
+      {
+        title: "Approval Reimburse",
+        icon: "CheckSquare",
+        path: "/finance/voucher-reimburse/approval-reimburse",
+      },
+    ],
   },
   {
     title: "Pajak",
@@ -1502,10 +1512,16 @@ export const gudangMenu: MenuSection[] = [
     directPath: "/gudang/gudang-proyek/dashboard",
   },
   {
-    title: "Penerimaan Barang Masuk",
+    title: "Request For Inspection (RFI)",
     icon: "Download",
     items: [],
     directPath: "/gudang/penerimaan-barang-masuk/dashboard",
+  },
+  {
+    title: "Penerimaan Barang Manual",
+    icon: "Edit",
+    items: [],
+    directPath: "/gudang/penerimaan-barang-manual/dashboard",
   },
   {
     title: "Mutasi Barang",
@@ -1807,7 +1823,28 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
-  
+  {
+    title: "Daftar Induk Dokumen",
+    icon: "FileText",
+    items: [
+      {
+        title: "Internal",
+        icon: "FileText",
+        path: "/qhse/daftar-induk-dokumen-internal",
+      },
+      {
+        title: "Eksternal",
+        icon: "FileCheck",
+        path: "/qhse/daftar-induk-dokumen-eksternal",
+      },
+    ],
+  },
+  {
+    title: "Approval RFI",
+    icon: "CheckCircle",
+    items: [],
+    directPath: "/qhse/approval-rfi/dashboard",
+  },
   createGeneralMenu("qhse"),
 ];
 
@@ -2063,7 +2100,7 @@ export const proconMenu: MenuSection[] = [
     title: "Sales Order",
     icon: "ShoppingCart",
     items: [],
-    directPath: "/marketing/sales-order/dashboard",
+    directPath: "/procon/sales-order/dashboard",
   },
   {
     title: "Proforma Invoice",
