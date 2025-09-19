@@ -1471,23 +1471,8 @@ export const gudangMenu: MenuSection[] = [
   {
     title: "Stock Opname",
     icon: "ClipboardCheck",
-    items: [
-      {
-        title: "Stock Opname",
-        icon: "ClipboardCheck",
-        path: "/gudang/stock-opname/stock-opname",
-      },
-      {
-        title: "Verifikasi Stock Opname",
-        icon: "CheckCircle",
-        path: "/gudang/stock-opname/verifikasi",
-      },
-      {
-        title: "Laporan Semua Stock",
-        icon: "FileText",
-        path: "/gudang/stock-opname/laporan",
-      },
-    ],
+    items: [],
+    directPath: "/gudang/stock-opname/stock-opname",
   },
   {
     title: "Monitoring Alat Proyek",
@@ -1859,6 +1844,22 @@ export const accountingMenu: MenuSection[] = [
     icon: "Scale", // Icon for balance sheet
     items: [],
     directPath: "/accounting/neraca",
+  },
+  {
+    title: "Stock Opname",
+    icon: "ClipboardCheck",
+    items: [
+      {
+        title: "Verifikasi Stock Opname",
+        icon: "CheckCircle",
+        path: "/gudang/stock-opname/verifikasi",
+      },
+      {
+        title: "Laporan Semua Stock",
+        icon: "FileText",
+        path: "/gudang/stock-opname/laporan",
+      },
+    ],
   },
   {
     title: "Kas",
