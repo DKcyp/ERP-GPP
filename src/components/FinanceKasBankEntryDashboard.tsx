@@ -678,7 +678,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                 {/* Diberikan Kepada Field */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Diberikan Kepada
+                    User
                   </label>
                   <input
                     type="text"
@@ -771,7 +771,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Diberikan Kepada
+                    User
                   </label>
                   <input
                     type="text"
