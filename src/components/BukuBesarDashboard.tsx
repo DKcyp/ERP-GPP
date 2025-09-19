@@ -59,11 +59,9 @@ const BukuBesarDashboard: React.FC = () => {
   const today = new Date();
   const [data] = useState<LedgerRow[]>(seed);
 
-  // Filters
-  const [q, setQ] = useState("");
-  const [coa, setCoa] = useState("");
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  // Filters (Kode Akun & Periode saja)
+  const [kodeAkun, setKodeAkun] = useState("");
+  const [periodeFilter, setPeriodeFilter] = useState<Date | null>(null);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -71,23 +69,23 @@ const BukuBesarDashboard: React.FC = () => {
 
   // Removed CRUD form and delete modal per requirement
 
-  const coas = useMemo(() => {
-    return Array.from(new Set(data.map((d) => `${d.akun} - ${d.namaAkun}`)));
-  }, [data]);
+  // COA list removed
 
   const filtered = useMemo(() => {
-    const qq = q.toLowerCase();
+    const kode = kodeAkun.trim();
     return data
       .filter((d) => {
-        const matchesText =
-          d.akun.toLowerCase().includes(qq) ||
-          d.namaAkun.toLowerCase().includes(qq) ||
-          d.keterangan.toLowerCase().includes(qq);
-        const matchesCoa = coa ? `${d.akun} - ${d.namaAkun}` === coa : true;
-        return matchesText && matchesCoa;
+        const matchesKode = kode ? d.akun.includes(kode) : true;
+        const matchesPeriode = !periodeFilter
+          ? true
+          : d.periode ===
+            `${periodeFilter.getFullYear()}-${String(
+              periodeFilter.getMonth() + 1
+            ).padStart(2, "0")}`;
+        return matchesKode && matchesPeriode;
       })
       .sort((a, b) => a.periode.localeCompare(b.periode));
-  }, [data, q, coa]);
+  }, [data, kodeAkun, periodeFilter]);
 
   const paged = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -128,65 +126,41 @@ const BukuBesarDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters: Kode Akun & Periode */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Filter</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative">
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Cari COA/No/Dokumen/Keterangan/SO"
-                className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              />
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:flex-1">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Kode Akun
+                </label>
+                <div className="relative">
+                  <input
+                    value={kodeAkun}
+                    onChange={(e) => setKodeAkun(e.target.value)}
+                    placeholder="Cari Kode Akun"
+                    className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">
+                  Periode
+                </label>
+                <DatePicker
+                  selected={periodeFilter}
+                  onChange={setPeriodeFilter}
+                  dateFormat="MM/yyyy"
+                  showMonthYearPicker
+                  placeholderText="mm/yyyy"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm text-gray-700 mb-1">COA</label>
-              <select
-                value={coa}
-                onChange={(e) => {
-                  setCoa(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Semua COA</option>
-                {coas.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-700 mb-1">
-                Tanggal Dari
-              </label>
-              <DatePicker
-                selected={startDate}
-                onChange={setStartDate}
-                dateFormat="dd/MM/yyyy"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholderText="dd/MM/yyyy"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-700 mb-1">
-                Tanggal Sampai
-              </label>
-              <DatePicker
-                selected={endDate}
-                onChange={setEndDate}
-                dateFormat="dd/MM/yyyy"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholderText="dd/MM/yyyy"
-              />
-            </div>
-          </div>
-          <div className="flex justify-end items-center mt-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 md:ml-6 md:shrink-0">
               <button className="inline-flex items-center px-4 py-2 text-sm rounded-md text-white bg-emerald-600 hover:bg-emerald-700">
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Export Excel
