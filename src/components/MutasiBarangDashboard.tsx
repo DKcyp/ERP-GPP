@@ -1,28 +1,92 @@
 import React, { useState } from 'react';
-import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays } from 'lucide-react';
+import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays, CheckCircle, XCircle } from 'lucide-react';
 import EntryMutasiBarangModal from './EntryMutasiBarangModal'; // Import the new modal
+
+interface MutasiBarangItem {
+  no: number;
+  noMutasi: string;
+  noSO: string;
+  gudangAsal: string;
+  gudangTujuan: string;
+  tanggalMutasi: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  approvalStatus: 'Waiting' | 'Approved' | 'Rejected';
+  sourceType: 'Manual' | 'From_PBG'; // PBG = Penerimaan Barang Gudang
+  pbgReference?: string;
+}
 
 const MutasiBarangDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const mutasiBarangItems = [
-    { no: 1, noMutasi: 'MT-202401', gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek A', tanggalMutasi: '2024-03-10', status: 'Approve' },
-    { no: 2, noMutasi: 'MT-202402', gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek B', tanggalMutasi: '2024-03-09', status: 'Progress' },
-    { no: 3, noMutasi: 'MT-202403', gudangAsal: 'Gudang Proyek A', gudangTujuan: 'Gudang Proyek C', tanggalMutasi: '2024-03-08', status: 'Rejected' },
-    { no: 4, noMutasi: 'MT-202404', gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek C', tanggalMutasi: '2024-03-07', status: 'Approve' },
-  ];
+  const [mutasiBarangItems, setMutasiBarangItems] = useState<MutasiBarangItem[]>([
+    { 
+      no: 1, noMutasi: 'MT-202401', noSO: 'SO-2024-001', 
+      gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek A', 
+      tanggalMutasi: '2024-03-10', status: 'Approved', approvalStatus: 'Approved',
+      sourceType: 'Manual'
+    },
+    { 
+      no: 2, noMutasi: 'MT-202402', noSO: 'SO-2024-002', 
+      gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek B', 
+      tanggalMutasi: '2024-03-09', status: 'Pending', approvalStatus: 'Waiting',
+      sourceType: 'From_PBG', pbgReference: 'PBG-2024-001'
+    },
+    { 
+      no: 3, noMutasi: 'MT-202403', noSO: 'SO-2024-003', 
+      gudangAsal: 'Gudang Proyek A', gudangTujuan: 'Gudang Proyek C', 
+      tanggalMutasi: '2024-03-08', status: 'Rejected', approvalStatus: 'Rejected',
+      sourceType: 'Manual'
+    },
+    { 
+      no: 4, noMutasi: 'MT-202404', noSO: 'SO-2024-004', 
+      gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek C', 
+      tanggalMutasi: '2024-03-07', status: 'Approved', approvalStatus: 'Approved',
+      sourceType: 'From_PBG', pbgReference: 'PBG-2024-002'
+    },
+  ]);
 
   const getStatusClasses = (status: string) => {
     switch (status) {
-      case 'Approve':
+      case 'Approved':
         return 'bg-green-100 text-green-800';
-      case 'Progress':
+      case 'Pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'Rejected':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getApprovalStatusBadge = (status: string) => {
+    const config = {
+      'Waiting': { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+      'Approved': { color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      'Rejected': { color: 'bg-red-100 text-red-800', icon: XCircle }
+    };
+    const { color, icon: Icon } = config[status as keyof typeof config];
+    return (
+      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${color}`}>
+        <Icon className="w-3 h-3 mr-1" />
+        {status}
+      </span>
+    );
+  };
+
+  const handleApprove = (id: number) => {
+    setMutasiBarangItems(prev => prev.map(item => 
+      item.no === id 
+        ? { ...item, status: 'Approved', approvalStatus: 'Approved' }
+        : item
+    ));
+  };
+
+  const handleReject = (id: number) => {
+    setMutasiBarangItems(prev => prev.map(item => 
+      item.no === id 
+        ? { ...item, status: 'Rejected', approvalStatus: 'Rejected' }
+        : item
+    ));
   };
 
   return (
@@ -50,7 +114,7 @@ const MutasiBarangDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {/* Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div className="relative">
               <label htmlFor="noMutasi" className="block text-sm font-medium text-gray-700 mb-1">Cari No Mutasi</label>
               <input
@@ -58,6 +122,16 @@ const MutasiBarangDashboard: React.FC = () => {
                 id="noMutasi"
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 placeholder="MT-2025012"
+              />
+              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+            </div>
+            <div className="relative">
+              <label htmlFor="noSO" className="block text-sm font-medium text-gray-700 mb-1">Cari No SO</label>
+              <input
+                type="text"
+                id="noSO"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                placeholder="SO-2024-001"
               />
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
@@ -181,10 +255,13 @@ const MutasiBarangDashboard: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Mutasi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Asal</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Tujuan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Mutasi</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -193,6 +270,7 @@ const MutasiBarangDashboard: React.FC = () => {
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noMutasi}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-blue-600">{item.noSO}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.gudangAsal}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.gudangTujuan}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalMutasi}</td>
@@ -201,11 +279,42 @@ const MutasiBarangDashboard: React.FC = () => {
                         {item.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getApprovalStatusBadge(item.approvalStatus)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex flex-col">
+                        <span className={`text-xs px-2 py-1 rounded ${item.sourceType === 'From_PBG' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+                          {item.sourceType === 'From_PBG' ? 'From PBG' : 'Manual'}
+                        </span>
+                        {item.pbgReference && (
+                          <span className="text-xs text-gray-500 mt-1">{item.pbgReference}</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100">
                           <Eye className="h-5 w-5" />
                         </button>
+                        {item.approvalStatus === 'Waiting' && (
+                          <>
+                            <button 
+                              onClick={() => handleApprove(item.no)}
+                              className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-5 w-5" />
+                            </button>
+                            <button 
+                              onClick={() => handleReject(item.no)}
+                              className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
+                              title="Reject"
+                            >
+                              <XCircle className="h-5 w-5" />
+                            </button>
+                          </>
+                        )}
                         <button className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100">
                           <Edit className="h-5 w-5" />
                         </button>
