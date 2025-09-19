@@ -10,16 +10,20 @@ interface TBEntry {
   periode: string; // yyyy-mm
   akun: string; // kode akun
   namaAkun: string;
-  debit: number;
-  kredit: number;
+  mu: string;
+  debitMu: number;
+  kreditMu: number;
+  debit: number; // Debet (Rp.)
+  kredit: number; // Kredit (Rp.)
+  keterangan: string;
 }
 
 const TrialBalanceDashboard: React.FC = () => {
   const today = new Date();
 
   const [data, setData] = useState<TBEntry[]>([
-    { id: "TB-1", periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`, akun: "1101", namaAkun: "Kas", debit: 15000000, kredit: 0 },
-    { id: "TB-2", periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`, akun: "2101", namaAkun: "Hutang Usaha", debit: 0, kredit: 4500000 },
+    { id: "TB-1", periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`, akun: "1101", namaAkun: "Kas", mu: "IDR", debitMu: 15000, kreditMu: 0, debit: 15000000, kredit: 0, keterangan: "Kas perusahaan" },
+    { id: "TB-2", periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`, akun: "2101", namaAkun: "Hutang Usaha", mu: "IDR", debitMu: 0, kreditMu: 4500, debit: 0, kredit: 4500000, keterangan: "Hutang kepada supplier" },
   ]);
 
   // Filters
@@ -47,8 +51,12 @@ const TrialBalanceDashboard: React.FC = () => {
     periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
     akun: "",
     namaAkun: "",
+    mu: "IDR",
+    debitMu: 0,
+    kreditMu: 0,
     debit: 0,
     kredit: 0,
+    keterangan: "",
   });
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -61,8 +69,12 @@ const TrialBalanceDashboard: React.FC = () => {
       periode: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`,
       akun: "",
       namaAkun: "",
+      mu: "IDR",
+      debitMu: 0,
+      kreditMu: 0,
       debit: 0,
       kredit: 0,
+      keterangan: "",
     });
     setIsFormOpen(true);
   };
@@ -223,24 +235,32 @@ const TrialBalanceDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Akun</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Akun</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Debit</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Kredit</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MU</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Debet (MU)</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Kredit (MU)</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Debet (Rp.)</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Kredit (Rp.)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {pageData.map((entry) => (
                   <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.akun}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{entry.namaAkun}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{entry.mu}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{entry.debitMu.toLocaleString("id-ID")}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{entry.kreditMu.toLocaleString("id-ID")}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp {entry.debit.toLocaleString("id-ID")}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp {entry.kredit.toLocaleString("id-ID")}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{entry.keterangan}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {entry.periode.split("-").reverse().join("/")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{entry.akun}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{entry.namaAkun}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp {entry.debit.toLocaleString("id-ID")}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp {entry.kredit.toLocaleString("id-ID")}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -262,10 +282,10 @@ const TrialBalanceDashboard: React.FC = () => {
               </tbody>
               <tfoot>
                 <tr className="bg-gray-50 font-semibold">
-                  <td className="px-6 py-3 text-sm text-gray-900" colSpan={3}>Total</td>
+                  <td className="px-6 py-3 text-sm text-gray-900" colSpan={5}>Total</td>
                   <td className="px-6 py-3 text-sm text-right text-gray-900">Rp {totalDebit.toLocaleString("id-ID")}</td>
                   <td className="px-6 py-3 text-sm text-right text-gray-900">Rp {totalKredit.toLocaleString("id-ID")}</td>
-                  <td></td>
+                  <td colSpan={3}></td>
                 </tr>
               </tfoot>
             </table>
@@ -277,54 +297,37 @@ const TrialBalanceDashboard: React.FC = () => {
       </div>
 
       {/* Form Modal */}
-      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Baris TB" : "Tambah Baris TB"} size="lg">
+      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Baris TB" : "Tambah Baris TB"} size="xl">
         <form onSubmit={submitForm} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Periode</label>
-              <input
-                type="month"
-                value={form.periode}
-                onChange={(e) => setForm((f) => ({ ...f, periode: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kode Akun</label>
-              <input
-                type="text"
-                value={form.akun}
-                onChange={(e) => setForm((f) => ({ ...f, akun: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Akun</label>
-              <input
-                type="text"
-                value={form.namaAkun}
-                onChange={(e) => setForm((f) => ({ ...f, namaAkun: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Debit</label>
-              <input
-                type="number"
-                value={form.debit}
-                onChange={(e) => setForm((f) => ({ ...f, debit: Number(e.target.value) }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 text-right"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kredit</label>
-              <input
-                type="number"
-                value={form.kredit}
-                onChange={(e) => setForm((f) => ({ ...f, kredit: Number(e.target.value) }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 text-right"
-              />
-            </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-2 text-left min-w-[120px]">Kode Akun</th>
+                  <th className="px-3 py-2 text-left min-w-[150px]">Nama Akun</th>
+                  <th className="px-3 py-2 text-left min-w-[80px]">MU</th>
+                  <th className="px-3 py-2 text-right min-w-[100px]">Debet (MU)</th>
+                  <th className="px-3 py-2 text-right min-w-[100px]">Kredit (MU)</th>
+                  <th className="px-3 py-2 text-right min-w-[120px]">Debet (Rp.)</th>
+                  <th className="px-3 py-2 text-right min-w-[120px]">Kredit (Rp.)</th>
+                  <th className="px-3 py-2 text-left min-w-[150px]">Keterangan</th>
+                  <th className="px-3 py-2 text-left min-w-[120px]">Periode</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-3 py-2 min-w-[120px]"><input className="w-full border rounded-lg px-3 py-2" value={form.akun} onChange={(e)=>setForm(f=>({...f, akun: e.target.value}))} placeholder="1101" /></td>
+                  <td className="px-3 py-2 min-w-[150px]"><input className="w-full border rounded-lg px-3 py-2" value={form.namaAkun} onChange={(e)=>setForm(f=>({...f, namaAkun: e.target.value}))} placeholder="Nama Akun" /></td>
+                  <td className="px-3 py-2 min-w-[80px]"><input className="w-full border rounded-lg px-3 py-2" value={form.mu} onChange={(e)=>setForm(f=>({...f, mu: e.target.value}))} placeholder="IDR" /></td>
+                  <td className="px-3 py-2 min-w-[100px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.debitMu} onChange={(e)=>setForm(f=>({...f, debitMu: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[100px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.kreditMu} onChange={(e)=>setForm(f=>({...f, kreditMu: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[120px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.debit} onChange={(e)=>setForm(f=>({...f, debit: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[120px]"><input type="number" className="w-full border rounded-lg px-3 py-2 text-right" value={form.kredit} onChange={(e)=>setForm(f=>({...f, kredit: Number(e.target.value)}))} /></td>
+                  <td className="px-3 py-2 min-w-[150px]"><input className="w-full border rounded-lg px-3 py-2" value={form.keterangan} onChange={(e)=>setForm(f=>({...f, keterangan: e.target.value}))} placeholder="Keterangan" /></td>
+                  <td className="px-3 py-2 min-w-[120px]"><input type="month" className="w-full border rounded-lg px-3 py-2" value={form.periode} onChange={(e)=>setForm(f=>({...f, periode: e.target.value}))} /></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <div className="flex items-center justify-end gap-2 pt-2">

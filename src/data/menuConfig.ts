@@ -249,18 +249,18 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
         ...(role === "qhse"
           ? [
-            {
-              title: "Daftar Induk Dokumen Internal",
-              icon: "FileText",
-              path: "/qhse/daftar-induk-dokumen-internal",
-            },
-            {
-              title: "Daftar Induk Dokumen Eksternal",
-              icon: "FileCheck",
-              path: "/qhse/daftar-induk-dokumen-eksternal",
-            },
+              {
+                title: "Daftar Induk Dokumen Internal",
+                icon: "FileText",
+                path: "/qhse/daftar-induk-dokumen-internal",
+              },
+              {
+                title: "Daftar Induk Dokumen Eksternal",
+                icon: "FileCheck",
+                path: "/qhse/daftar-induk-dokumen-eksternal",
+              },
             ]
-          : [] )      
+          : []),
       ],
     },
     // Procon-only: PBG submenu replaces Purchase Request
@@ -1127,7 +1127,7 @@ export const financeMenu: MenuSection[] = [
   //   title: "Kelola Bank",
   //   icon: "Banknote",
   //   items: [
-     
+
   //   ],
   // },
   // {
@@ -1414,7 +1414,7 @@ export const gudangMenu: MenuSection[] = [
       //   icon: "RotateCw",
       //   path: "/gudang/barang/restock-expired",
       // },
-      { title: "Stock Barang", icon: "Layers", path: "/gudang/barang/stock" },
+      { title: "Laporan Stok Pergudang", icon: "Layers", path: "/gudang/barang/stock" },
     ],
   },
   {
@@ -1900,12 +1900,12 @@ export const accountingMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Neraca",
-    icon: "Scale", // Icon for balance sheet
-    items: [],
-    directPath: "/accounting/neraca",
-  },
+  // {
+  //   title: "Neraca",
+  //   icon: "Scale", // Icon for balance sheet
+  //   items: [],
+  //   directPath: "/accounting/neraca",
+  // },
   {
     title: "Pajak",
     icon: "Scale", // Icon for general tax section
@@ -1940,6 +1940,22 @@ export const accountingMenu: MenuSection[] = [
             path: "/tax/pajak/proses-hutang-pajak",
           },
         ],
+      },
+    ],
+  },
+  {
+    title: "Rekonsiliasi",
+    icon: "RefreshCw", // Example icon, choose as appropriate
+    items: [
+      {
+        title: "Reconcilliation Match",
+        icon: "CheckSquare", // Example icon
+        path: "/accounting/reconcilliation/match",
+      },
+      {
+        title: "Reconcilliation Unmatch",
+        icon: "XSquare", // Example icon
+        path: "/accounting/reconcilliation/unmatch",
       },
     ],
   },
