@@ -1117,14 +1117,14 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/kas/kas-bank-entry",
       },
       {
-        title: "Laporan Kas",
+        title: "Laporan Kas Harian",
         icon: "FileText",
         path: "/finance/kas/laporan-kas",
       },
       {
-        title: "Laporan Bank",
+        title: "Laporan Bank Harian",
         icon: "FileText",
-        path: "/finance/kas/laporan-bank",
+        path: "/finance/bank/laporan-kas-bank-harian",
       },
     ],
   },
@@ -1132,16 +1132,7 @@ export const financeMenu: MenuSection[] = [
   //   title: "Kelola Bank",
   //   icon: "Banknote",
   //   items: [
-  //     {
-  //       title: "Laporan Bank Harian",
-  //       icon: "FileText",
-  //       path: "/finance/bank/laporan-bank-harian",
-  //     },
-  //     {
-  //       title: "Laporan Bank Harian Khusus",
-  //       icon: "FileText",
-  //       path: "/finance/bank/laporan-bank-harian-khusus",
-  //     },
+     
   //   ],
   // },
   // {

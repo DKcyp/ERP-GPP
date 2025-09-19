@@ -95,6 +95,7 @@ import FinanceBuktiBankMasukDashboard from "./FinanceBuktiBankMasukDashboard";
 import FinanceBuktiBankKeluarDashboard from "./FinanceBuktiBankKeluarDashboard";
 import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboard";
 import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
+import FinanceLaporanKasBankHarianDashboard from "./FinanceLaporanKasBankHarianDashboard";
 import FinancePermintaanPencairanDanaDashboard from "./FinancePermintaanPencairanDanaDashboard";
 import FinanceVoucherDashboard from "./FinanceVoucherDashboard";
 import FinanceKasBankEntryDashboard from "./FinanceKasBankEntryDashboard";
@@ -1664,6 +1665,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // Laporan Bank
     if (currentPage === "/finance/kas/laporan-bank") {
       return <FinanceLaporanBankDashboard />;
+    }
+    // Laporan Kas Bank Harian (Unified)
+    if (currentPage === "/finance/bank/laporan-kas-bank-harian") {
+      return <FinanceLaporanKasBankHarianDashboard />;
     }
 
     if (currentPage === "/finance/voucher/dashboard") {
