@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Eye, Pencil, Trash2, PlusCircle, FileText, Calendar, User, Shield } from 'lucide-react';
+import { Search, Eye, Pencil, Trash2, PlusCircle, FileText, Calendar, User, Shield, Printer } from 'lucide-react';
 
 interface DoseRecord {
   id: string;
@@ -202,10 +202,126 @@ const QHSEKartuDosisDashboard: React.FC = () => {
 
   const handleDelete = () => {
     if (recordToDelete) {
-      setRecords(prev => prev.filter(r => r.id !== recordToDelete.id));
+      setRecords(records.filter(record => record.id !== recordToDelete.id));
       setShowDeleteConfirm(false);
       setRecordToDelete(null);
     }
+  };
+
+  const handlePrint = (record: DoseRecord) => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      const printContent = generatePrintContent(record);
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
+  };
+
+  const generatePrintContent = (record: DoseRecord) => {
+    const years = Object.keys(record.doseData).sort();
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Kartu Dosis - ${record.name}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .header { text-align: center; margin-bottom: 20px; }
+          .company-info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+          .document-info { margin-bottom: 20px; }
+          .personal-info { margin-bottom: 20px; border: 1px solid #000; padding: 10px; }
+          .dose-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+          .dose-table th, .dose-table td { border: 1px solid #000; padding: 8px; text-align: center; }
+          .dose-table th { background-color: #f0f0f0; font-weight: bold; }
+          .signature-section { margin-top: 40px; display: flex; justify-content: space-between; }
+          .signature-box { text-align: center; width: 200px; }
+          .signature-line { border-bottom: 1px solid #000; height: 60px; margin-bottom: 5px; }
+          @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h2>KARTU DOSIS PERORANGAN</h2>
+          <h3>PT. GAMMA BUANA PERSADA</h3>
+        </div>
+        
+        <div class="company-info">
+          <div>
+            <strong>Dokumen No:</strong> ${record.documentNo}<br>
+            <strong>Revisi No:</strong> ${record.revisionNo}
+          </div>
+          <div>
+            <strong>Tanggal Revisi:</strong> ${record.dateOfRevision}<br>
+            <strong>Tanggal Berlaku:</strong> ${record.dateOfEffective}<br>
+            <strong>Halaman:</strong> ${record.page}
+          </div>
+        </div>
+        
+        <div class="personal-info">
+          <strong>Nama:</strong> ${record.name}<br>
+          <strong>Kualifikasi:</strong> ${record.qualification}<br>
+          <strong>No. SIB:</strong> ${record.sibNo}<br>
+          <strong>Masa Berlaku:</strong> ${record.validation}
+        </div>
+        
+        <table class="dose-table">
+          <thead>
+            <tr>
+              <th rowspan="2">Bulan</th>
+              <th colspan="${years.length}">Tahun</th>
+            </tr>
+            <tr>
+              ${years.map(year => `<th>${year}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${months.map(month => `
+              <tr>
+                <td><strong>${month}</strong></td>
+                ${years.map(year => {
+                  const value = record.doseData[year]?.[month];
+                  return `<td>${value !== null && value !== undefined ? value : '-'}</td>`;
+                }).join('')}
+              </tr>
+            `).join('')}
+            <tr style="background-color: #f0f0f0;">
+              <td><strong>TOTAL</strong></td>
+              ${years.map(year => `<td><strong>${record.totalByYear[year] || 0}</strong></td>`).join('')}
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="signature-section">
+          <div class="signature-box">
+            <div>Petugas Proteksi Radiasi</div>
+            <div class="signature-line"></div>
+            <div>(.............................)</div>
+          </div>
+          <div class="signature-box">
+            <div>Mengetahui</div>
+            <div class="signature-line"></div>
+            <div>(.............................)</div>
+          </div>
+        </div>
+        
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 500);
+          }
+        </script>
+      </body>
+      </html>
+    `;
   };
 
   return (
@@ -380,6 +496,13 @@ const QHSEKartuDosisDashboard: React.FC = () => {
                           >
                             <Eye className="h-4 w-4" />
                             Lihat
+                          </button>
+                          <button
+                            onClick={() => handlePrint(record)}
+                            className="text-purple-600 hover:text-purple-900 flex items-center gap-1"
+                          >
+                            <Printer className="h-4 w-4" />
+                            Cetak
                           </button>
                           <button
                             onClick={() => openEditModal(record)}
@@ -617,6 +740,25 @@ const QHSEKartuDosisDashboard: React.FC = () => {
                           </tbody>
                         </table>
                       </div>
+                      
+                      {/* Signature Section - Only show in view mode */}
+                      {modalMode === 'view' && (
+                        <div className="mt-8 pt-6 border-t border-gray-200">
+                          <h4 className="text-lg font-semibold text-gray-900 mb-6">Tanda Tangan</h4>
+                          <div className="flex justify-between items-end">
+                            <div className="text-center">
+                              <div className="mb-2 text-sm font-medium text-gray-700">Petugas Proteksi Radiasi</div>
+                              <div className="w-48 h-20 border-b-2 border-gray-400 mb-2"></div>
+                              <div className="text-sm text-gray-600">(.............................)</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="mb-2 text-sm font-medium text-gray-700">Mengetahui</div>
+                              <div className="w-48 h-20 border-b-2 border-gray-400 mb-2"></div>
+                              <div className="text-sm text-gray-600">(.............................)</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -631,6 +773,15 @@ const QHSEKartuDosisDashboard: React.FC = () => {
               >
                 {modalMode === 'view' ? 'Tutup' : 'Batal'}
               </button>
+              {modalMode === 'view' && selectedRecord && (
+                <button
+                  onClick={() => handlePrint(selectedRecord)}
+                  className="px-4 py-2 text-sm rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  Cetak Kartu Dosis
+                </button>
+              )}
               {(modalMode === 'add' || modalMode === 'edit') && (
                 <button
                   onClick={handleSave}
