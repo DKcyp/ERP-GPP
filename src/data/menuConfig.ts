@@ -1469,8 +1469,18 @@ export const gudangMenu: MenuSection[] = [
   {
     title: "Timesheet Barang",
     icon: "Clock",
-    items: [],
-    directPath: "/gudang/pengembalian-barang/timesheet",
+    items: [
+      {
+        title: "Timesheet Barang",
+        icon: "Clock",
+        path: "/gudang/pengembalian-barang/timesheet",
+      },
+      {
+        title: "Approval Timesheet Barang",
+        icon: "CheckCircle",
+        path: "/gudang/timesheet-barang/approval",
+      },
+    ],
   },
   {
     title: "Stock Opname",
