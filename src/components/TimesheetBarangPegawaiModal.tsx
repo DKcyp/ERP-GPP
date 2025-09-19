@@ -186,7 +186,7 @@ const TimesheetBarangPegawaiModal: React.FC<
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white w-full max-w-6xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white w-full max-w-screen-2xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-white">
           <h3 className="text-lg font-semibold text-gray-900">
             Tambah Timesheet Barang/Pegawai
@@ -295,37 +295,37 @@ const TimesheetBarangPegawaiModal: React.FC<
                 </button>
               </div>
               <div className="overflow-x-auto border rounded-xl">
-                <table className="w-full text-xs">
+                <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-3 py-2 text-left">Nama</th>
-                      <th className="px-3 py-2 text-left">Kualifikasi</th>
-                      <th className="px-3 py-2 text-left">Zona</th>
-                      <th className="px-3 py-2 text-left">Durasi</th>
-                      <th className="px-3 py-2 text-left">Actual</th>
-                      <th className="px-3 py-2 text-left">Rate</th>
-                      <th className="px-3 py-2 text-left">Start Kerja</th>
-                      <th className="px-3 py-2 text-left">Finish Kerja</th>
-                      <th className="px-3 py-2 text-left">Overtime</th>
-                      <th className="px-3 py-2 text-left">Upload</th>
-                      <th className="px-3 py-2 text-center">Aksi</th>
+                      <th className="px-3 py-2 text-left min-w-[150px]">Nama</th>
+                      <th className="px-3 py-2 text-left min-w-[150px]">Kualifikasi</th>
+                      <th className="px-3 py-2 text-left min-w-[100px]">Zona</th>
+                      <th className="px-3 py-2 text-left min-w-[100px]">Durasi</th>
+                      <th className="px-3 py-2 text-left min-w-[100px]">Actual</th>
+                      <th className="px-3 py-2 text-left min-w-[100px]">Rate</th>
+                      <th className="px-3 py-2 text-left min-w-[200px]">Start Kerja</th>
+                      <th className="px-3 py-2 text-left min-w-[200px]">Finish Kerja</th>
+                      <th className="px-3 py-2 text-left min-w-[100px]">Overtime</th>
+                      <th className="px-3 py-2 text-left min-w-[150px]">Upload</th>
+                      <th className="px-3 py-2 text-center min-w-[80px]">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {form.pegawai.map((row) => (
                       <tr key={row.id} className="hover:bg-gray-50">
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[150px]">
                           <input
-                            className="w-full px-2 py-1 border rounded-lg"
+                            className="w-full px-3 py-2 border rounded-lg"
                             value={row.nama}
                             onChange={(e) =>
                               updatePegawai(row.id, "nama", e.target.value)
                             }
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[150px]">
                           <input
-                            className="w-full px-2 py-1 border rounded-lg"
+                            className="w-full px-3 py-2 border rounded-lg"
                             value={row.kualifikasi}
                             onChange={(e) =>
                               updatePegawai(
@@ -336,18 +336,18 @@ const TimesheetBarangPegawaiModal: React.FC<
                             }
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[100px]">
                           <input
-                            className="w-full px-2 py-1 border rounded-lg"
+                            className="w-full px-3 py-2 border rounded-lg"
                             value={row.zona}
                             onChange={(e) =>
                               updatePegawai(row.id, "zona", e.target.value)
                             }
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[100px]">
                           <input
-                            className="w-full px-2 py-1 border rounded-lg"
+                            className="w-full px-3 py-2 border rounded-lg"
                             value={row.hargaAkhir}
                             onChange={(e) =>
                               updatePegawai(
@@ -358,13 +358,13 @@ const TimesheetBarangPegawaiModal: React.FC<
                             }
                           />
                         </td>
-                        <td className="px-3 py-2">
-                          <input className="w-full px-2 py-1 border rounded-lg" />
+                        <td className="px-3 py-2 min-w-[100px]">
+                          <input className="w-full px-3 py-2 border rounded-lg" />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[100px]">
                           <input
                             type="number"
-                            className="w-full px-2 py-1 border rounded-lg text-right"
+                            className="w-full px-3 py-2 border rounded-lg text-right"
                             value={row.rate ?? ""}
                             onChange={(e) =>
                               updatePegawai(
@@ -376,30 +376,30 @@ const TimesheetBarangPegawaiModal: React.FC<
                             placeholder="0"
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[200px]">
                           <input
                             type="datetime-local"
-                            className="w-full px-2 py-1 border rounded-lg"
+                            className="w-full px-3 py-2 border rounded-lg"
                             value={row.startKerja ?? ""}
                             onChange={(e) =>
                               updatePegawai(row.id, "startKerja", e.target.value)
                             }
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[200px]">
                           <input
                             type="datetime-local"
-                            className="w-full px-2 py-1 border rounded-lg"
+                            className="w-full px-3 py-2 border rounded-lg"
                             value={row.finishKerja ?? ""}
                             onChange={(e) =>
                               updatePegawai(row.id, "finishKerja", e.target.value)
                             }
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[100px]">
                           <input
                             type="number"
-                            className="w-full px-2 py-1 border rounded-lg text-right"
+                            className="w-full px-3 py-2 border rounded-lg text-right"
                             value={row.overtime ?? ""}
                             onChange={(e) =>
                               updatePegawai(
@@ -411,7 +411,7 @@ const TimesheetBarangPegawaiModal: React.FC<
                             placeholder="0"
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 min-w-[150px]">
                           <input
                             type="file"
                             onChange={(e) =>
@@ -423,7 +423,7 @@ const TimesheetBarangPegawaiModal: React.FC<
                             }
                           />
                         </td>
-                        <td className="px-3 py-2 text-center">
+                        <td className="px-3 py-2 text-center min-w-[80px]">
                           <button
                             onClick={() => removePegawai(row.id)}
                             className="px-2 py-1 bg-rose-600 text-white rounded-lg"
