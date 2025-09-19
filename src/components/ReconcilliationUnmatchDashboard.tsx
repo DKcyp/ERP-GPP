@@ -121,9 +121,6 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
             Transaksi Rekonsiliasi UnMatch
           </h1>
           {/* "Batal Pasang" button */}
-          <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-            Batal Pasang
-          </button>
         </div>
 
         {/* Filter Section */}
@@ -733,6 +730,11 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="mt-6 flex justify-start">
+        <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+          Batal Pasang
+        </button>
       </div>
     </div>
   );
