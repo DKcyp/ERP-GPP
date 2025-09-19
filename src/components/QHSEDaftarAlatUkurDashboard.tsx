@@ -922,14 +922,32 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Spec</label>
-                    <input
-                      type="text"
+                    <select
                       value={formData.spec || ''}
                       onChange={(e) => handleInputChange('spec', e.target.value)}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                      placeholder="1000V AC/DC"
-                    />
+                    >
+                      <option value="">Pilih Spec</option>
+                      <option value="MT">MT</option>
+                      <option value="PT">PT</option>
+                      <option value="RT">RT</option>
+                      <option value="UT">UT</option>
+                      <option value="All">All</option>
+                      <option value="Load Test">Load Test</option>
+                      <option value="MH6-24F">MH6-24F</option>
+                      <option value="Intron MH 20-30">Intron MH 20-30</option>
+                      <option value="PMI">PMI</option>
+                      <option value="Drop Cell">Drop Cell</option>
+                      <option value="RFIT">RFIT</option>
+                      <option value="Eddy Curent">Eddy Curent</option>
+                      <option value="Boroscope">Boroscope</option>
+                      <option value="Hardness">Hardness</option>
+                      <option value="Infrared Thermograph">Infrared Thermograph</option>
+                      <option value="Painting">Painting</option>
+                      <option value="Hydrotest / Leaktest">Hydrotest / Leaktest</option>
+                      <option value="Hydrotest">Hydrotest</option>
+                    </select>
                   </div>
                   
                   <div>

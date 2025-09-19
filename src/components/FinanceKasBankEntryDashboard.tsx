@@ -517,9 +517,9 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                   Hapus
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                {/* <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                   Unposting
-                </th>
+                </th> */}
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                   Cetak
                 </th>
@@ -558,7 +558,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                       <Trash2 size={16} />
                     </button>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
+                  {/* <td className="px-4 py-3 whitespace-nowrap">
                     <button
                       onClick={() => handleUnpost(entry)}
                       className="text-orange-600 hover:text-orange-800 p-1"
@@ -566,7 +566,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     >
                       <RefreshCw size={16} />
                     </button>
-                  </td>
+                  </td> */}
                   <td className="px-4 py-3 whitespace-nowrap">
                     <button
                       onClick={() => handlePrint(entry)}

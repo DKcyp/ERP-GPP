@@ -1734,22 +1734,22 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Daftar Induk Dokumen",
-    icon: "FileText",
-    items: [
-      {
-        title: "Internal",
-        icon: "FileText",
-        path: "/qhse/daftar-induk-dokumen-internal",
-      },
-      {
-        title: "Eksternal",
-        icon: "FileCheck",
-        path: "/qhse/daftar-induk-dokumen-eksternal",
-      },
-    ],
-  },
+  // {
+  //   title: "Daftar Induk Dokumen",
+  //   icon: "FileText",
+  //   items: [
+  //     {
+  //       title: "Internal",
+  //       icon: "FileText",
+  //       path: "/qhse/daftar-induk-dokumen-internal",
+  //     },
+  //     {
+  //       title: "Eksternal",
+  //       icon: "FileCheck",
+  //       path: "/qhse/daftar-induk-dokumen-eksternal",
+  //     },
+  //   ],
+  // },
   {
     title: "Approval RFI",
     icon: "CheckCircle",
