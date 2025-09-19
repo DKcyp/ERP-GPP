@@ -9,6 +9,9 @@ interface BASerahTerimaItem {
   penerima: string;
   namaAsset: string;
   nomorAsset: string;
+  kodeAsset: string;
+  jumlah: number;
+  keterangan: string;
   kondisi: 'Baik' | 'Rusak' | 'Perlu Perbaikan';
   status: 'Draft' | 'Selesai' | 'Pending';
 }
@@ -24,7 +27,8 @@ interface Props {
 const BASerahTerimaModal: React.FC<Props> = ({ isOpen, onClose, onSave, mode, data }) => {
   const [formData, setFormData] = useState<Partial<BASerahTerimaItem>>({
     nomorBA: '', tanggalBA: '', penyerah: '', penerima: '',
-    namaAsset: '', nomorAsset: '', kondisi: 'Baik', status: 'Draft'
+    namaAsset: '', nomorAsset: '', kodeAsset: '', jumlah: 1, keterangan: '',
+    kondisi: 'Baik', status: 'Draft'
   });
 
   useEffect(() => {
@@ -34,13 +38,14 @@ const BASerahTerimaModal: React.FC<Props> = ({ isOpen, onClose, onSave, mode, da
       setFormData({
         nomorBA: '', tanggalBA: new Date().toISOString().split('T')[0],
         penyerah: '', penerima: '', namaAsset: '', nomorAsset: '',
-        kondisi: 'Baik', status: 'Draft'
+        kodeAsset: '', jumlah: 1, keterangan: '', kondisi: 'Baik', status: 'Draft'
       });
     }
   }, [data, mode]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const value = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    setFormData(prev => ({ ...prev, [e.target.name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -97,6 +102,18 @@ const BASerahTerimaModal: React.FC<Props> = ({ isOpen, onClose, onSave, mode, da
                   disabled={mode === 'view'} className="w-full px-3 py-2 border rounded-lg" required />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">🔢 Kode Asset *</label>
+                <input type="text" name="kodeAsset" value={formData.kodeAsset || ''} onChange={handleChange}
+                  disabled={mode === 'view'} className="w-full px-3 py-2 border rounded-lg" 
+                  placeholder="AST-001" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">📊 Jumlah *</label>
+                <input type="number" name="jumlah" value={formData.jumlah || 1} onChange={handleChange}
+                  disabled={mode === 'view'} className="w-full px-3 py-2 border rounded-lg" 
+                  min="1" required />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Kondisi *</label>
                 <select name="kondisi" value={formData.kondisi || 'Baik'} onChange={handleChange}
                   disabled={mode === 'view'} className="w-full px-3 py-2 border rounded-lg">
@@ -114,6 +131,20 @@ const BASerahTerimaModal: React.FC<Props> = ({ isOpen, onClose, onSave, mode, da
                   <option value="Selesai">Selesai</option>
                 </select>
               </div>
+            </div>
+            
+            {/* Keterangan Field - Full Width */}
+            <div>
+              <label className="block text-sm font-medium mb-1">📝 Keterangan</label>
+              <textarea 
+                name="keterangan" 
+                value={formData.keterangan || ''} 
+                onChange={handleChange}
+                disabled={mode === 'view'} 
+                className="w-full px-3 py-2 border rounded-lg" 
+                rows={3}
+                placeholder="Tambahkan keterangan serah terima asset..."
+              />
             </div>
 
             {mode !== 'view' && (
