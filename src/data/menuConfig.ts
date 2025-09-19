@@ -1236,7 +1236,7 @@ export const financeMenu: MenuSection[] = [
     ],
   },
   {
-    title: "AR",
+    title: "AR dan Collection",
     icon: "ReceiptText", // Icon for Accounts Receivable
     subSections: [
       {
