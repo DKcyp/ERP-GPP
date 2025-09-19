@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Download, Upload, Banknote, Building2, X, Save, Calendar } from 'lucide-react';
+import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Download, Upload, Banknote, Building2, X, Save, Calendar } from 'lucide-react';
 
 // Types for different entry types
 interface KasBankEntry {
@@ -34,6 +34,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
   const [formData, setFormData] = useState({
     tanggal: today.toISOString().split('T')[0],
     noBukti: '',
+    tipeTransaksi: '', // New field for transaction type selection
     divisi: '',
     jenisTransaksi: '',
     noDokumen: '',
@@ -88,6 +89,14 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
     return tabConfig?.label || 'Kas Bank Entry';
   };
 
+  // Transaction type options for the modal
+  const transactionTypeOptions = [
+    { value: 'kas-masuk', label: 'Bukti Kas Masuk', prefix: 'BKM' },
+    { value: 'kas-keluar', label: 'Bukti Kas Keluar', prefix: 'BKK' },
+    { value: 'bank-masuk', label: 'Bank Masuk', prefix: 'BBM' },
+    { value: 'bank-keluar', label: 'Bank Keluar', prefix: 'BBK' },
+  ];
+
   const getNoPrefix = () => {
     switch (activeTab) {
       case 'kas-masuk': return 'BKM';
@@ -98,11 +107,14 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
     }
   };
 
-  // Generate next number for new entries
-  const generateNextNumber = () => {
-    const prefix = getNoPrefix();
+  // Generate next number based on transaction type
+  const generateNextNumberByType = (tipeTransaksi: string) => {
+    const selectedType = transactionTypeOptions.find(opt => opt.value === tipeTransaksi);
+    if (!selectedType) return '';
+    
+    const prefix = selectedType.prefix;
     const existingNumbers = entries
-      .filter(e => e.tipeEntry === activeTab)
+      .filter(e => e.tipeEntry === tipeTransaksi as any)
       .map(e => {
         const match = e.noBukti.match(/-\d{3}$/);
         return match ? parseInt(match[0].substring(1)) : 0;
@@ -111,10 +123,13 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
     return `${prefix}-${String(nextNum).padStart(3, '0')}`;
   };
 
+
+
   const resetForm = () => {
     setFormData({
       tanggal: today.toISOString().split('T')[0],
-      noBukti: generateNextNumber(),
+      noBukti: '',
+      tipeTransaksi: '',
       divisi: '',
       jenisTransaksi: '',
       noDokumen: '',
@@ -138,6 +153,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
     setFormData({
       tanggal: entry.tanggal,
       noBukti: entry.noBukti,
+      tipeTransaksi: entry.tipeEntry,
       divisi: entry.divisi,
       jenisTransaksi: entry.jenisTransaksi,
       noDokumen: entry.noDokumen,
@@ -163,12 +179,21 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       return;
     }
 
-    if (activeTab.includes('masuk') && !formData.terimaDari) {
+    // For add mode, validate transaction type selection
+    if (modalMode === 'add' && !formData.tipeTransaksi) {
+      alert('Mohon pilih tipe transaksi!');
+      return;
+    }
+
+    // Determine the entry type based on mode
+    const entryType = modalMode === 'add' ? formData.tipeTransaksi as KasBankEntry['tipeEntry'] : activeTab;
+
+    if (entryType.includes('masuk') && !formData.terimaDari) {
       alert('Field "Terima Dari" harus diisi!');
       return;
     }
 
-    if (activeTab.includes('keluar') && !formData.bayarKepada) {
+    if (entryType.includes('keluar') && !formData.bayarKepada) {
       alert('Field "Bayar Kepada" harus diisi!');
       return;
     }
@@ -182,14 +207,14 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
         divisi: formData.divisi,
         jenisTransaksi: formData.jenisTransaksi,
         noDokumen: formData.noDokumen,
-        terimaDari: activeTab.includes('masuk') ? formData.terimaDari : undefined,
-        bayarKepada: activeTab.includes('keluar') ? formData.bayarKepada : undefined,
+        terimaDari: entryType.includes('masuk') ? formData.terimaDari : undefined,
+        bayarKepada: entryType.includes('keluar') ? formData.bayarKepada : undefined,
         keterangan: formData.keterangan,
         total: formData.total,
-        tipeEntry: activeTab,
+        tipeEntry: entryType,
       };
       setEntries(prev => [...prev, newEntry]);
-      alert(`${getTabTitle()} berhasil ditambahkan!`);
+      alert(`Data ${transactionTypeOptions.find(opt => opt.value === entryType)?.label} berhasil ditambahkan!`);
     } else {
       // Update existing entry
       setEntries(prev => prev.map(entry => 
@@ -340,7 +365,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                 className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 w-full md:w-auto"
               >
                 <PlusCircle className="h-5 w-5 mr-2" /> 
-                Tambah {getTabTitle()}
+                <span>Tambah</span>
               </button>
               <button 
                 onClick={exportExcel} 
@@ -463,6 +488,35 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                   />
                 </div>
 
+                {/* Tipe Transaksi - Only show in add mode */}
+                {modalMode === 'add' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tipe Transaksi *
+                    </label>
+                    <select
+                      value={formData.tipeTransaksi}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          tipeTransaksi: newType,
+                          noBukti: newType ? generateNextNumberByType(newType) : ''
+                        }));
+                      }}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Pilih Tipe Transaksi</option>
+                      {transactionTypeOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 {/* No Bukti */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -473,7 +527,8 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     value={formData.noBukti}
                     onChange={(e) => setFormData(prev => ({ ...prev, noBukti: e.target.value }))}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Masukkan nomor bukti"
+                    placeholder={modalMode === 'add' ? "Akan diisi otomatis setelah memilih tipe transaksi" : "Masukkan nomor bukti"}
+                    readOnly={modalMode === 'add' && !formData.tipeTransaksi}
                     required
                   />
                 </div>
@@ -509,9 +564,10 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, jenisTransaksi: e.target.value }))}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                     required
+                    disabled={modalMode === 'add' && !formData.tipeTransaksi}
                   >
-                    <option value="">Pilih Jenis Transaksi</option>
-                    {activeTab.includes('masuk') ? (
+                    <option value="">{modalMode === 'add' && !formData.tipeTransaksi ? 'Pilih tipe transaksi terlebih dahulu' : 'Pilih Jenis Transaksi'}</option>
+                    {(modalMode === 'edit' ? activeTab : formData.tipeTransaksi).includes('masuk') ? (
                       <>
                         <option value="Penerimaan Pendapatan">Penerimaan Pendapatan</option>
                         <option value="Pelunasan Piutang">Pelunasan Piutang</option>
@@ -549,20 +605,21 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                 {/* Terima Dari / Bayar Kepada */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {activeTab.includes('masuk') ? 'Terima Dari *' : 'Bayar Kepada *'}
+                    {(modalMode === 'edit' ? activeTab : formData.tipeTransaksi).includes('masuk') ? 'Terima Dari *' : 'Bayar Kepada *'}
                   </label>
                   <input
                     type="text"
-                    value={activeTab.includes('masuk') ? formData.terimaDari : formData.bayarKepada}
+                    value={(modalMode === 'edit' ? activeTab : formData.tipeTransaksi).includes('masuk') ? formData.terimaDari : formData.bayarKepada}
                     onChange={(e) => {
-                      if (activeTab.includes('masuk')) {
+                      if ((modalMode === 'edit' ? activeTab : formData.tipeTransaksi).includes('masuk')) {
                         setFormData(prev => ({ ...prev, terimaDari: e.target.value }));
                       } else {
                         setFormData(prev => ({ ...prev, bayarKepada: e.target.value }));
                       }
                     }}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder={activeTab.includes('masuk') ? 'Nama penerima' : 'Nama pembayar'}
+                    placeholder={(modalMode === 'edit' ? activeTab : formData.tipeTransaksi).includes('masuk') ? 'Nama penerima' : 'Nama pembayar'}
+                    disabled={modalMode === 'add' && !formData.tipeTransaksi}
                     required
                   />
                 </div>

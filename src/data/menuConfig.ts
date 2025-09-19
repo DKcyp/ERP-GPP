@@ -1220,7 +1220,7 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/pengajuan-hutang-usaha",
       },
       {
-        title: "Pengajuan Dana Voucher",
+        title: "Pengajuan Voucher",
         icon: "Ticket",
         path: "/finance/pengajuan-voucher",
       },
