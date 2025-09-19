@@ -5,6 +5,10 @@ import "react-datepicker/dist/react-datepicker.css";
 
 interface LedgerRow {
   id: string;
+  nomorUrut: number;
+  tglJurnal: string; // yyyy-mm-dd
+  noJurnal: string;
+  noBukti: string;
   periode: string; // yyyy-mm
   akun: string; // kode akun
   namaAkun: string;
@@ -19,6 +23,10 @@ interface LedgerRow {
 const seed: LedgerRow[] = [
   {
     id: "1",
+    nomorUrut: 1,
+    tglJurnal: "2025-09-01",
+    noJurnal: "JRL-2025-09-0001",
+    noBukti: "BKT-0001",
     periode: "2025-09",
     akun: "1101",
     namaAkun: "Kas",
@@ -31,6 +39,10 @@ const seed: LedgerRow[] = [
   },
   {
     id: "2",
+    nomorUrut: 2,
+    tglJurnal: "2025-09-03",
+    noJurnal: "JRL-2025-09-0002",
+    noBukti: "BKT-0002",
     periode: "2025-09",
     akun: "1101",
     namaAkun: "Kas",
@@ -43,6 +55,10 @@ const seed: LedgerRow[] = [
   },
   {
     id: "3",
+    nomorUrut: 3,
+    tglJurnal: "2025-09-05",
+    noJurnal: "JRL-2025-09-0003",
+    noBukti: "BKT-0003",
     periode: "2025-09",
     akun: "1101",
     namaAkun: "Kas",
@@ -180,6 +196,18 @@ const BukuBesarDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No. Urut
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tgl Jurnal
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No. Jurnal
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No. Bukti
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Kode Akun
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -211,6 +239,18 @@ const BukuBesarDashboard: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {withSaldo.map((r) => (
                   <tr key={r.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-3 text-sm text-gray-700">
+                      {r.nomorUrut}
+                    </td>
+                    <td className="px-6 py-3 text-sm text-gray-700">
+                      {r.tglJurnal.split("-").reverse().join("/")}
+                    </td>
+                    <td className="px-6 py-3 text-sm text-gray-700">
+                      {r.noJurnal}
+                    </td>
+                    <td className="px-6 py-3 text-sm text-gray-700">
+                      {r.noBukti}
+                    </td>
                     <td className="px-6 py-3 text-sm font-medium text-gray-900">
                       {r.akun}
                     </td>
@@ -241,7 +281,7 @@ const BukuBesarDashboard: React.FC = () => {
                 {withSaldo.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={13}
                       className="px-6 py-8 text-center text-sm text-gray-500"
                     >
                       Tidak ada data untuk filter saat ini

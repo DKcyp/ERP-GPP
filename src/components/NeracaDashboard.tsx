@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Clock,
   Search,
@@ -24,34 +24,101 @@ interface NeracaEntry {
 const NeracaDashboard: React.FC = () => {
   const today = new Date();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterPeriod, setFilterPeriod] = useState("Juli 2025"); // Default filter
+  const [filterPeriod, setFilterPeriod] = useState("2025"); // Default filter
 
-  const [neracaData] = useState<NeracaEntry[]>([
+  // Comparative data for ASET vs PASSIVA (example)
+  type BalanceRow = {
+    label: string;
+    july: number;
+    august: number;
+    isBold?: boolean;
+    isTotal?: boolean;
+  };
+
+  const formatNumber = (n: number) =>
+    n < 0
+      ? `(${Math.abs(n).toLocaleString("id-ID")})`
+      : n.toLocaleString("id-ID");
+
+  const asetRows: BalanceRow[] = [
+    { label: "Kas", july: 174895077, august: 174895077 },
+    { label: "Bank", july: 910444129, august: 910444129 },
+    { label: "Piutang Usaha", july: 5785285132, august: 5785285132 },
+    { label: "Piutang Direksi", july: 0, august: 0 },
+    { label: "Piutang Karyawan", july: 179164968, august: 179164968 },
+    { label: "Piutang Lainnya", july: 0, august: 0 },
     {
-      id: "1",
-      periode: "2025-07",
-      akun: "11100000",
-      namaAkun: "KAS",
-      mu: "IDR",
-      debitMu: 42370,
-      kreditMu: 0,
-      debit: 42370393,
-      kredit: 0,
-      keterangan: "Kas perusahaan",
+      label: "Total Aset Lancar",
+      july: 25180213079,
+      august: 25180213079,
+      isBold: true,
+    },
+    { label: "Investasi", july: 20500000000, august: 20500000000 },
+    {
+      label: "Total Investasi",
+      july: 20500000000,
+      august: 20500000000,
+      isBold: true,
+    },
+    { label: "Tanah & Bangunan", july: 9514985504, august: 9514985504 },
+    { label: "Peralatan Proyek", july: 20876912390, august: 20876912390 },
+    {
+      label: "Total Aset Tetap",
+      july: 18486798703,
+      august: 18486798703,
+      isBold: true,
     },
     {
-      id: "2",
-      periode: "2025-07",
-      akun: "112001000",
-      namaAkun: "BNI - REK.5520140008",
-      mu: "IDR",
-      debitMu: 21570197,
-      kreditMu: 0,
-      debit: 21570196765,
-      kredit: 0,
-      keterangan: "Rekening bank BNI",
+      label: "JUMLAH ASET",
+      july: 64167011782,
+      august: 64167011782,
+      isTotal: true,
+      isBold: true,
     },
-  ]);
+  ];
+
+  const passivaRows: BalanceRow[] = [
+    { label: "Hutang Uang Muka Pembelian", july: 0, august: 0 },
+    { label: "Hutang Usaha", july: 14927029616, august: 14927029616 },
+    { label: "Hutang Karyawan", july: 248444775, august: 248444775 },
+    { label: "Hutang Direksi", july: 0, august: 0 },
+    { label: "Hutang Kepada Pihak ke -3", july: 11760000, august: 11760000 },
+    { label: "Hutang Bank", july: 0, august: 0 },
+    {
+      label: "Total Kewajiban",
+      july: 18338641050,
+      august: 18338641050,
+      isBold: true,
+    },
+    { label: "Modal", july: 15000000000, august: 15000000000 },
+    { label: "Laba Ditahan", july: 25209466205, august: 25209466205 },
+    { label: "Laba Tahun Berjalan", july: 5618904527, august: 5618904527 },
+    { label: "Deviden", july: 0, august: 0 },
+    {
+      label: "Total Modal",
+      july: 45828370732,
+      august: 45828370732,
+      isBold: true,
+    },
+    {
+      label: "JUMLAH PASSIVA",
+      july: 64167011782,
+      august: 64167011782,
+      isTotal: true,
+      isBold: true,
+    },
+  ];
+
+  const maxRows = Math.max(asetRows.length, passivaRows.length);
+  const pairedRows = useMemo(
+    () =>
+      Array.from({ length: maxRows }).map((_, i) => ({
+        left: asetRows[i],
+        right: passivaRows[i],
+        key: i,
+      })),
+    [maxRows]
+  );
 
   // Removed unused helpers
 
@@ -119,9 +186,9 @@ const NeracaDashboard: React.FC = () => {
               value={filterPeriod}
               onChange={(e) => setFilterPeriod(e.target.value)}
             >
-              <option value="Juli 2025">Juli 2025</option>
-              <option value="Juni 2025">Juni 2025</option>
-              <option value="Mei 2025">Mei 2025</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
               {/* Tambahkan periode lain sesuai kebutuhan */}
             </select>
           </div>
@@ -153,70 +220,90 @@ const NeracaDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Neraca Table */}
+        {/* Neraca Table (ASET vs PASSIVA) */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Kode Akun
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th
+                    className="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-r border-gray-200"
+                    colSpan={3}
+                  >
+                    ASET
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Nama Akun
+                  <th
+                    className="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-l border-gray-200"
+                    colSpan={3}
+                  >
+                    PASSIVA
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    MU
+                </tr>
+                <tr className="bg-gray-50">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200">
+                    Deskripsi
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Debet (MU)
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-200">
+                    July
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Kredit (MU)
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-300">
+                    August
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Debet (Rp.)
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-l border-gray-300">
+                    Deskripsi
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Kredit (Rp.)
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-200">
+                    July
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Keterangan
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    Periode
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">
+                    August
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {neracaData.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                      {row.akun}
+              <tbody>
+                {pairedRows.map(({ left, right, key }) => (
+                  <tr key={key} className="hover:bg-gray-50">
+                    <td
+                      className={`px-4 py-2 border-r border-gray-200 ${
+                        left?.isBold ? "font-semibold" : "text-gray-800"
+                      } ${left?.isTotal ? "bg-yellow-100 uppercase" : ""}`}
+                    >
+                      {left ? left.label : ""}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
-                      {row.namaAkun}
+                    <td
+                      className={`px-4 py-2 text-right border-r border-gray-200 ${
+                        left?.isBold ? "font-semibold" : ""
+                      } ${left?.isTotal ? "bg-yellow-100" : ""}`}
+                    >
+                      {left ? formatNumber(left.july) : ""}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
-                      {row.mu}
+                    <td
+                      className={`px-4 py-2 text-right border-r border-gray-300 ${
+                        left?.isBold ? "font-semibold" : ""
+                      } ${left?.isTotal ? "bg-yellow-100" : ""}`}
+                    >
+                      {left ? formatNumber(left.august) : ""}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {row.debitMu.toLocaleString("id-ID")}
+                    <td
+                      className={`px-4 py-2 border-l border-gray-300 ${
+                        right?.isBold ? "font-semibold" : "text-gray-800"
+                      } ${right?.isTotal ? "bg-yellow-100 uppercase" : ""}`}
+                    >
+                      {right ? right.label : ""}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      {row.kreditMu.toLocaleString("id-ID")}
+                    <td
+                      className={`px-4 py-2 text-right border-r border-gray-200 ${
+                        right?.isBold ? "font-semibold" : ""
+                      } ${right?.isTotal ? "bg-yellow-100" : ""}`}
+                    >
+                      {right ? formatNumber(right.july) : ""}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      Rp {row.debit.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 text-right border-r border-gray-200">
-                      Rp {row.kredit.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
-                      {row.keterangan}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 border-r border-gray-200">
-                      {row.periode.split("-").reverse().join("/")}
+                    <td
+                      className={`px-4 py-2 text-right ${
+                        right?.isBold ? "font-semibold" : ""
+                      } ${right?.isTotal ? "bg-yellow-100" : ""}`}
+                    >
+                      {right ? formatNumber(right.august) : ""}
                     </td>
                   </tr>
                 ))}
