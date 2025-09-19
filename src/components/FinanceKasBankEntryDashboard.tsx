@@ -797,7 +797,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                 <div className="mt-6">
                   <div className="overflow-x-auto">
                     <table className="w-full border border-gray-300">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-50 a">
                         <tr>
                           <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase border-r border-gray-300">Hapus</th>
                           <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase border-r border-gray-300">Edit</th>
