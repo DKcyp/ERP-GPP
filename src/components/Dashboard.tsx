@@ -243,7 +243,6 @@ import QHSEKartuPemantauanKesehatanDashboard from "./QHSEKartuPemantauanKesehata
 import QHSEMonitoringPersonilDashboard from "./QHSEMonitoringPersonilDashboard";
 import QHSELogBookTKPKDashboard from "./QHSELogBookTKPKDashboard";
 
-
 // Accounting Dashboards
 import AccountingMainDashboard from "./AccountingMainDashboard";
 import MasterCOADashboard from "./MasterCOADashboard";
@@ -256,6 +255,8 @@ import LaporanJurnalDashboard from "./LaporanJurnalDashboard";
 import TutupBukuDashboard from "./TutupBukuDashboard";
 import LabaRugiDashboard from "./LabaRugiDashboard";
 import NeracaDashboard from "./NeracaDashboard";
+import ReconcilliationMatchDashboard from "./ReconcilliationMatchDashboard";
+import ReconcilliationUnmatchDashboard from "./ReconcilliationUnmatchDashboard";
 
 // Tax Dashboards
 import TaxMainDashboard from "./TaxMainDashboard";
@@ -1718,31 +1719,30 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/kpi-department/master") {
       return <QHSEMasterKPIDashboard />;
-    } 
+    }
     if (currentPage === "/qhse/kpi-department/list") {
       return <QHSEListKPIDashboard />;
-    } 
+    }
 
     if (currentPage === "/qhse/kompetensi-perusahaan") {
       return <QHSEKompetensiPerusahaanDashboard />;
     }
 
-    if(currentPage === "/qhse/qhse-performance") {
+    if (currentPage === "/qhse/qhse-performance") {
       return <QHSEPerformanceDashboard />;
     }
 
-    if(currentPage === "/qhse/monitoring-apd") {
+    if (currentPage === "/qhse/monitoring-apd") {
       return <QHSEMonitoringAPDDashboard />;
     }
 
-    if(currentPage === "/qhse/kamera-radiography") {
+    if (currentPage === "/qhse/kamera-radiography") {
       return <QHSEKameraRadiographyDashboard />;
     }
 
-    if(currentPage === "/qhse/log-book-rat") {
+    if (currentPage === "/qhse/log-book-rat") {
       return <QHSELogBookRATDashboard />;
     }
-    
 
     if (currentPage === "/qhse/perizinan-alat") {
       return <PerizinanAlatDashboard />;
@@ -2018,6 +2018,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/accounting/neraca") {
       return <NeracaDashboard />;
+    }
+    if (currentPage === "/accounting/reconcilliation/match") {
+      return <ReconcilliationMatchDashboard />;
+    }
+    if (currentPage === "/accounting/reconcilliation/unmatch") {
+      return <ReconcilliationUnmatchDashboard />;
     }
 
     // Tax Routes

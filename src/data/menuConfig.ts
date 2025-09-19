@@ -1944,6 +1944,22 @@ export const accountingMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Rekonsiliasi",
+    icon: "RefreshCw", // Example icon, choose as appropriate
+    items: [
+      {
+        title: "Reconcilliation Match",
+        icon: "CheckSquare", // Example icon
+        path: "/accounting/reconcilliation/match",
+      },
+      {
+        title: "Reconcilliation Unmatch",
+        icon: "XSquare", // Example icon
+        path: "/accounting/reconcilliation/unmatch",
+      },
+    ],
+  },
+  {
     title: "PPH UNIFIKASI",
     icon: "Layers",
 
