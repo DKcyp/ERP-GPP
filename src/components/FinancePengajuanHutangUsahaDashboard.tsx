@@ -3,35 +3,27 @@ import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search } fr
 import FinancePermintaanPencairanDanaModal, { PermintaanPencairanDanaFormData } from './FinancePermintaanPencairanDanaModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
-interface PPDRow {
+interface HutangUsahaRow {
   id: number;
   tanggal: string; // yyyy-mm-dd
   noPPD: string;
   divisi: string;
   pemohon: string;
   keperluanUmum: string;
-  bank: string; // display label Nama Bank (norek - alamat)
+  bank: string; // display label Nama Bank - norek
   total: number;
-  status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+  status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected' | 'Pending';
 }
 
-type FinancePPDDashboardProps = { view?: string };
-const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps> = ({ view: viewProp }) => {
+const FinancePengajuanHutangUsahaDashboard: React.FC = () => {
   const today = new Date();
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-  const view = viewProp ?? searchParams?.get('view') ?? undefined;
-  const pageTitle = view === 'list-hutang'
-    ? 'Pengajuan Hutang Usaha'
-    : view === 'pengajuan-voucher'
-    ? 'Pengajuan Voucher'
-    : 'PERMINTAAN PENCAIRAN DANA';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState('Tambah Permintaan Pencairan Dana');
+  const [modalTitle, setModalTitle] = useState('Tambah Pengajuan Hutang Usaha');
   const [editingData, setEditingData] = useState<PermintaanPencairanDanaFormData | null>(null);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [rowToDelete, setRowToDelete] = useState<PPDRow | null>(null);
+  const [rowToDelete, setRowToDelete] = useState<HutangUsahaRow | null>(null);
 
   const [searchNo, setSearchNo] = useState('');
   const [searchPemohon, setSearchPemohon] = useState('');
@@ -42,18 +34,19 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
 
   const divisiOptions = ['Marketing','HRD','GA','Procurement','Project Control','Operasional','QHSE','Finance','Accounting','Tax','Gudang'];
 
-  const [rows, setRows] = useState<PPDRow[]>([
-    { id: 1, tanggal: '2025-09-05', noPPD: 'PPD-2025-09-001', divisi: 'Finance', pemohon: 'Rina', keperluanUmum: 'Pembayaran vendor A', bank: 'Bank Mandiri Operasional - 1400098765432', total: 7500000, status: 'Submitted' },
-    { id: 2, tanggal: '2025-09-06', noPPD: 'PPD-2025-09-002', divisi: 'Accounting', pemohon: 'Budi', keperluanUmum: 'Pembayaran PPN', bank: 'Bank Mandiri PPN - 1400055512345', total: 4500000, status: 'Approved' },
+  const [rows, setRows] = useState<HutangUsahaRow[]>([
+    { id: 1, tanggal: '2025-09-05', noPPD: 'HU-2025-09-001', divisi: 'Finance', pemohon: 'Rina', keperluanUmum: 'Pembayaran hutang supplier A', bank: 'Bank Mandiri Operasional - 1400098765432', total: 7500000, status: 'Submitted' },
+    { id: 2, tanggal: '2025-09-06', noPPD: 'HU-2025-09-002', divisi: 'Accounting', pemohon: 'Budi', keperluanUmum: 'Pelunasan hutang PPN', bank: 'Bank Mandiri PPN - 1400055512345', total: 4500000, status: 'Approved' },
+    { id: 3, tanggal: '2025-09-07', noPPD: 'HU-2025-09-003', divisi: 'Procurement', pemohon: 'Sari', keperluanUmum: 'Pembayaran hutang vendor material', bank: 'Bank BCA Operasional - 5551234567890', total: 12000000, status: 'Pending' },
   ]);
 
   const handleAdd = () => {
     setEditingData(null);
-    setModalTitle('Tambah Permintaan Pencairan Dana');
+    setModalTitle('Tambah Pengajuan Hutang Usaha');
     setIsModalOpen(true);
   };
 
-  const handleEdit = (row: PPDRow) => {
+  const handleEdit = (row: HutangUsahaRow) => {
     const data: PermintaanPencairanDanaFormData = {
       id: row.id,
       noPPD: row.noPPD,
@@ -69,7 +62,7 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
       totalPembayaran: row.total,
     };
     setEditingData(data);
-    setModalTitle('Edit Permintaan Pencairan Dana');
+    setModalTitle('Edit Pengajuan Hutang Usaha');
     setIsModalOpen(true);
   };
 
@@ -94,7 +87,7 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
       } : r));
     } else {
       const newId = rows.length ? Math.max(...rows.map(r => r.id)) + 1 : 1;
-      const newRow: PPDRow = {
+      const newRow: HutangUsahaRow = {
         id: newId,
         tanggal: tanggalStr,
         noPPD: data.noPPD,
@@ -107,10 +100,21 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
       };
       setRows(prev => [newRow, ...prev]);
     }
+    setIsModalOpen(false);
   };
 
-  const handleDelete = (row: PPDRow) => { setRowToDelete(row); setIsConfirmOpen(true); };
-  const confirmDelete = () => { if (rowToDelete) setRows(prev => prev.filter(r => r.id !== rowToDelete.id)); };
+  const handleDelete = (row: HutangUsahaRow) => { 
+    setRowToDelete(row); 
+    setIsConfirmOpen(true); 
+  };
+  
+  const confirmDelete = () => { 
+    if (rowToDelete) {
+      setRows(prev => prev.filter(r => r.id !== rowToDelete.id)); 
+      setIsConfirmOpen(false);
+      setRowToDelete(null);
+    }
+  };
 
   const filtered = useMemo(() => {
     return rows.filter(r => {
@@ -133,11 +137,11 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">{pageTitle}</h1>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">Pengajuan Hutang Usaha</h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">{pageTitle}</span>
+                <span className="text-blue-600 font-medium">Pengajuan Hutang Usaha</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -153,8 +157,8 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
           <h3 className="text-2xl font-bold text-gray-900 mb-6">Filter</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cari No PPD</label>
-              <input type="text" value={searchNo} onChange={e => setSearchNo(e.target.value)} placeholder="PPD-..." className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">Cari No Hutang Usaha</label>
+              <input type="text" value={searchNo} onChange={e => setSearchNo(e.target.value)} placeholder="HU-..." className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Pemohon</label>
@@ -194,7 +198,7 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
 
           <div className="flex flex-col md:flex-row justify-end items-center space-y-3 md:space-y-0 md:space-x-3 mt-2">
             <button onClick={handleAdd} className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 w-full md:w-auto">
-              <PlusCircle className="h-5 w-5 mr-2" /> Tambah PPD
+              <PlusCircle className="h-5 w-5 mr-2" /> Tambah Hutang Usaha
             </button>
             <button onClick={exportExcel} className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 w-full md:w-auto">
               <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
@@ -205,14 +209,14 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">{view === 'list-hutang' ? 'Daftar Transaksi' : 'Daftar Permintaan Pencairan Dana'}</h3>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Daftar Transaksi</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No PPD</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Hutang Usaha</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Divisi</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pemohon</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keperluan</th>
@@ -264,10 +268,10 @@ const FinancePermintaanPencairanDanaDashboard: React.FC<FinancePPDDashboardProps
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={confirmDelete}
         itemName={rowToDelete?.noPPD}
-        message="Apakah Anda yakin ingin menghapus Permintaan Pencairan Dana ini?"
+        message="Apakah Anda yakin ingin menghapus Pengajuan Hutang Usaha ini?"
       />
     </div>
   );
 };
 
-export default FinancePermintaanPencairanDanaDashboard;
+export default FinancePengajuanHutangUsahaDashboard;

@@ -97,7 +97,14 @@ import FinanceLaporanBankHarianDashboard from "./FinanceLaporanBankHarianDashboa
 import FinanceLaporanBankHarianKhususDashboard from "./FinanceLaporanBankHarianKhususDashboard";
 import FinancePermintaanPencairanDanaDashboard from "./FinancePermintaanPencairanDanaDashboard";
 import FinanceVoucherDashboard from "./FinanceVoucherDashboard";
+import FinanceKasBankEntryDashboard from "./FinanceKasBankEntryDashboard";
+import FinanceLaporanKasDashboard from "./FinanceLaporanKasDashboard";
+import FinanceLaporanBankDashboard from "./FinanceLaporanBankDashboard";
 import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumeniDashboard";
+import FinanceApprovalVoucherDashboard from "./FinanceApprovalVoucherDashboard";
+import FinanceApprovalReimburseDashboard from "./FinanceApprovalReimburseDashboard";
+import FinancePengajuanHutangUsahaDashboard from "./FinancePengajuanHutangUsahaDashboard";
+import FinancePengajuanVoucherDashboard from "./FinancePengajuanVoucherDashboard";
 import FinanceARInvoiceDashboard from "./FinanceARInvoiceDashboard";
 import CollectionDashboardSO from "./CollectionDashboardSO";
 import CollectionDashboardProformaInvoice from "./CollectionDashboardProformaInvoice";
@@ -1627,6 +1634,33 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/approval/voucher") {
       return <ApprovalVoucherDashboard />;
     }
+    // Finance Voucher-Reimburse Approval Routes
+    if (currentPage === "/finance/voucher-reimburse/approval-voucher") {
+      return <FinanceApprovalVoucherDashboard />;
+    }
+    if (currentPage === "/finance/voucher-reimburse/approval-reimburse") {
+      return <FinanceApprovalReimburseDashboard />;
+    }
+    // Finance Separate Pengajuan Routes
+    if (currentPage === "/finance/pengajuan-hutang-usaha") {
+      return <FinancePengajuanHutangUsahaDashboard />;
+    }
+    if (currentPage === "/finance/pengajuan-voucher") {
+      return <FinancePengajuanVoucherDashboard />;
+    }
+    // Kas Bank Entry
+    if (currentPage === "/finance/kas/kas-bank-entry") {
+      return <FinanceKasBankEntryDashboard />;
+    }
+    // Laporan Kas
+    if (currentPage === "/finance/kas/laporan-kas") {
+      return <FinanceLaporanKasDashboard />;
+    }
+    // Laporan Bank
+    if (currentPage === "/finance/kas/laporan-bank") {
+      return <FinanceLaporanBankDashboard />;
+    }
+
     if (currentPage === "/finance/voucher/dashboard") {
       return <FinanceVoucherDashboard />;
     }

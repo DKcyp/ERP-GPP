@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Download, Upload, Banknote, Building2 } from 'lucide-react';
+import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Download, Upload, Banknote, Building2, X, Save, Calendar } from 'lucide-react';
 
 // Types for different entry types
 interface KasBankEntry {
@@ -24,6 +24,24 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
   const [searchKeterangan, setSearchKeterangan] = useState('');
   const [filterDivisi, setFilterDivisi] = useState('');
   const [filterTanggal, setFilterTanggal] = useState('');
+  
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [editingEntry, setEditingEntry] = useState<KasBankEntry | null>(null);
+  
+  // Form states
+  const [formData, setFormData] = useState({
+    tanggal: today.toISOString().split('T')[0],
+    noBukti: '',
+    divisi: '',
+    jenisTransaksi: '',
+    noDokumen: '',
+    terimaDari: '',
+    bayarKepada: '',
+    keterangan: '',
+    total: 0,
+  });
 
   // Sample data for all entry types
   const [entries, setEntries] = useState<KasBankEntry[]>([
@@ -80,18 +98,127 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
     }
   };
 
+  // Generate next number for new entries
+  const generateNextNumber = () => {
+    const prefix = getNoPrefix();
+    const existingNumbers = entries
+      .filter(e => e.tipeEntry === activeTab)
+      .map(e => {
+        const match = e.noBukti.match(/-\d{3}$/);
+        return match ? parseInt(match[0].substring(1)) : 0;
+      });
+    const nextNum = Math.max(0, ...existingNumbers) + 1;
+    return `${prefix}-${String(nextNum).padStart(3, '0')}`;
+  };
+
+  const resetForm = () => {
+    setFormData({
+      tanggal: today.toISOString().split('T')[0],
+      noBukti: generateNextNumber(),
+      divisi: '',
+      jenisTransaksi: '',
+      noDokumen: '',
+      terimaDari: '',
+      bayarKepada: '',
+      keterangan: '',
+      total: 0,
+    });
+  };
+
   const handleAdd = () => {
-    alert(`Tambah ${getTabTitle()} - Modal akan diimplementasikan`);
+    setModalMode('add');
+    setEditingEntry(null);
+    resetForm();
+    setShowModal(true);
   };
 
   const handleEdit = (entry: KasBankEntry) => {
-    alert(`Edit ${entry.noBukti} - Modal akan diimplementasikan`);
+    setModalMode('edit');
+    setEditingEntry(entry);
+    setFormData({
+      tanggal: entry.tanggal,
+      noBukti: entry.noBukti,
+      divisi: entry.divisi,
+      jenisTransaksi: entry.jenisTransaksi,
+      noDokumen: entry.noDokumen,
+      terimaDari: entry.terimaDari || '',
+      bayarKepada: entry.bayarKepada || '',
+      keterangan: entry.keterangan,
+      total: entry.total,
+    });
+    setShowModal(true);
   };
 
   const handleDelete = (entry: KasBankEntry) => {
-    if (confirm(`Hapus ${entry.noBukti}?`)) {
+    if (confirm(`Apakah Anda yakin ingin menghapus ${entry.noBukti}?\n\nData yang dihapus tidak dapat dikembalikan.`)) {
       setEntries(prev => prev.filter(e => e.id !== entry.id));
+      alert(`${entry.noBukti} berhasil dihapus!`);
     }
+  };
+
+  const handleSave = () => {
+    // Validation
+    if (!formData.divisi || !formData.jenisTransaksi || !formData.keterangan || formData.total <= 0) {
+      alert('Mohon lengkapi semua field yang diperlukan!');
+      return;
+    }
+
+    if (activeTab.includes('masuk') && !formData.terimaDari) {
+      alert('Field "Terima Dari" harus diisi!');
+      return;
+    }
+
+    if (activeTab.includes('keluar') && !formData.bayarKepada) {
+      alert('Field "Bayar Kepada" harus diisi!');
+      return;
+    }
+
+    if (modalMode === 'add') {
+      // Add new entry
+      const newEntry: KasBankEntry = {
+        id: Math.max(0, ...entries.map(e => e.id)) + 1,
+        tanggal: formData.tanggal,
+        noBukti: formData.noBukti,
+        divisi: formData.divisi,
+        jenisTransaksi: formData.jenisTransaksi,
+        noDokumen: formData.noDokumen,
+        terimaDari: activeTab.includes('masuk') ? formData.terimaDari : undefined,
+        bayarKepada: activeTab.includes('keluar') ? formData.bayarKepada : undefined,
+        keterangan: formData.keterangan,
+        total: formData.total,
+        tipeEntry: activeTab,
+      };
+      setEntries(prev => [...prev, newEntry]);
+      alert(`${getTabTitle()} berhasil ditambahkan!`);
+    } else {
+      // Update existing entry
+      setEntries(prev => prev.map(entry => 
+        entry.id === editingEntry?.id 
+          ? {
+              ...entry,
+              tanggal: formData.tanggal,
+              noBukti: formData.noBukti,
+              divisi: formData.divisi,
+              jenisTransaksi: formData.jenisTransaksi,
+              noDokumen: formData.noDokumen,
+              terimaDari: activeTab.includes('masuk') ? formData.terimaDari : undefined,
+              bayarKepada: activeTab.includes('keluar') ? formData.bayarKepada : undefined,
+              keterangan: formData.keterangan,
+              total: formData.total,
+            }
+          : entry
+      ));
+      alert(`${formData.noBukti} berhasil diperbarui!`);
+    }
+    
+    setShowModal(false);
+    resetForm();
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    resetForm();
+    setEditingEntry(null);
   };
 
   const resetFilters = () => {
@@ -302,6 +429,196 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Form */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {modalMode === 'add' ? `Tambah ${getTabTitle()}` : `Edit ${getTabTitle()}`}
+              </h3>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Tanggal */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="h-4 w-4 inline mr-1" />
+                    Tanggal *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tanggal}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tanggal: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                {/* No Bukti */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    No Bukti *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.noBukti}
+                    onChange={(e) => setFormData(prev => ({ ...prev, noBukti: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Masukkan nomor bukti"
+                    required
+                  />
+                </div>
+
+                {/* Divisi */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Divisi *
+                  </label>
+                  <select
+                    value={formData.divisi}
+                    onChange={(e) => setFormData(prev => ({ ...prev, divisi: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="">Pilih Divisi</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Accounting">Accounting</option>
+                    <option value="HRD">HRD</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Procurement">Procurement</option>
+                    <option value="Operations">Operations</option>
+                  </select>
+                </div>
+
+                {/* Jenis Transaksi */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Jenis Transaksi *
+                  </label>
+                  <select
+                    value={formData.jenisTransaksi}
+                    onChange={(e) => setFormData(prev => ({ ...prev, jenisTransaksi: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="">Pilih Jenis Transaksi</option>
+                    {activeTab.includes('masuk') ? (
+                      <>
+                        <option value="Penerimaan Pendapatan">Penerimaan Pendapatan</option>
+                        <option value="Pelunasan Piutang">Pelunasan Piutang</option>
+                        <option value="Transfer Masuk">Transfer Masuk</option>
+                        <option value="Penerimaan DP">Penerimaan DP</option>
+                        <option value="Penerimaan Lainnya">Penerimaan Lainnya</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Pembayaran Operasional">Pembayaran Operasional</option>
+                        <option value="Pembayaran Gaji">Pembayaran Gaji</option>
+                        <option value="Transfer Keluar">Transfer Keluar</option>
+                        <option value="Pembayaran Invoice">Pembayaran Invoice</option>
+                        <option value="Pembayaran Supplier">Pembayaran Supplier</option>
+                        <option value="Pembayaran Lainnya">Pembayaran Lainnya</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                {/* No Dokumen */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    No Dokumen
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.noDokumen}
+                    onChange={(e) => setFormData(prev => ({ ...prev, noDokumen: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Masukkan nomor dokumen"
+                  />
+                </div>
+
+                {/* Terima Dari / Bayar Kepada */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {activeTab.includes('masuk') ? 'Terima Dari *' : 'Bayar Kepada *'}
+                  </label>
+                  <input
+                    type="text"
+                    value={activeTab.includes('masuk') ? formData.terimaDari : formData.bayarKepada}
+                    onChange={(e) => {
+                      if (activeTab.includes('masuk')) {
+                        setFormData(prev => ({ ...prev, terimaDari: e.target.value }));
+                      } else {
+                        setFormData(prev => ({ ...prev, bayarKepada: e.target.value }));
+                      }
+                    }}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder={activeTab.includes('masuk') ? 'Nama penerima' : 'Nama pembayar'}
+                    required
+                  />
+                </div>
+
+                {/* Total */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total (Rp) *
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.total}
+                    onChange={(e) => setFormData(prev => ({ ...prev, total: parseInt(e.target.value) || 0 }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                {/* Keterangan */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Keterangan *
+                  </label>
+                  <textarea
+                    value={formData.keterangan}
+                    onChange={(e) => setFormData(prev => ({ ...prev, keterangan: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows={3}
+                    placeholder="Masukkan keterangan transaksi"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
+                <button
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>{modalMode === 'add' ? 'Simpan' : 'Update'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

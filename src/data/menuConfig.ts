@@ -1087,63 +1087,58 @@ export const financeMenu: MenuSection[] = [
     directPath: "/finance/dashboard",
   },
   {
-    title: "Kas",
+    title: "Kas / Bank",
     icon: "Banknote",
     items: [
       {
-        title: "Bukti Kas Masuk",
-        icon: "Download",
-        path: "/finance/kas/bukti-kas-masuk",
+        title: "Kas Bank Entry",
+        icon: "PlusCircle",
+        path: "/finance/kas/kas-bank-entry",
       },
       {
-        title: "Bukti Kas Keluar",
-        icon: "Upload",
-        path: "/finance/kas/bukti-kas-keluar",
-      },
-      {
-        title: "Laporan Kas Kecil",
+        title: "Laporan Kas",
         icon: "FileText",
-        path: "/finance/kas/laporan-kas-kecil",
+        path: "/finance/kas/laporan-kas",
       },
       {
-        title: "Laporan Outstanding Cash Advance",
+        title: "Laporan Bank",
         icon: "FileText",
-        path: "/finance/kas/laporan-outstanding-cash-advance",
+        path: "/finance/kas/laporan-bank",
       },
     ],
   },
-  {
-    title: "Kelola Bank",
-    icon: "Banknote",
-    items: [
-      {
-        title: "Laporan Bank Harian",
-        icon: "FileText",
-        path: "/finance/bank/laporan-bank-harian",
-      },
-      {
-        title: "Laporan Bank Harian Khusus",
-        icon: "FileText",
-        path: "/finance/bank/laporan-bank-harian-khusus",
-      },
-    ],
-  },
-  {
-    title: "Bank",
-    icon: "Banknote",
-    items: [
-      {
-        title: "Bukti Bank Masuk",
-        icon: "Download",
-        path: "/finance/bank/bukti-bank-masuk",
-      },
-      {
-        title: "Bukti Bank Keluar",
-        icon: "Upload",
-        path: "/finance/bank/bukti-bank-keluar",
-      },
-    ],
-  },
+  // {
+  //   title: "Kelola Bank",
+  //   icon: "Banknote",
+  //   items: [
+  //     {
+  //       title: "Laporan Bank Harian",
+  //       icon: "FileText",
+  //       path: "/finance/bank/laporan-bank-harian",
+  //     },
+  //     {
+  //       title: "Laporan Bank Harian Khusus",
+  //       icon: "FileText",
+  //       path: "/finance/bank/laporan-bank-harian-khusus",
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Bank",
+  //   icon: "Banknote",
+  //   items: [
+  //     {
+  //       title: "Bukti Bank Masuk",
+  //       icon: "Download",
+  //       path: "/finance/bank/bukti-bank-masuk",
+  //     },
+  //     {
+  //       title: "Bukti Bank Keluar",
+  //       icon: "Upload",
+  //       path: "/finance/bank/bukti-bank-keluar",
+  //     },
+  //   ],
+  // },
   {
     title: "AP",
     icon: "CreditCard", // Icon for Accounts Payable
@@ -1157,11 +1152,11 @@ export const financeMenu: MenuSection[] = [
             icon: "LayoutDashboard",
             path: "/finance/ap/dashboard",
           },
-          {
-            title: "Laporan Outstanding Hutang",
-            icon: "FileText",
-            path: "/finance/ap/laporan-outstanding-hutang",
-          },
+          // {
+          //   title: "Laporan Outstanding Hutang",
+          //   icon: "FileText",
+          //   path: "/finance/ap/laporan-outstanding-hutang",
+          // },
           {
             title: "Laporan Pembayaran Hutang",
             icon: "FileText",
@@ -1174,10 +1169,15 @@ export const financeMenu: MenuSection[] = [
         icon: "Folder",
         items: [
           { title: "Tresuri", icon: "FolderUp", path: "/finance/ap/tresuri" },
+          // {
+          //   title: "Laporan Hutang",
+          //   icon: "FileText",
+          //   path: "/finance/ap/laporan-hutang",
+          // },
           {
             title: "Laporan Hutang",
             icon: "FileText",
-            path: "/finance/ap/laporan-hutang",
+            path: "/finance/ap/laporan-outstanding-hutang",
           },
           {
             title: "Pengajuan Dana Hutang",
@@ -1205,12 +1205,12 @@ export const financeMenu: MenuSection[] = [
       {
         title: "Pengajuan Hutang Usaha",
         icon: "ClipboardList",
-        path: "/finance/permintaan-pencairan-dana?view=list-hutang",
+        path: "/finance/pengajuan-hutang-usaha",
       },
       {
         title: "Pengajuan Dana Voucher",
         icon: "Ticket",
-        path: "/finance/permintaan-pencairan-dana?view=pengajuan-voucher",
+        path: "/finance/pengajuan-voucher",
       },
     ],
   },
