@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Eye } from 'lucide-react';
+import BASerahTerimaModal from './BASerahTerimaModal';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 interface BASerahTerimaItem {
   id: string;
@@ -35,12 +37,39 @@ const seedData = (): BASerahTerimaItem[] => [
     nomorAsset: 'AST-FUR-025',
     kondisi: 'Baik',
     status: 'Selesai'
+  },
+  {
+    id: '3',
+    nomorBA: 'BA-STA-003/2024',
+    tanggalBA: '2024-12-17',
+    penyerah: 'Manager IT',
+    penerima: 'Budi Santoso',
+    namaAsset: 'Monitor LG 24 inch',
+    nomorAsset: 'AST-IT-015',
+    kondisi: 'Baik',
+    status: 'Pending'
+  },
+  {
+    id: '4',
+    nomorBA: 'BA-STA-004/2024',
+    tanggalBA: '2024-12-18',
+    penyerah: 'Supervisor GA',
+    penerima: 'Sari Dewi',
+    namaAsset: 'Printer Canon',
+    nomorAsset: 'AST-IT-008',
+    kondisi: 'Perlu Perbaikan',
+    status: 'Draft'
   }
 ];
 
 const GABASerahTerimaAssetDashboard: React.FC = () => {
-  const [data] = useState<BASerahTerimaItem[]>(seedData());
+  const [data, setData] = useState<BASerahTerimaItem[]>(seedData());
   const [searchQuery, setSearchQuery] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [selectedItem, setSelectedItem] = useState<BASerahTerimaItem | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<BASerahTerimaItem | null>(null);
 
   const getStatusBadge = (status: string) => {
     const baseClass = "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border";
@@ -58,6 +87,62 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
       case 'Rusak': return `${baseClass} bg-red-100 text-red-800 border-red-200`;
       default: return `${baseClass} bg-orange-100 text-orange-800 border-orange-200`;
     }
+  };
+
+  // Handler functions
+  const handleTambah = () => {
+    setModalMode('create');
+    setSelectedItem(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (item: BASerahTerimaItem) => {
+    setModalMode('edit');
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleView = (item: BASerahTerimaItem) => {
+    setModalMode('view');
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (item: BASerahTerimaItem) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      setData(prev => prev.filter(item => item.id !== itemToDelete.id));
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
+    }
+  };
+
+  const handleSave = (formData: Partial<BASerahTerimaItem>) => {
+    if (modalMode === 'create') {
+      const newItem: BASerahTerimaItem = {
+        id: Date.now().toString(),
+        nomorBA: formData.nomorBA || '',
+        tanggalBA: formData.tanggalBA || '',
+        penyerah: formData.penyerah || '',
+        penerima: formData.penerima || '',
+        namaAsset: formData.namaAsset || '',
+        nomorAsset: formData.nomorAsset || '',
+        kondisi: formData.kondisi || 'Baik',
+        status: formData.status || 'Draft'
+      };
+      setData(prev => [...prev, newItem]);
+    } else if (modalMode === 'edit' && selectedItem) {
+      setData(prev => prev.map(item => 
+        item.id === selectedItem.id 
+          ? { ...item, ...formData }
+          : item
+      ));
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -111,7 +196,10 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2 mt-6">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs">
+            <button 
+              onClick={handleTambah}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
+            >
               <Plus className="h-4 w-4" />
               <span>Tambah BA</span>
             </button>
@@ -164,13 +252,25 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        <button className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200" title="View">
+                        <button 
+                          onClick={() => handleView(item)}
+                          className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200" 
+                          title="View"
+                        >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200" title="Edit">
+                        <button 
+                          onClick={() => handleEdit(item)}
+                          className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200" 
+                          title="Edit"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200" title="Delete">
+                        <button 
+                          onClick={() => handleDelete(item)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200" 
+                          title="Delete"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -182,6 +282,27 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Form Modal */}
+      {isModalOpen && (
+        <BASerahTerimaModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSave}
+          mode={modalMode}
+          data={selectedItem}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDelete}
+          itemName={itemToDelete?.nomorBA || ''}
+        />
+      )}
     </div>
   );
 };

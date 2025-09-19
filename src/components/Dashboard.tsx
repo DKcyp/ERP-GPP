@@ -1663,6 +1663,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/kas/laporan-kas") {
       return <FinanceLaporanKasDashboard />;
     }
+    // Laporan Kas Bank Harian
+    if (currentPage === "/finance/kas/laporan-kas-bank-harian") {
+      return <FinanceLaporanKasBankHarianDashboard />;
+    }
     // Laporan Bank
     if (currentPage === "/finance/kas/laporan-bank") {
       return <FinanceLaporanBankDashboard />;
