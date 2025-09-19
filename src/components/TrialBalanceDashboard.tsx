@@ -215,9 +215,6 @@ const TrialBalanceDashboard: React.FC = () => {
                     Kredit (Rp.)
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Keterangan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Periode
                   </th>
                 </tr>
@@ -248,9 +245,6 @@ const TrialBalanceDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                       Rp {entry.kredit.toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {entry.keterangan}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {entry.periode.split("-").reverse().join("/")}
