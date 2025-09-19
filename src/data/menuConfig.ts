@@ -1414,7 +1414,7 @@ export const gudangMenu: MenuSection[] = [
       //   icon: "RotateCw",
       //   path: "/gudang/barang/restock-expired",
       // },
-      { title: "Stock Barang", icon: "Layers", path: "/gudang/barang/stock" },
+      { title: "Laporan Stok Pergudang", icon: "Layers", path: "/gudang/barang/stock" },
     ],
   },
   {

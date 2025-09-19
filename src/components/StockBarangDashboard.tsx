@@ -70,14 +70,31 @@ const GudangSummary: React.FC<{ selectedGudang: GudangKey; items: StockItem[] }>
 
 const StockBarangDashboard: React.FC = () => {
   const [selectedGudang, setSelectedGudang] = useState<'ALL' | 'MAIN' | 'PROYEK_A' | 'PROYEK_B' | 'PROYEK_C' | 'PROYEK_D'>('ALL');
+  const [searchBarang, setSearchBarang] = useState('');
+  const [searchKodeBarang, setSearchKodeBarang] = useState('');
 
-  const stockItems = [
+  const allStockItems = [
     { no: 1, kodeBarang: 'GB001', namaBarang: 'Bolt M10 x 50', kategori: 'Sparepart', satuan: 'PCS', stockMain: 500, stockProyekA: 120, stockProyekB: 80, stockProyekC: 150, stockProyekD: 100 },
     { no: 2, kodeBarang: 'GB002', namaBarang: 'Bearing 6203', kategori: 'Sparepart', satuan: 'PCS', stockMain: 300, stockProyekA: 90, stockProyekB: 60, stockProyekC: 100, stockProyekD: 50 },
     { no: 3, kodeBarang: 'GB003', namaBarang: 'Grease Shell Gadus', kategori: 'Pelumas', satuan: 'Kg', stockMain: 200, stockProyekA: 40, stockProyekB: 30, stockProyekC: 70, stockProyekD: 60 },
     { no: 4, kodeBarang: 'GB004', namaBarang: 'Welding Rod E6013', kategori: 'Material', satuan: 'Kg', stockMain: 150, stockProyekA: 30, stockProyekB: 20, stockProyekC: 50, stockProyekD: 50 },
     { no: 5, kodeBarang: 'GB005', namaBarang: 'Hydraulic Oil AW 68', kategori: 'Pelumas', satuan: 'Liter', stockMain: 250, stockProyekA: 50, stockProyekB: 40, stockProyekC: 80, stockProyekD: 80 },
   ];
+
+  // Filter data berdasarkan pencarian
+  const filteredStockItems = useMemo(() => {
+    return allStockItems.filter(item => {
+      const matchKodeBarang = searchKodeBarang === '' || 
+        item.kodeBarang.toLowerCase().includes(searchKodeBarang.toLowerCase());
+      
+      const matchNamaBarang = searchBarang === '' || 
+        item.namaBarang.toLowerCase().includes(searchBarang.toLowerCase());
+      
+      return matchKodeBarang && matchNamaBarang;
+    });
+  }, [searchBarang, searchKodeBarang]);
+
+  const stockItems = filteredStockItems;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -86,36 +103,19 @@ const StockBarangDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                STOCK BARANG
+                LAPORAN STOK PERGUDANG
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
                 <span className="mx-2">›</span>
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">Barang</span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Stock Barang</span>
+                <span className="text-blue-600 font-medium">Laporan Stok Pergudang</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
               <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
-            </div>
-            {/* Gudang Component */}
-            <div className="relative">
-              <label htmlFor="gudang" className="block text-sm font-medium text-gray-700 mb-1">Gudang</label>
-              <select
-                id="gudang"
-                value={selectedGudang}
-                onChange={(e) => setSelectedGudang(e.target.value as any)}
-                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              >
-                <option value="ALL">Semua Gudang</option>
-                <option value="MAIN">Main</option>
-                <option value="PROYEK_A">Proyek A</option>
-                <option value="PROYEK_B">Proyek B</option>
-                <option value="PROYEK_C">Proyek C</option>
-                <option value="PROYEK_D">Proyek D</option>
-              </select>
             </div>
           </div>
 
@@ -125,53 +125,97 @@ const StockBarangDashboard: React.FC = () => {
       </div>
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          {/* Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-            <div className="relative">
-              <label htmlFor="kodeBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Kode Barang</label>
-              <input
-                type="text"
-                id="kodeBarang"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="BRG0001"
-              />
-              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+          {/* Unified Filter Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border border-blue-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Search className="h-5 w-5 mr-2 text-blue-600" />
+              Panel Pencarian Laporan Stok
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">🏢 Filter Gudang</label>
+                <select
+                  value={selectedGudang}
+                  onChange={(e) => setSelectedGudang(e.target.value as any)}
+                  className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                >
+                  <option value="ALL">Semua Gudang</option>
+                  <option value="MAIN">Main</option>
+                  <option value="PROYEK_A">Proyek A</option>
+                  <option value="PROYEK_B">Proyek B</option>
+                  <option value="PROYEK_C">Proyek C</option>
+                  <option value="PROYEK_D">Proyek D</option>
+                </select>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">🔢 Kode Barang</label>
+                <input
+                  type="text"
+                  value={searchKodeBarang}
+                  onChange={(e) => setSearchKodeBarang(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                  placeholder="Cari kode barang"
+                />
+                <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">📦 Nama Barang</label>
+                <input
+                  type="text"
+                  value={searchBarang}
+                  onChange={(e) => setSearchBarang(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                  placeholder="Cari nama barang"
+                />
+                <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                <select className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                  <option>--Pilih Kategori--</option>
+                  <option>Sparepart</option>
+                  <option>Pelumas</option>
+                  <option>Material</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Satuan</label>
+                <select className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                  <option>--Pilih Satuan--</option>
+                  <option>PCS</option>
+                  <option>Kg</option>
+                  <option>Liter</option>
+                </select>
+              </div>
             </div>
-            <div className="relative">
-              <label htmlFor="namaBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Nama Barang</label>
-              <input
-                type="text"
-                id="namaBarang"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="Nama Barang"
-              />
-              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
-            </div>
-            <div className="relative">
-              <label htmlFor="kategori" className="block text-sm font-medium text-gray-700 mb-1">Cari Kategori</label>
-              <select
-                id="kategori"
-                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                {(searchKodeBarang || searchBarang) && (
+                  <div className="flex items-center space-x-2">
+                    <span>📊 Hasil: {stockItems.length} item</span>
+                    {searchKodeBarang && (
+                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                        Kode: "{searchKodeBarang}"
+                      </span>
+                    )}
+                    {searchBarang && (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                        Nama: "{searchBarang}"
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              <button 
+                onClick={() => { 
+                  setSearchBarang(''); 
+                  setSearchKodeBarang(''); 
+                  setSelectedGudang('ALL'); 
+                }}
+                className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
               >
-                <option>--Pilih Kategori--</option>
-                <option>Alat</option>
-                <option>Bahan</option>
-                <option>Sparepart</option>
-                <option>Pelumas</option>
-                <option>Material</option>
-              </select>
-            </div>
-            <div className="relative">
-              <label htmlFor="satuan" className="block text-sm font-medium text-gray-700 mb-1">Cari Satuan</label>
-              <select
-                id="satuan"
-                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              >
-                <option>--Pilih Satuan--</option>
-                <option>PCS</option>
-                <option>Kg</option>
-                <option>Liter</option>
-              </select>
+                Reset Filter
+              </button>
             </div>
           </div>
 
