@@ -16,17 +16,24 @@ import {
   Clock,
   Filter,
   ArrowUpDown,
+  Upload,
+  X,
+  File
 } from 'lucide-react';
 
 interface DocumentRecord {
   id: string;
   no: number;
-  namaDoumen: string;
+  namaDokumen: string;
   nomorDokumen: string;
   departemen: string;
   lokasi: string;
   revisiKe: string;
-  tanggal: string;
+  tanggalDibuat: string;
+  tanggalBerlaku: string;
+  sampaiMasaBerlaku: string;
+  hasilReview: string;
+  uploadDokumen: string;
   status: 'Valid' | 'Mendekati Expired' | 'Expired';
   keterangan?: string;
 }
@@ -57,111 +64,151 @@ const initialDocumentData: DocumentRecord[] = [
   {
     id: '1',
     no: 1,
-    namaDoumen: 'PPH PSL 23',
+    namaDokumen: 'PPH PSL 23',
     nomorDokumen: 'KEP-50/PJ/1994',
     departemen: 'FA',
     lokasi: 'FA',
     revisiKe: '-',
-    tanggal: '1994-12-27',
+    tanggalDibuat: '1994-10-15',
+    tanggalBerlaku: '1994-12-27',
+    sampaiMasaBerlaku: '2025-12-27',
+    hasilReview: 'Dokumen masih berlaku dan sesuai regulasi terbaru',
+    uploadDokumen: 'PPH_PSL_23.pdf',
     status: 'Valid'
   },
   {
     id: '2',
     no: 2,
-    namaDoumen: 'PPH PASAL 4 AYAT 2',
+    namaDokumen: 'PPH PASAL 4 AYAT 2',
     nomorDokumen: 'Peraturan Pemerintah No. 29 Thn 1996 jo PP No.65 thn 2001',
     departemen: 'FA',
     lokasi: 'FA',
     revisiKe: '-',
-    tanggal: '2002-03-22',
+    tanggalDibuat: '2001-12-01',
+    tanggalBerlaku: '2002-03-22',
+    sampaiMasaBerlaku: '2025-03-22',
+    hasilReview: 'Perlu update sesuai peraturan terbaru',
+    uploadDokumen: 'PPH_PASAL_4_AYAT_2.pdf',
     status: 'Valid'
   },
   {
     id: '3',
     no: 3,
-    namaDoumen: 'PPH PASAL 26',
+    namaDokumen: 'PPH PASAL 26',
     nomorDokumen: 'UU No.36 Tahun2008',
     departemen: 'FA',
     lokasi: 'FA',
     revisiKe: '-',
-    tanggal: '2008-09-23',
+    tanggalDibuat: '2008-07-01',
+    tanggalBerlaku: '2008-09-23',
+    sampaiMasaBerlaku: '2025-09-23',
+    hasilReview: 'Dokumen valid dan dapat digunakan',
+    uploadDokumen: 'PPH_PASAL_26.pdf',
     status: 'Valid'
   },
   {
     id: '4',
     no: 4,
-    namaDoumen: 'PPh Psl 21',
+    namaDokumen: 'PPh Psl 21',
     nomorDokumen: 'Tahun 2022',
     departemen: 'FA',
     lokasi: 'FA',
     revisiKe: '-',
-    tanggal: '2022-09-20',
+    tanggalDibuat: '2022-08-01',
+    tanggalBerlaku: '2022-09-20',
+    sampaiMasaBerlaku: '2025-09-20',
+    hasilReview: 'Dokumen terbaru dan sesuai standar',
+    uploadDokumen: 'PPh_Psl_21_2022.pdf',
     status: 'Valid'
   },
   {
     id: '5',
     no: 5,
-    namaDoumen: 'Keselamatan kerja',
+    namaDokumen: 'Keselamatan kerja',
     nomorDokumen: 'UU 1 Tahun 1970',
     departemen: 'HRD',
     lokasi: 'HRD',
     revisiKe: '-',
-    tanggal: '1970-01-12',
+    tanggalDibuat: '1969-11-01',
+    tanggalBerlaku: '1970-01-12',
+    sampaiMasaBerlaku: '2024-01-12',
+    hasilReview: 'Dokumen sudah expired, perlu pembaruan',
+    uploadDokumen: 'UU_Keselamatan_Kerja_1970.pdf',
     status: 'Expired'
   },
   {
     id: '6',
     no: 6,
-    namaDoumen: 'Badan penyelenggaraan jaminan sosial',
+    namaDokumen: 'Badan penyelenggaraan jaminan sosial',
     nomorDokumen: 'UU 24 tahun 2011',
     departemen: 'HRD',
     lokasi: 'HRD',
     revisiKe: '-',
-    tanggal: '2011-11-25',
+    tanggalDibuat: '2011-09-01',
+    tanggalBerlaku: '2011-11-25',
+    sampaiMasaBerlaku: '2025-11-25',
+    hasilReview: 'Dokumen masih berlaku untuk jaminan sosial',
+    uploadDokumen: 'UU_BPJS_2011.pdf',
     status: 'Valid'
   },
   {
     id: '7',
     no: 7,
-    namaDoumen: 'Kesehatan',
+    namaDokumen: 'Kesehatan',
     nomorDokumen: 'UU 36 tahun 2009',
     departemen: 'HRD',
     lokasi: 'HRD',
     revisiKe: '-',
-    tanggal: '2009-10-13',
+    tanggalDibuat: '2009-08-01',
+    tanggalBerlaku: '2009-10-13',
+    sampaiMasaBerlaku: '2025-10-13',
+    hasilReview: 'Regulasi kesehatan masih berlaku',
+    uploadDokumen: 'UU_Kesehatan_2009.pdf',
     status: 'Valid'
   },
   {
     id: '8',
     no: 8,
-    namaDoumen: 'Ketenagakerjaan',
+    namaDokumen: 'Ketenagakerjaan',
     nomorDokumen: 'UU 13 tahun 2003',
     departemen: 'HRD',
     lokasi: 'HRD',
     revisiKe: '-',
-    tanggal: '2003-03-25',
+    tanggalDibuat: '2003-01-15',
+    tanggalBerlaku: '2003-03-25',
+    sampaiMasaBerlaku: '2025-03-25',
+    hasilReview: 'UU Ketenagakerjaan masih berlaku',
+    uploadDokumen: 'UU_Ketenagakerjaan_2003.pdf',
     status: 'Valid'
   },
   {
     id: '9',
     no: 9,
-    namaDoumen: 'Jaminan sosial tenaga kerja',
+    namaDokumen: 'Jaminan sosial tenaga kerja',
     nomorDokumen: 'UU 03 tahun 1992',
     departemen: 'HRD',
     lokasi: 'HRD',
     revisiKe: '-',
-    tanggal: '1992-02-17',
+    tanggalDibuat: '1991-12-01',
+    tanggalBerlaku: '1992-02-17',
+    sampaiMasaBerlaku: '2025-02-17',
+    hasilReview: 'Dokumen mendekati expired, perlu review',
+    uploadDokumen: 'UU_Jamsostek_1992.pdf',
     status: 'Mendekati Expired'
   },
   {
     id: '10',
     no: 10,
-    namaDoumen: 'Lalu lintas dan angkutan jalan',
+    namaDokumen: 'Lalu lintas dan angkutan jalan',
     nomorDokumen: 'UU 22 tahun 2009',
     departemen: 'QHSE',
     lokasi: 'QHSE',
     revisiKe: '-',
-    tanggal: '2009-06-22',
+    tanggalDibuat: '2009-04-01',
+    tanggalBerlaku: '2009-06-22',
+    sampaiMasaBerlaku: '2025-06-22',
+    hasilReview: 'Dokumen lalu lintas masih berlaku',
+    uploadDokumen: 'UU_Lalin_2009.pdf',
     status: 'Valid'
   }
 ];
@@ -185,6 +232,11 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
 
   // Form state
   const [formData, setFormData] = useState<Partial<DocumentRecord>>({});
+  
+  // File upload state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Get unique departments for filter
   const departments = useMemo(() => {
@@ -194,14 +246,14 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
 
   // Filter and search data
   const filteredData = useMemo(() => {
-    return documentData.filter((item) => {
-      const matchesSearch = 
-        item.namaDoumen.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.nomorDokumen.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.departemen.toLowerCase().includes(searchTerm.toLowerCase());
+    return documentData.filter(doc => {
+      const matchesSearch = searchTerm === '' || 
+        doc.namaDokumen.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.nomorDokumen.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.departemen.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesDepartemen = filterDepartemen === '' || item.departemen === filterDepartemen;
-      const matchesStatus = filterStatus === '' || item.status === filterStatus;
+      const matchesDepartemen = filterDepartemen === '' || doc.departemen === filterDepartemen;
+      const matchesStatus = filterStatus === '' || doc.status === filterStatus;
       
       return matchesSearch && matchesDepartemen && matchesStatus;
     });
@@ -258,6 +310,52 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
     setModalMode('add');
     setSelectedRecord(null);
     setFormData({});
+    setSelectedFile(null);
+    setUploadProgress(0);
+    setIsUploading(false);
+  };
+
+  // File upload handlers
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type (PDF, DOC, DOCX)
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (allowedTypes.includes(file.type)) {
+        setSelectedFile(file);
+        setFormData(prev => ({ ...prev, uploadDokumen: file.name }));
+      } else {
+        alert('Hanya file PDF, DOC, atau DOCX yang diizinkan!');
+      }
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+    
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    // Simulate file upload progress
+    const uploadInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(uploadInterval);
+          setIsUploading(false);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+    
+    // In real implementation, this would be an API call
+    // await uploadFileToServer(selectedFile);
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setFormData(prev => ({ ...prev, uploadDokumen: '' }));
+    setUploadProgress(0);
   };
 
   const handleSave = () => {
@@ -390,7 +488,7 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 text-center cursor-pointer hover:bg-green-200"
-                    onClick={() => handleSort('namaDoumen')}
+                    onClick={() => handleSort('namaDokumen')}
                   >
                     <div className="flex items-center justify-center gap-1">
                       Nama Dokumen
@@ -651,8 +749,8 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={formData.namaDoumen || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, namaDoumen: e.target.value }))}
+                    value={formData.namaDokumen || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, namaDokumen: e.target.value }))}
                     disabled={modalMode === 'view'}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
                     placeholder="Masukkan nama dokumen"
@@ -764,6 +862,112 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
                     <option value="Mendekati Expired">Mendekati Expired</option>
                     <option value="Expired">Expired</option>
                   </select>
+                </div>
+
+                {/* Tanggal Dibuat */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal Dibuat *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tanggalDibuat || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tanggalDibuat: e.target.value }))}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                  />
+                </div>
+
+                {/* Sampai Masa Berlaku */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sampai Masa Berlaku *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.sampaiMasaBerlaku || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, sampaiMasaBerlaku: e.target.value }))}
+                    disabled={modalMode === 'view'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                  />
+                </div>
+
+                {/* Hasil Review */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Hasil Review
+                  </label>
+                  <textarea
+                    value={formData.hasilReview || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, hasilReview: e.target.value }))}
+                    disabled={modalMode === 'view'}
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                    placeholder="Masukkan hasil review dokumen..."
+                  />
+                </div>
+
+                {/* Upload Dokumen */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Upload Dokumen
+                  </label>
+                  {modalMode !== 'view' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleFileSelect}
+                          className="hidden"
+                          id="file-upload"
+                        />
+                        <label
+                          htmlFor="file-upload"
+                          className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Pilih File
+                        </label>
+                        {selectedFile && (
+                          <div className="flex items-center space-x-2">
+                            <File className="h-4 w-4 text-green-600" />
+                            <span className="text-sm text-gray-700">{selectedFile.name}</span>
+                            <button
+                              type="button"
+                              onClick={removeFile}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      {selectedFile && !isUploading && uploadProgress < 100 && (
+                        <button
+                          type="button"
+                          onClick={handleFileUpload}
+                          className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                          Upload File
+                        </button>
+                      )}
+                      {isUploading && (
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {modalMode === 'view' && formData.uploadDokumen && (
+                    <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
+                      <File className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-gray-700">{formData.uploadDokumen}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Keterangan */}

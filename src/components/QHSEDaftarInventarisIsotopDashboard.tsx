@@ -1,511 +1,376 @@
 import React, { useMemo, useState } from "react";
-import { Plus, Search, Eye, Pencil, Trash2, FileUp, Filter } from "lucide-react";
+import { Plus, Search, Filter, X, Save, ChevronLeft, ChevronRight, Eye, Pencil, Trash2 } from "lucide-react";
 
-// Data types
-export type LokasiIzinArea =
-  | "Office"
-  | "Project"
-  | "Medco Corridor"
-  | "Medco SSB"
-  | "PHE ONWJ";
-
-export type StatusProsesIsotop =
-  | "Pemesanan Isotop Baru"
-  | "Pelimbahan Isotop Lama"
-  | "Penghentian Ijin Isotop Lama"
-  | "Permohonan Ijin Isotop Baru"
-  | "Selesai";
-
-export interface InventarisIsotopItem {
-  id: string;
-  no: number;
-  namaIsotop: string; // Co-60, Ir-192, dsb
-  tipeIsotop: string; // Type/Model
-  nomorSeriIsotop: string; // SN Isotop
-  tglMulaiAktivitas: string; // ISO date string
-  izinPemanfaatanNo: string; // No Izin Pemanfaatan
-  masaBerlakuIzin: string; // ISO date string
-  supplier: string;
-  nomorBAST: string; // Berita Acara Serah Terima
-  lokasiIzin: LokasiIzinArea[]; // 5 area izin
-  dokumenSertifikat?: string; // file name or url placeholder
-  statusProses: StatusProsesIsotop;
-  keterangan?: string;
+// Data model for Isotope Inventory - matching image structure
+export interface IsotopeInventoryItem {
+  id: string; // uuid
+  no: number; // row number
+  // ISOTOP column group
+  tipe: string; // e.g. A424-9
+  sn: string; // Serial Number e.g. 94727G
+  supplier: string; // e.g. PT. NDT Instruments Indonesia
+  // KTUN PEMANFAATAN
+  ktunPemanfaatan: string; // e.g. 094654.019.33.170720
+  // KTUN TRANSPORT  
+  ktunTransport: string; // e.g. 2100969.069.11.050321
+  // STATUS (multi-line)
+  status: string; // e.g. "Dikembalikan ke Supplier No BAST 023/NDTII-ADM/III/2021"
 }
 
-const initialData: InventarisIsotopItem[] = [
+const sampleData: IsotopeInventoryItem[] = [
   {
-    id: "iso-1",
+    id: "1",
     no: 1,
-    namaIsotop: "Ir-192",
-    tipeIsotop: "Gammamat SE",
-    nomorSeriIsotop: "IR192-GB-001",
-    tglMulaiAktivitas: "2025-01-10",
-    izinPemanfaatanNo: "12/IR192/QHSE/2025",
-    masaBerlakuIzin: "2026-01-10",
-    supplier: "PT Isotop Nusantara",
-    nomorBAST: "BAST/IR192/001/2025",
-    lokasiIzin: ["Office", "PHE ONWJ", "Medco Corridor", "Medco SSB", "Project"],
-    dokumenSertifikat: "sertifikat_ir192_001.pdf",
-    statusProses: "Permohonan Ijin Isotop Baru",
-    keterangan: "Proses verifikasi dokumen di BAPETEN",
+    tipe: "A424-9",
+    sn: "94727G",
+    supplier: "PT. NDT Instruments Indonesia",
+    ktunPemanfaatan: "094654.019.33.170720",
+    ktunTransport: "2100969.069.11.050321",
+    status: "Dikembalikan ke Supplier No BAST 023/NDTII-ADM/III/2021",
   },
   {
-    id: "iso-2",
+    id: "2",
     no: 2,
-    namaIsotop: "Co-60",
-    tipeIsotop: "Sentinel 880",
-    nomorSeriIsotop: "CO60-GB-002",
-    tglMulaiAktivitas: "2024-09-05",
-    izinPemanfaatanNo: "09/CO60/QHSE/2024",
-    masaBerlakuIzin: "2025-09-05",
-    supplier: "PT Gamma Supplier",
-    nomorBAST: "BAST/CO60/010/2024",
-    lokasiIzin: ["Office", "PHE ONWJ", "Medco SSB"],
-    dokumenSertifikat: "sertifikat_co60_010.pdf",
-    statusProses: "Selesai",
-    keterangan: "Aktif digunakan untuk operasi radiografi",
+    tipe: "A424-9",
+    sn: "95862G",
+    supplier: "PT. NDT Instruments Indonesia",
+    ktunPemanfaatan: "095771.019.11.220420",
+    ktunTransport: "2100852.065.11.270221",
+    status: "Dikembalikan ke Supplier No BAST 023/NDTII-ADM/III/2021",
   },
   {
-    id: "iso-3",
+    id: "3",
     no: 3,
-    namaIsotop: "Ir-192",
-    tipeIsotop: "SPEC 150",
-    nomorSeriIsotop: "IR192-GB-003",
-    tglMulaiAktivitas: "2023-07-20",
-    izinPemanfaatanNo: "18/IR192/QHSE/2023",
-    masaBerlakuIzin: "2025-07-20",
-    supplier: "PT Rad Source Indo",
-    nomorBAST: "BAST/IR192/018/2023",
-    lokasiIzin: ["Office", "Project"],
-    dokumenSertifikat: "sertifikat_ir192_018.pdf",
-    statusProses: "Pelimbahan Isotop Lama",
-    keterangan: "Menunggu jadwal pelimbahan ke fasilitas terpadu",
+    tipe: "A424-9",
+    sn: "92514G",
+    supplier: "PT. NDT Instruments Indonesia",
+    ktunPemanfaatan: "092622.019.11.290120",
+    ktunTransport: "2100975.069.11.050321",
+    status: "Dikembalikan ke Supplier No BAST 025/NDTII-ADM/III/2021",
+  },
+  {
+    id: "4",
+    no: 4,
+    tipe: "A424-9",
+    sn: "97950G",
+    supplier: "PT. NDT Instruments Indonesia",
+    ktunPemanfaatan: "097763.019.11.200720",
+    ktunTransport: "2102117.069.11.070521",
+    status: "Dikembalikan ke Supplier No BAST 042/NDTII-ADM/IV/2021",
   },
 ];
 
-interface FormState extends Omit<InventarisIsotopItem, "no"> {}
-
-type ModalMode = "view" | "edit" | "add";
-
-const statusColor: Record<StatusProsesIsotop, string> = {
-  "Pemesanan Isotop Baru": "bg-blue-100 text-blue-700 border-blue-300",
-  "Pelimbahan Isotop Lama": "bg-amber-100 text-amber-700 border-amber-300",
-  "Penghentian Ijin Isotop Lama": "bg-rose-100 text-rose-700 border-rose-300",
-  "Permohonan Ijin Isotop Baru": "bg-indigo-100 text-indigo-700 border-indigo-300",
-  Selesai: "bg-green-100 text-green-700 border-green-300",
-};
+type ModalMode = "add" | "edit" | "view";
 
 const QHSEDaftarInventarisIsotopDashboard: React.FC = () => {
-  const [items, setItems] = useState<InventarisIsotopItem[]>(initialData);
+  const [data, setData] = useState<IsotopeInventoryItem[]>(sampleData);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"All" | StatusProsesIsotop>("All");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState<ModalMode>("view");
-  const [selected, setSelected] = useState<InventarisIsotopItem | null>(null);
-  const [form, setForm] = useState<FormState | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [modalMode, setModalMode] = useState<ModalMode>("add");
+  const [selected, setSelected] = useState<IsotopeInventoryItem | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteItem, setDeleteItem] = useState<IsotopeInventoryItem | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => {
-    let data = items;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      data = data.filter(
-        (d) =>
-          d.namaIsotop.toLowerCase().includes(q) ||
-          d.tipeIsotop.toLowerCase().includes(q) ||
-          d.nomorSeriIsotop.toLowerCase().includes(q) ||
-          d.izinPemanfaatanNo.toLowerCase().includes(q) ||
-          d.supplier.toLowerCase().includes(q) ||
-          d.nomorBAST.toLowerCase().includes(q)
-      );
-    }
-    if (statusFilter !== "All") {
-      data = data.filter((d) => d.statusProses === statusFilter);
-    }
-    return data.sort((a, b) => a.no - b.no);
-  }, [items, search, statusFilter]);
+    const q = search.toLowerCase();
+    return data
+      .filter((d) =>
+        statusFilter === "ALL" ? true : d.status.toLowerCase().includes(statusFilter.toLowerCase())
+      )
+      .filter((d) =>
+        [
+          d.no.toString(),
+          d.tipe,
+          d.sn,
+          d.supplier,
+          d.ktunPemanfaatan,
+          d.ktunTransport,
+          d.status,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
+      )
+      .sort((a, b) => a.no - b.no);
+  }, [data, search, statusFilter]);
 
-  const openView = (item: InventarisIsotopItem) => {
-    setSelected(item);
-    setModalMode("view");
-    setForm({ ...item });
-    setShowModal(true);
-  };
-
-  const openEdit = (item: InventarisIsotopItem) => {
-    setSelected(item);
-    setModalMode("edit");
-    setForm({ ...item });
-    setShowModal(true);
-  };
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const openAdd = () => {
-    setSelected(null);
     setModalMode("add");
-    setForm({
+    setSelected({
       id: crypto.randomUUID(),
-      namaIsotop: "",
-      tipeIsotop: "",
-      nomorSeriIsotop: "",
-      tglMulaiAktivitas: new Date().toISOString().slice(0, 10),
-      izinPemanfaatanNo: "",
-      masaBerlakuIzin: new Date().toISOString().slice(0, 10),
+      no: data.length + 1,
+      tipe: "",
+      sn: "",
       supplier: "",
-      nomorBAST: "",
-      lokasiIzin: [],
-      dokumenSertifikat: undefined,
-      statusProses: "Permohonan Ijin Isotop Baru",
-      keterangan: "",
+      ktunPemanfaatan: "",
+      ktunTransport: "",
+      status: "",
     });
     setShowModal(true);
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setForm(null);
-    setSelected(null);
-  };
-
-  const saveForm = () => {
-    if (!form) return;
-    if (modalMode === "add") {
-      const nextNo = (items[items.length - 1]?.no || 0) + 1;
-      const newItem: InventarisIsotopItem = { no: nextNo, ...form } as InventarisIsotopItem;
-      setItems((prev) => [...prev, newItem]);
-    } else if (modalMode === "edit" && selected) {
-      setItems((prev) => prev.map((it) => (it.id === selected.id ? ({ no: it.no, ...form } as InventarisIsotopItem) : it)));
-    }
-    closeModal();
-  };
-
-  const confirmDelete = (item: InventarisIsotopItem) => {
+  const openEdit = (item: IsotopeInventoryItem) => {
+    setModalMode("edit");
     setSelected(item);
-    setShowDeleteConfirm(true);
+    setShowModal(true);
   };
 
-  const doDelete = () => {
-    if (selected) {
-      setItems((prev) => prev.filter((it) => it.id !== selected.id));
+  const openView = (item: IsotopeInventoryItem) => {
+    setModalMode("view");
+    setSelected(item);
+    setShowModal(true);
+  };
+
+  const openDelete = (item: IsotopeInventoryItem) => {
+    setDeleteItem(item);
+    setShowDeleteModal(true);
+  };
+
+
+
+  const handleSave = () => {
+    if (!selected) return;
+    if (modalMode === "add") {
+      setData([...data, selected]);
+    } else if (modalMode === "edit") {
+      setData(data.map((item) => (item.id === selected.id ? selected : item)));
     }
-    setShowDeleteConfirm(false);
+    setShowModal(false);
     setSelected(null);
   };
 
-  const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    if (!form) return;
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value } as FormState);
+  const handleDelete = () => {
+    if (!deleteItem) return;
+    setData(data.filter((item) => item.id !== deleteItem.id));
+    setShowDeleteModal(false);
+    setDeleteItem(null);
   };
 
-  const toggleLokasi = (area: LokasiIzinArea) => {
-    if (!form) return;
-    const exists = form.lokasiIzin.includes(area);
-    const lokasiIzin = exists
-      ? form.lokasiIzin.filter((a) => a !== area)
-      : [...form.lokasiIzin, area];
-    setForm({ ...form, lokasiIzin });
+  const handleInputChange = (field: keyof IsotopeInventoryItem, value: any) => {
+    setSelected((prev) => prev ? { ...prev, [field]: value } : null);
   };
-
-  const areas: LokasiIzinArea[] = [
-    "Office",
-    "Project",
-    "Medco Corridor",
-    "Medco SSB",
-    "PHE ONWJ",
-  ];
-
-  const statusOptions: StatusProsesIsotop[] = [
-    "Pemesanan Isotop Baru",
-    "Pelimbahan Isotop Lama",
-    "Penghentian Ijin Isotop Lama",
-    "Permohonan Ijin Isotop Baru",
-    "Selesai",
-  ];
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg p-4 md:p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold">Daftar Inventaris Isotop</h1>
-            <p className="text-white/80 text-sm">Monitoring persediaan isotop, izin pemanfaatan, masa berlaku, dan proses perizinan</p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={openAdd} className="inline-flex items-center gap-2 bg-white text-indigo-700 hover:bg-indigo-50 px-3 py-2 rounded shadow">
-              <Plus size={18} />
-              <span className="text-sm font-semibold">Tambah</span>
-            </button>
-            <button className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/25 px-3 py-2 rounded">
-              <FileUp size={18} />
-              <span className="text-sm">Upload Dokumen</span>
-            </button>
+      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-lg font-bold">📋</div>
+                <h1 className="text-4xl font-bold text-gray-900 tracking-wide">
+                  Daftar Inventaris Isotop
+                </h1>
+              </div>
+              <nav className="text-sm text-gray-600">
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  QHSE
+                </span>
+                <span className="mx-2">›</span>
+                <span className="text-blue-600 font-medium">Daftar Inventaris Isotop</span>
+              </nav>
+              <p className="text-gray-600 mt-2">Kelola data inventaris isotop radiografi</p>
+            </div>
+            <div className="flex items-center space-x-3 text-sm text-gray-500">
+              <div className="w-5 h-5 bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">✓</div>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between mb-4">
-        <div className="flex items-center gap-2 flex-1">
-          <div className="relative flex-1 max-w-xl">
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Toolbar */}
+      <div className="p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
+              placeholder="Cari isotop..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari: Nama Isotop / Tipe / SN / No Izin / Supplier / No BAST"
-              className="w-full pl-9 pr-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="ALL">Semua Status</option>
+              <option value="Dikembalikan">Dikembalikan ke Supplier</option>
+              <option value="BAST">BAST</option>
+            </select>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Filter size={18} className="text-gray-500" />
-          <select
-            className="border rounded px-2 py-2 text-sm"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-          >
-            <option value="All">Semua Status</option>
-            {statusOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+        >
+          <Plus className="w-4 h-4" />
+          Tambah Isotop
+        </button>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white border rounded-lg">
+      <div className="overflow-auto border rounded">
         <table className="min-w-[1200px] w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100 text-gray-700">
-              <th className="px-3 py-2 text-left border">No</th>
-              <th className="px-3 py-2 text-left border">Nama Isotop</th>
-              <th className="px-3 py-2 text-left border">Tipe/Model</th>
-              <th className="px-3 py-2 text-left border">SN Isotop</th>
-              <th className="px-3 py-2 text-left border">Tgl Mulai Aktivitas</th>
-              <th className="px-3 py-2 text-left border">No Izin Pemanfaatan</th>
-              <th className="px-3 py-2 text-left border">Masa Berlaku Izin</th>
-              <th className="px-3 py-2 text-left border">Supplier</th>
-              <th className="px-3 py-2 text-left border">No BAST</th>
-              <th className="px-3 py-2 text-left border">Lokasi Izin (5 Area)</th>
-              <th className="px-3 py-2 text-left border">Dokumen Sertifikat</th>
-              <th className="px-3 py-2 text-left border">Status Proses</th>
-              <th className="px-3 py-2 text-left border">Aksi</th>
+          <thead className="bg-gray-50">
+            <tr>
+              <th rowSpan={2} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                NO
+              </th>
+              <th colSpan={3} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                ISOTOP
+              </th>
+              <th rowSpan={2} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                KTUN PEMANFAATAN
+              </th>
+              <th rowSpan={2} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                KTUN TRANSPORT
+              </th>
+              <th rowSpan={2} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                STATUS
+              </th>
+              <th rowSpan={2} className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                AKSI
+              </th>
+            </tr>
+            <tr>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                Tipe
+              </th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                SN
+              </th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">
+                Supplier
+              </th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((row) => (
+            {paginated.map((row) => (
               <tr key={row.id} className="hover:bg-gray-50">
-                <td className="px-3 py-2 border">{row.no}</td>
-                <td className="px-3 py-2 border font-medium">{row.namaIsotop}</td>
-                <td className="px-3 py-2 border">{row.tipeIsotop}</td>
-                <td className="px-3 py-2 border">{row.nomorSeriIsotop}</td>
-                <td className="px-3 py-2 border">{new Date(row.tglMulaiAktivitas).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
-                <td className="px-3 py-2 border">{row.izinPemanfaatanNo}</td>
-                <td className="px-3 py-2 border">{new Date(row.masaBerlakuIzin).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</td>
-                <td className="px-3 py-2 border">{row.supplier}</td>
-                <td className="px-3 py-2 border">{row.nomorBAST}</td>
-                <td className="px-3 py-2 border">
-                  <div className="flex flex-wrap gap-1">
-                    {row.lokasiIzin.map((a) => (
-                      <span key={a} className="px-2 py-0.5 text-xs rounded bg-gray-100 border text-gray-700">
-                        {a}
-                      </span>
-                    ))}
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300 text-center">{row.no}</td>
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300 text-center">{row.tipe}</td>
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300 text-center">{row.sn}</td>
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300">
+                  <div className="text-blue-600 font-medium">{row.supplier}</div>
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300 text-center">{row.ktunPemanfaatan}</td>
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300 text-center">{row.ktunTransport}</td>
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300">
+                  <div className="text-center text-xs leading-tight">
+                    {row.status}
                   </div>
                 </td>
-                <td className="px-3 py-2 border">
-                  {row.dokumenSertifikat ? (
-                    <a href="#" className="text-indigo-600 hover:underline">
-                      {row.dokumenSertifikat}
-                    </a>
-                  ) : (
-                    <span className="text-gray-400 italic">-</span>
-                  )}
-                </td>
-                <td className="px-3 py-2 border">
-                  <span className={`px-2 py-1 text-xs rounded border inline-block ${statusColor[row.statusProses]}`}>
-                    {row.statusProses}
-                  </span>
-                </td>
-                <td className="px-3 py-2 border">
-                  <div className="flex gap-2">
-                    <button onClick={() => openView(row)} className="p-1.5 rounded border text-blue-600 hover:bg-blue-50" title="Lihat">
-                      <Eye size={16} />
+                <td className="px-4 py-3 text-sm text-gray-900 border border-gray-300">
+                  <div className="flex justify-center space-x-2">
+                    <button
+                      onClick={() => openView(row)}
+                      className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                      title="Lihat Detail"
+                    >
+                      <Eye className="w-4 h-4" />
                     </button>
-                    <button onClick={() => openEdit(row)} className="p-1.5 rounded border text-green-600 hover:bg-green-50" title="Ubah">
-                      <Pencil size={16} />
+                    <button
+                      onClick={() => openEdit(row)}
+                      className="p-1.5 text-green-600 hover:text-green-800 hover:bg-green-50 rounded"
+                      title="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => confirmDelete(row)} className="p-1.5 rounded border text-rose-600 hover:bg-rose-50" title="Hapus">
-                      <Trash2 size={16} />
+                    <button
+                      onClick={() => openDelete(row)}
+                      className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                      title="Hapus"
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
               </tr>
             ))}
+            {paginated.length === 0 && (
+              <tr>
+                <td className="px-4 py-6 border text-center text-slate-500" colSpan={8}>Tidak ada data</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
+      {/* Pagination */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-3">
+        <div className="text-sm text-slate-600">Menampilkan {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filtered.length)} dari {filtered.length} data</div>
+        <div className="flex items-center gap-2">
+          <select className="border rounded px-2 py-2 text-sm" value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+          <div className="flex items-center gap-1">
+            <button className="p-2 border rounded disabled:opacity-50" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}><ChevronLeft className="h-4 w-4" /></button>
+            <span className="text-sm">{currentPage} / {totalPages}</span>
+            <button className="p-2 border rounded disabled:opacity-50" disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}><ChevronRight className="h-4 w-4" /></button>
+          </div>
+        </div>
+      </div>
+
       {/* Modal Add/Edit/View */}
-      {showModal && form && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-4xl rounded-lg shadow-lg">
-            <div className="px-4 py-3 border-b flex items-center justify-between">
-              <h2 className="font-semibold">
-                {modalMode === "add" && "Tambah Isotop"}
-                {modalMode === "edit" && "Ubah Isotop"}
-                {modalMode === "view" && "Detail Isotop"}
-              </h2>
-              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">✕</button>
+      {showModal && selected && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                {modalMode === "add" ? "Tambah" : modalMode === "edit" ? "Edit" : "Detail"} Isotop
+              </h3>
+              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-
-            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-sm text-gray-600">Nama Isotop</label>
-                <input
-                  name="namaIsotop"
-                  value={form.namaIsotop}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
+                <label className="block text-xs text-slate-600 mb-1">Tipe</label>
+                <input className="w-full border rounded px-2 py-2" value={selected.tipe} disabled={modalMode === "view"} onChange={(e) => handleInputChange("tipe", e.target.value)} />
               </div>
               <div>
-                <label className="text-sm text-gray-600">Tipe/Model</label>
-                <input
-                  name="tipeIsotop"
-                  value={form.tipeIsotop}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
+                <label className="block text-xs text-slate-600 mb-1">SN</label>
+                <input className="w-full border rounded px-2 py-2" value={selected.sn} disabled={modalMode === "view"} onChange={(e) => handleInputChange("sn", e.target.value)} />
               </div>
               <div>
-                <label className="text-sm text-gray-600">SN Isotop</label>
-                <input
-                  name="nomorSeriIsotop"
-                  value={form.nomorSeriIsotop}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
+                <label className="block text-xs text-slate-600 mb-1">Supplier</label>
+                <input className="w-full border rounded px-2 py-2" value={selected.supplier} disabled={modalMode === "view"} onChange={(e) => handleInputChange("supplier", e.target.value)} />
               </div>
               <div>
-                <label className="text-sm text-gray-600">Tgl Mulai Aktivitas</label>
-                <input
-                  type="date"
-                  name="tglMulaiAktivitas"
-                  value={form.tglMulaiAktivitas}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
+                <label className="block text-xs text-slate-600 mb-1">KTUN Pemanfaatan</label>
+                <input className="w-full border rounded px-2 py-2" value={selected.ktunPemanfaatan} disabled={modalMode === "view"} onChange={(e) => handleInputChange("ktunPemanfaatan", e.target.value)} />
               </div>
               <div>
-                <label className="text-sm text-gray-600">No Izin Pemanfaatan</label>
-                <input
-                  name="izinPemanfaatanNo"
-                  value={form.izinPemanfaatanNo}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">Masa Berlaku Izin</label>
-                <input
-                  type="date"
-                  name="masaBerlakuIzin"
-                  value={form.masaBerlakuIzin}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">Supplier</label>
-                <input
-                  name="supplier"
-                  value={form.supplier}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">No BAST</label>
-                <input
-                  name="nomorBAST"
-                  value={form.nomorBAST}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                />
+                <label className="block text-xs text-slate-600 mb-1">KTUN Transport</label>
+                <input className="w-full border rounded px-2 py-2" value={selected.ktunTransport} disabled={modalMode === "view"} onChange={(e) => handleInputChange("ktunTransport", e.target.value)} />
               </div>
               <div className="md:col-span-2">
-                <label className="text-sm text-gray-600">Lokasi Izin (5 Area)</label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {areas.map((a) => {
-                    const active = form.lokasiIzin.includes(a);
-                    return (
-                      <button
-                        key={a}
-                        type="button"
-                        onClick={() => toggleLokasi(a)}
-                        disabled={modalMode === "view"}
-                        className={`px-3 py-1 rounded border text-sm ${
-                          active ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700"
-                        }`}
-                      >
-                        {a}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <label className="text-sm text-gray-600">Status Proses</label>
-                <select
-                  name="statusProses"
-                  value={form.statusProses}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                >
-                  {statusOptions.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="text-sm text-gray-600">Keterangan</label>
-                <textarea
-                  name="keterangan"
-                  value={form.keterangan || ""}
-                  onChange={handleFormChange}
-                  disabled={modalMode === "view"}
-                  className="w-full border rounded px-3 py-2"
-                  rows={3}
-                />
+                <label className="block text-xs text-slate-600 mb-1">Status</label>
+                <textarea className="w-full border rounded px-2 py-2" rows={3} value={selected.status} disabled={modalMode === "view"} onChange={(e) => handleInputChange("status", e.target.value)} />
               </div>
             </div>
-
-            <div className="px-4 py-3 border-t flex items-center justify-end gap-2">
-              <button onClick={closeModal} className="px-3 py-2 rounded border">Tutup</button>
+            <div className="p-3 border-t flex items-center justify-end gap-2">
+              <button onClick={() => setShowModal(false)} className="px-3 py-2 border rounded text-sm hover:bg-slate-50">Batal</button>
               {modalMode !== "view" && (
-                <button
-                  onClick={saveForm}
-                  className="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700"
-                >
-                  Simpan
+                <button onClick={handleSave} className="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 flex items-center gap-1">
+                  <Save className="h-4 w-4" /> Simpan
                 </button>
               )}
             </div>
@@ -513,23 +378,24 @@ const QHSEDaftarInventarisIsotopDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Delete confirmation */}
-      {showDeleteConfirm && selected && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md rounded-lg shadow-lg">
-            <div className="px-4 py-3 border-b">
-              <h3 className="font-semibold">Hapus Data</h3>
-            </div>
-            <div className="p-4 text-sm text-gray-700">
-              Yakin ingin menghapus Isotop <span className="font-semibold">{selected.namaIsotop}</span> dengan SN <span className="font-semibold">{selected.nomorSeriIsotop}</span>?
-            </div>
-            <div className="px-4 py-3 border-t flex items-center justify-end gap-2">
-              <button onClick={() => setShowDeleteConfirm(false)} className="px-3 py-2 rounded border">Batal</button>
-              <button onClick={doDelete} className="px-3 py-2 rounded bg-rose-600 text-white hover:bg-rose-700">Hapus</button>
+      {/* Delete Confirm */}
+      {showDeleteModal && deleteItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div className="p-4">
+              <h3 className="text-lg font-semibold mb-2">Konfirmasi Hapus</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Apakah Anda yakin ingin menghapus isotop <strong>{deleteItem.tipe} ({deleteItem.sn})</strong>?
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <button onClick={() => setShowDeleteModal(false)} className="px-3 py-2 border rounded text-sm hover:bg-slate-50">Batal</button>
+                <button onClick={handleDelete} className="px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700">Hapus</button>
+              </div>
             </div>
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
