@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Edit, Trash2, Printer, RefreshCw, Plus, X } from 'lucide-react';
+import { Edit, Trash2, Printer, RefreshCw, Plus, X, Clock } from 'lucide-react';
 
 // Interface matching the exact table structure from the image
 interface KasBankEntry {
@@ -413,12 +413,22 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-lg shadow-sm">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h1 className="text-xl font-semibold text-gray-900">Kas Bank Entry</h1>
+      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">KAS BANK ENTRY</h1>
+              <nav className="text-sm text-gray-600">
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
+                <span className="mx-2">›</span>
+                <span className="text-blue-600 font-medium">Kas Bank Entry</span>
+              </nav>
+            </div>
+          </div>
         </div>
 
+
+        <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Filter Section */}
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -1023,6 +1033,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
