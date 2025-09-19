@@ -1,0 +1,148 @@
+/* Print Styles for Proforma Invoice */
+@media print {
+  /* Hide all elements by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the print template */
+  .print-template,
+  .print-template * {
+    visibility: visible;
+  }
+
+  /* Position the print template */
+  .print-template {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Page settings */
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  /* Typography adjustments for print */
+  .print-template {
+    font-size: 12px;
+    line-height: 1.4;
+    color: black;
+  }
+
+  .print-template h1 {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .print-template h2 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .print-template h3 {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .print-template h4 {
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  /* Table styles for print */
+  .print-template table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .print-template th,
+  .print-template td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .print-template th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+
+  /* Remove shadows and rounded corners for print */
+  .print-template .shadow-lg,
+  .print-template .shadow-xl,
+  .print-template .rounded-lg,
+  .print-template .rounded-xl,
+  .print-template .rounded-2xl {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* Ensure borders are visible in print */
+  .print-template .border {
+    border: 1px solid #000;
+  }
+
+  .print-template .border-b {
+    border-bottom: 1px solid #000;
+  }
+
+  .print-template .border-t {
+    border-top: 1px solid #000;
+  }
+
+  .print-template .border-b-2 {
+    border-bottom: 2px solid #000;
+  }
+
+  .print-template .border-t-2 {
+    border-top: 2px solid #000;
+  }
+
+  /* Background colors for print */
+  .print-template .bg-gray-50 {
+    background-color: #f9f9f9 !important;
+  }
+
+  .print-template .bg-blue-600 {
+    color: #000 !important;
+    background-color: transparent !important;
+  }
+
+  /* Text colors for print */
+  .print-template .text-blue-600 {
+    color: #000 !important;
+    font-weight: bold;
+  }
+
+  .print-template .text-gray-600,
+  .print-template .text-gray-500 {
+    color: #666 !important;
+  }
+
+  /* Hide print controls */
+  .print-template .print\\:hidden {
+    display: none !important;
+  }
+
+  /* Page breaks */
+  .print-template .page-break-before {
+    page-break-before: always;
+  }
+
+  .print-template .page-break-after {
+    page-break-after: always;
+  }
+
+  .print-template .page-break-inside-avoid {
+    page-break-inside: avoid;
+  }
+}
+
+/* Print template specific class */
+.print-template {
+  background: white;
+  color: black;
+}

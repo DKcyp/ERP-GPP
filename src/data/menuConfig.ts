@@ -1414,7 +1414,11 @@ export const gudangMenu: MenuSection[] = [
       //   icon: "RotateCw",
       //   path: "/gudang/barang/restock-expired",
       // },
-      { title: "Laporan Stok Pergudang", icon: "Layers", path: "/gudang/barang/stock" },
+      {
+        title: "Laporan Stok Pergudang",
+        icon: "Layers",
+        path: "/gudang/barang/stock",
+      },
     ],
   },
   {
@@ -1465,8 +1469,18 @@ export const gudangMenu: MenuSection[] = [
   {
     title: "Timesheet Barang",
     icon: "Clock",
-    items: [],
-    directPath: "/gudang/pengembalian-barang/timesheet",
+    items: [
+      {
+        title: "Timesheet Barang",
+        icon: "Clock",
+        path: "/gudang/pengembalian-barang/timesheet",
+      },
+      {
+        title: "Approval Timesheet Barang",
+        icon: "CheckCircle",
+        path: "/gudang/timesheet-barang/approval",
+      },
+    ],
   },
   {
     title: "Stock Opname",
@@ -1861,46 +1875,46 @@ export const accountingMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Kas",
-    icon: "Wallet",
-    subSections: [
-      {
-        title: "Kas",
-        icon: "Wallet",
-        items: [
-          { title: "Kas Masuk", icon: "Wallet", path: "/accounting/kas-masuk" },
-          {
-            title: "Kas Keluar",
-            icon: "CreditCard",
-            path: "/accounting/kas-keluar",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Bank",
-    icon: "Banknote",
-    subSections: [
-      {
-        title: "Bank",
-        icon: "Banknote",
-        items: [
-          {
-            title: "Bank Masuk",
-            icon: "Banknote",
-            path: "/accounting/bank-masuk",
-          },
-          {
-            title: "Bank Keluar",
-            icon: "Landmark",
-            path: "/accounting/bank-keluar",
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   title: "Kas",
+  //   icon: "Wallet",
+  //   subSections: [
+  //     {
+  //       title: "Kas",
+  //       icon: "Wallet",
+  //       items: [
+  //         { title: "Kas Masuk", icon: "Wallet", path: "/accounting/kas-masuk" },
+  //         {
+  //           title: "Kas Keluar",
+  //           icon: "CreditCard",
+  //           path: "/accounting/kas-keluar",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: "Bank",
+  //   icon: "Banknote",
+  //   subSections: [
+  //     {
+  //       title: "Bank",
+  //       icon: "Banknote",
+  //       items: [
+  //         {
+  //           title: "Bank Masuk",
+  //           icon: "Banknote",
+  //           path: "/accounting/bank-masuk",
+  //         },
+  //         {
+  //           title: "Bank Keluar",
+  //           icon: "Landmark",
+  //           path: "/accounting/bank-keluar",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
   // {
   //   title: "Neraca",
   //   icon: "Scale", // Icon for balance sheet

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Clock, Plus, Search, X, Edit, Trash2, Printer, UploadCloud, FileText, Download } from 'lucide-react';
+import { Clock, Plus, Search, X, Edit, Trash2, Printer, UploadCloud, FileText } from 'lucide-react';
 import HPPDetailTabs from './HPPDetailTabs';
+import ProformaInvoicePrintTemplate from './ProformaInvoicePrintTemplate';
 
 interface PIEntry {
   id: string;
@@ -190,6 +191,10 @@ const ProconPembuatanPIDashboard: React.FC = () => {
   // New: Estimasi Nilai Kontrak field (tab content uses shared HPPDetailTabs)
   const [estimasiNilaiKontrak, setEstimasiNilaiKontrak] = useState<number>(0);
 
+  // Print Template State
+  const [showPrintTemplate, setShowPrintTemplate] = useState(false);
+  const [printData, setPrintData] = useState<PIEntry | null>(null);
+
   const filtered = useMemo(() => {
     return data.filter(r =>
       r.clientName.toLowerCase().includes(qClient.toLowerCase()) &&
@@ -272,9 +277,18 @@ const ProconPembuatanPIDashboard: React.FC = () => {
   const handlePrint = (id: string) => {
     const item = data.find(d => d.id === id);
     if (!item) return;
-    // Placeholder print action. Integrate with real print template if available.
-    const details = `Tanggal Dokumen: ${item.documentDate}\nNo SO/SO Turunan: ${item.soInduk} / ${item.soTurunan}\nNama Sales: ${item.salesName}\nPajak: ${item.taxType}\nDue Pembayaran: ${item.dueDate}\nNo Kontrak/PO: ${item.contractOrPO}\nKode Bank: ${item.bankCode}`;
-    alert(`Cetak Proforma Invoice:\n\n${details}`);
+    setPrintData(item);
+    setShowPrintTemplate(true);
+  };
+
+  const handleClosePrint = () => {
+    setShowPrintTemplate(false);
+    setPrintData(null);
+  };
+
+  const handlePrintComplete = () => {
+    // Optional: Add any post-print actions here
+    console.log('Print completed for:', printData?.id);
   };
 
   // Dependent select handlers
@@ -698,6 +712,15 @@ const ProconPembuatanPIDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Print Template Modal */}
+      {showPrintTemplate && printData && (
+        <ProformaInvoicePrintTemplate
+          data={printData}
+          onClose={handleClosePrint}
+          onPrint={handlePrintComplete}
+        />
       )}
     </div>
   );
