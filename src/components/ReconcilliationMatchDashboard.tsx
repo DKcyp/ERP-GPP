@@ -161,14 +161,14 @@ const ReconcilliationMatchDashboard: React.FC = () => {
               Filter Data Daftar Mutasi
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="periodeStartMutasi"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Periode
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 min-w-0">
                   <input
                     type="date"
                     id="periodeStartMutasi"
@@ -179,9 +179,9 @@ const ReconcilliationMatchDashboard: React.FC = () => {
                         periodeStart: e.target.value,
                       })
                     }
-                    className="w-1/2 pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 min-w-0 pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
-                  <span className="flex items-center text-gray-500">s/d</span>
+                  <span className="flex items-center text-gray-500 whitespace-nowrap px-1">s/d</span>
                   <input
                     type="date"
                     id="periodeEndMutasi"
@@ -192,28 +192,37 @@ const ReconcilliationMatchDashboard: React.FC = () => {
                         periodeEnd: e.target.value,
                       })
                     }
-                    className="w-1/2 pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 min-w-0 pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
-              <div>
+              <div className="min-w-0 md:col-span-2">
                 <label
                   htmlFor="bankMutasi"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Bank
                 </label>
-                <select
-                  id="bankMutasi"
-                  value={filterMutasi.bank}
-                  onChange={(e) =>
-                    setFilterMutasi({ ...filterMutasi, bank: e.target.value })
-                  }
-                  className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Bank In BCA-1260755555</option>
-                  {/* Add more bank options here */}
-                </select>
+                <div className="relative min-w-0">
+                  <select
+                    id="bankMutasi"
+                    value={filterMutasi.bank}
+                    onChange={(e) =>
+                      setFilterMutasi({ ...filterMutasi, bank: e.target.value })
+                    }
+                    title={filterMutasi.bank}
+                    className="block w-full max-w-full appearance-none pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 truncate text-sm leading-tight"
+                  >
+                    <option value="">Bank In BCA-1260755555</option>
+                    {/* Add more bank options here */}
+                  </select>
+                  <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
+                    {/* simple caret icon */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </span>
+                </div>
               </div>
               <div>
                 <label
