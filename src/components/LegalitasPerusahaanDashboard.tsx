@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   FileText,
   Clock,
+  RefreshCw,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
@@ -102,7 +103,11 @@ function daysUntil(dateStr: string): number {
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-const LegalitasPerusahaanDashboard: React.FC = () => {
+interface LegalitasPerusahaanDashboardProps {
+  role?: 'direksi' | 'management';
+}
+
+const LegalitasPerusahaanDashboard: React.FC<LegalitasPerusahaanDashboardProps> = ({ role = 'direksi' }) => {
   const [rows, setRows] = useState<Sertifikat[]>(initialData);
 
   const [search, setSearch] = useState("");
@@ -114,6 +119,7 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
 
   const [modal, setModal] = useState<ModalState>({ open: false, mode: "add" });
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [showPerpanjangConfirm, setShowPerpanjangConfirm] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -205,6 +211,23 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
     setConfirmId(null);
   };
 
+  const handlePerpanjang = (sertifikat: Sertifikat) => {
+    setShowPerpanjangConfirm(sertifikat.id);
+  };
+
+  const confirmPerpanjang = () => {
+    if (showPerpanjangConfirm) {
+      setRows((prev) =>
+        prev.map((p) =>
+          p.id === showPerpanjangConfirm
+            ? { ...p, status: "Perpanjang" as const }
+            : p
+        )
+      );
+    }
+    setShowPerpanjangConfirm(null);
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gray-50">
@@ -291,12 +314,14 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
             </div>
 
             <div className="flex justify-end space-x-3">
-              <button
-                onClick={openAdd}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-              >
-                <PlusCircle className="h-5 w-5 mr-2" /> Tambah Sertifikat
-              </button>
+              {role === 'direksi' && (
+                <button
+                  onClick={openAdd}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                >
+                  <PlusCircle className="h-5 w-5 mr-2" /> Tambah Sertifikat
+                </button>
+              )}
               <button
                 onClick={() => setPage(1)}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
@@ -456,20 +481,39 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => openEdit(r)}
-                              className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-                              title="Edit"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => setConfirmId(r.id)}
-                              className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-red-700 hover:bg-red-50 transition-colors"
-                              title="Hapus"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                            {role === 'direksi' ? (
+                              <>
+                                <button
+                                  onClick={() => openEdit(r)}
+                                  className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                                  title="Edit"
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => setConfirmId(r.id)}
+                                  className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-red-700 hover:bg-red-50 transition-colors"
+                                  title="Hapus"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => handlePerpanjang(r)}
+                                  className="inline-flex items-center px-3 py-1.5 border border-blue-300 rounded-md text-blue-700 hover:bg-blue-50 transition-colors"
+                                  title="Perpanjang"
+                                >
+                                  <RefreshCw className="h-4 w-4" />
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => handlePerpanjang(r)}
+                                className="inline-flex items-center px-3 py-1.5 border border-blue-300 rounded-md text-blue-700 hover:bg-blue-50 transition-colors"
+                                title="Perpanjang"
+                              >
+                                <RefreshCw className="h-4 w-4 mr-1" /> Perpanjang
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -713,6 +757,53 @@ const LegalitasPerusahaanDashboard: React.FC = () => {
           confirmId ? rows.find((x) => x.id === confirmId)?.nama : undefined
         }
       />
+
+      {/* Confirm Perpanjang Modal */}
+      {showPerpanjangConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0">
+                <RefreshCw className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Konfirmasi Perpanjang Sertifikat
+                </h3>
+              </div>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-500">
+                Apakah Anda yakin ingin mengajukan perpanjangan untuk sertifikat ini?
+              </p>
+              {showPerpanjangConfirm && (
+                <div className="mt-2 p-3 bg-gray-50 rounded-md">
+                  <p className="text-sm font-medium text-gray-900">
+                    {rows.find((x) => x.id === showPerpanjangConfirm)?.nama}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    No. Sertifikat: {rows.find((x) => x.id === showPerpanjangConfirm)?.noSertifikat}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowPerpanjangConfirm(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmPerpanjang}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Ya, Perpanjang
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

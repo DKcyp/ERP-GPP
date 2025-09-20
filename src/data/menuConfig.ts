@@ -1629,6 +1629,12 @@ export const managementMenu: MenuSection[] = [
     items: [],
     directPath: "/management/po/jasa",
   },
+  {
+    title: "Kompetensi Perusahaan",
+    icon: "Award",
+    items: [],
+    directPath: "/management/kompetensi-perusahaan",
+  },
 ];
 
 export const qhseMenu: MenuSection[] = [
