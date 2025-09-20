@@ -185,13 +185,13 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
 
   const getMCUCategoryDescription = (category: string) => {
     const descriptions = {
-      'P1': 'Fit to Work - Layak bekerja tanpa pembatasan',
-      'P2': 'Fit with Restriction - Layak bekerja dengan pembatasan tertentu',
-      'P3': 'Temporary Unfit - Tidak layak bekerja sementara',
-      'P4': 'Permanent Unfit - Tidak layak bekerja permanen',
-      'P5': 'Under Investigation - Dalam penyelidikan lebih lanjut',
-      'P6': 'Refer to Specialist - Dirujuk ke dokter spesialis',
-      'P7': 'Incomplete Examination - Pemeriksaan tidak lengkap'
+      'P1': 'Fit To Work - Tidak ditemukan kelainan medis',
+      'P2': 'Fit With Medical Noted - Ditemukan kelainan medis yang tidak serius',
+      'P3': 'Fit With Medical Noted - Ditemukan kelainan medis, risiko kesehatan rendah',
+      'P4': 'Fit With Medical Noted - Ditemukan kelainan bermakna yang dapat menjadi serius',
+      'P5': 'Fit With Medical Noted - Ditemukan kelainan medis serius',
+      'P6': 'Temporary Unfit - Dengan keterbatasan fisik untuk melakukan pekerjaan secara normal, hanya untuk pekerjaan ringan',
+      'P7': 'Unfit - Sedang sakit atau dalam kondisi yang tidak mungkin untuk melakukan pekerjaan (status ijin sakit)'
     };
     return descriptions[category as keyof typeof descriptions] || category;
   };
@@ -460,13 +460,13 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
                   <option value="">Semua Hasil MCU</option>
-                  <option value="P1">P1 - Fit to Work</option>
-                  <option value="P2">P2 - Fit with Restriction</option>
-                  <option value="P3">P3 - Temporary Unfit</option>
-                  <option value="P4">P4 - Permanent Unfit</option>
-                  <option value="P5">P5 - Under Investigation</option>
-                  <option value="P6">P6 - Refer to Specialist</option>
-                  <option value="P7">P7 - Incomplete Examination</option>
+                  <option value="P1">P1 - Fit To Work</option>
+                  <option value="P2">P2 - Fit With Medical Noted</option>
+                  <option value="P3">P3 - Fit With Medical Noted</option>
+                  <option value="P4">P4 - Fit With Medical Noted</option>
+                  <option value="P5">P5 - Fit With Medical Noted</option>
+                  <option value="P6">P6 - Temporary Unfit</option>
+                  <option value="P7">P7 - Unfit</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -728,19 +728,19 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Hasil MCU</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Hasil MCU (Kategori P1-P7)</label>
                     <select
                       value={formData.hasilMCU || 'P1'}
                       onChange={(e) => handleInputChange('hasilMCU', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     >
-                      <option value="P1">P1</option>
-                      <option value="P2">P2</option>
-                      <option value="P3">P3</option>
-                      <option value="P4">P4</option>
-                      <option value="P5">P5</option>
-                      <option value="P6">P6</option>
-                      <option value="P7">P7</option>
+                      <option value="P1">P1 - Fit To Work (Tidak ditemukan kelainan medis)</option>
+                      <option value="P2">P2 - Fit With Medical Noted (Ditemukan kelainan medis yang tidak serius)</option>
+                      <option value="P3">P3 - Fit With Medical Noted (Ditemukan kelainan medis, risiko kesehatan rendah)</option>
+                      <option value="P4">P4 - Fit With Medical Noted (Ditemukan kelainan bermakna yang dapat menjadi serius)</option>
+                      <option value="P5">P5 - Fit With Medical Noted (Ditemukan kelainan medis serius)</option>
+                      <option value="P6">P6 - Temporary Unfit (Dengan keterbatasan fisik untuk melakukan pekerjaan secara normal, hanya untuk pekerjaan ringan)</option>
+                      <option value="P7">P7 - Unfit (Sedang sakit atau dalam kondisi yang tidak mungkin untuk melakukan pekerjaan/status ijin sakit)</option>
                     </select>
                   </div>
                 </div>
