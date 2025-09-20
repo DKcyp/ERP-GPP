@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Calendar, FileDown, Eye } from 'lucide-react';
+import { Search, Calendar, FileDown, Eye, X, Edit, Printer } from 'lucide-react';
 
 interface InvoiceRow {
   id: number;
@@ -18,7 +18,105 @@ const initialData: InvoiceRow[] = [
 ];
 
 const FinanceARInvoiceDashboard: React.FC = () => {
-  const [rows] = useState<InvoiceRow[]>(initialData);
+  const [rows, setRows] = useState<InvoiceRow[]>(initialData);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceRow | null>(null);
+  const [editFormData, setEditFormData] = useState<InvoiceRow | null>(null);
+
+  const handleDetailClick = (invoice: InvoiceRow) => {
+    setSelectedInvoice(invoice);
+    setShowDetailModal(true);
+  };
+
+  const closeDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedInvoice(null);
+  };
+
+  const handleEditClick = () => {
+    if (selectedInvoice) {
+      setEditFormData({ ...selectedInvoice });
+      setShowDetailModal(false);
+      setShowEditModal(true);
+    }
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditFormData(null);
+  };
+
+  const handleEditInputChange = (field: keyof InvoiceRow, value: string) => {
+    if (editFormData) {
+      setEditFormData({
+        ...editFormData,
+        [field]: value
+      });
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (editFormData) {
+      setRows(prevRows => 
+        prevRows.map(row => 
+          row.id === editFormData.id ? editFormData : row
+        )
+      );
+      closeEditModal();
+      alert('Invoice berhasil diupdate!');
+    }
+  };
+
+  const handlePrintInvoice = () => {
+    if (selectedInvoice) {
+      // Create print content
+      const printContent = `
+        <html>
+          <head>
+            <title>Invoice ${selectedInvoice.noInvoice}</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              .header { text-align: center; margin-bottom: 30px; }
+              .invoice-info { margin-bottom: 20px; }
+              .invoice-info div { margin-bottom: 10px; }
+              .label { font-weight: bold; }
+              .value { margin-left: 10px; }
+              .footer { margin-top: 30px; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>INVOICE</h1>
+              <h2>PT. Gamma Buana Persada</h2>
+            </div>
+            <div class="invoice-info">
+              <div><span class="label">No. Invoice:</span><span class="value">${selectedInvoice.noInvoice}</span></div>
+              <div><span class="label">Tanggal:</span><span class="value">${selectedInvoice.tanggal}</span></div>
+              <div><span class="label">Customer:</span><span class="value">${selectedInvoice.customer}</span></div>
+              <div><span class="label">No. SO:</span><span class="value">${selectedInvoice.noSO}</span></div>
+              <div><span class="label">Nilai:</span><span class="value">${selectedInvoice.nilai}</span></div>
+              <div><span class="label">Status:</span><span class="value">${selectedInvoice.status}</span></div>
+            </div>
+            <div class="footer">
+              <p>Terima kasih atas kepercayaan Anda</p>
+            </div>
+          </body>
+        </html>
+      `;
+      
+      // Open print window
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+      }
+      
+      alert('Invoice sedang dicetak...');
+    }
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
@@ -159,7 +257,11 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                      <button 
+                        onClick={() => handleDetailClick(r)}
+                        className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        title="Lihat Detail"
+                      >
                         <Eye size={14} />
                       </button>
                     </td>
@@ -180,6 +282,241 @@ const FinanceARInvoiceDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedInvoice && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Detail Invoice</h2>
+              <button
+                onClick={closeDetailModal}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Invoice Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-800 border-b pb-2">Informasi Invoice</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">No. Invoice</label>
+                    <p className="mt-1 text-sm text-gray-900 font-semibold">{selectedInvoice.noInvoice}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Tanggal</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedInvoice.tanggal}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">No. SO</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedInvoice.noSO}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Status</label>
+                    <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
+                      selectedInvoice.status === 'Disetujui' ? 'bg-green-100 text-green-800' :
+                      selectedInvoice.status === 'Dikirim' ? 'bg-yellow-100 text-yellow-800' :
+                      selectedInvoice.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {selectedInvoice.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Customer & Financial Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-800 border-b pb-2">Informasi Customer & Keuangan</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Customer</label>
+                    <p className="mt-1 text-sm text-gray-900 font-semibold">{selectedInvoice.customer}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Nilai Invoice</label>
+                    <p className="mt-1 text-lg text-gray-900 font-bold text-blue-600">{selectedInvoice.nilai}</p>
+                  </div>
+
+                  {/* Additional Details */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Keterangan</label>
+                    <p className="mt-1 text-sm text-gray-900">Invoice untuk layanan NDT sesuai SO {selectedInvoice.noSO}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Metode Pembayaran</label>
+                    <p className="mt-1 text-sm text-gray-900">Transfer Bank</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Information Section */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Informasi Tambahan</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Dibuat Oleh</label>
+                    <p className="mt-1 text-sm text-gray-900">Admin Finance</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Tanggal Dibuat</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedInvoice.tanggal}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Terakhir Diupdate</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedInvoice.tanggal}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <button
+                onClick={closeDetailModal}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              >
+                Tutup
+              </button>
+              <button 
+                onClick={handleEditClick}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2"
+              >
+                <Edit size={16} />
+                Edit Invoice
+              </button>
+              <button 
+                onClick={handlePrintInvoice}
+                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
+              >
+                <Printer size={16} />
+                Print Invoice
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && editFormData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Edit Invoice</h2>
+              <button
+                onClick={closeEditModal}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">No. Invoice</label>
+                    <input
+                      type="text"
+                      value={editFormData.noInvoice}
+                      onChange={(e) => handleEditInputChange('noInvoice', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <input
+                      type="text"
+                      value={editFormData.tanggal}
+                      onChange={(e) => handleEditInputChange('tanggal', e.target.value)}
+                      placeholder="dd-mm-yyyy"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">No. SO</label>
+                    <input
+                      type="text"
+                      value={editFormData.noSO}
+                      onChange={(e) => handleEditInputChange('noSO', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
+                    <input
+                      type="text"
+                      value={editFormData.customer}
+                      onChange={(e) => handleEditInputChange('customer', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nilai</label>
+                    <input
+                      type="text"
+                      value={editFormData.nilai}
+                      onChange={(e) => handleEditInputChange('nilai', e.target.value)}
+                      placeholder="Rp 0"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={editFormData.status}
+                      onChange={(e) => handleEditInputChange('status', e.target.value as InvoiceRow['status'])}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="Draft">Draft</option>
+                      <option value="Dikirim">Dikirim</option>
+                      <option value="Disetujui">Disetujui</option>
+                      <option value="Ditolak">Ditolak</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200">
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Simpan Perubahan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
