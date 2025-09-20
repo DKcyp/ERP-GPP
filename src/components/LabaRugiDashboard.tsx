@@ -337,6 +337,7 @@ const LabaRugiDashboard: React.FC = () => {
   };
 
   const plRows: PLRow[] = [
+    // PENDAPATAN
     {
       id: "hdr-pendapatan",
       label: "PENDAPATAN",
@@ -346,12 +347,30 @@ const LabaRugiDashboard: React.FC = () => {
     },
     {
       id: "pdpt-1",
-      label: "Pendapatan Jasa Non Inspeksi",
+      label: "Pendapatan Penjualan Material",
       level: 1,
       values: Array(months.length).fill(0),
     },
     {
       id: "pdpt-2",
+      label: "Pendapatan Jasa Inspeksi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "pdpt-3",
+      label: "Pendapatan Jasa Inspeksi RAT",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "pdpt-4",
+      label: "Pendapatan Jasa Non Inspeksi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "pdpt-5",
       label: "Pendapatan Jasa Non Inspeksi RAT",
       level: 1,
       values: Array(months.length).fill(0),
@@ -364,6 +383,7 @@ const LabaRugiDashboard: React.FC = () => {
       values: Array(months.length).fill(0),
     },
 
+    // BIAYA ATAS PENDAPATAN
     {
       id: "hdr-bap",
       label: "BIAYA ATAS PENDAPATAN",
@@ -390,6 +410,90 @@ const LabaRugiDashboard: React.FC = () => {
       values: Array(months.length).fill(0),
     },
     {
+      id: "bap-4",
+      label: "Biaya Transportasi Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-5",
+      label: "Biaya Penginapan Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-6",
+      label: "Biaya Sewa proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-7",
+      label: "Biaya Pengiriman Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-8",
+      label: "Biaya Rumah Tangga Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-9",
+      label: "Biaya Administrasi Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-10",
+      label: "Biaya Perbaikan Peralatan Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-11",
+      label: "Biaya Training Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-12",
+      label: "Biaya Pengujian Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-13",
+      label: "Biaya Prosdure Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-14",
+      label: "Biaya Kalibrasi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-15",
+      label: "Biaya Komisi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-16",
+      label: "Biaya Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bap-17",
+      label: "Biaya Sparepart Proyek",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
       id: "total-bap",
       label: "Total BIAYA ATAS PENDAPATAN",
       isTotal: true,
@@ -397,6 +501,7 @@ const LabaRugiDashboard: React.FC = () => {
       values: Array(months.length).fill(0),
     },
 
+    // BIAYA ADMINISTRASI & UMUM
     {
       id: "hdr-bau",
       label: "BIAYA ADMINISTRASI & UMUM",
@@ -406,30 +511,259 @@ const LabaRugiDashboard: React.FC = () => {
     },
     {
       id: "bau-1",
-      label: "Biaya Perijinan",
+      label: "Biaya Gaji",
       level: 1,
       values: Array(months.length).fill(0),
     },
     {
       id: "bau-2",
-      label: "Biaya MCU Staff & Management",
+      label: "Biaya BPJS",
       level: 1,
       values: Array(months.length).fill(0),
     },
     {
       id: "bau-3",
+      label: "Tunjangan Raya",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-4",
+      label: "Biaya Denda",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-5",
+      label: "biaya Reimbusable",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-6",
+      label: "Biaya Sewa",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-7",
+      label: "Biaya Asuransi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-8",
+      label: "Biaya Utilitiy",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-9",
+      label: "Biaya Pulsa",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-10",
+      label: "Biaya Transportasi Kantor",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-11",
+      label: "Biaya ATK Kantor",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-12",
+      label: "Biaya Konsultan",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-13",
+      label: "Biaya Iklan & Promosi & Entertainment",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-14",
+      label: "Biaya Akomodasi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-15",
+      label: "Biaya Perjalanan Dinas",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-16",
+      label: "Biaya BOD",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-17",
+      label: "Biaya Garansi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-18",
+      label: "Biaya Member",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-19",
+      label: "Biaya HSE",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-20",
+      label: "Biaya Kegiatan",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-21",
+      label: "Biaya Pemeliharaan Kantor",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-22",
+      label: "Biaya Perbaikan",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-23",
+      label: "Biaya Spare Part",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-24",
+      label: "Biaya Pajak",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-25",
+      label: "Biaya Training dan Pengembangan",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-26",
+      label: "Biaya Pengiriman",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-27",
+      label: "Biaya Sertifikasi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-28",
+      label: "Sumbangan & Zakat",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-29",
+      label: "Biaya Pantry",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-30",
+      label: "Biaya MCU Teknisi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-31",
+      label: "Biaya Training Teknisi",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-32",
+      label: "Biaya Lainnya",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-33",
+      label: "Biaya Perlengkapan Kantor",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-34",
+      label: "Biaya SIBperasional SIB",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-35",
+      label: "Biaya Project",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-36",
+      label: "Biaya Perijinan",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-37",
+      label: "Biaya MCU Staff & Management",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-38",
       label: "Biaya di luar usaha",
       level: 1,
       values: Array(months.length).fill(0),
     },
     {
+      id: "bau-39",
+      label: "Biaya Outsourcing",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-40",
+      label: "Biaya Internship",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "bau-41",
+      label: "Biaya Penyusutan",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
       id: "total-bau",
-      label: "Total BIAYA ADMINISTRASI & UMUM",
+      label: "Total BIAYA ADMINISTASI & UMUM",
       isTotal: true,
       level: 0,
       values: Array(months.length).fill(0),
     },
 
+    // PENDAPATAN LUAR USAHA
     {
       id: "hdr-plu",
       label: "PENDAPATAN LUAR USAHA",
@@ -457,6 +791,25 @@ const LabaRugiDashboard: React.FC = () => {
       values: Array(months.length).fill(0),
     },
 
+    // PENGELUARAN LUAR USAHA
+    {
+      id: "glu-1",
+      label: "Gain / Loss Dispossal Asset",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "blu-1",
+      label: "Biaya Administrasi Bank",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
+    {
+      id: "rlsk-1",
+      label: "Rugi Laba Selisih Kurs",
+      level: 1,
+      values: Array(months.length).fill(0),
+    },
     {
       id: "total-pengeluaran-luar-usaha",
       label: "Total PENGELUARAN LUAR USAHA",
@@ -465,6 +818,7 @@ const LabaRugiDashboard: React.FC = () => {
       values: Array(months.length).fill(0),
     },
 
+    // LABA / RUGI BERSIH SEBELUM PAJAK
     {
       id: "final",
       label: "LABA / RUGI BERSIH SEBELUM PAJAK",
