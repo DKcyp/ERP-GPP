@@ -876,7 +876,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                       <option value="Prosedur">Prosedur</option>
                       <option value="Instruksi Kerja">Instruksi Kerja</option>
                       <option value="SOP">SOP</option>
-                      <option value="Manual">Manual</option>
+                      <option value="Kebijakan">Kebijakan</option>
                     </select>
                   </div>
 

@@ -1629,6 +1629,12 @@ export const managementMenu: MenuSection[] = [
     items: [],
     directPath: "/management/po/jasa",
   },
+  {
+    title: "Kompetensi Perusahaan",
+    icon: "Award",
+    items: [],
+    directPath: "/management/kompetensi-perusahaan",
+  },
 ];
 
 export const qhseMenu: MenuSection[] = [
@@ -1734,22 +1740,22 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Daftar Induk Dokumen",
-    icon: "FileText",
-    items: [
-      {
-        title: "Internal",
-        icon: "FileText",
-        path: "/qhse/daftar-induk-dokumen-internal",
-      },
-      {
-        title: "Eksternal",
-        icon: "FileCheck",
-        path: "/qhse/daftar-induk-dokumen-eksternal",
-      },
-    ],
-  },
+  // {
+  //   title: "Daftar Induk Dokumen",
+  //   icon: "FileText",
+  //   items: [
+  //     {
+  //       title: "Internal",
+  //       icon: "FileText",
+  //       path: "/qhse/daftar-induk-dokumen-internal",
+  //     },
+  //     {
+  //       title: "Eksternal",
+  //       icon: "FileCheck",
+  //       path: "/qhse/daftar-induk-dokumen-eksternal",
+  //     },
+  //   ],
+  // },
   {
     title: "Approval RFI",
     icon: "CheckCircle",

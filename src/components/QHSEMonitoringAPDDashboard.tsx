@@ -26,15 +26,7 @@ interface APDRecord {
     keterangan?: string;
     uploadFile?: string;
   };
-  coverallMerah: {
-    tanggal: string;
-    ukuran: string;
-    jumlah: number;
-    status: 'Valid' | 'Mendekati Expired' | 'Expired';
-    keterangan?: string;
-    uploadFile?: string;
-  };
-  coverallBiru: {
+  wearpack: {
     tanggal: string;
     ukuran: string;
     jumlah: number;
@@ -103,17 +95,11 @@ const initialAPDData: APDRecord[] = [
       status: 'Expired',
       keterangan: 'Sudah bolong bagian bawah 07-2023'
     },
-    coverallMerah: {
+    wearpack: {
       tanggal: '10-Dec-21',
       ukuran: 'L',
       jumlah: 1,
       status: 'Valid'
-    },
-    coverallBiru: {
-      tanggal: '26-Aug-20',
-      ukuran: 'L',
-      jumlah: 1,
-      status: 'Expired'
     },
     safetyGlassClear: {
       tanggal: '12-Jan-22',
@@ -326,10 +312,7 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                     SAFETY SHOES
                   </th>
                   <th className="border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 text-center" colSpan={3}>
-                    COVERALL<br/>(MERAH)
-                  </th>
-                  <th className="border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 text-center" colSpan={3}>
-                    COVERALL<br/>(BIRU)
+                    WEARPACK
                   </th>
                   <th className="border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 text-center" rowSpan={2}>
                     KETERANGAN
@@ -339,9 +322,6 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                   </th>
                 </tr>
                 <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 text-center">Tanggal</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 text-center">Ukuran</th>
-                  <th className="border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 text-center">Jumlah</th>
                   <th className="border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 text-center">Tanggal</th>
                   <th className="border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 text-center">Ukuran</th>
                   <th className="border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 text-center">Jumlah</th>
@@ -366,30 +346,20 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                     <td className="border border-gray-300 px-2 py-2 text-sm text-center">
                       {record.safetyShoes.jumlah}
                     </td>
-                    {/* Coverall Merah */}
-                    <td className={`border border-gray-300 px-2 py-2 text-sm text-center ${getStatusColor(record.coverallMerah.status)}`}>
-                      {record.coverallMerah.tanggal}
+                    {/* Wearpack */}
+                    <td className={`border border-gray-300 px-2 py-2 text-sm text-center ${getStatusColor(record.wearpack.status)}`}>
+                      {record.wearpack.tanggal}
                     </td>
                     <td className="border border-gray-300 px-2 py-2 text-sm text-center">
-                      {record.coverallMerah.ukuran}
+                      {record.wearpack.ukuran}
                     </td>
                     <td className="border border-gray-300 px-2 py-2 text-sm text-center">
-                      {record.coverallMerah.jumlah}
-                    </td>
-                    {/* Coverall Biru */}
-                    <td className={`border border-gray-300 px-2 py-2 text-sm text-center ${getStatusColor(record.coverallBiru.status)}`}>
-                      {record.coverallBiru.tanggal}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-sm text-center">
-                      {record.coverallBiru.ukuran}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-sm text-center">
-                      {record.coverallBiru.jumlah}
+                      {record.wearpack.jumlah}
                     </td>
                     {/* Keterangan */}
                     <td className="border border-gray-300 px-2 py-2 text-sm text-left">
-                      <div className="max-w-xs truncate" title={record.safetyShoes.keterangan || record.coverallMerah.keterangan || record.coverallBiru.keterangan || '-'}>
-                        {record.safetyShoes.keterangan || record.coverallMerah.keterangan || record.coverallBiru.keterangan || '-'}
+                      <div className="max-w-xs truncate" title={record.safetyShoes.keterangan || record.wearpack.keterangan || '-'}>
+                        {record.safetyShoes.keterangan || record.wearpack.keterangan || '-'}
                       </div>
                     </td>
                     {/* Actions */}
@@ -661,18 +631,18 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Coverall Merah */}
-              <div className="border rounded-lg p-4 bg-red-50">
-                <h4 className="font-medium text-gray-900 mb-3">Coverall</h4>
+              {/* Wearpack */}
+              <div className="border rounded-lg p-4 bg-orange-50">
+                <h4 className="font-medium text-gray-900 mb-3">Wearpack</h4>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
                     <input
                       type="date"
-                      value={formData.coverallMerah?.tanggal || ''}
+                      value={formData.wearpack?.tanggal || ''}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        coverallMerah: { ...prev.coverallMerah, tanggal: e.target.value }
+                        wearpack: { ...prev.wearpack, tanggal: e.target.value }
                       }))}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
@@ -681,10 +651,10 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Ukuran</label>
                     <select
-                      value={formData.coverallMerah?.ukuran || ''}
+                      value={formData.wearpack?.ukuran || ''}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        coverallMerah: { ...prev.coverallMerah, ukuran: e.target.value }
+                        wearpack: { ...prev.wearpack, ukuran: e.target.value }
                       }))}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
@@ -700,10 +670,10 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                     <input
                       type="number"
                       min="0"
-                      value={formData.coverallMerah?.jumlah || ''}
+                      value={formData.wearpack?.jumlah || ''}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        coverallMerah: { ...prev.coverallMerah, jumlah: parseInt(e.target.value) || 0 }
+                        wearpack: { ...prev.wearpack, jumlah: parseInt(e.target.value) || 0 }
                       }))}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
@@ -712,10 +682,10 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select
-                      value={formData.coverallMerah?.status || ''}
+                      value={formData.wearpack?.status || ''}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        coverallMerah: { ...prev.coverallMerah, status: e.target.value as 'Valid' | 'Mendekati Expired' | 'Expired' }
+                        wearpack: { ...prev.wearpack, status: e.target.value as 'Valid' | 'Mendekati Expired' | 'Expired' }
                       }))}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
@@ -731,10 +701,10 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
                     <textarea
-                      value={formData.coverallMerah?.keterangan || ''}
+                      value={formData.wearpack?.keterangan || ''}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        coverallMerah: { ...prev.coverallMerah, keterangan: e.target.value }
+                        wearpack: { ...prev.wearpack, keterangan: e.target.value }
                       }))}
                       disabled={modalMode === 'view'}
                       rows={2}
@@ -748,114 +718,14 @@ const QHSEMonitoringAPDDashboard: React.FC = () => {
                       type="file"
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        coverallMerah: { ...prev.coverallMerah, uploadFile: e.target.files?.[0]?.name || '' }
+                        wearpack: { ...prev.wearpack, uploadFile: e.target.files?.[0]?.name || '' }
                       }))}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                       accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                     />
-                    {formData.coverallMerah?.uploadFile && (
-                      <p className="text-sm text-gray-600 mt-1">File: {formData.coverallMerah.uploadFile}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Coverall Biru */}
-              <div className="border rounded-lg p-4 bg-blue-50">
-                <h4 className="font-medium text-gray-900 mb-3">Coverall</h4>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                    <input
-                      type="date"
-                      value={formData.coverallBiru?.tanggal || ''}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        coverallBiru: { ...prev.coverallBiru, tanggal: e.target.value }
-                      }))}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ukuran</label>
-                    <select
-                      value={formData.coverallBiru?.ukuran || ''}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        coverallBiru: { ...prev.coverallBiru, ukuran: e.target.value }
-                      }))}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                    >
-                      <option value="">Pilih Ukuran</option>
-                      {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
-                        <option key={size} value={size}>{size}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.coverallBiru?.jumlah || ''}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        coverallBiru: { ...prev.coverallBiru, jumlah: parseInt(e.target.value) || 0 }
-                      }))}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select
-                      value={formData.coverallBiru?.status || ''}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        coverallBiru: { ...prev.coverallBiru, status: e.target.value as 'Valid' | 'Mendekati Expired' | 'Expired' }
-                      }))}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                    >
-                      <option value="">Pilih Status</option>
-                      <option value="Valid">Valid</option>
-                      <option value="Mendekati Expired">Mendekati Expired</option>
-                      <option value="Expired">Expired</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-                    <textarea
-                      value={formData.coverallBiru?.keterangan || ''}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        coverallBiru: { ...prev.coverallBiru, keterangan: e.target.value }
-                      }))}
-                      disabled={modalMode === 'view'}
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                      placeholder="Catatan tambahan..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload File</label>
-                    <input
-                      type="file"
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        coverallBiru: { ...prev.coverallBiru, uploadFile: e.target.files?.[0]?.name || '' }
-                      }))}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                    />
-                    {formData.coverallBiru?.uploadFile && (
-                      <p className="text-sm text-gray-600 mt-1">File: {formData.coverallBiru.uploadFile}</p>
+                    {formData.wearpack?.uploadFile && (
+                      <p className="text-sm text-gray-600 mt-1">File: {formData.wearpack.uploadFile}</p>
                     )}
                   </div>
                 </div>

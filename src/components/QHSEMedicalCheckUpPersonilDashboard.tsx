@@ -30,6 +30,8 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterProses, setFilterProses] = useState<string>('');
   const [filterHasilMCU, setFilterHasilMCU] = useState<string>('');
+  const [filterProvider, setFilterProvider] = useState<string>('');
+  const [filterTahun, setFilterTahun] = useState<string>('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<MCUPersonilItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<MCUPersonilItem | null>(null);
@@ -132,10 +134,12 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       const matchesStatus = filterStatus === '' || item.statusMCU === filterStatus;
       const matchesProses = filterProses === '' || item.statusProses === filterProses;
       const matchesHasilMCU = filterHasilMCU === '' || item.hasilMCU === filterHasilMCU;
+      const matchesProvider = filterProvider === '' || item.providerMCU.toLowerCase().includes(filterProvider.toLowerCase());
+      const matchesTahun = filterTahun === '' || new Date(item.tanggalMCU).getFullYear().toString() === filterTahun;
       
-      return matchesSearch && matchesStatus && matchesProses && matchesHasilMCU;
+      return matchesSearch && matchesStatus && matchesProses && matchesHasilMCU && matchesProvider && matchesTahun;
     });
-  }, [mcuData, searchTerm, filterStatus, filterProses, filterHasilMCU]);
+  }, [mcuData, searchTerm, filterStatus, filterProses, filterHasilMCU, filterProvider, filterTahun]);
 
   const getStatusBadge = (status: string, type: 'mcu' | 'approval' | 'proses') => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
@@ -177,6 +181,19 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       'P7': 'bg-pink-100 text-pink-800'
     };
     return `${baseClasses} ${colors[keterangan as keyof typeof colors] || 'bg-gray-100 text-gray-800'}`;
+  };
+
+  const getMCUCategoryDescription = (category: string) => {
+    const descriptions = {
+      'P1': 'Fit To Work - Tidak ditemukan kelainan medis',
+      'P2': 'Fit With Medical Noted - Ditemukan kelainan medis yang tidak serius',
+      'P3': 'Fit With Medical Noted - Ditemukan kelainan medis, risiko kesehatan rendah',
+      'P4': 'Fit With Medical Noted - Ditemukan kelainan bermakna yang dapat menjadi serius',
+      'P5': 'Fit With Medical Noted - Ditemukan kelainan medis serius',
+      'P6': 'Temporary Unfit - Dengan keterbatasan fisik untuk melakukan pekerjaan secara normal, hanya untuk pekerjaan ringan',
+      'P7': 'Unfit - Sedang sakit atau dalam kondisi yang tidak mungkin untuk melakukan pekerjaan (status ijin sakit)'
+    };
+    return descriptions[category as keyof typeof descriptions] || category;
   };
 
   const getExpiryBadge = (daysUntilExpiry: number) => {
@@ -383,7 +400,31 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
         {/* Filters */}
         {showFilters && (
           <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Provider MCU</label>
+                <input
+                  type="text"
+                  placeholder="Cari provider..."
+                  value={filterProvider}
+                  onChange={(e) => setFilterProvider(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                <select
+                  value={filterTahun}
+                  onChange={(e) => setFilterTahun(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                >
+                  <option value="">Semua Tahun</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                  <option value="2021">2021</option>
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status MCU</label>
                 <select
@@ -419,18 +460,20 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
                   <option value="">Semua Hasil MCU</option>
-                  <option value="P1">P1</option>
-                  <option value="P2">P2</option>
-                  <option value="P3">P3</option>
-                  <option value="P4">P4</option>
-                  <option value="P5">P5</option>
-                  <option value="P6">P6</option>
-                  <option value="P7">P7</option>
+                  <option value="P1">P1 - Fit To Work</option>
+                  <option value="P2">P2 - Fit With Medical Noted</option>
+                  <option value="P3">P3 - Fit With Medical Noted</option>
+                  <option value="P4">P4 - Fit With Medical Noted</option>
+                  <option value="P5">P5 - Fit With Medical Noted</option>
+                  <option value="P6">P6 - Temporary Unfit</option>
+                  <option value="P7">P7 - Unfit</option>
                 </select>
               </div>
               <div className="flex items-end">
                 <button
                   onClick={() => {
+                    setFilterProvider('');
+                    setFilterTahun('');
                     setFilterStatus('');
                     setFilterProses('');
                     setFilterHasilMCU('');
@@ -450,14 +493,15 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No/Personil</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Urut</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Personil</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posisi/Jabatan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expired MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Review User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket MCU</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hasil MCU</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket MCU<br/><span className="text-xs normal-case text-gray-400">(Paket yang diambil)</span></th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hasil MCU<br/><span className="text-xs normal-case text-gray-400">(P1-P7 Kategori)</span></th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status MCU</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Proses</th>
@@ -465,11 +509,16 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map((item) => (
+                {filteredData.map((item, index) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.no}</div>
-                      <div className="text-sm text-gray-500">{item.namaPersonil}</div>
+                      <div className="text-sm font-medium text-gray-900">{index+1}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-1">
+                        <User className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-900">{item.namaPersonil}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-1">
@@ -498,7 +547,12 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                       <div className="text-sm text-gray-900">{item.paketMCU}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getKeteranganBadge(item.hasilMCU)}>{item.hasilMCU}</span>
+                      <div className="group relative">
+                        <span className={getKeteranganBadge(item.hasilMCU)}>{item.hasilMCU}</span>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                          {getMCUCategoryDescription(item.hasilMCU)}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={getStatusBadge(item.statusMCU, 'mcu')}>{item.statusMCU}</span>
@@ -674,19 +728,19 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Hasil MCU</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Hasil MCU (Kategori P1-P7)</label>
                     <select
                       value={formData.hasilMCU || 'P1'}
                       onChange={(e) => handleInputChange('hasilMCU', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     >
-                      <option value="P1">P1</option>
-                      <option value="P2">P2</option>
-                      <option value="P3">P3</option>
-                      <option value="P4">P4</option>
-                      <option value="P5">P5</option>
-                      <option value="P6">P6</option>
-                      <option value="P7">P7</option>
+                      <option value="P1">P1 - Fit To Work (Tidak ditemukan kelainan medis)</option>
+                      <option value="P2">P2 - Fit With Medical Noted (Ditemukan kelainan medis yang tidak serius)</option>
+                      <option value="P3">P3 - Fit With Medical Noted (Ditemukan kelainan medis, risiko kesehatan rendah)</option>
+                      <option value="P4">P4 - Fit With Medical Noted (Ditemukan kelainan bermakna yang dapat menjadi serius)</option>
+                      <option value="P5">P5 - Fit With Medical Noted (Ditemukan kelainan medis serius)</option>
+                      <option value="P6">P6 - Temporary Unfit (Dengan keterbatasan fisik untuk melakukan pekerjaan secara normal, hanya untuk pekerjaan ringan)</option>
+                      <option value="P7">P7 - Unfit (Sedang sakit atau dalam kondisi yang tidak mungkin untuk melakukan pekerjaan/status ijin sakit)</option>
                     </select>
                   </div>
                 </div>

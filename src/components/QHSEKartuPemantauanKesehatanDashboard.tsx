@@ -261,6 +261,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor SIB</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Berlaku SIB</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status MCU Terakhir</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -271,14 +272,7 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
                   return (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => openDetailModal(item)}
-                          className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
-                        >
-                          {item.nama}
-                        </button>
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nama}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kualifikasi}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nomorSIB}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -292,6 +286,15 @@ const QHSEKartuPemantauanKesehatanDashboard: React.FC = () => {
                             {latestMCU.status}
                           </span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => openDetailModal(item)}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Detail
+                        </button>
                       </td>
                     </tr>
                   );

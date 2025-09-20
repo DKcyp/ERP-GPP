@@ -192,6 +192,7 @@ import MonitoringAlatSafetyDashboard from "./MonitoringAlatSafetyDashboard";
 import SPDashboard from "./SPDashboard";
 import JadwalRealisasiProgramDashboard from "./JadwalRealisasiProgramDashboard";
 import LegalitasPerusahaanDashboard from "./LegalitasPerusahaanDashboard";
+import ManagementKompetensiPerusahaanDashboard from "./ManagementKompetensiPerusahaanDashboard";
 import QHSEPerformanceDashboard from "./QHSEPerformanceDashboard";
 import QHSEKameraRadiographyDashboard from "./QHSEKameraRadiographyDashboard";
 import RadiographyMonitoringKameraDashboard from "./RadiographyMonitoringKameraDashboard";
@@ -462,6 +463,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // Management Routes
     if (currentPage === "/management/monitoring/marketing") {
       return <ManagementMonitoringMarketingDashboard />;
+    }
+    if (currentPage === "/management/kompetensi-perusahaan") {
+      return <ManagementKompetensiPerusahaanDashboard />;
     }
     // Marketing CSI
     if (currentPage === "/marketing/csi/master") {
