@@ -394,6 +394,11 @@ import QHSEDaftarIndukDokumenInternalDashboard from "./QHSEDaftarIndukDokumenInt
 import QHSEMonitoringPersonnelReportDashboard from "./QHSEMonitoringPersonnelReportDashboard";
 import QHSEDaftarInventarisIsotopDashboard from "./QHSEDaftarInventarisIsotopDashboard";
 
+// QHSE Expired Barang Components
+import QHSEExpiredBarangBADashboard from "./QHSEExpiredBarangBADashboard";
+import QHSEExpiredBarangApprovalDashboard from "./QHSEExpiredBarangApprovalDashboard";
+import QHSEExpiredBarangHasilApprovedDashboard from "./QHSEExpiredBarangHasilApprovedDashboard";
+
 interface DashboardProps {
   currentPage: string;
 }
@@ -1917,6 +1922,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/qhse/approval-rfi/dashboard") {
       return <QHSEApprovalRFIDashboard />;
+    }
+    
+    // QHSE Expired Barang Routes
+    if (currentPage === "/qhse/expired-barang/ba") {
+      return <QHSEExpiredBarangBADashboard />;
+    }
+    if (currentPage === "/qhse/expired-barang/approval") {
+      return <QHSEExpiredBarangApprovalDashboard />;
+    }
+    if (currentPage === "/qhse/expired-barang/hasil-approved") {
+      return <QHSEExpiredBarangHasilApprovedDashboard />;
     }
     if (currentPage === "/qhse/daftar-induk-rekaman-internal") {
       return <DaftarIndukRekamanInternalDashboard />;

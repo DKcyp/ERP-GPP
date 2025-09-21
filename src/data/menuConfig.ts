@@ -1740,6 +1740,27 @@ export const qhseMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "Expired Barang",
+    icon: "AlertTriangle",
+    items: [
+      {
+        title: "BA Expired Barang",
+        icon: "FileText",
+        path: "/qhse/expired-barang/ba",
+      },
+      {
+        title: "Approval BA Expired",
+        icon: "CheckCircle2",
+        path: "/qhse/expired-barang/approval",
+      },
+      {
+        title: "Hasil BA Approved",
+        icon: "CheckSquare",
+        path: "/qhse/expired-barang/hasil-approved",
+      },
+    ],
+  },
   // {
   //   title: "Daftar Induk Dokumen",
   //   icon: "FileText",
