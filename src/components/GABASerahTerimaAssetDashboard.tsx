@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Eye } from 'lucide-react';
+import { Search, Plus, FileSpreadsheet, FileText, Clock, Edit, Trash2, Eye, Printer } from 'lucide-react';
 import BASerahTerimaModal from './BASerahTerimaModal';
+import BASerahTerimaPrintTemplate from './BASerahTerimaPrintTemplate';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 interface BASerahTerimaItem {
@@ -141,6 +142,8 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<BASerahTerimaItem | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<BASerahTerimaItem | null>(null);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [printItem, setPrintItem] = useState<BASerahTerimaItem | null>(null);
 
   const getStatusBadge = (status: string) => {
     const baseClass = "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border";
@@ -184,6 +187,11 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
+  const handlePrint = (item: BASerahTerimaItem) => {
+    setPrintItem(item);
+    setIsPrintModalOpen(true);
+  };
+
   const confirmDelete = () => {
     if (itemToDelete) {
       setData(prev => prev.filter(item => item.id !== itemToDelete.id));
@@ -202,6 +210,9 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
         penerima: formData.penerima || '',
         namaAsset: formData.namaAsset || '',
         nomorAsset: formData.nomorAsset || '',
+        kodeAsset: formData.kodeAsset || '',
+        jumlah: formData.jumlah || 1,
+        keterangan: formData.keterangan || '',
         kondisi: formData.kondisi || 'Baik',
         status: formData.status || 'Draft'
       };
@@ -346,6 +357,13 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
+                          onClick={() => handlePrint(item)}
+                          className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200" 
+                          title="Print BA"
+                        >
+                          <Printer className="h-4 w-4" />
+                        </button>
+                        <button 
                           onClick={() => handleDelete(item)}
                           className="p-1 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200" 
                           title="Delete"
@@ -380,6 +398,14 @@ const GABASerahTerimaAssetDashboard: React.FC = () => {
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={confirmDelete}
           itemName={itemToDelete?.nomorBA || ''}
+        />
+      )}
+
+      {/* Print Modal */}
+      {isPrintModalOpen && printItem && (
+        <BASerahTerimaPrintTemplate
+          data={printItem}
+          onClose={() => setIsPrintModalOpen(false)}
         />
       )}
     </div>

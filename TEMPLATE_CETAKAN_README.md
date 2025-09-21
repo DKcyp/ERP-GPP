@@ -1,9 +1,18 @@
-# Template Cetakan Proforma Invoice - ERP GPP
+# Template Cetakan - ERP GPP
 
 ## 📋 Deskripsi
-Template cetakan untuk Proforma Invoice yang dapat diakses melalui menu **Procon > Proforma Invoice > Pembuatan PI**. Template ini menyediakan format profesional untuk mencetak dokumen Proforma Invoice dengan layout yang rapi dan informasi lengkap.
+Dokumentasi untuk template cetakan yang tersedia di sistem ERP GPP. Saat ini tersedia 2 template cetakan:
+
+1. **Proforma Invoice** - untuk menu Procon > Proforma Invoice > Pembuatan PI
+2. **BA Serah Terima Asset** - untuk menu GA > BA Serah Terima Asset
+
+Template-template ini menyediakan format profesional untuk mencetak dokumen dengan layout yang rapi dan informasi lengkap sesuai standar perusahaan.
 
 ## 🚀 Cara Menggunakan
+
+---
+
+# 📄 TEMPLATE 1: PROFORMA INVOICE
 
 ### 1. Login sebagai Procon
 - Username: `procon`
@@ -19,47 +28,114 @@ Template cetakan untuk Proforma Invoice yang dapat diakses melalui menu **Procon
 3. Klik tombol **"Cetak"** untuk mencetak dokumen
 4. Klik tombol **"Tutup"** untuk menutup preview
 
+---
+
+# 📋 TEMPLATE 2: BA SERAH TERIMA ASSET
+
+### 1. Login sebagai GA
+- Username: `ga`
+- Password: `12345`
+
+### 2. Navigasi ke Menu
+- Klik menu **BA Serah Terima**
+- Pilih submenu **BA Serah Terima Asset**
+
+### 3. Mencetak BA Serah Terima
+1. Pada tabel data BA Serah Terima, klik tombol **Printer** (ikon printer hijau) pada baris yang ingin dicetak
+2. Template cetakan akan muncul dalam modal preview dengan format formulir resmi
+3. Klik tombol **"Print"** untuk mencetak dokumen
+4. Klik tombol **"Tutup"** untuk menutup preview
+
+---
+
 ## 📄 Komponen Template
 
 ### File yang Dibuat/Dimodifikasi:
 
+#### Template Proforma Invoice:
 1. **`/src/components/ProformaInvoicePrintTemplate.tsx`** (BARU)
-   - Komponen React untuk template cetakan
+   - Komponen React untuk template cetakan PI
    - Layout profesional dengan header perusahaan
    - Tabel rincian layanan dan ringkasan pembayaran
 
-2. **`/src/styles/print.css`** (BARU)
-   - CSS khusus untuk optimasi print
-   - Media query untuk format A4
-   - Styling yang printer-friendly
-
-3. **`/src/components/ProconPembuatanPIDashboard.tsx`** (DIMODIFIKASI)
-   - Integrasi template cetakan
+2. **`/src/components/ProconPembuatanPIDashboard.tsx`** (DIMODIFIKASI)
+   - Integrasi template cetakan PI
    - Handler untuk print functionality
    - State management untuk print modal
 
+#### Template BA Serah Terima Asset:
+3. **`/src/components/BASerahTerimaPrintTemplate.tsx`** (BARU)
+   - Komponen React untuk template cetakan BA Serah Terima
+   - Format formulir resmi sesuai standar perusahaan
+   - Layout dengan logo GBP dan tabel asset
+
+4. **`/src/components/GABASerahTerimaAssetDashboard.tsx`** (DIMODIFIKASI)
+   - Integrasi template cetakan BA
+   - Tombol print hijau pada setiap row
+   - Handler untuk print functionality
+
+#### Shared Components:
+5. **`/src/styles/print.css`** (DIMODIFIKASI)
+   - CSS khusus untuk optimasi print kedua template
+   - Media query untuk format A4
+   - Styling yang printer-friendly untuk semua template
+
+6. **`/src/main.tsx`** (DIMODIFIKASI)
+   - Import CSS print untuk global styling
+
 ## 🎨 Fitur Template
 
-### Layout Profesional
+---
+
+### 📄 TEMPLATE PROFORMA INVOICE
+
+#### Layout Profesional
 - **Header Perusahaan**: Logo dan informasi kontak PT. Global Prima Perkasa
 - **Judul Dokumen**: "PROFORMA INVOICE" yang prominent
 - **Informasi Invoice**: Nomor, tanggal, sales, jatuh tempo, pajak
 - **Informasi Client**: Nama client, SO Induk/Turunan, nomor kontrak
 
-### Rincian Layanan
+#### Rincian Layanan
 - **Tabel Terstruktur**: No, Deskripsi, Qty, Harga Satuan, Total
 - **Perhitungan Otomatis**: Subtotal, PPN (jika applicable), Total akhir
 - **Format Rupiah**: Formatting currency Indonesia yang proper
 
-### Informasi Pembayaran
+#### Informasi Pembayaran
 - **Rekening Bank**: Informasi transfer bank
 - **Ketentuan Pembayaran**: Terms dan kondisi
 - **Tanggal Jatuh Tempo**: Deadline pembayaran
 
-### Footer Profesional
+#### Footer Profesional
 - **Tanda Tangan**: Area untuk sales representative
 - **Timestamp**: Tanggal cetak dokumen
 - **Catatan**: Informasi tambahan dan disclaimer
+
+---
+
+### 📋 TEMPLATE BA SERAH TERIMA ASSET
+
+#### Header Formulir
+- **Logo GBP**: Logo perusahaan dengan background kuning
+- **Judul Formulir**: "FORMULIR TANDA TERIMA ASET PERUSAHAAN"
+- **Informasi Dokumen**: Nomor dokumen, revisi, tanggal revisi, halaman
+- **Copyright**: © Perusahaan/ Rev. 00 / 22 Agustus 2019
+
+#### Informasi Karyawan
+- **Data Penerima**: Nama karyawan, departemen, jabatan
+- **Informasi Form**: Nomor form, tanggal serah terima
+- **Alamat Serah Terima**: Bapak/Ibu yang menerima
+
+#### Tabel Asset
+- **Kolom Terstruktur**: No, Nama Asset, Kode Asset, Jumlah, Keterangan
+- **Data Asset**: Informasi lengkap asset yang diserahkan
+- **Kondisi Asset**: Status kondisi (Baik/Rusak/Perlu Perbaikan)
+
+#### Pernyataan dan Tanda Tangan
+- **Pernyataan Tanggung Jawab**: Text formal tentang tanggung jawab penerima
+- **Area Tanda Tangan**: Yang menyerahkan dan yang menerima
+- **Lokasi dan Tanggal**: Jakarta dengan tanggal serah terima
+
+---
 
 ## 🖨️ Optimasi Print
 
@@ -157,13 +233,25 @@ const formatRupiah = (amount: number): string => {
 
 ## 🎯 Testing
 
-### Test Scenario
+### Test Scenario - Proforma Invoice
 1. **Login Test**: Login sebagai user `procon`
 2. **Navigation Test**: Akses menu Proforma Invoice > Pembuatan PI
 3. **Data Test**: Pastikan ada data sample di tabel
 4. **Print Test**: Klik tombol printer pada salah satu row
 5. **Preview Test**: Verifikasi template muncul dengan data yang benar
 6. **Print Test**: Test actual printing functionality
+
+### Test Scenario - BA Serah Terima Asset
+1. **Login Test**: Login sebagai user `ga`
+2. **Navigation Test**: Akses menu BA Serah Terima > BA Serah Terima Asset
+3. **Data Test**: Pastikan ada data sample BA di tabel
+4. **Print Test**: Klik tombol printer hijau pada salah satu row
+5. **Preview Test**: Verifikasi template formulir muncul dengan:
+   - Logo GBP dengan background kuning
+   - Data karyawan penerima yang benar
+   - Informasi asset yang sesuai
+   - Format tabel yang rapi
+6. **Print Test**: Test actual printing dengan format A4
 
 ### Browser Compatibility
 - ✅ Chrome/Chromium
@@ -193,20 +281,33 @@ const formatRupiah = (amount: number): string => {
 
 ## 🆘 Troubleshooting
 
-### Template Tidak Muncul
+### Template Proforma Invoice Tidak Muncul
 - Pastikan data PI ada di tabel
 - Check console browser untuk error
 - Verifikasi import CSS print berhasil
+
+### Template BA Serah Terima Tidak Muncul
+- Pastikan login sebagai user `ga`
+- Verifikasi data BA ada di tabel
+- Check console browser untuk error React
+- Pastikan import `BASerahTerimaPrintTemplate` berhasil
 
 ### Print Tidak Sesuai Format
 - Check printer settings (A4, Portrait)
 - Pastikan browser print preview aktif
 - Verifikasi CSS print media query
+- Untuk BA Serah Terima: pastikan logo GBP muncul dengan background kuning
 
 ### Data Tidak Lengkap
-- Check mapping data di interface PIEntry
-- Verifikasi data sample di localStorage
+- **Proforma Invoice**: Check mapping data di interface PIEntry
+- **BA Serah Terima**: Check interface BASerahTerimaItem
+- Verifikasi data sample di komponen
 - Update form input jika ada field baru
+
+### Logo atau Styling Tidak Muncul
+- Pastikan CSS print sudah diimport di main.tsx
+- Check browser developer tools untuk CSS conflicts
+- Verifikasi print-color-adjust property untuk background colors
 
 ## 📞 Support
 Untuk pertanyaan atau issue terkait template cetakan ini, silakan check:

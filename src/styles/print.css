@@ -146,3 +146,101 @@
   background: white;
   color: black;
 }
+
+/* BA Serah Terima Print Styles */
+@media print {
+  /* Hide all elements by default for BA print */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the print content */
+  .print-content,
+  .print-content * {
+    visibility: visible;
+  }
+
+  /* Position the print content */
+  .print-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+    color: black;
+  }
+
+  /* BA Serah Terima specific table styles */
+  .print-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .print-content th,
+  .print-content td {
+    border: 1px solid #000 !important;
+    padding: 4px 8px;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .print-content .text-center {
+    text-align: center !important;
+  }
+
+  .print-content .font-bold {
+    font-weight: bold !important;
+  }
+
+  /* Logo styling for print */
+  .print-content .bg-yellow-400 {
+    background-color: #fbbf24 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure proper spacing */
+  .print-content .mt-4 {
+    margin-top: 16px !important;
+  }
+
+  .print-content .mt-8 {
+    margin-top: 32px !important;
+  }
+
+  .print-content .mb-2 {
+    margin-bottom: 8px !important;
+  }
+
+  .print-content .mb-4 {
+    margin-bottom: 16px !important;
+  }
+
+  .print-content .mb-16 {
+    margin-bottom: 64px !important;
+  }
+
+  /* Grid layout for signatures */
+  .print-content .grid-cols-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  /* Border for signatures */
+  .print-content .border-b {
+    border-bottom: 1px solid #000 !important;
+  }
+
+  /* Text alignment */
+  .print-content .text-right {
+    text-align: right !important;
+  }
+
+  /* Leading for text */
+  .print-content .leading-relaxed {
+    line-height: 1.6 !important;
+  }
+}
