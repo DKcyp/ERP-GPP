@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle } from 'lucide-react';
 
 type Status = 'Pending' | 'Approved' | 'Rejected';
 
@@ -338,24 +338,6 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                         <button className="text-blue-600 hover:text-blue-900 transition-colors" title="Lihat Detail">
                           <Eye className="h-5 w-5" />
                         </button>
-                        {request.status === 'Pending' && (
-                          <>
-                            <button 
-                              onClick={() => handleApprove(request.kodePermintaan)}
-                              className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100"
-                              title="Approve"
-                            >
-                              <CheckCircle className="h-5 w-5" />
-                            </button>
-                            <button 
-                              onClick={() => handleReject(request.kodePermintaan)}
-                              className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
-                              title="Reject"
-                            >
-                              <XCircle className="h-5 w-5" />
-                            </button>
-                          </>
-                        )}
                       </div>
                     </td>
                   </tr>
