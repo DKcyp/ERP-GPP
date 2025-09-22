@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ActionConfirmationModal from "./ActionConfirmationModal";
 import {
   Search,
   FileSpreadsheet,
@@ -15,6 +16,8 @@ import {
   ChevronRight,
   ArrowUp,
   ChevronDown,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 
 interface TimesheetBarang {
@@ -35,10 +38,12 @@ interface TimesheetBarang {
 
 interface TimesheetBarangDashboardProps {
   title?: string;
+  approvalMode?: boolean;
 }
 
 const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
   title = "Timesheet Barang",
+  approvalMode = false,
 }) => {
   const [searchNoSO, setSearchNoSO] = useState("");
   const [searchSOTurunan, setSearchSOTurunan] = useState("");
@@ -58,6 +63,8 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
     null
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const [modalState, setModalState] = useState<{isOpen: boolean, type: 'approve' | 'reject' | null, item: TimesheetBarang | null}>({isOpen: false, type: null, item: null});
 
   // Add Timesheet Barang modal state and form
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -263,6 +270,18 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
       );
       setItemToDelete(null);
     }
+  };
+
+  const handleActionClick = (type: 'approve' | 'reject', item: TimesheetBarang) => {
+    setModalState({ isOpen: true, type, item });
+  };
+
+  const handleConfirmAction = () => {
+    if (modalState.item && modalState.type) {
+      const newStatus = modalState.type === 'approve' ? 'Approve by Gudang' : 'Rejected';
+      setTimesheetBarangData(currentData => currentData.map(item => item.id === modalState.item!.id ? {...item, status: newStatus} : item));
+    }
+    setModalState({ isOpen: false, type: null, item: null });
   };
 
   const handleSort = (field: keyof TimesheetBarang) => {
@@ -525,12 +544,12 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
           {/* Tambah + Export Buttons */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              <button
+              {!approvalMode && <button
                 onClick={handleOpenAddModal}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
               >
                 Tambah
-              </button>
+              </button>}
             </div>
             <div className="flex space-x-2">
               <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
@@ -651,9 +670,14 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
-                    Aksi
-                  </th>
+                  {!approvalMode && (
+                    <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                      Aksi
+                    </th>
+                  )}
+                  {approvalMode && (
+                    <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Approval</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -714,38 +738,23 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() =>
-                            setTimesheetBarangData((prev) =>
-                              prev.map((t) =>
-                                t.id === item.id
-                                  ? { ...t, status: "Approve by Gudang" }
-                                  : t
-                              )
-                            )
-                          }
-                          className="px-2.5 py-1 text-sm text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() =>
-                            setTimesheetBarangData((prev) =>
-                              prev.map((t) =>
-                                t.id === item.id
-                                  ? { ...t, status: "Rejected" }
-                                  : t
-                              )
-                            )
-                          }
-                          className="px-2.5 py-1 text-sm text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    </td>
+                    {!approvalMode && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <button className="p-1 text-gray-500 hover:text-blue-600"><Eye size={16} /></button>
+                          <button className="p-1 text-gray-500 hover:text-yellow-600"><Edit size={16} /></button>
+                          <button onClick={() => handleDeleteClick(item)} className="p-1 text-gray-500 hover:text-red-600"><Trash2 size={16} /></button>
+                        </div>
+                      </td>
+                    )}
+                    {approvalMode && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <button onClick={() => handleActionClick('approve', item)} className="p-1 text-gray-500 hover:text-green-600"><CheckCircle size={16} /></button>
+                          <button onClick={() => handleActionClick('reject', item)} className="p-1 text-gray-500 hover:text-red-600"><XCircle size={16} /></button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -795,8 +804,25 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
         </div>
       </div>
 
+      <ActionConfirmationModal 
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({isOpen: false, type: null, item: null})}
+        onConfirm={handleConfirmAction}
+        title={modalState.type === 'approve' ? 'Approve Timesheet' : 'Reject Timesheet'}
+        message={`Are you sure you want to ${modalState.type} this timesheet?`}
+        actionType={modalState.type || 'approve'}
+        confirmText={modalState.type === 'approve' ? 'Approve' : 'Reject'}
+      />
+
+      <ConfirmDeleteModal 
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={itemToDelete?.noSO}
+      />
+
       {/* Add Timesheet Barang Modal */}
-      {isAddModalOpen && (
+      {!approvalMode && isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
