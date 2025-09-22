@@ -33,7 +33,13 @@ interface TimesheetBarang {
   detailBarang?: string;
 }
 
-const TimesheetBarangDashboard: React.FC = () => {
+interface TimesheetBarangDashboardProps {
+  title?: string;
+}
+
+const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
+  title = "Timesheet Barang",
+}) => {
   const [searchNoSO, setSearchNoSO] = useState("");
   const [searchSOTurunan, setSearchSOTurunan] = useState("");
   const [searchNamaProject, setSearchNamaProject] = useState("");
@@ -347,9 +353,7 @@ const TimesheetBarangDashboard: React.FC = () => {
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8">
-            Timesheet Barang
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-8">{title}</h1>
 
           {/* Search and Filter Section */}
           <div className="space-y-4 mb-6">
