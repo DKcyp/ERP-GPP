@@ -141,6 +141,7 @@ import PengembalianBarangDashboard from "./PengembalianBarangDashboard";
 import BarangKarantinaDashboard from "./BarangKarantinaDashboard";
 import BarangDibuangDashboard from "./BarangDibuangDashboard";
 import TimesheetBarangGudangDashboard from "./TimesheetBarangGudangDashboard";
+import ApprovalTimesheetBarangDashboard from "./ApprovalTimesheetBarangDashboard";
 import StockOpnameDashboard from "./StockOpnameDashboard";
 import VerifikasiStockOpnameDashboard from "./VerifikasiStockOpnameDashboard";
 import LaporanSemuaStockDashboard from "./LaporanSemuaStockDashboard";
@@ -557,6 +558,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/gudang/permintaan-barang-gudang/dashboard") {
       return <PermintaanBarangGudangDashboard />;
+    }
+    if (currentPage === "/gudang/timesheet-barang/approval") {
+      return <ApprovalTimesheetBarangDashboard />;
     }
     // NEW Gudang 'Izin Alat' Routes
     if (currentPage === "/gudang/monitoring-izin-alat") {
@@ -1923,7 +1927,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/qhse/approval-rfi/dashboard") {
       return <QHSEApprovalRFIDashboard />;
     }
-    
+
     // QHSE Expired Barang Routes
     if (currentPage === "/qhse/expired-barang/ba") {
       return <QHSEExpiredBarangBADashboard />;
