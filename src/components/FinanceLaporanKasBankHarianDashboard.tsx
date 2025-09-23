@@ -38,7 +38,8 @@ interface KasData {
 
 const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [filterType, setFilterType] = useState<'kas' | 'bank'>('kas'); // Filter state
 
 
@@ -283,12 +284,24 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Awal</label>
               <div className="relative">
                 <input
                   type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-10"
+                />
+                <Calendar className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Akhir</label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                   className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-10"
                 />
                 <Calendar className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
@@ -309,7 +322,8 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                 <Search className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
-            <div className="flex items-end justify-end gap-2">
+          </div>
+            <div className="flex items-end justify-end gap-2 mt-2">
               <button className="inline-flex items-center px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Excel
@@ -319,7 +333,6 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                 PDF
               </button>
             </div>
-          </div>
         </div>
 
         {/* Data Table */}
@@ -331,10 +344,13 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
             Laporan {filterType === 'kas' ? 'Kas' : 'Bank'} Harian Khusus ({filteredData.length} {filterType === 'kas' ? 'kas' : 'bank'})
           </h3>
           <div className="text-sm text-gray-500">
-            Tanggal: {new Date(selectedDate).toLocaleDateString('id-ID', { 
-              weekday: 'long', 
+            Periode: {new Date(startDate).toLocaleDateString('id-ID', { 
               year: 'numeric', 
-              month: 'long', 
+              month: 'short', 
+              day: 'numeric' 
+            })} - {new Date(endDate).toLocaleDateString('id-ID', { 
+              year: 'numeric', 
+              month: 'short', 
               day: 'numeric' 
             })}
           </div>
