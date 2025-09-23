@@ -54,15 +54,21 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
       tglPPDFrom: new Date(row.tanggal),
       tglPPDTo: new Date(row.tanggal),
       divisi: row.divisi,
-      dibayarkanKepada: '',
       namaPemohon: row.pemohon,
-      namaPenerima: '',
-      noRekening: '',
       mataUang: 'IDR',
       statusLunas: 'Belum',
       pertanggungjawaban: row.pertanggungjawaban,
       jenisDokumen: '',
-      detailItems: [{ id: 1, noDokumen: '', keterangan: row.keperluanUmum, nominalDPP: row.total, nominalPPN: 0 }],
+      detailItems: [{
+        id: 1, 
+        noDokumen: '', 
+        keterangan: row.keperluanUmum, 
+        dibayarkanKepada: '', 
+        namaPenerima: '', 
+        noRekening: '', 
+        nominalDPP: row.total, 
+        nominalPPN: 0 
+      }],
       totalPembayaran: row.total,
     };
     setEditingData(data);

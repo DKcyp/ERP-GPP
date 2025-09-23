@@ -367,7 +367,7 @@ const LaporanPerSO: React.FC<LaporanPerSOProps> = () => {
           {/* Action Buttons */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
-              Daftar Sales Order
+              Daftar Sales Order 2
             </h2>
             <div className="flex gap-2">
               <button

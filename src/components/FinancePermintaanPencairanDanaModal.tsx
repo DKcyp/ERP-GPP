@@ -7,6 +7,9 @@ interface PPDDetailItem {
   id: number;
   noDokumen: string;
   keterangan: string;
+  dibayarkanKepada: string;
+  namaPenerima: string;
+  noRekening: string;
   nominalDPP: number;
   nominalPPN: number;
 }
@@ -17,10 +20,7 @@ export interface PermintaanPencairanDanaFormData {
   tglPPDFrom: Date | null;
   tglPPDTo: Date | null;
   divisi: string;
-  dibayarkanKepada: string; // Changed from kodeSupplier
   namaPemohon: string; // Changed from namaSupplier
-  namaPenerima: string; // New field
-  noRekening: string; // New field
   mataUang: string;
   statusLunas: "Lunas" | "Belum";
   pertanggungjawaban: "Iya" | "Tidak"; // New field
@@ -89,16 +89,13 @@ const FinancePermintaanPencairanDanaModal: React.FC<
     tglPPDFrom: today,
     tglPPDTo: today,
     divisi: "",
-    dibayarkanKepada: "",
     namaPemohon: "",
-    namaPenerima: "",
-    noRekening: "",
     mataUang: "IDR",
     statusLunas: "Belum",
     pertanggungjawaban: "Tidak",
     jenisDokumen: "",
     detailItems: [
-      { id: 1, noDokumen: "", keterangan: "", nominalDPP: 0, nominalPPN: 0 },
+      { id: 1, noDokumen: "", keterangan: "", dibayarkanKepada: "", namaPenerima: "", noRekening: "", nominalDPP: 0, nominalPPN: 0 },
     ],
     totalPembayaran: 0,
   };
@@ -108,15 +105,6 @@ const FinancePermintaanPencairanDanaModal: React.FC<
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handler for Nama Penerima change to auto-fill account number if employee
-  const handleNamaPenerimaChange = (value: string) => {
-    const employee = employeeData.find(emp => emp.name === value);
-    setFormData(prev => ({
-      ...prev,
-      namaPenerima: value,
-      noRekening: employee ? employee.accountNumber : prev.noRekening
-    }));
-  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -165,6 +153,9 @@ const FinancePermintaanPencairanDanaModal: React.FC<
           id: prev.detailItems.length + 1,
           noDokumen: "",
           keterangan: "",
+          dibayarkanKepada: "",
+          namaPenerima: "",
+          noRekening: "",
           nominalDPP: 0,
           nominalPPN: 0,
         },
@@ -204,20 +195,20 @@ const FinancePermintaanPencairanDanaModal: React.FC<
     if (!formData.tglPPDFrom || !formData.tglPPDTo)
       e.tglPPDFrom = "Periode tanggal wajib diisi";
     if (!formData.divisi.trim()) e.divisi = "Divisi wajib dipilih";
-    if (!formData.dibayarkanKepada.trim())
-      e.dibayarkanKepada = "Dibayarkan kepada wajib dipilih";
     if (!formData.namaPemohon.trim())
       e.namaPemohon = "Nama pemohon wajib diisi";
-    if (!formData.namaPenerima.trim())
-      e.namaPenerima = "Nama penerima wajib diisi";
-    if (!formData.noRekening.trim())
-      e.noRekening = "No. Rekening wajib diisi";
     if (formData.detailItems.length === 0)
       e.detailItems = "Minimal satu baris detail diperlukan";
     else
       formData.detailItems.forEach((it, idx) => {
         if (!it.noDokumen.trim())
           e[`detailItems[${idx}].noDokumen`] = "No. Dokumen wajib diisi";
+        if (!it.dibayarkanKepada.trim())
+          e[`detailItems[${idx}].dibayarkanKepada`] = "Wajib diisi";
+        if (!it.namaPenerima.trim())
+          e[`detailItems[${idx}].namaPenerima`] = "Wajib diisi";
+        if (!it.noRekening.trim())
+          e[`detailItems[${idx}].noRekening`] = "Wajib diisi";
         const subtotal =
           (Number(it.nominalDPP) || 0) + (Number(it.nominalPPN) || 0);
         if (!subtotal || subtotal <= 0)
@@ -336,35 +327,6 @@ const FinancePermintaanPencairanDanaModal: React.FC<
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Dibayarkan Kepada <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={formData.dibayarkanKepada}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dibayarkanKepada: e.target.value,
-                    }))
-                  }
-                  className={`block w-full border rounded-lg px-4 py-2 text-sm appearance-none ${
-                    errors.dibayarkanKepada ? "border-red-300" : "border-gray-300"
-                  }`}
-                >
-                  <option value="">Pilih Dibayarkan Kepada</option>
-                  {dibayarkanKepadaOptions.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-                {errors.dibayarkanKepada && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.dibayarkanKepada}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nama Pemohon <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -383,72 +345,6 @@ const FinancePermintaanPencairanDanaModal: React.FC<
                 {errors.namaPemohon && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.namaPemohon}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Penerima <span className="text-red-500">*</span>
-                </label>
-                {formData.dibayarkanKepada === 'Karyawan' ? (
-                  <select
-                    value={formData.namaPenerima}
-                    onChange={(e) => handleNamaPenerimaChange(e.target.value)}
-                    className={`block w-full border rounded-lg px-4 py-2 text-sm appearance-none ${
-                      errors.namaPenerima ? "border-red-300" : "border-gray-300"
-                    }`}
-                  >
-                    <option value="">Pilih Karyawan</option>
-                    {employeeData.map((emp) => (
-                      <option key={emp.name} value={emp.name}>
-                        {emp.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    value={formData.namaPenerima}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        namaPenerima: e.target.value,
-                      }))
-                    }
-                    className={`block w-full border rounded-lg px-4 py-2 text-sm ${
-                      errors.namaPenerima ? "border-red-300" : "border-gray-300"
-                    }`}
-                    placeholder="Masukkan nama penerima"
-                  />
-                )}
-                {errors.namaPenerima && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.namaPenerima}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  No. Rekening <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.noRekening}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      noRekening: e.target.value,
-                    }))
-                  }
-                  className={`block w-full border rounded-lg px-4 py-2 text-sm ${
-                    errors.noRekening ? "border-red-300" : "border-gray-300"
-                  }`}
-                  placeholder={formData.dibayarkanKepada === 'Karyawan' ? 'Otomatis terisi saat pilih karyawan' : 'Masukkan nomor rekening'}
-                  readOnly={formData.dibayarkanKepada === 'Karyawan' && formData.namaPenerima !== ''}
-                />
-                {errors.noRekening && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.noRekening}
                   </p>
                 )}
               </div>
@@ -538,24 +434,15 @@ const FinancePermintaanPencairanDanaModal: React.FC<
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                      No. Dokumen
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                      Keterangan
-                    </th>
-                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                      Nominal DPP
-                    </th>
-                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                      Nominal PPN
-                    </th>
-                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                      SubTotal
-                    </th>
-                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
-                      Aksi
-                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Dibayarkan Kepada</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nama Penerima</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No. Rekening</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal DPP</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Nominal PPN</th>
+                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">SubTotal</th>
+                    <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -599,6 +486,52 @@ const FinancePermintaanPencairanDanaModal: React.FC<
                           className="block w-full border rounded-lg px-2 py-1.5 text-sm border-gray-300"
                           placeholder="Keterangan"
                         />
+                      </td>
+                      <td className="px-4 py-2">
+                        <select
+                          value={it.dibayarkanKepada}
+                          onChange={(e) => handleDetailChange(it.id, "dibayarkanKepada", e.target.value)}
+                          className={`block w-full border rounded-lg px-2 py-1.5 text-sm appearance-none ${
+                            errors[`detailItems[${idx}].dibayarkanKepada`] ? "border-red-300" : "border-gray-300" }`}>
+                          <option value="">Pilih</option>
+                          {dibayarkanKepadaOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </td>
+                      <td className="px-4 py-2">
+                        {it.dibayarkanKepada === 'Karyawan' ? (
+                          <select
+                            value={it.namaPenerima}
+                            onChange={(e) => {
+                              const employee = employeeData.find(emp => emp.name === e.target.value);
+                              handleDetailChange(it.id, "namaPenerima", e.target.value);
+                              if (employee) {
+                                handleDetailChange(it.id, "noRekening", employee.accountNumber);
+                              }
+                            }}
+                            className={`block w-full border rounded-lg px-2 py-1.5 text-sm appearance-none ${
+                              errors[`detailItems[${idx}].namaPenerima`] ? "border-red-300" : "border-gray-300" }`}>
+                            <option value="">Pilih Karyawan</option>
+                            {employeeData.map(emp => <option key={emp.name} value={emp.name}>{emp.name}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={it.namaPenerima}
+                            onChange={(e) => handleDetailChange(it.id, "namaPenerima", e.target.value)}
+                            className={`block w-full border rounded-lg px-2 py-1.5 text-sm ${
+                              errors[`detailItems[${idx}].namaPenerima`] ? "border-red-300" : "border-gray-300" }`}
+                            placeholder="Nama Penerima" />
+                        )}
+                      </td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="text"
+                          value={it.noRekening}
+                          onChange={(e) => handleDetailChange(it.id, "noRekening", e.target.value)}
+                          readOnly={it.dibayarkanKepada === 'Karyawan' && it.namaPenerima !== ''}
+                          className={`block w-full border rounded-lg px-2 py-1.5 text-sm ${
+                            errors[`detailItems[${idx}].noRekening`] ? "border-red-300" : "border-gray-300" }`}
+                          placeholder="No. Rekening" />
                       </td>
                       <td className="px-4 py-2">
                         <input
