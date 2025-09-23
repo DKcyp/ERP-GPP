@@ -1186,11 +1186,11 @@ export const financeMenu: MenuSection[] = [
             icon: "FileText",
             path: "/finance/ap/laporan-outstanding-hutang",
           },
-          {
-            title: "Pengajuan Dana Hutang",
-            icon: "Send",
-            path: "/finance/ap/pengajuan-dana-hutang",
-          },
+          // {
+          //   title: "Pengajuan Dana Hutang",
+          //   icon: "Send",
+          //   path: "/finance/ap/pengajuan-dana-hutang",
+          // },
           {
             title: "Pembayaran Hutang",
             icon: "Wallet",
