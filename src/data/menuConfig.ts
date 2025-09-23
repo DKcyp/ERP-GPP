@@ -1368,32 +1368,6 @@ export const financeMenu: MenuSection[] = [
     directPath: "/finance/approve-pi",
   },
   {
-    title: "Voucher",
-    icon: "Ticket",
-    items: [
-      {
-        title: "Dashboard Voucher",
-        icon: "LayoutDashboard",
-        path: "/finance/voucher/dashboard",
-      },
-      // {
-      //   title: "Daftar Pembayaran",
-      //   icon: "CreditCard",
-      //   path: "/finance/voucher/daftar-pembayaran",
-      // },
-      // {
-      //   title: "Daftar Voucher",
-      //   icon: "TicketPercent",
-      //   path: "/finance/voucher/daftar-voucher",
-      // },
-      // {
-      //   title: "Laporan Hutang Usaha",
-      //   icon: "FileText",
-      //   path: "/finance/voucher/laporan-hutang-usaha",
-      // },
-    ],
-  },
-  {
     title: "Tanda Terima",
     icon: "Wallet",
     items: [
@@ -1413,6 +1387,11 @@ export const financeMenu: MenuSection[] = [
     title: "Voucher dan Reimburse",
     icon: "Wallet", // Icon for Voucher dan Reimburse
     items: [
+      {
+        title: "Dashboard Voucher",
+        icon: "LayoutDashboard",
+        path: "/finance/voucher/dashboard",
+      },
       {
         title: "Pencairan Voucher",
         icon: "Ticket",
@@ -1493,6 +1472,22 @@ export const gudangMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Penerimaan Barang",
+    icon: "Box",
+    items: [
+      {
+        title: "Manual",
+        icon: "Edit",
+        path: "/gudang/penerimaan-barang-manual/dashboard",
+      },
+      {
+        title: "Gudang",
+        icon: "ShoppingCart",
+        path: "/gudang/permintaan-barang-gudang/dashboard",
+      },
+    ],
+  },
+  {
     title: "Gudang Proyek",
     icon: "Building",
     items: [],
@@ -1503,12 +1498,6 @@ export const gudangMenu: MenuSection[] = [
     icon: "Download",
     items: [],
     directPath: "/gudang/penerimaan-barang-masuk/dashboard",
-  },
-  {
-    title: "Penerimaan Barang Manual",
-    icon: "Edit",
-    items: [],
-    directPath: "/gudang/penerimaan-barang-manual/dashboard",
   },
   {
     title: "Mutasi Barang",
@@ -1564,12 +1553,6 @@ export const gudangMenu: MenuSection[] = [
     icon: "Monitor",
     items: [],
     directPath: "/gudang/monitoring-alat-proyek/dashboard",
-  },
-  {
-    title: "Permintaan Barang Gudang",
-    icon: "ShoppingCart",
-    items: [],
-    directPath: "/gudang/permintaan-barang-gudang/dashboard",
   },
   // Grouped 'Izin Alat' menu
   {
