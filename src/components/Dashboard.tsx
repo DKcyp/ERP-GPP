@@ -348,6 +348,8 @@ import GeneralUtilityDashboard from "./GeneralUtilityDashboard";
 import MasterDataCustomerDashboard from "./MasterDataCustomerDashboard";
 import MonitoringMarketingDashboard from "./MonitoringMarketingDashboard";
 import ManagementMonitoringMarketingDashboard from "./ManagementMonitoringMarketingDashboard";
+import ManagementMonitoringPembelianDashboard from "./ManagementMonitoringPembelianDashboard";
+import ManagementMonitoringPenjualanDashboard from "./ManagementMonitoringPenjualanDashboard";
 import CSIMasterDashboard from "./CSIMasterDashboard";
 import CSIPenilaianFormDashboard from "./CSIPenilaianFormDashboard";
 import PerjalananDinasDashboard from "./PerjalananDinasDashboard";
@@ -469,6 +471,12 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <QHSEDaftarInventarisIsotopDashboard />;
     }
     // Management Routes
+    if (currentPage === "/manajement/monitoring-pembelian") {
+      return <ManagementMonitoringPembelianDashboard />;
+    }
+    if (currentPage === "/manajement/monitoring-penjualan") {
+      return <ManagementMonitoringPenjualanDashboard />;
+    }
     if (currentPage === "/management/monitoring/marketing") {
       return <ManagementMonitoringMarketingDashboard />;
     }

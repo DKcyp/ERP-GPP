@@ -350,6 +350,52 @@ const createGeneralMenu = (role: string): MenuSection => ({
   ],
 });
 
+// Monitoring Pembelian & Penjualan untuk manajement
+export const monitoringManajementMenu: MenuSection[] = [
+  {
+    title: "Monitoring Pembelian",
+    icon: "ShoppingCart",
+    items: [
+      {
+        title: "Purchase Request (PR)",
+        icon: "FilePlus",
+        path: "/manajement/monitoring-pembelian/pr",
+      },
+      {
+        title: "Purchase Order (PO)",
+        icon: "FileBox",
+        path: "/manajement/monitoring-pembelian/po",
+      },
+      {
+        title: "Delivery Order (DO)",
+        icon: "Truck",
+        path: "/manajement/monitoring-pembelian/do",
+      },
+    ],
+  },
+  {
+    title: "Monitoring Penjualan",
+    icon: "BarChart2",
+    items: [
+      {
+        title: "Sales Order (SO)",
+        icon: "ShoppingBag",
+        path: "/manajement/monitoring-penjualan/so",
+      },
+      {
+        title: "Delivery Order (DO)",
+        icon: "Truck",
+        path: "/manajement/monitoring-penjualan/do",
+      },
+      {
+        title: "Invoice",
+        icon: "FileText",
+        path: "/manajement/monitoring-penjualan/invoice",
+      },
+    ],
+  },
+];
+
 export const marketingMenu: MenuSection[] = [
   {
     title: "Dashboard", // NEW: Main Dashboard for Marketing
@@ -1583,6 +1629,18 @@ export const managementMenu: MenuSection[] = [
         ],
       },
     ],
+  },
+  {
+    title: "Monitoring Pembelian",
+    icon: "ShoppingCart",
+    items: [],
+    directPath: "/manajement/monitoring-pembelian",
+  },
+  {
+    title: "Monitoring Penjualan",
+    icon: "BarChart2",
+    items: [],
+    directPath: "/manajement/monitoring-penjualan",
   },
   {
     title: "Management Monitoring Marketing",
