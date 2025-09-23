@@ -40,7 +40,7 @@ interface ProconSalesOrder {
   delaySubmitToFinance: string;
   piAmount: string;
   keterangan: string;
-  contractReceived: string; // Changed from piNo
+  piNo: string;
   remarkProjectControl: string;
   invoiceNo: string;
   invoiceAmount: string;
@@ -106,10 +106,11 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportReceived: "17-Jan-25",
       dueDateFinance: "03-Jan-25",
       delaySubmitToFinance: "14",
-      piAmount: "15,000,000",
+      piAmount: "75",
       keterangan: "OVERDUE",
-      contractReceived: "18-Jan-25",
-      remarkProjectControl: "CRITICAL DELAY",
+      piNo: "PI-2025-001",
+      remarkProjectControl:
+        "Perlu koordinasi ulang dengan client terkait jadwal inspeksi",
       invoiceNo: "INV-2025-001",
       invoiceAmount: "15,000,000",
       invoiceAmountPpn: "16,650,000",
@@ -144,13 +145,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportMob: "07-Jan-25",
       reportDemob: "08-Jan-25",
       reportDuration: "1 DAY",
-      reportReceived: "",
+      reportReceived: "20-Jan-25",
       dueDateFinance: "09-Jan-25",
       delaySubmitToFinance: "11",
-      piAmount: "25,000,000",
+      piAmount: "45",
       keterangan: "CRITICAL",
-      contractReceived: "20-Jan-25",
-      remarkProjectControl: "EQUIPMENT MISSING",
+      piNo: "PI-2025-002",
+      remarkProjectControl: "Menunggu kelengkapan peralatan NDT dari supplier",
       invoiceNo: "",
       invoiceAmount: "",
       invoiceAmountPpn: "",
@@ -189,10 +190,10 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportReceived: "14-Jan-25",
       dueDateFinance: "15-Jan-25",
       delaySubmitToFinance: "0",
-      piAmount: "45,000,000",
+      piAmount: "100",
       keterangan: "COMPLETED",
-      contractReceived: "16-Jan-25",
-      remarkProjectControl: "ON SCHEDULE",
+      piNo: "PI-2025-003",
+      remarkProjectControl: "Progres sesuai timeline, dokumentasi lengkap",
       invoiceNo: "INV-2025-003",
       invoiceAmount: "45,000,000",
       invoiceAmountPpn: "49,950,000",
@@ -230,10 +231,10 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportReceived: "15-Jan-25",
       dueDateFinance: "16-Jan-25",
       delaySubmitToFinance: "0",
-      piAmount: "18,000,000",
+      piAmount: "90",
       keterangan: "COMPLETED",
-      contractReceived: "17-Jan-25",
-      remarkProjectControl: "GOOD PERFORMANCE",
+      piNo: "PI-2025-004",
+      remarkProjectControl: "Tim bekerja dengan baik, hasil inspeksi memuaskan",
       invoiceNo: "INV-2025-004",
       invoiceAmount: "18,000,000",
       invoiceAmountPpn: "19,980,000",
@@ -272,10 +273,11 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportReceived: "25-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "2",
-      piAmount: "75,000,000",
+      piAmount: "65",
       keterangan: "MINOR DELAY",
-      contractReceived: "26-Jan-25",
-      remarkProjectControl: "SLIGHT DELAY",
+      piNo: "PI-2025-005",
+      remarkProjectControl:
+        "Terdapat kendala cuaca offshore, estimasi delay 2 hari",
       invoiceNo: "INV-2025-005",
       invoiceAmount: "75,000,000",
       invoiceAmountPpn: "83,250,000",
@@ -311,13 +313,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportMob: "21-Jan-25",
       reportDemob: "22-Jan-25",
       reportDuration: "1 DAY",
-      reportReceived: "",
+      reportReceived: "23-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "0",
-      piAmount: "32,000,000",
+      piAmount: "30",
       keterangan: "IN PROGRESS",
-      contractReceived: "24-Jan-25",
-      remarkProjectControl: "ON TRACK",
+      piNo: "PI-2025-006",
+      remarkProjectControl: "Pekerjaan berjalan lancar, koordinasi tim baik",
       invoiceNo: "",
       invoiceAmount: "",
       invoiceAmountPpn: "",
@@ -356,10 +358,11 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportReceived: "28-Jan-25",
       dueDateFinance: "31-Jan-25",
       delaySubmitToFinance: "-3",
-      piAmount: "95,000,000",
+      piAmount: "95",
       keterangan: "EXCELLENT",
-      contractReceived: "29-Jan-25",
-      remarkProjectControl: "AHEAD OF SCHEDULE",
+      piNo: "PI-2025-007",
+      remarkProjectControl:
+        "Pekerjaan selesai lebih cepat dari jadwal, kualitas excellent",
       invoiceNo: "INV-2025-007",
       invoiceAmount: "95,000,000",
       invoiceAmountPpn: "105,450,000",
@@ -401,7 +404,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
     const matchesNoSO = item.soNo
       .toLowerCase()
       .includes(searchNoSO.toLowerCase());
-    const matchesNomorKontrak = item.contractReceived
+    const matchesNomorKontrak = item.piNo
       .toLowerCase()
       .includes(searchNomorKontrak.toLowerCase());
     const matchesClient = item.client
@@ -466,22 +469,22 @@ const ProconSalesOrderDashboard: React.FC = () => {
       item.keterangan === "OVERDUE" ||
       item.keterangan === "CRITICAL"
     ) {
-      return "bg-red-100 hover:bg-red-200";
+      return "bg-red-100";
     }
     // Pink/Salmon rows - Warning/Attention status
     if (item.status === "WARNING" || item.keterangan === "MINOR DELAY") {
-      return "bg-pink-100 hover:bg-pink-200";
+      return "bg-pink-100";
     }
     // Blue rows - In Progress status
     if (item.status === "IN PROGRESS" || item.keterangan === "IN PROGRESS") {
-      return "bg-blue-100 hover:bg-blue-200";
+      return "bg-blue-100";
     }
     // Green rows - Excellent/Good status
     if (item.status === "EXCELLENT" || item.keterangan === "EXCELLENT") {
-      return "bg-green-100 hover:bg-green-200";
+      return "bg-green-100";
     }
     // White/Light rows - Normal/Completed status (default)
-    return "bg-white hover:bg-gray-50";
+    return "bg-white";
   };
 
   // Helper function to get status badge color
@@ -523,8 +526,16 @@ const ProconSalesOrderDashboard: React.FC = () => {
       statusAR: "NOT STARTED",
       statusAP: "NOT STARTED",
       lir: "NO",
-      reportMob: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: '2-digit' }),
-      reportDemob: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: '2-digit' }),
+      reportMob: new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      }),
+      reportDemob: new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      }),
       reportDuration: "0",
       equipmentReceived: "PARTIAL",
       equipmentScopeLocation: "ONSHORE",
@@ -563,7 +574,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
         id: newId,
         no: newNo,
         soNo: newSoNo,
-        contractReceived: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: '2-digit' }),
+        piNo: `PI-2025-${String(newNo).padStart(3, "0")}`,
       };
 
       setSalesOrders((prev) => [newItem, ...prev]);
@@ -841,7 +852,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
                     rowSpan={2}
                   >
-                    PI NO / CONTRACT RECEIVED
+                    PI NO
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]"
@@ -874,24 +885,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     PERIOD BY REPORT & TS
                   </th>
                   <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]"
-                    rowSpan={2}
-                  >
-                    REPORTED
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]"
-                    rowSpan={2}
-                  >
-                    DUE DATE
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    DELAY SUBMIT REPORT
-                  </th>
-                  <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
                     rowSpan={2}
                   >
@@ -920,12 +913,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     rowSpan={2}
                   >
                     KETERANGAN
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    PI NO
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]"
@@ -1018,12 +1005,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className={`${getRowColor(item)} ${
-                      animateRows ? "animate-pulse" : ""
-                    } transition-colors duration-200`}
-                  >
+                  <tr key={item.id}>
                     <td className="px-2 py-3 border border-gray-300 text-center">
                       <span className="font-bold text-gray-900 text-xs">
                         {item.no}
@@ -1049,7 +1031,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium`}
                       >
-                        {item.contractReceived}
+                        {item.piNo}
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">
@@ -1059,8 +1041,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       {item.manPower}
                     </td>
                     <td className="px-2 py-2 text-center border border-gray-300">
-                    {item.contractReceived}
-                  </td>
+                      {item.piNo}
+                    </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
                       {item.mob}
                     </td>
@@ -1098,8 +1080,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
                         {item.delaySubmitToFinance}
                       </span>
                     </td>
-                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
-                      {item.piAmount && `Rp ${item.piAmount}`}
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-center">
+                      {item.piAmount}%
                     </td>
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
@@ -1109,9 +1091,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       >
                         {item.keterangan}
                       </span>
-                    </td>
-                    <td className="px-2 py-3 text-blue-600 text-xs border border-gray-300 font-medium text-center">
-                      {item.contractReceived}
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">
                       {item.remarkProjectControl}
@@ -1170,38 +1149,26 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       </span>
                     </td>
                     {/* L/R Column */}
-                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-bold">
-                      {item.yearSheet}
-                    </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(
-                          item.statusPekerjaan
-                        )}`}
-                      >
-                        {item.statusPekerjaan}
-                      </span>
-                    </td>
-                    <td></td>
+
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <div className="flex items-center justify-center space-x-1">
                         <button
                           onClick={() => handleView(item)}
-                          className="px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs"
+                          className="px-2 py-1 bg-blue-600 text-white rounded-md text-xs"
                           title="View"
                         >
                           <Eye className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => handleEdit(item)}
-                          className="px-2 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-xs"
+                          className="px-2 py-1 bg-green-600 text-white rounded-md text-xs"
                           title="Edit"
                         >
                           <Edit className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => handleDelete(item)}
-                          className="px-2 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-xs"
+                          className="px-2 py-1 bg-red-600 text-white rounded-md text-xs"
                           title="Delete"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -1267,7 +1234,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       className={`px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
                         currentPage === page
                           ? "bg-blue-600 text-white shadow shadow-blue-600/20"
-                          : "text-gray-700 hover:bg-white hover:text-blue-600"
+                          : "text-gray-700"
                       }`}
                     >
                       {page}
