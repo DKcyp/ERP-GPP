@@ -1635,6 +1635,12 @@ export const managementMenu: MenuSection[] = [
     items: [],
     directPath: "/management/kompetensi-perusahaan",
   },
+  {
+    title: "Approval Voucher",
+    icon: "CheckCircle",
+    items: [],
+    directPath: "/finance/voucher-reimburse/approval-voucher",
+  },
 ];
 
 export const qhseMenu: MenuSection[] = [
