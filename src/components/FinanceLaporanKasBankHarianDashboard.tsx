@@ -322,7 +322,8 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                 <Search className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
-            <div className="flex items-end justify-end gap-2">
+          </div>
+            <div className="flex items-end justify-end gap-2 mt-2">
               <button className="inline-flex items-center px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Excel
@@ -332,7 +333,6 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                 PDF
               </button>
             </div>
-          </div>
         </div>
 
         {/* Data Table */}
