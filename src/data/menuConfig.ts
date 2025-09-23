@@ -1477,7 +1477,7 @@ export const gudangMenu: MenuSection[] = [
     directPath: "/gudang/gudang-proyek/dashboard",
   },
   {
-    title: "Request For Inspection (RFI)",
+    title: "RFI",
     icon: "Download",
     items: [],
     directPath: "/gudang/penerimaan-barang-masuk/dashboard",
