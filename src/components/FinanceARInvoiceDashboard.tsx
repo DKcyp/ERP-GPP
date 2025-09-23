@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Search, Calendar, FileDown, Eye, X, Edit, Printer } from 'lucide-react';
+import { Search, Calendar, FileDown, Eye, X, Edit, Printer, MessageSquare } from 'lucide-react';
+import FollowUpModal from './FollowUpModal';
+
+interface FollowUp {
+  tanggal: string;
+  status: string;
+}
 
 interface InvoiceRow {
   id: number;
@@ -8,19 +14,24 @@ interface InvoiceRow {
   customer: string;
   noSO: string;
   nilai: string; // formatted currency
-  status: 'Draft' | 'Dikirim' | 'Disetujui' | 'Ditolak';
+  status: 'Draft' | 'Dikirim' | 'Diterima' | 'Ditolak';
+  tanggalDikirim?: string; // yyyy-mm-dd
+  tanggalDiterima?: string; // yyyy-mm-dd
+  dokumenDiterima?: File | null;
+  followUps?: FollowUp[];
 }
 
 const initialData: InvoiceRow[] = [
-  { id: 1, noInvoice: 'INV-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft' },
-  { id: 2, noInvoice: 'INV-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim' },
-  { id: 3, noInvoice: 'INV-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Disetujui' },
+  { id: 1, noInvoice: 'INV-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', followUps: [] },
+  { id: 2, noInvoice: 'INV-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
+  { id: 3, noInvoice: 'INV-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
 ];
 
 const FinanceARInvoiceDashboard: React.FC = () => {
   const [rows, setRows] = useState<InvoiceRow[]>(initialData);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showFollowUpModal, setShowFollowUpModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceRow | null>(null);
   const [editFormData, setEditFormData] = useState<InvoiceRow | null>(null);
 
@@ -47,7 +58,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
     setEditFormData(null);
   };
 
-  const handleEditInputChange = (field: keyof InvoiceRow, value: string) => {
+  const handleEditInputChange = (field: keyof InvoiceRow, value: string | File | null) => {
     if (editFormData) {
       setEditFormData({
         ...editFormData,
@@ -158,7 +169,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                 <option value="">Semua</option>
                 <option>Draft</option>
                 <option>Dikirim</option>
-                <option>Disetujui</option>
+                <option>Diterima</option>
                 <option>Ditolak</option>
               </select>
             </div>
@@ -248,7 +259,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                     <td className="px-6 py-4">{r.nilai}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        r.status === 'Disetujui' ? 'bg-green-100 text-green-800' :
+                        r.status === 'Diterima' ? 'bg-green-100 text-green-800' :
                         r.status === 'Dikirim' ? 'bg-yellow-100 text-yellow-800' :
                         r.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
                         'bg-red-100 text-red-800'
@@ -256,13 +267,34 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                         {r.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 flex items-center gap-2">
                       <button 
                         onClick={() => handleDetailClick(r)}
-                        className="p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="p-1.5 text-blue-600 rounded-md hover:bg-blue-100"
                         title="Lihat Detail"
                       >
-                        <Eye size={14} />
+                        <Eye size={16} />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setSelectedInvoice(r);
+                          setEditFormData(r);
+                          setShowEditModal(true);
+                        }}
+                        className="p-1.5 text-yellow-600 rounded-md hover:bg-yellow-100"
+                        title="Edit Status & Tanggal"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setSelectedInvoice(r);
+                          setShowFollowUpModal(true);
+                        }}
+                        className="p-1.5 text-green-600 rounded-md hover:bg-green-100"
+                        title="Follow Up"
+                      >
+                        <MessageSquare size={16} />
                       </button>
                     </td>
                   </tr>
@@ -323,7 +355,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-600">Status</label>
                     <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
-                      selectedInvoice.status === 'Disetujui' ? 'bg-green-100 text-green-800' :
+                      selectedInvoice.status === 'Diterima' ? 'bg-green-100 text-green-800' :
                       selectedInvoice.status === 'Dikirim' ? 'bg-yellow-100 text-yellow-800' :
                       selectedInvoice.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
                       'bg-red-100 text-red-800'
@@ -491,9 +523,36 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                     >
                       <option value="Draft">Draft</option>
                       <option value="Dikirim">Dikirim</option>
-                      <option value="Disetujui">Disetujui</option>
+                      <option value="Diterima">Diterima</option>
                       <option value="Ditolak">Ditolak</option>
                     </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Dikirim</label>
+                    <input
+                      type="date"
+                      value={editFormData.tanggalDikirim || ''}
+                      onChange={(e) => handleEditInputChange('tanggalDikirim', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Diterima</label>
+                    <input
+                      type="date"
+                      value={editFormData.tanggalDiterima || ''}
+                      onChange={(e) => handleEditInputChange('tanggalDiterima', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Dokumen Diterima</label>
+                    <input
+                      type="file"
+                      onChange={(e) => handleEditInputChange('dokumenDiterima', e.target.files ? e.target.files[0] : null)}
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    {editFormData.dokumenDiterima && <span className='text-xs text-gray-500 mt-1'>{editFormData.dokumenDiterima.name}</span>}
                   </div>
                 </div>
               </div>
@@ -517,6 +576,22 @@ const FinanceARInvoiceDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Follow-Up Modal */}
+      {showFollowUpModal && selectedInvoice && (
+        <FollowUpModal 
+          isOpen={showFollowUpModal}
+          onClose={() => setShowFollowUpModal(false)}
+          invoiceNumber={selectedInvoice.noInvoice}
+          followUps={selectedInvoice.followUps || []}
+          onSave={(newFollowUps) => {
+            const updatedInvoice = { ...selectedInvoice, followUps: newFollowUps };
+            setRows(prev => prev.map(r => r.id === selectedInvoice.id ? updatedInvoice : r));
+            setShowFollowUpModal(false);
+          }}
+        />
+      )}
+
     </div>
   );
 };
