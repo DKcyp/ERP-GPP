@@ -7,6 +7,8 @@ import {
   Upload,
   FileSpreadsheet,
   FileDown,
+  Eye,
+  X,
 } from "lucide-react";
 
 type ItemJenis = "jasa" | "barang";
@@ -66,11 +68,14 @@ const FinanceAPTresuriDashboard: React.FC = () => {
   ]);
   const [filter, setFilter] = useState("");
   const [jenisFilter, setJenisFilter] = useState<string>("");
-  const [tanggalFilter, setTanggalFilter] = useState(""); // Filter tanggal pembuatan
+  const [tanggalMulai, setTanggalMulai] = useState(""); // Filter tanggal mulai
+  const [tanggalAkhir, setTanggalAkhir] = useState(""); // Filter tanggal akhir
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<TresuriRow | null>(null);
+  const [viewLaporanModal, setViewLaporanModal] = useState(false);
+  const [selectedLaporan, setSelectedLaporan] = useState<{fileName: string, type: string} | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -82,12 +87,28 @@ const FinanceAPTresuriDashboard: React.FC = () => {
         const jenisHit = jenisFilter
           ? r.jenis === (jenisFilter as ItemJenis)
           : true;
-        const tanggalHit = tanggalFilter
-          ? r.tanggalPembuatan === tanggalFilter
-          : true;
-        return textHit && jenisHit && tanggalHit;
+        
+        // Date range filtering
+        let dateRangeHit = true;
+        if (tanggalMulai || tanggalAkhir) {
+          const itemDate = new Date(r.tanggalPembuatan);
+          
+          if (tanggalMulai && tanggalAkhir) {
+            const startDate = new Date(tanggalMulai);
+            const endDate = new Date(tanggalAkhir);
+            dateRangeHit = itemDate >= startDate && itemDate <= endDate;
+          } else if (tanggalMulai) {
+            const startDate = new Date(tanggalMulai);
+            dateRangeHit = itemDate >= startDate;
+          } else if (tanggalAkhir) {
+            const endDate = new Date(tanggalAkhir);
+            dateRangeHit = itemDate <= endDate;
+          }
+        }
+        
+        return textHit && jenisHit && dateRangeHit;
       }),
-    [rows, filter, jenisFilter, tanggalFilter]
+    [rows, filter, jenisFilter, tanggalMulai, tanggalAkhir]
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -156,7 +177,8 @@ const FinanceAPTresuriDashboard: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {/* Filter Section */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Cari
@@ -190,33 +212,48 @@ const FinanceAPTresuriDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Pembuatan
+                Tanggal Mulai
               </label>
               <input
                 type="date"
-                value={tanggalFilter}
+                value={tanggalMulai}
                 onChange={(e) => {
-                  setTanggalFilter(e.target.value);
+                  setTanggalMulai(e.target.value);
                   setCurrentPage(1);
                 }}
                 className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
             </div>
-            <div className="hidden md:block"></div>
-            <div className="flex items-end justify-end gap-2">
-              <button
-                onClick={startAdd}
-                className="inline-flex items-center px-4 py-2 text-sm text-white bg-purple-600 rounded-md hover:bg-purple-700"
-              >
-                <PlusCircle className="h-5 w-5 mr-2" /> Tambah
-              </button>
-              <button className="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700">
-                <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
-              </button>
-              <button className="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700">
-                <FileDown className="h-4 w-4 mr-2" /> Export PDF
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tanggal Akhir
+              </label>
+              <input
+                type="date"
+                value={tanggalAkhir}
+                onChange={(e) => {
+                  setTanggalAkhir(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
             </div>
+          </div>
+          
+          {/* Action Buttons Section */}
+          <div className="flex justify-end items-center gap-3 pt-4 border-t border-gray-100">
+            <button
+              onClick={startAdd}
+              className="inline-flex items-center px-4 py-2 text-sm text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <PlusCircle className="h-5 w-5 mr-2" /> Tambah
+            </button>
+            <button className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 transition-colors">
+              <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
+            </button>
+            <button className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 transition-colors">
+              <FileDown className="h-4 w-4 mr-2" /> Export PDF
+            </button>
           </div>
         </div>
 
@@ -279,7 +316,22 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                     <td className="px-4 py-2 text-sm">{row.noPO}</td>
                     <td className="px-4 py-2 text-sm">{row.vendor}</td>
                     <td className="px-4 py-2 text-sm">{row.tanggalPembuatan}</td>
-                    <td className="px-4 py-2 text-sm">{row.laporanHarian || "-"}</td>
+                    <td className="px-4 py-2 text-sm">
+                      {row.laporanHarian ? (
+                        <button
+                          onClick={() => {
+                            setSelectedLaporan({fileName: row.laporanHarian!, type: 'Laporan Harian'});
+                            setViewLaporanModal(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+                        >
+                          <Eye className="h-3 w-3" />
+                          Lihat
+                        </button>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td className="px-4 py-2 text-sm">{row.invoice || "-"}</td>
                     <td className="px-4 py-2 text-sm">
                       {row.fakturPajak || "-"}
@@ -297,7 +349,22 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                         ? row.report || "-"
                         : row.rfi || "-"}
                     </td>
-                    <td className="px-4 py-2 text-sm">{row.laporanLainnya || "-"}</td>
+                    <td className="px-4 py-2 text-sm">
+                      {row.laporanLainnya ? (
+                        <button
+                          onClick={() => {
+                            setSelectedLaporan({fileName: row.laporanLainnya!, type: 'Laporan Lainnya'});
+                            setViewLaporanModal(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                        >
+                          <Eye className="h-3 w-3" />
+                          Lihat
+                        </button>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td className="px-4 py-2 text-center text-sm">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -718,6 +785,60 @@ const FinanceAPTresuriDashboard: React.FC = () => {
               >
                 Simpan
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Lihat Laporan */}
+      {viewLaporanModal && selectedLaporan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white w-full max-w-4xl rounded-lg shadow-lg max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {selectedLaporan.type}: {selectedLaporan.fileName}
+              </h3>
+              <button
+                onClick={() => {
+                  setViewLaporanModal(false);
+                  setSelectedLaporan(null);
+                }}
+                className="p-1 rounded hover:bg-gray-100"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+                <div className="space-y-4">
+                  <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                    <FileSpreadsheet className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">
+                      {selectedLaporan.fileName}
+                    </h4>
+                    <p className="text-sm text-gray-600 mb-4">
+                      File {selectedLaporan.type} siap untuk dilihat
+                    </p>
+                    <div className="flex justify-center gap-3">
+                      <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Buka File
+                      </button>
+                      <button className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <FileDown className="h-4 w-4 mr-2" />
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    <p>Ukuran file: 2.4 MB</p>
+                    <p>Terakhir dimodifikasi: {new Date().toLocaleDateString('id-ID')}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
