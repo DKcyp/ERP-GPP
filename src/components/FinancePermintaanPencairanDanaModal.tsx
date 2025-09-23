@@ -17,8 +17,10 @@ export interface PermintaanPencairanDanaFormData {
   tglPPDFrom: Date | null;
   tglPPDTo: Date | null;
   divisi: string;
-  kodeSupplier: string;
-  namaSupplier: string;
+  dibayarkanKepada: string; // Changed from kodeSupplier
+  namaPemohon: string; // Changed from namaSupplier
+  namaPenerima: string; // New field
+  noRekening: string; // New field
   mataUang: string;
   statusLunas: "Lunas" | "Belum";
   jenisDokumen: string;
@@ -42,6 +44,23 @@ const jenisDokumenOptions = [
   "LPB (Lembar Penerimaan Barang)",
   "Voucher",
   "Reimburse",
+];
+
+const dibayarkanKepadaOptions = [
+  "Supplier",
+  "Karyawan",
+  "Vendor",
+  "Kontraktor",
+  "Lainnya",
+];
+
+// Sample employee data with account numbers
+const employeeData = [
+  { name: "Andi Pratama", accountNumber: "1234567890" },
+  { name: "Siti Nurhaliza", accountNumber: "2345678901" },
+  { name: "Rudi Hermawan", accountNumber: "3456789012" },
+  { name: "Maya Sari", accountNumber: "4567890123" },
+  { name: "Budi Santoso", accountNumber: "5678901234" },
 ];
 
 const FinancePermintaanPencairanDanaModal: React.FC<
@@ -69,8 +88,10 @@ const FinancePermintaanPencairanDanaModal: React.FC<
     tglPPDFrom: today,
     tglPPDTo: today,
     divisi: "",
-    kodeSupplier: "",
-    namaSupplier: "",
+    dibayarkanKepada: "",
+    namaPemohon: "",
+    namaPenerima: "",
+    noRekening: "",
     mataUang: "IDR",
     statusLunas: "Belum",
     jenisDokumen: "",
@@ -84,6 +105,16 @@ const FinancePermintaanPencairanDanaModal: React.FC<
     useState<PermintaanPencairanDanaFormData>(initialEmpty);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // Handler for Nama Penerima change to auto-fill account number if employee
+  const handleNamaPenerimaChange = (value: string) => {
+    const employee = employeeData.find(emp => emp.name === value);
+    setFormData(prev => ({
+      ...prev,
+      namaPenerima: value,
+      noRekening: employee ? employee.accountNumber : prev.noRekening
+    }));
+  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -171,10 +202,14 @@ const FinancePermintaanPencairanDanaModal: React.FC<
     if (!formData.tglPPDFrom || !formData.tglPPDTo)
       e.tglPPDFrom = "Periode tanggal wajib diisi";
     if (!formData.divisi.trim()) e.divisi = "Divisi wajib dipilih";
-    if (!formData.kodeSupplier.trim())
-      e.kodeSupplier = "Kode supplier wajib diisi";
-    if (!formData.namaSupplier.trim())
-      e.namaSupplier = "Nama supplier wajib diisi";
+    if (!formData.dibayarkanKepada.trim())
+      e.dibayarkanKepada = "Dibayarkan kepada wajib dipilih";
+    if (!formData.namaPemohon.trim())
+      e.namaPemohon = "Nama pemohon wajib diisi";
+    if (!formData.namaPenerima.trim())
+      e.namaPenerima = "Nama penerima wajib diisi";
+    if (!formData.noRekening.trim())
+      e.noRekening = "No. Rekening wajib diisi";
     if (formData.detailItems.length === 0)
       e.detailItems = "Minimal satu baris detail diperlukan";
     else
@@ -299,47 +334,119 @@ const FinancePermintaanPencairanDanaModal: React.FC<
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Kode Supplier <span className="text-red-500">*</span>
+                  Dibayarkan Kepada <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  value={formData.kodeSupplier}
+                <select
+                  value={formData.dibayarkanKepada}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      kodeSupplier: e.target.value,
+                      dibayarkanKepada: e.target.value,
                     }))
                   }
-                  className={`block w-full border rounded-lg px-4 py-2 text-sm ${
-                    errors.kodeSupplier ? "border-red-300" : "border-gray-300"
+                  className={`block w-full border rounded-lg px-4 py-2 text-sm appearance-none ${
+                    errors.dibayarkanKepada ? "border-red-300" : "border-gray-300"
                   }`}
-                />
-                {errors.kodeSupplier && (
+                >
+                  <option value="">Pilih Dibayarkan Kepada</option>
+                  {dibayarkanKepadaOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                {errors.dibayarkanKepada && (
                   <p className="mt-1 text-sm text-red-600">
-                    {errors.kodeSupplier}
+                    {errors.dibayarkanKepada}
                   </p>
                 )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Supplier <span className="text-red-500">*</span>
+                  Nama Pemohon <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  value={formData.namaSupplier}
+                  value={formData.namaPemohon}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      namaSupplier: e.target.value,
+                      namaPemohon: e.target.value,
                     }))
                   }
                   className={`block w-full border rounded-lg px-4 py-2 text-sm ${
-                    errors.namaSupplier ? "border-red-300" : "border-gray-300"
+                    errors.namaPemohon ? "border-red-300" : "border-gray-300"
                   }`}
                 />
-                {errors.namaSupplier && (
+                {errors.namaPemohon && (
                   <p className="mt-1 text-sm text-red-600">
-                    {errors.namaSupplier}
+                    {errors.namaPemohon}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nama Penerima <span className="text-red-500">*</span>
+                </label>
+                {formData.dibayarkanKepada === 'Karyawan' ? (
+                  <select
+                    value={formData.namaPenerima}
+                    onChange={(e) => handleNamaPenerimaChange(e.target.value)}
+                    className={`block w-full border rounded-lg px-4 py-2 text-sm appearance-none ${
+                      errors.namaPenerima ? "border-red-300" : "border-gray-300"
+                    }`}
+                  >
+                    <option value="">Pilih Karyawan</option>
+                    {employeeData.map((emp) => (
+                      <option key={emp.name} value={emp.name}>
+                        {emp.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={formData.namaPenerima}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        namaPenerima: e.target.value,
+                      }))
+                    }
+                    className={`block w-full border rounded-lg px-4 py-2 text-sm ${
+                      errors.namaPenerima ? "border-red-300" : "border-gray-300"
+                    }`}
+                    placeholder="Masukkan nama penerima"
+                  />
+                )}
+                {errors.namaPenerima && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.namaPenerima}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No. Rekening <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.noRekening}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      noRekening: e.target.value,
+                    }))
+                  }
+                  className={`block w-full border rounded-lg px-4 py-2 text-sm ${
+                    errors.noRekening ? "border-red-300" : "border-gray-300"
+                  }`}
+                  placeholder={formData.dibayarkanKepada === 'Karyawan' ? 'Otomatis terisi saat pilih karyawan' : 'Masukkan nomor rekening'}
+                  readOnly={formData.dibayarkanKepada === 'Karyawan' && formData.namaPenerima !== ''}
+                />
+                {errors.noRekening && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.noRekening}
                   </p>
                 )}
               </div>

@@ -13,6 +13,15 @@ interface EntryVoucherModalProps {
   onRequestClose: () => void;
 }
 
+// Sample employee data with account numbers
+const employeeData = [
+  { name: "Andi Pratama", accountNumber: "1234567890" },
+  { name: "Siti Nurhaliza", accountNumber: "2345678901" },
+  { name: "Rudi Hermawan", accountNumber: "3456789012" },
+  { name: "Maya Sari", accountNumber: "4567890123" },
+  { name: "Budi Santoso", accountNumber: "5678901234" },
+];
+
 const EntryVoucherModal: React.FC<EntryVoucherModalProps> = ({ isOpen, onRequestClose }) => {
   const [noVoucher, setNoVoucher] = useState('');
   const [kodeAkun, setKodeAkun] = useState('');
@@ -25,6 +34,20 @@ const EntryVoucherModal: React.FC<EntryVoucherModalProps> = ({ isOpen, onRequest
   const [nominal, setNominal] = useState('');
   const [keterangan, setKeterangan] = useState('');
   const [attachment, setAttachment] = useState<File | null>(null);
+  const [namaPenerima, setNamaPenerima] = useState('');
+  const [noRekening, setNoRekening] = useState('');
+  const [isKaryawan, setIsKaryawan] = useState(false);
+
+  // Handler for Nama Penerima change to auto-fill account number if employee
+  const handleNamaPenerimaChange = (value: string, isEmployeeSelected: boolean = false) => {
+    setNamaPenerima(value);
+    if (isEmployeeSelected) {
+      const employee = employeeData.find(emp => emp.name === value);
+      if (employee) {
+        setNoRekening(employee.accountNumber);
+      }
+    }
+  };
 
   const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -43,7 +66,8 @@ const EntryVoucherModal: React.FC<EntryVoucherModalProps> = ({ isOpen, onRequest
     e.preventDefault();
     console.log({
       noVoucher, kodeAkun, noSO, namaAkun, noSOTurunan, kodeBiaya,
-      tanggalMulaiVoucher, namaBiaya, nominal, keterangan, attachment
+      tanggalMulaiVoucher, namaBiaya, nominal, keterangan, attachment,
+      namaPenerima, noRekening, isKaryawan
     });
     // Add logic to save data
     onRequestClose(); // Close modal after submission
@@ -200,6 +224,84 @@ const EntryVoucherModal: React.FC<EntryVoucherModalProps> = ({ isOpen, onRequest
                 onChange={(e) => setKeterangan(e.target.value)}
                 placeholder="Keterangan"
               ></textarea>
+            </div>
+          </div>
+
+          {/* Additional Fields - Full Width */}
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-gray-200">
+            <div>
+              <label className={labelClass}>Tipe Penerima</label>
+              <div className="flex gap-4 mt-2">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="tipePenerima"
+                    value="karyawan"
+                    checked={isKaryawan}
+                    onChange={() => {
+                      setIsKaryawan(true);
+                      setNamaPenerima('');
+                      setNoRekening('');
+                    }}
+                    className="mr-2"
+                  />
+                  Karyawan
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="tipePenerima"
+                    value="lainnya"
+                    checked={!isKaryawan}
+                    onChange={() => {
+                      setIsKaryawan(false);
+                      setNamaPenerima('');
+                      setNoRekening('');
+                    }}
+                    className="mr-2"
+                  />
+                  Lainnya
+                </label>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="namaPenerima" className={labelClass}>Nama Penerima</label>
+              {isKaryawan ? (
+                <select
+                  id="namaPenerima"
+                  className={selectClass}
+                  value={namaPenerima}
+                  onChange={(e) => handleNamaPenerimaChange(e.target.value, true)}
+                >
+                  <option value="">Pilih Karyawan</option>
+                  {employeeData.map((emp) => (
+                    <option key={emp.name} value={emp.name}>
+                      {emp.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  id="namaPenerima"
+                  className={inputClass}
+                  value={namaPenerima}
+                  onChange={(e) => handleNamaPenerimaChange(e.target.value, false)}
+                  placeholder="Masukkan nama penerima"
+                />
+              )}
+            </div>
+            <div>
+              <label htmlFor="noRekening" className={labelClass}>No. Rekening</label>
+              <input
+                type="text"
+                id="noRekening"
+                className={inputClass}
+                value={noRekening}
+                onChange={(e) => setNoRekening(e.target.value)}
+                placeholder={isKaryawan ? 'Otomatis terisi saat pilih karyawan' : 'Masukkan nomor rekening'}
+                readOnly={isKaryawan && namaPenerima !== ''}
+              />
             </div>
           </div>
 
