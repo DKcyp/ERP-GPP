@@ -149,6 +149,7 @@ import VerifikasiStockOpnameDashboard from "./VerifikasiStockOpnameDashboard";
 import LaporanSemuaStockDashboard from "./LaporanSemuaStockDashboard";
 import MonitoringAlatProyekDashboard from "./MonitoringAlatProyekDashboard";
 import PermintaanBarangGudangDashboard from "./PermintaanBarangGudangDashboard";
+import KartuStockDashboard from "./KartuStockDashboard";
 import LaporanEvaluasiVendorDashboard from "./LaporanEvaluasiVendorDashboard";
 import GudangMainDashboard from "./GudangMainDashboard";
 import DashboardKPIDashboard from "./DashboardKPIDashboard"; // New import for KPI Dashboard
@@ -571,6 +572,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/gudang/permintaan-barang-gudang/dashboard") {
       return <PermintaanBarangGudangDashboard />;
+    }
+    if (currentPage === "/gudang/kartu-stock/dashboard") {
+      return <KartuStockDashboard />;
     }
     if (currentPage === "/gudang/timesheet-barang/approval") {
       return <ApprovalTimesheetBarangDashboard />;

@@ -25,7 +25,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
         </div>
         <div className="p-6 space-y-6">
           {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <div>
               <label htmlFor="noMutasi" className="block text-sm font-medium text-gray-700 mb-1">No Mutasi</label>
               <input
@@ -43,6 +43,15 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                 id="noPBG"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 placeholder="PBG-2024-001"
+              />
+            </div>
+            <div>
+              <label htmlFor="noSO" className="block text-sm font-medium text-gray-700 mb-1">No. SO</label>
+              <input
+                type="text"
+                id="noSO"
+                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                placeholder="SO-2024-001"
               />
             </div>
             <div>
@@ -77,7 +86,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
               />
               <CalendarDays className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
-            <div className="md:col-span-1">
+            <div className="md:col-span-2">
               <label htmlFor="catatan" className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
               <textarea
                 id="catatan"
@@ -86,7 +95,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                 placeholder="Tambahkan catatan..."
               ></textarea>
             </div>
-            <div className="md:col-span-1">
+            <div className="md:col-span-3">
               <label htmlFor="attachment" className="block text-sm font-medium text-gray-700 mb-1">Attachment</label>
               <div className="flex items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
                 <input id="attachment" type="file" className="hidden" />
@@ -107,7 +116,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan Barang</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Mutasi</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hapus</th>
                 </tr>
@@ -124,8 +133,8 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                       <input
                         type="text"
-                        placeholder="SO-xxxx"
-                        className="w-28 border border-gray-300 rounded-md px-2 py-1 text-sm"
+                        placeholder="SN-001"
+                        className="w-32 border border-gray-300 rounded-md px-2 py-1 text-sm"
                       />
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">

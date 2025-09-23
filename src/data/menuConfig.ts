@@ -1503,6 +1503,12 @@ export const gudangMenu: MenuSection[] = [
     ],
   },
   {
+    title: "Kartu Stock",
+    icon: "BarChart3",
+    items: [],
+    directPath: "/gudang/kartu-stock/dashboard",
+  },
+  {
     title: "Pengembalian Barang",
     icon: "RotateCcw",
     items: [
