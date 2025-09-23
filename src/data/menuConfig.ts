@@ -1472,38 +1472,35 @@ export const gudangMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Penerimaan Barang",
+    title: "Keluar / Masuk Barang",
     icon: "Box",
     items: [
       {
-        title: "Manual",
-        icon: "Edit",
-        path: "/gudang/penerimaan-barang-manual/dashboard",
+        title: "Master Gudang",
+        icon: "Building",
+        path: "/gudang/gudang-proyek/dashboard",
       },
       {
-        title: "Gudang",
+        title: "RFI",
+        icon: "Download",
+        path: "/gudang/penerimaan-barang-masuk/dashboard",
+      },
+      {
+        title: "Mutasi Barang",
+        icon: "Shuffle",
+        path: "/gudang/mutasi-barang/dashboard",
+      },
+      // {
+      //   title: "Penerimaan Barang Manual",
+      //   icon: "Edit",
+      //   path: "/gudang/penerimaan-barang-manual/dashboard",
+      // },
+      {
+        title: "Pertmintaan Barang Gudang",
         icon: "ShoppingCart",
         path: "/gudang/permintaan-barang-gudang/dashboard",
       },
     ],
-  },
-  {
-    title: "Gudang Proyek",
-    icon: "Building",
-    items: [],
-    directPath: "/gudang/gudang-proyek/dashboard",
-  },
-  {
-    title: "RFI",
-    icon: "Download",
-    items: [],
-    directPath: "/gudang/penerimaan-barang-masuk/dashboard",
-  },
-  {
-    title: "Mutasi Barang",
-    icon: "Shuffle",
-    items: [],
-    directPath: "/gudang/mutasi-barang/dashboard",
   },
   {
     title: "Pengembalian Barang",

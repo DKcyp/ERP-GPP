@@ -25,7 +25,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
         </div>
         <div className="p-6 space-y-6">
           {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
               <label htmlFor="noMutasi" className="block text-sm font-medium text-gray-700 mb-1">No Mutasi</label>
               <input
@@ -34,6 +34,15 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({ isOpen,
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50"
                 defaultValue="MT-202536"
                 readOnly
+              />
+            </div>
+            <div>
+              <label htmlFor="noPBG" className="block text-sm font-medium text-gray-700 mb-1">No. PBG</label>
+              <input
+                type="text"
+                id="noPBG"
+                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                placeholder="PBG-2024-001"
               />
             </div>
             <div>

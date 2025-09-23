@@ -7,6 +7,7 @@ interface RequestItem {
   id: string;
   kodeBarang: string;
   namaBarang: string;
+  serialNumber: string;
   qty: number;
   unit: string;
   keterangan?: string;
@@ -54,7 +55,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       gudangTujuan: 'G002',
       status: 'Pending',
       items: [
-        { id: 'it-1', kodeBarang: 'BRG-001', namaBarang: 'Kabel UTP Cat6', qty: 100, unit: 'meter' },
+        { id: 'it-1', kodeBarang: 'BRG-001', namaBarang: 'Kabel UTP Cat6', serialNumber: 'SN-KBL-001', qty: 100, unit: 'meter' },
       ],
     },
     {
@@ -65,7 +66,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       gudangTujuan: 'G003',
       status: 'Approved',
       items: [
-        { id: 'it-2', kodeBarang: 'BRG-002', namaBarang: 'Besi Beton 12mm', qty: 50, unit: 'batang' },
+        { id: 'it-2', kodeBarang: 'BRG-002', namaBarang: 'Besi Beton 12mm', serialNumber: 'SN-BSI-002', qty: 50, unit: 'batang' },
       ],
     },
     {
@@ -76,7 +77,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       gudangTujuan: 'G003',
       status: 'Pending',
       items: [
-        { id: 'it-3', kodeBarang: 'BRG-003', namaBarang: 'Semen Portland', qty: 25, unit: 'sak' },
+        { id: 'it-3', kodeBarang: 'BRG-003', namaBarang: 'Semen Portland', serialNumber: 'SN-SMN-003', qty: 25, unit: 'sak' },
       ],
     },
     {
@@ -87,7 +88,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       gudangTujuan: 'G001',
       status: 'Rejected',
       items: [
-        { id: 'it-4', kodeBarang: 'BRG-004', namaBarang: 'Cat Tembok Putih', qty: 10, unit: 'kaleng' },
+        { id: 'it-4', kodeBarang: 'BRG-004', namaBarang: 'Cat Tembok Putih', serialNumber: 'SN-CAT-004', qty: 10, unit: 'kaleng' },
       ],
     },
   ]);
@@ -103,7 +104,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
 
   // Items input table state
   const [items, setItems] = useState<RequestItem[]>([
-    { id: 'row-1', kodeBarang: '', namaBarang: '', qty: 0, unit: '' },
+    { id: 'row-1', kodeBarang: '', namaBarang: '', serialNumber: '', qty: 0, unit: '' },
   ]);
 
   // Auto-generate kode on load and when date changes
@@ -117,7 +118,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
   const addRow = () => {
     setItems(prev => [
       ...prev,
-      { id: `row-${Date.now()}`, kodeBarang: '', namaBarang: '', qty: 0, unit: '' },
+      { id: `row-${Date.now()}`, kodeBarang: '', namaBarang: '', serialNumber: '', qty: 0, unit: '' },
     ]);
   };
 
@@ -131,7 +132,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
 
   const resetForm = () => {
     setHeader({ kodePermintaan: '', tanggalInput: todayStr(), gudangAsal: '', gudangTujuan: '' });
-    setItems([{ id: 'row-1', kodeBarang: '', namaBarang: '', qty: 0, unit: '' }]);
+    setItems([{ id: 'row-1', kodeBarang: '', namaBarang: '', serialNumber: '', qty: 0, unit: '' }]);
   };
 
   const handleSave = () => {
@@ -234,6 +235,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                       <tr>
                         <th className="px-3 py-2 text-left font-semibold text-gray-700">Kode Barang</th>
                         <th className="px-3 py-2 text-left font-semibold text-gray-700">Nama Barang</th>
+                        <th className="px-3 py-2 text-left font-semibold text-gray-700">Serial Number</th>
                         <th className="px-3 py-2 text-left font-semibold text-gray-700">Qty</th>
                         <th className="px-3 py-2 text-left font-semibold text-gray-700">Satuan</th>
                         <th className="px-3 py-2 text-left font-semibold text-gray-700">Keterangan</th>
@@ -245,6 +247,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                         <tr key={it.id}>
                           <td className="px-3 py-2"><input value={it.kodeBarang} onChange={(e) => updateItem(it.id, { kodeBarang: e.target.value })} className="w-full px-2 py-1.5 border rounded" placeholder="BRG-001" /></td>
                           <td className="px-3 py-2"><input value={it.namaBarang} onChange={(e) => updateItem(it.id, { namaBarang: e.target.value })} className="w-full px-2 py-1.5 border rounded" placeholder="Nama Barang" /></td>
+                          <td className="px-3 py-2"><input value={it.serialNumber} onChange={(e) => updateItem(it.id, { serialNumber: e.target.value })} className="w-full px-2 py-1.5 border rounded" placeholder="SN-001" /></td>
                           <td className="px-3 py-2"><input type="number" value={it.qty} onChange={(e) => updateItem(it.id, { qty: Number(e.target.value) })} className="w-24 px-2 py-1.5 border rounded" /></td>
                           <td className="px-3 py-2"><input value={it.unit} onChange={(e) => updateItem(it.id, { unit: e.target.value })} className="w-28 px-2 py-1.5 border rounded" placeholder="pcs/unit" /></td>
                           <td className="px-3 py-2"><input value={it.keterangan || ''} onChange={(e) => updateItem(it.id, { keterangan: e.target.value })} className="w-full px-2 py-1.5 border rounded" placeholder="Catatan" /></td>

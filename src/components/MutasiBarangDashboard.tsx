@@ -5,14 +5,15 @@ import EntryMutasiBarangModal from './EntryMutasiBarangModal'; // Import the new
 interface MutasiBarangItem {
   no: number;
   noMutasi: string;
+  noPBG: string;
   noSO: string;
   gudangAsal: string;
   gudangTujuan: string;
+  serialNumber: string;
   tanggalMutasi: string;
   status: 'Pending' | 'Approved' | 'Rejected';
   approvalStatus: 'Waiting' | 'Approved' | 'Rejected';
   sourceType: 'Manual' | 'From_PBG'; // PBG = Penerimaan Barang Gudang
-  pbgReference?: string;
 }
 
 const MutasiBarangDashboard: React.FC = () => {
@@ -20,28 +21,28 @@ const MutasiBarangDashboard: React.FC = () => {
 
   const [mutasiBarangItems, setMutasiBarangItems] = useState<MutasiBarangItem[]>([
     { 
-      no: 1, noMutasi: 'MT-202401', noSO: 'SO-2024-001', 
+      no: 1, noMutasi: 'MT-202401', noPBG: 'PBG-2024-001', noSO: 'SO-2024-001', 
       gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek A', 
-      tanggalMutasi: '2024-03-10', status: 'Approved', approvalStatus: 'Approved',
+      serialNumber: 'SN-MT-001', tanggalMutasi: '2024-03-10', status: 'Approved', approvalStatus: 'Approved',
       sourceType: 'Manual'
     },
     { 
-      no: 2, noMutasi: 'MT-202402', noSO: 'SO-2024-002', 
+      no: 2, noMutasi: 'MT-202402', noPBG: 'PBG-2024-002', noSO: 'SO-2024-002', 
       gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek B', 
-      tanggalMutasi: '2024-03-09', status: 'Pending', approvalStatus: 'Waiting',
-      sourceType: 'From_PBG', pbgReference: 'PBG-2024-001'
+      serialNumber: 'SN-MT-002', tanggalMutasi: '2024-03-09', status: 'Pending', approvalStatus: 'Waiting',
+      sourceType: 'From_PBG'
     },
     { 
-      no: 3, noMutasi: 'MT-202403', noSO: 'SO-2024-003', 
+      no: 3, noMutasi: 'MT-202403', noPBG: 'PBG-2024-003', noSO: 'SO-2024-003', 
       gudangAsal: 'Gudang Proyek A', gudangTujuan: 'Gudang Proyek C', 
-      tanggalMutasi: '2024-03-08', status: 'Rejected', approvalStatus: 'Rejected',
+      serialNumber: 'SN-MT-003', tanggalMutasi: '2024-03-08', status: 'Rejected', approvalStatus: 'Rejected',
       sourceType: 'Manual'
     },
     { 
-      no: 4, noMutasi: 'MT-202404', noSO: 'SO-2024-004', 
+      no: 4, noMutasi: 'MT-202404', noPBG: 'PBG-2024-004', noSO: 'SO-2024-004', 
       gudangAsal: 'Gudang Pusat', gudangTujuan: 'Gudang Proyek C', 
-      tanggalMutasi: '2024-03-07', status: 'Approved', approvalStatus: 'Approved',
-      sourceType: 'From_PBG', pbgReference: 'PBG-2024-002'
+      serialNumber: 'SN-MT-004', tanggalMutasi: '2024-03-07', status: 'Approved', approvalStatus: 'Approved',
+      sourceType: 'From_PBG'
     },
   ]);
 
@@ -225,7 +226,9 @@ const MutasiBarangDashboard: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Mutasi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. PBG</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No SO</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Asal</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Tujuan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Mutasi</th>
@@ -238,7 +241,9 @@ const MutasiBarangDashboard: React.FC = () => {
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noMutasi}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{item.noPBG}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-blue-600">{item.noSO}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600">{item.serialNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.gudangAsal}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.gudangTujuan}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalMutasi}</td>

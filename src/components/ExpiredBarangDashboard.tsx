@@ -18,6 +18,7 @@ interface ExpiredBarangItem {
 }
 
 const ExpiredBarangDashboard: React.FC = () => {
+  const [serialNumberFilter, setSerialNumberFilter] = useState('');
   const [expiredItems, setExpiredItems] = useState<ExpiredBarangItem[]>([
     { 
       no: 1, kodeBarang: 'BRG001', namaBarang: 'Helm Safety', kategori: 'Alat', satuan: 'Unit', 
@@ -93,6 +94,11 @@ const ExpiredBarangDashboard: React.FC = () => {
     );
   };
 
+  // Filter data based on serial number
+  const filteredItems = expiredItems.filter(item => 
+    item.serialNumber.toLowerCase().includes(serialNumberFilter.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
@@ -120,7 +126,7 @@ const ExpiredBarangDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {/* Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div className="relative">
               <label htmlFor="kodeBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Kode Barang</label>
               <input
@@ -138,6 +144,18 @@ const ExpiredBarangDashboard: React.FC = () => {
                 id="namaBarang"
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 placeholder="Nama Barang"
+              />
+              <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+            </div>
+            <div className="relative">
+              <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-1">Serial Number/Batch Number</label>
+              <input
+                type="text"
+                id="serialNumber"
+                value={serialNumberFilter}
+                onChange={(e) => setSerialNumberFilter(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                placeholder="HSF-2024-001"
               />
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
@@ -252,7 +270,7 @@ const ExpiredBarangDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {expiredItems.map((item) => (
+                {filteredItems.map((item) => (
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeBarang}</td>
