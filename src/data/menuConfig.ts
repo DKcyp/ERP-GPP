@@ -1196,28 +1196,12 @@ export const financeMenu: MenuSection[] = [
             icon: "Wallet",
             path: "/finance/ap/pembayaran-hutang",
           },
+          {
+            title: "Pengajuan Hutang Usaha",
+            icon: "ClipboardList",
+            path: "/finance/pengajuan-hutang-usaha",
+          },
         ],
-      },
-    ],
-  },
-  {
-    title: "Pencairan Dana",
-    icon: "Wallet",
-    items: [
-      // {
-      //   title: "Permintaan Pencairan Dana",
-      //   icon: "Wallet",
-      //   path: "/finance/permintaan-pencairan-dana",
-      // },
-      {
-        title: "Pengajuan Hutang Usaha",
-        icon: "ClipboardList",
-        path: "/finance/pengajuan-hutang-usaha",
-      },
-      {
-        title: "Pengajuan Voucher",
-        icon: "Ticket",
-        path: "/finance/pengajuan-voucher",
       },
     ],
   },
@@ -1366,6 +1350,11 @@ export const financeMenu: MenuSection[] = [
     title: "Voucher dan Reimburse",
     icon: "Wallet", // Icon for Voucher dan Reimburse
     items: [
+      {
+        title: "Pengajuan Voucher",
+        icon: "Ticket",
+        path: "/finance/pengajuan-voucher",
+      },
       {
         title: "Approval Voucher",
         icon: "CheckCircle",
