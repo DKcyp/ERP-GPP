@@ -896,7 +896,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                               Edit
                             </th>
                             <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase border-r border-gray-300">
-                              Kode COA
+                              Kode Akun
                             </th>
                             <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase border-r border-gray-300">
                               Nama Akun
@@ -973,17 +973,17 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* COA Section */}
+                  {/* Akun Section */}
                   <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          COA
+                          Nama Akun
                         </label>
                         <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                          <option value="">Cari COA</option>
-                          <option value="coa1">COA 1</option>
-                          <option value="coa2">COA 2</option>
+                          <option value="">Cari Akun</option>
+                          <option value="Akun1">Akun 1</option>
+                          <option value="Akun2">Akun 2</option>
                         </select>
                       </div>
                       <div>
@@ -1063,7 +1063,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kode COA
+                    Kode Akun
                   </label>
                   <input
                     type="text"
