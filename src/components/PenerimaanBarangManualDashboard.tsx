@@ -11,13 +11,13 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<PenerimaanBarangManualData | null>(null);
   const [penerimaanData, setPenerimaanData] = useState<PenerimaanBarangManualData[]>([
     {
-      id: '1', no: 1, tanggalPenerimaan: '2025-01-15', noPO: 'PO-2025-001',
+      id: '1', no: 1, tanggalPenerimaan: '2025-01-15', noDokumen: 'DOK-2025-001',
       namaBarang: 'Semen Portland', kodeBarang: 'SMN-001', qty: 50, satuan: 'Sak',
       kondisiBarang: 'Expired', alasanManual: 'Barang expired tapi masih layak pakai',
       statusPersetujuan: 'Pending'
     },
     {
-      id: '2', no: 2, tanggalPenerimaan: '2025-01-16', noPO: 'PO-2025-002',
+      id: '2', no: 2, tanggalPenerimaan: '2025-01-16', noDokumen: 'DOK-2025-002',
       namaBarang: 'Cat Tembok', kodeBarang: 'CAT-002', qty: 20, satuan: 'Kaleng',
       kondisiBarang: 'Expired', tanggalExpired: '2025-01-12',
       alasanManual: 'Cat expired namun kualitas masih baik setelah dicek',
@@ -53,7 +53,7 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
       id: newId,
       no: penerimaanData.length + 1,
       tanggalPenerimaan: new Date().toISOString().split('T')[0],
-      noPO: formData.noPO,
+      noDokumen: formData.noDokumen,
       namaBarang: formData.namaBarang,
       kodeBarang: formData.kodeBarang,
       qty: parseInt(formData.qty),
@@ -110,7 +110,7 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">PO</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barang</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -121,7 +121,7 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
               {penerimaanData.map((item) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 text-sm">{item.no}</td>
-                  <td className="px-6 py-4 text-sm">{item.noPO}</td>
+                  <td className="px-6 py-4 text-sm">{item.noDokumen}</td>
                   <td className="px-6 py-4 text-sm">
                     <div className="font-medium">{item.namaBarang}</div>
                     <div className="text-gray-500">{item.kodeBarang}</div>

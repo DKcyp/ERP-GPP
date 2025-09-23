@@ -1490,11 +1490,11 @@ export const gudangMenu: MenuSection[] = [
         icon: "Shuffle",
         path: "/gudang/mutasi-barang/dashboard",
       },
-      // {
-      //   title: "Penerimaan Barang Manual",
-      //   icon: "Edit",
-      //   path: "/gudang/penerimaan-barang-manual/dashboard",
-      // },
+      {
+        title: "Penerimaan Barang Manual",
+        icon: "Edit",
+        path: "/gudang/penerimaan-barang-manual/dashboard",
+      },
       {
         title: "Pertmintaan Barang Gudang",
         icon: "ShoppingCart",

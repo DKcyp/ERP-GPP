@@ -10,19 +10,44 @@ interface Props {
 
 const PenerimaanBarangManualModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState<PenerimaanBarangManualFormData>({
-    noPO: '', namaBarang: '', kodeBarang: '', qty: '', satuan: '',
+    noDokumen: '', namaBarang: '', kodeBarang: '', qty: '', satuan: '',
     kondisiBarang: 'Expired', tanggalExpired: '', alasanManual: '', keterangan: ''
   });
 
+  // Data master barang untuk auto-select
+  const masterBarang = [
+    { kode: 'SMN-001', nama: 'Semen Portland', satuan: 'Sak' },
+    { kode: 'CAT-002', nama: 'Cat Tembok', satuan: 'Kaleng' },
+    { kode: 'BSI-003', nama: 'Besi Beton 12mm', satuan: 'Batang' },
+    { kode: 'KBL-004', nama: 'Kabel UTP Cat6', satuan: 'Meter' },
+    { kode: 'PLT-005', nama: 'Pipa PVC 4 inch', satuan: 'Batang' }
+  ];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleKodeBarangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedKode = e.target.value;
+    const selectedBarang = masterBarang.find(item => item.kode === selectedKode);
+    
+    if (selectedBarang) {
+      setFormData(prev => ({
+        ...prev,
+        kodeBarang: selectedKode,
+        namaBarang: selectedBarang.nama,
+        satuan: selectedBarang.satuan
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, kodeBarang: selectedKode }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
     setFormData({
-      noPO: '', namaBarang: '', kodeBarang: '', qty: '', satuan: '',
+      noDokumen: '', namaBarang: '', kodeBarang: '', qty: '', satuan: '',
       kondisiBarang: 'Expired', tanggalExpired: '', alasanManual: '', keterangan: ''
     });
   };
@@ -46,21 +71,27 @@ const PenerimaanBarangManualModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">No PO *</label>
-                <input type="text" name="noPO" value={formData.noPO} onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+                <label className="block text-sm font-medium mb-1">No. Dokumen *</label>
+                <input type="text" name="noDokumen" value={formData.noDokumen} onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="DOK-2025-001" required />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Kode Barang *</label>
-                <input type="text" name="kodeBarang" value={formData.kodeBarang} onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+                <select name="kodeBarang" value={formData.kodeBarang} onChange={handleKodeBarangChange}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                  <option value="">Pilih Kode Barang</option>
+                  {masterBarang.map(item => (
+                    <option key={item.kode} value={item.kode}>{item.kode} - {item.nama}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Nama Barang *</label>
-              <input type="text" name="namaBarang" value={formData.namaBarang} onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              <input type="text" name="namaBarang" value={formData.namaBarang} readOnly
+                className="w-full px-3 py-2 border rounded-lg bg-gray-50 text-gray-700" 
+                placeholder="Akan terisi otomatis saat memilih kode barang" />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -71,15 +102,9 @@ const PenerimaanBarangManualModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Satuan *</label>
-                <select name="satuan" value={formData.satuan} onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
-                  <option value="">Pilih</option>
-                  <option value="Pcs">Pcs</option>
-                  <option value="Kg">Kg</option>
-                  <option value="Sak">Sak</option>
-                  <option value="Kaleng">Kaleng</option>
-                  <option value="Batang">Batang</option>
-                </select>
+                <input type="text" name="satuan" value={formData.satuan} readOnly
+                  className="w-full px-3 py-2 border rounded-lg bg-gray-50 text-gray-700"
+                  placeholder="Akan terisi otomatis" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Kondisi *</label>

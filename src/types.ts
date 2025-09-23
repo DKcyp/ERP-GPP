@@ -412,7 +412,7 @@ export interface PenerimaanBarangManualData {
   id: string;
   no: number;
   tanggalPenerimaan: string;
-  noPO: string;
+  noDokumen: string;
   namaBarang: string;
   kodeBarang: string;
   qty: number;
@@ -427,7 +427,7 @@ export interface PenerimaanBarangManualData {
 }
 
 export interface PenerimaanBarangManualFormData {
-  noPO: string;
+  noDokumen: string;
   namaBarang: string;
   kodeBarang: string;
   qty: string; // keep as string for input

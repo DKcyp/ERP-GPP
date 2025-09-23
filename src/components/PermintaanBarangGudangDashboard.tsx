@@ -16,6 +16,8 @@ interface RequestItem {
 interface PermintaanHeader {
   kodePermintaan: string;
   tanggalInput: string; // yyyy-MM-dd
+  noSO: string;
+  namaProject: string;
   gudangAsal: string;
   gudangTujuan: string;
 }
@@ -51,6 +53,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       id: 'PRG-20250719-001',
       kodePermintaan: 'PRG-20250719-001',
       tanggalInput: '2025-07-19',
+      noSO: 'SO-2025-001',
+      namaProject: 'Proyek Pembangunan Gedung A',
       gudangAsal: 'G001',
       gudangTujuan: 'G002',
       status: 'Pending',
@@ -62,6 +66,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       id: 'PRG-20250719-002',
       kodePermintaan: 'PRG-20250719-002',
       tanggalInput: '2025-07-19',
+      noSO: 'SO-2025-002',
+      namaProject: 'Renovasi Kantor Pusat',
       gudangAsal: 'G002',
       gudangTujuan: 'G003',
       status: 'Approved',
@@ -73,6 +79,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       id: 'PRG-20250719-003',
       kodePermintaan: 'PRG-20250719-003',
       tanggalInput: '2025-07-19',
+      noSO: 'SO-2025-003',
+      namaProject: 'Konstruksi Jembatan Layang',
       gudangAsal: 'G001',
       gudangTujuan: 'G003',
       status: 'Pending',
@@ -84,6 +92,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       id: 'PRG-20250719-004',
       kodePermintaan: 'PRG-20250719-004',
       tanggalInput: '2025-07-19',
+      noSO: 'SO-2025-004',
+      namaProject: 'Pembangunan Infrastruktur IT',
       gudangAsal: 'G003',
       gudangTujuan: 'G001',
       status: 'Rejected',
@@ -97,6 +107,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
   const [header, setHeader] = useState<PermintaanHeader>({
     kodePermintaan: '',
     tanggalInput: todayStr(),
+    noSO: '',
+    namaProject: '',
     gudangAsal: '',
     gudangTujuan: '',
   });
@@ -131,21 +143,23 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
   };
 
   const resetForm = () => {
-    setHeader({ kodePermintaan: '', tanggalInput: todayStr(), gudangAsal: '', gudangTujuan: '' });
+    setHeader({ kodePermintaan: '', tanggalInput: todayStr(), noSO: '', namaProject: '', gudangAsal: '', gudangTujuan: '' });
     setItems([{ id: 'row-1', kodeBarang: '', namaBarang: '', serialNumber: '', qty: 0, unit: '' }]);
   };
 
   const handleSave = () => {
-    if (!header.gudangAsal || !header.gudangTujuan) return;
+    if (!header.noSO || !header.namaProject || !header.gudangAsal || !header.gudangTujuan) return;
     if (items.length === 0 || items.every(i => !i.kodeBarang || !i.namaBarang || !i.qty || !i.unit)) return;
     const record: PermintaanRecord = {
       id: header.kodePermintaan,
       kodePermintaan: header.kodePermintaan,
       tanggalInput: header.tanggalInput,
+      noSO: header.noSO,
+      namaProject: header.namaProject,
       gudangAsal: header.gudangAsal,
       gudangTujuan: header.gudangTujuan,
       status: 'Pending',
-      items: items.filter(i => i.kodeBarang && i.namaBarang && i.qty && i.unit),
+      items: [...items].filter(i => i.kodeBarang && i.namaBarang && i.qty && i.unit),
     };
     setSaved(prev => [record, ...prev]);
     resetForm();
@@ -193,7 +207,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                 <button onClick={() => setIsModalOpen(false)} className="px-3 py-1.5 rounded-lg border">Tutup</button>
               </div>
               {/* Header Inputs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Input</label>
                   <input type="date" value={header.tanggalInput} onChange={(e) => setHeader({ ...header, tanggalInput: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
@@ -201,6 +215,16 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Kode Permintaan</label>
                   <input type="text" value={header.kodePermintaan} readOnly className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">No. SO *</label>
+                  <input type="text" value={header.noSO} onChange={(e) => setHeader({ ...header, noSO: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="SO-2025-001" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Nama Project *</label>
+                  <input type="text" value={header.namaProject} onChange={(e) => setHeader({ ...header, namaProject: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Nama Project" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Gudang Asal</label>
@@ -308,6 +332,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Permintaan</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. SO</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Project</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Asal</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Tujuan</th>
@@ -324,6 +350,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                 filteredRequests.map((request) => (
                   <tr key={request.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.kodePermintaan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{request.noSO}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.namaProject}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{request.tanggalInput}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{gudangOptions.find(g => g.id === request.gudangAsal)?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{gudangOptions.find(g => g.id === request.gudangTujuan)?.name}</td>
@@ -347,7 +375,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+                  <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">
                     Tidak ada permintaan barang yang ditemukan.
                   </td>
                 </tr>
