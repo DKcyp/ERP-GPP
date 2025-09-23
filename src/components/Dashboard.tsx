@@ -167,6 +167,8 @@ import GeneralPertanggungJawabanVoucherDashboard from "./GeneralPertanggungJawab
 import GeneralPengajuanCutiDashboard from "./GeneralPengajuanCutiDashboard"; // NEW: Pengajuan Cuti
 import GeneralApproveCutiDashboard from "./GeneralApproveCutiDashboard"; // NEW: Approve Cuti
 import PegawaiListCutiDashboard from "./PegawaiListCutiDashboard"; // NEW: HRD Pegawai List Cuti
+import GeneralPengajuanTicketDashboard from "./GeneralPengajuanTicketDashboard"; // NEW: General Pengajuan Ticket
+import FinanceApprovalTicketDashboard from "./FinanceApprovalTicketDashboard"; // NEW: Finance Approval Ticket
 import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD List Training
 import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
 import PendebetanDashboard from "./PendebetanDashboard";
@@ -640,6 +642,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/gudang/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
     }
+    // NEW Gudang General Ticket Routes
+    if (currentPage === "/gudang/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
+    }
     // Gudang General Kendaraan
     if (currentPage === "/gudang/general/kendaraan/pengajuan-driver") {
       return <GeneralKendaraanPengajuanDriver />;
@@ -706,6 +712,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/ga/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
+    }
+    // NEW ga General Ticket Routes
+    if (currentPage === "/ga/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
     }
     if (currentPage === "/ga/general/utility/dashboard") {
       return <GeneralUtilityDashboard />;
@@ -858,6 +868,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/pengadaan/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
+    }
+    // NEW Pengadaan General Ticket Routes
+    if (currentPage === "/pengadaan/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
     }
 
     // HRD Routes
@@ -1065,6 +1079,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/hrd/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
     }
+    // NEW HRD General Ticket Routes
+    if (currentPage === "/hrd/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
+    }
 
     // Marketing Routes
     if (currentPage === "/marketing/dashboard") {
@@ -1202,6 +1220,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/procon/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
     }
+    // NEW Procon General Ticket Routes
+    if (currentPage === "/procon/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
+    }
     // Procon General > PBG
     if (currentPage === "/procon/general/pbg/mutasi-barang") {
       return <MutasiBarangDashboard />;
@@ -1271,6 +1293,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
+    }
+    // NEW Marketing General Ticket Routes
+    if (currentPage === "/marketing/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
     }
 
     // GA Routes
@@ -1548,6 +1574,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/operational/general/cuti/approve") {
       return <GeneralApproveCutiDashboard />;
     }
+    // NEW Operational General Ticket Routes
+    if (currentPage === "/operational/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
+    }
 
     // Finance Routes
     if (currentPage === "/finance/dashboard") {
@@ -1671,6 +1701,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/voucher-reimburse/approval-voucher") {
       return <FinanceApprovalVoucherDashboard />;
     }
+    // Finance Approval Ticket Routes
+    if (currentPage === "/finance/approval/ticket") {
+      return <FinanceApprovalTicketDashboard />;
+    }
     // Approve PI
     if (currentPage === "/finance/approve-pi") {
       return <FinanceApprovePIDashboard/>
@@ -1756,6 +1790,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // QHSE Routes
     if (currentPage === "/qhse/dashboard") {
       return <QHSENewDashboard />;
+    }
+    // NEW QHSE General Ticket Routes
+    if (currentPage === "/qhse/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
     }
     // Make The KPI Departemen Here
     if (currentPage === "/qhse/kpi-department/dashboard") {
@@ -2026,6 +2064,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/accounting/dashboard") {
       return <AccountingMainDashboard />;
     }
+    // NEW Accounting General Ticket Routes
+    if (currentPage === "/accounting/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
+    }
     if (currentPage === "/accounting/master-coa") {
       return <MasterCOADashboard />;
     }
@@ -2084,6 +2126,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // Tax Routes
     if (currentPage === "/tax/dashboard") {
       return <TaxMainDashboard />;
+    }
+    // NEW Tax General Ticket Routes
+    if (currentPage === "/tax/general/ticket/pengajuan") {
+      return <GeneralPengajuanTicketDashboard />;
     }
     if (currentPage === "/tax/pajak-masukan") {
       return <PajakMasukanDashboard />;

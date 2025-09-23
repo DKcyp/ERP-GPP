@@ -263,6 +263,17 @@ const createGeneralMenu = (role: string): MenuSection => ({
           : []),
       ],
     },
+    {
+      title: "Ticket",
+      icon: "TicketCheck",
+      items: [
+        {
+          title: "Pengajuan Ticket",
+          icon: "FilePlus",
+          path: `/${role}/general/ticket/pengajuan`,
+        },
+      ],
+    },
     // Procon-only: PBG submenu replaces Purchase Request
     ...(role === "procon"
       ? [
@@ -1427,6 +1438,17 @@ export const financeMenu: MenuSection[] = [
       //   icon: "FileText",
       //   path: "/finance/voucher-reimburse/laporan-pertanggung-jawaban-voucher",
       // },
+    ],
+  },
+  {
+    title: "Approval",
+    icon: "CheckCircle",
+    items: [
+      {
+        title: "Approval Ticket",
+        icon: "TicketCheck",
+        path: "/finance/approval/ticket",
+      },
     ],
   },
   //   icon: "FileText",
