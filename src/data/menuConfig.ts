@@ -1351,6 +1351,12 @@ export const financeMenu: MenuSection[] = [
   //   ],
   // },
   {
+    title: "Approve PI",
+    icon: "CheckCircle",
+    items: [],
+    directPath: "/finance/approve-pi",
+  },
+  {
     title: "Voucher",
     icon: "Ticket",
     items: [

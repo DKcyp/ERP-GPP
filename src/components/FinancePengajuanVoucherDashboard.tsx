@@ -12,6 +12,7 @@ interface VoucherRow {
   keperluanUmum: string;
   bank: string; // display label Nama Bank - norek
   total: number;
+  pertanggungjawaban: 'Iya' | 'Tidak';
   status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected' | 'Pending';
 }
 
@@ -35,9 +36,9 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
   const divisiOptions = ['Marketing','HRD','GA','Procurement','Project Control','Operasional','QHSE','Finance','Accounting','Tax','Gudang'];
 
   const [rows, setRows] = useState<VoucherRow[]>([
-    { id: 1, tanggal: '2025-09-05', noPPD: 'VCH-2025-09-001', divisi: 'Marketing', pemohon: 'Andi', keperluanUmum: 'Voucher perjalanan dinas Jakarta', bank: 'Bank Mandiri Operasional - 1400098765432', total: 2500000, status: 'Submitted' },
-    { id: 2, tanggal: '2025-09-06', noPPD: 'VCH-2025-09-002', divisi: 'HRD', pemohon: 'Siti', keperluanUmum: 'Voucher training karyawan', bank: 'Bank BCA Training - 5551234567890', total: 3500000, status: 'Approved' },
-    { id: 3, tanggal: '2025-09-07', noPPD: 'VCH-2025-09-003', divisi: 'GA', pemohon: 'Rudi', keperluanUmum: 'Voucher maintenance gedung', bank: 'Bank Mandiri GA - 1400055512345', total: 1800000, status: 'Pending' },
+    { id: 1, tanggal: '2025-09-05', noPPD: 'VCH-2025-09-001', divisi: 'Marketing', pemohon: 'Andi', keperluanUmum: 'Voucher perjalanan dinas Jakarta', bank: 'Bank Mandiri Operasional - 1400098765432', total: 2500000, pertanggungjawaban: 'Iya', status: 'Submitted' },
+    { id: 2, tanggal: '2025-09-06', noPPD: 'VCH-2025-09-002', divisi: 'HRD', pemohon: 'Siti', keperluanUmum: 'Voucher training karyawan', bank: 'Bank BCA Training - 5551234567890', total: 3500000, pertanggungjawaban: 'Tidak', status: 'Approved' },
+    { id: 3, tanggal: '2025-09-07', noPPD: 'VCH-2025-09-003', divisi: 'GA', pemohon: 'Rudi', keperluanUmum: 'Voucher maintenance gedung', bank: 'Bank Mandiri GA - 1400055512345', total: 1800000, pertanggungjawaban: 'Iya', status: 'Pending' },
   ]);
 
   const handleAdd = () => {
@@ -59,6 +60,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
       noRekening: '',
       mataUang: 'IDR',
       statusLunas: 'Belum',
+      pertanggungjawaban: row.pertanggungjawaban,
       jenisDokumen: '',
       detailItems: [{ id: 1, noDokumen: '', keterangan: row.keperluanUmum, nominalDPP: row.total, nominalPPN: 0 }],
       totalPembayaran: row.total,
@@ -85,6 +87,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
         keperluanUmum: keperluan || r.keperluanUmum,
         bank: bankDisplay || r.bank,
         total,
+        pertanggungjawaban: data.pertanggungjawaban,
         status: r.status,
       } : r));
     } else {
@@ -98,6 +101,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
         keperluanUmum: keperluan,
         bank: bankDisplay,
         total,
+        pertanggungjawaban: data.pertanggungjawaban,
         status: 'Draft',
       };
       setRows(prev => [newRow, ...prev]);
@@ -224,6 +228,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keperluan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bank</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pertanggungjawaban</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                 </tr>
@@ -238,6 +243,15 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.keperluanUmum}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.bank}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">Rp {row.total.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        row.pertanggungjawaban === 'Iya' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {row.pertanggungjawaban}
+                      </span>
+                    </td>
                     <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${row.status === 'Approved' ? 'text-green-700' : row.status === 'Submitted' ? 'text-blue-700' : row.status === 'Rejected' ? 'text-red-700' : 'text-gray-600'}`}>{row.status}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">

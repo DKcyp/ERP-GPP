@@ -403,6 +403,7 @@ import QHSEDaftarInventarisIsotopDashboard from "./QHSEDaftarInventarisIsotopDas
 import QHSEExpiredBarangBADashboard from "./QHSEExpiredBarangBADashboard";
 import QHSEExpiredBarangApprovalDashboard from "./QHSEExpiredBarangApprovalDashboard";
 import QHSEExpiredBarangHasilApprovedDashboard from "./QHSEExpiredBarangHasilApprovedDashboard";
+import FinanceApprovePIDashboard from "./FinanceApprovePIDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1669,6 +1670,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     // Finance Voucher-Reimburse Approval Routes
     if (currentPage === "/finance/voucher-reimburse/approval-voucher") {
       return <FinanceApprovalVoucherDashboard />;
+    }
+    // Approve PI
+    if (currentPage === "/finance/approve-pi") {
+      return <FinanceApprovePIDashboard/>
     }
 
     if (currentPage === "/finance/voucher-reimburse/approval-ptj-voucher") {

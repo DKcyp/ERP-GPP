@@ -23,6 +23,7 @@ export interface PermintaanPencairanDanaFormData {
   noRekening: string; // New field
   mataUang: string;
   statusLunas: "Lunas" | "Belum";
+  pertanggungjawaban: "Iya" | "Tidak"; // New field
   jenisDokumen: string;
   detailItems: PPDDetailItem[];
   totalPembayaran: number;
@@ -94,6 +95,7 @@ const FinancePermintaanPencairanDanaModal: React.FC<
     noRekening: "",
     mataUang: "IDR",
     statusLunas: "Belum",
+    pertanggungjawaban: "Tidak",
     jenisDokumen: "",
     detailItems: [
       { id: 1, noDokumen: "", keterangan: "", nominalDPP: 0, nominalPPN: 0 },
@@ -487,6 +489,24 @@ const FinancePermintaanPencairanDanaModal: React.FC<
                 >
                   <option value="Belum">Belum</option>
                   <option value="Lunas">Lunas</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Pertanggungjawaban <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.pertanggungjawaban}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      pertanggungjawaban: e.target.value as "Iya" | "Tidak",
+                    }))
+                  }
+                  className="block w-full border rounded-lg px-4 py-2 text-sm appearance-none"
+                >
+                  <option value="Tidak">Tidak</option>
+                  <option value="Iya">Iya</option>
                 </select>
               </div>
               <div>
