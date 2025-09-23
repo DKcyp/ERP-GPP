@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Search, Calendar, FileText, FileSpreadsheet, FileDown, Eye, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Clock, Search, Calendar, FileText, FileSpreadsheet, FileDown, Eye, ThumbsUp, ThumbsDown, CreditCard, Building2 } from 'lucide-react';
 import DetailApprovalVoucherModal from './DetailApprovalVoucherModal';
 import { ApprovalVoucherDetailData } from '../types';
 
@@ -13,6 +13,26 @@ const ApprovalVoucherDashboard: React.FC = () => {
   // State for Detail Approval Voucher Modal
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedVoucherDetail, setSelectedVoucherDetail] = useState<ApprovalVoucherDetailData | null>(null);
+
+  // State for Payment Method Modal
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedVoucherForPayment, setSelectedVoucherForPayment] = useState<ApprovalVoucherDetailData | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'kas' | 'bank'>('kas');
+  const [selectedKasBank, setSelectedKasBank] = useState('');
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Kas/Bank Options Data
+  const kasOptions = [
+    { id: 'kas-001', name: 'Kas Kecil Operasional', location: 'Kantor Pusat - Lantai 2', balance: 5000000 },
+    { id: 'kas-002', name: 'Kas Proyek Site A', location: 'Site A - Container Office', balance: 3000000 },
+    { id: 'kas-003', name: 'Kas Proyek Site B', location: 'Site B - Field Office', balance: 2500000 },
+  ];
+
+  const bankOptions = [
+    { id: 'bank-001', name: 'Bank Mandiri Operasional', account: '1400098765432', branch: 'KCP Mandiri Operasional', balance: 150000000 },
+    { id: 'bank-002', name: 'Bank BCA Operasional', account: '5430012345678', branch: 'KCP BCA Sudirman', balance: 85000000 },
+    { id: 'bank-003', name: 'Bank BNI Payroll', account: '0987654321098', branch: 'KCP BNI Gatot Subroto', balance: 45000000 },
+  ];
 
   const data: ApprovalVoucherDetailData[] = [
     {
@@ -116,6 +136,38 @@ const ApprovalVoucherDashboard: React.FC = () => {
   const handleViewDetails = (voucher: ApprovalVoucherDetailData) => {
     setSelectedVoucherDetail(voucher);
     setIsDetailModalOpen(true);
+  };
+
+  // Payment Method Handlers
+  const handlePaymentMethod = (voucher: ApprovalVoucherDetailData) => {
+    setSelectedVoucherForPayment(voucher);
+    setPaymentMethod('kas');
+    setSelectedKasBank('');
+    setPaymentDate(new Date().toISOString().split('T')[0]);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+    setSelectedVoucherForPayment(null);
+    setSelectedKasBank('');
+  };
+
+  const handleConfirmPayment = () => {
+    if (!selectedKasBank || !paymentDate) {
+      alert('Mohon lengkapi semua field yang diperlukan');
+      return;
+    }
+
+    const selectedOption = paymentMethod === 'kas' 
+      ? kasOptions.find(k => k.id === selectedKasBank)
+      : bankOptions.find(b => b.id === selectedKasBank);
+
+    if (selectedVoucherForPayment && selectedOption) {
+      // Here you would normally update the voucher status and create payment record
+      alert(`Pembayaran berhasil!\n\nVoucher: ${selectedVoucherForPayment.noVoucher}\nMetode: ${paymentMethod === 'kas' ? 'Kas' : 'Bank'}\nDetail: ${selectedOption.name}\nTanggal Bayar: ${new Date(paymentDate).toLocaleDateString('id-ID')}\nJumlah: ${formatCurrency(selectedVoucherForPayment.jumlahNominal)}`);
+      handleClosePaymentModal();
+    }
   };
 
   return (
@@ -339,6 +391,15 @@ const ApprovalVoucherDashboard: React.FC = () => {
                         >
                           <ThumbsDown className="h-5 w-5" />
                         </button>
+                        {row.status === 'Approved' && (
+                          <button
+                            onClick={() => handlePaymentMethod(row)}
+                            className="text-purple-600 hover:text-purple-900 transition-colors duration-200"
+                            title="Metode Kas/Bank"
+                          >
+                            <CreditCard className="h-5 w-5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -369,6 +430,151 @@ const ApprovalVoucherDashboard: React.FC = () => {
         onClose={() => setIsDetailModalOpen(false)}
         voucherData={selectedVoucherDetail}
       />
+
+      {/* Payment Method Modal */}
+      {isPaymentModalOpen && selectedVoucherForPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold flex items-center">
+                    <CreditCard className="w-6 h-6 mr-2" />
+                    Metode Kas/Bank
+                  </h3>
+                  <p className="text-purple-100 text-sm mt-1">
+                    Voucher: {selectedVoucherForPayment.noVoucher} - {formatCurrency(selectedVoucherForPayment.jumlahNominal)}
+                  </p>
+                </div>
+                <button
+                  onClick={handleClosePaymentModal}
+                  className="text-white hover:text-gray-200 transition-colors duration-200"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              {/* Payment Method Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Pilih Metode Pembayaran
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() => {
+                      setPaymentMethod('kas');
+                      setSelectedKasBank('');
+                    }}
+                    className={`p-4 border-2 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                      paymentMethod === 'kas'
+                        ? 'border-purple-500 bg-purple-50 text-purple-700'
+                        : 'border-gray-300 hover:border-purple-300 text-gray-700'
+                    }`}
+                  >
+                    <Building2 className="w-6 h-6 mr-2" />
+                    <span className="font-medium">Kas</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPaymentMethod('bank');
+                      setSelectedKasBank('');
+                    }}
+                    className={`p-4 border-2 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                      paymentMethod === 'bank'
+                        ? 'border-purple-500 bg-purple-50 text-purple-700'
+                        : 'border-gray-300 hover:border-purple-300 text-gray-700'
+                    }`}
+                  >
+                    <CreditCard className="w-6 h-6 mr-2" />
+                    <span className="font-medium">Bank</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Kas/Bank Detail Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Pilih Detail {paymentMethod === 'kas' ? 'Kas' : 'Bank'}
+                </label>
+                <select
+                  value={selectedKasBank}
+                  onChange={(e) => setSelectedKasBank(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+                >
+                  <option value="">-- Pilih {paymentMethod === 'kas' ? 'Kas' : 'Bank'} --</option>
+                  {(paymentMethod === 'kas' ? kasOptions : bankOptions).map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name} - {'account' in option ? option.account : option.location} 
+                      (Saldo: {formatCurrency(option.balance)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Payment Date */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Tanggal Bayar
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={paymentDate}
+                    onChange={(e) => setPaymentDate(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <Calendar className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected Details Preview */}
+              {selectedKasBank && (
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Detail Pembayaran:</h4>
+                  {(() => {
+                    const selectedOption = paymentMethod === 'kas' 
+                      ? kasOptions.find(k => k.id === selectedKasBank)
+                      : bankOptions.find(b => b.id === selectedKasBank);
+                    
+                    return selectedOption ? (
+                      <div className="text-sm text-gray-600">
+                        <p><strong>Nama:</strong> {selectedOption.name}</p>
+                        <p><strong>{'account' in selectedOption ? 'No. Rekening' : 'Lokasi'}:</strong> {'account' in selectedOption ? selectedOption.account : selectedOption.location}</p>
+                        {'branch' in selectedOption && <p><strong>Cabang:</strong> {selectedOption.branch}</p>}
+                        <p><strong>Saldo Tersedia:</strong> {formatCurrency(selectedOption.balance)}</p>
+                        <p><strong>Tanggal Bayar:</strong> {new Date(paymentDate).toLocaleDateString('id-ID')}</p>
+                      </div>
+                    ) : null;
+                  })()} 
+                </div>
+              )}
+
+              {/* Modal Footer */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleClosePaymentModal}
+                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmPayment}
+                  disabled={!selectedKasBank || !paymentDate}
+                  className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  Konfirmasi Pembayaran
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
