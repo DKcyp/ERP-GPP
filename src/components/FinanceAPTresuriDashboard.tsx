@@ -15,7 +15,11 @@ type TresuriRow = {
   id: number;
   jenis: ItemJenis; // jasa/barang
   noDokumen: string; // No dokumen utama (Invoice/BA/DO)
+  noPO: string; // No. PO - field baru
   vendor: string;
+  tanggalPembuatan: string; // Tanggal Pembuatan - field baru
+  laporanHarian?: string; // Laporan Harian - field baru
+  laporanLainnya?: string; // Upload Laporan Lainnya - field baru
   invoice?: string;
   fakturPajak?: string;
   ba?: string; // untuk jasa
@@ -34,7 +38,11 @@ const FinanceAPTresuriDashboard: React.FC = () => {
       id: 1,
       jenis: "jasa",
       noDokumen: "INV-001",
+      noPO: "PO-2025-001",
       vendor: "PT Jasa Prima",
+      tanggalPembuatan: "2025-01-15",
+      laporanHarian: "LH-001.pdf",
+      laporanLainnya: "LL-001.pdf",
       invoice: "INV-001.pdf",
       fakturPajak: "FP-001.pdf",
       ba: "BA-001.pdf",
@@ -45,7 +53,10 @@ const FinanceAPTresuriDashboard: React.FC = () => {
       id: 2,
       jenis: "barang",
       noDokumen: "INV-002",
+      noPO: "PO-2025-002",
       vendor: "CV Sukses",
+      tanggalPembuatan: "2025-01-16",
+      laporanHarian: "LH-002.pdf",
       invoice: "INV-002.pdf",
       fakturPajak: "FP-002.pdf",
       do: "DO-110.pdf",
@@ -55,6 +66,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
   ]);
   const [filter, setFilter] = useState("");
   const [jenisFilter, setJenisFilter] = useState<string>("");
+  const [tanggalFilter, setTanggalFilter] = useState(""); // Filter tanggal pembuatan
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [formOpen, setFormOpen] = useState(false);
@@ -63,16 +75,19 @@ const FinanceAPTresuriDashboard: React.FC = () => {
   const filtered = useMemo(
     () =>
       rows.filter((r) => {
-        const textHit = [r.noDokumen, r.vendor]
+        const textHit = [r.noDokumen, r.vendor, r.noPO]
           .join(" ")
           .toLowerCase()
           .includes(filter.toLowerCase());
         const jenisHit = jenisFilter
           ? r.jenis === (jenisFilter as ItemJenis)
           : true;
-        return textHit && jenisHit;
+        const tanggalHit = tanggalFilter
+          ? r.tanggalPembuatan === tanggalFilter
+          : true;
+        return textHit && jenisHit && tanggalHit;
       }),
-    [rows, filter, jenisFilter]
+    [rows, filter, jenisFilter, tanggalFilter]
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -83,7 +98,15 @@ const FinanceAPTresuriDashboard: React.FC = () => {
   );
 
   const startAdd = () => {
-    setEditing({ id: 0, jenis: "jasa", noDokumen: "", vendor: "" });
+    const today = new Date().toISOString().slice(0, 10);
+    setEditing({ 
+      id: 0, 
+      jenis: "jasa", 
+      noDokumen: "", 
+      noPO: "",
+      vendor: "",
+      tanggalPembuatan: today
+    });
     setFormOpen(true);
   };
   const startEdit = (row: TresuriRow) => {
@@ -105,24 +128,6 @@ const FinanceAPTresuriDashboard: React.FC = () => {
     setEditing(null);
   };
 
-  const uploadLabelSet = (jenis: ItemJenis) =>
-    jenis === "jasa"
-      ? {
-          ba: "BA",
-          timesheet: "Timesheet",
-          report: "Report (Opsional)",
-          do: undefined,
-          lpb: undefined,
-          rfi: undefined,
-        }
-      : {
-          do: "DO",
-          lpb: "LPB",
-          rfi: "RFI (Opsional)",
-          ba: undefined,
-          timesheet: undefined,
-          report: undefined,
-        };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -151,7 +156,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Cari
@@ -162,7 +167,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                   setFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder="No Dokumen / Vendor"
+                placeholder="No Dokumen / Vendor / No PO"
                 className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
             </div>
@@ -182,6 +187,20 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                 <option value="jasa">Jasa</option>
                 <option value="barang">Barang</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tanggal Pembuatan
+              </label>
+              <input
+                type="date"
+                value={tanggalFilter}
+                onChange={(e) => {
+                  setTanggalFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
             </div>
             <div className="hidden md:block"></div>
             <div className="flex items-end justify-end gap-2">
@@ -213,7 +232,16 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                     No Dokumen
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
+                    No. PO
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
                     Vendor
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
+                    Tanggal Pembuatan
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
+                    Laporan Harian
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
                     Invoice
@@ -230,6 +258,9 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
                     Report / RFI
                   </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
+                    Laporan Lainnya
+                  </th>
                   <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600">
                     Aksi
                   </th>
@@ -245,7 +276,10 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       {row.jenis}
                     </td>
                     <td className="px-4 py-2 text-sm">{row.noDokumen}</td>
+                    <td className="px-4 py-2 text-sm">{row.noPO}</td>
                     <td className="px-4 py-2 text-sm">{row.vendor}</td>
+                    <td className="px-4 py-2 text-sm">{row.tanggalPembuatan}</td>
+                    <td className="px-4 py-2 text-sm">{row.laporanHarian || "-"}</td>
                     <td className="px-4 py-2 text-sm">{row.invoice || "-"}</td>
                     <td className="px-4 py-2 text-sm">
                       {row.fakturPajak || "-"}
@@ -263,6 +297,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                         ? row.report || "-"
                         : row.rfi || "-"}
                     </td>
+                    <td className="px-4 py-2 text-sm">{row.laporanLainnya || "-"}</td>
                     <td className="px-4 py-2 text-center text-sm">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -380,6 +415,119 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                     <option value="jasa">Jasa</option>
                     <option value="barang">Barang</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    No. PO
+                  </label>
+                  <input
+                    type="text"
+                    value={editing.noPO}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        noPO: e.target.value,
+                      })
+                    }
+                    placeholder="Masukkan No. PO"
+                    className="w-full border rounded px-2 py-1.5 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    No Dokumen
+                  </label>
+                  <input
+                    type="text"
+                    value={editing.noDokumen}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        noDokumen: e.target.value,
+                      })
+                    }
+                    placeholder="Masukkan No Dokumen"
+                    className="w-full border rounded px-2 py-1.5 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Vendor
+                  </label>
+                  <input
+                    type="text"
+                    value={editing.vendor}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        vendor: e.target.value,
+                      })
+                    }
+                    placeholder="Masukkan Nama Vendor"
+                    className="w-full border rounded px-2 py-1.5 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tanggal Pembuatan
+                  </label>
+                  <input
+                    type="date"
+                    value={editing.tanggalPembuatan}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        tanggalPembuatan: e.target.value,
+                      })
+                    }
+                    className="w-full border rounded px-2 py-1.5 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Laporan Harian
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        setEditing({
+                          ...editing,
+                          laporanHarian: e.target.files?.[0]?.name || "",
+                        })
+                      }
+                      className="w-full border rounded px-2 py-1.5 text-sm"
+                    />
+                    <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                      <Upload className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Upload Laporan Lainnya
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        setEditing({
+                          ...editing,
+                          laporanLainnya: e.target.files?.[0]?.name || "",
+                        })
+                      }
+                      className="w-full border rounded px-2 py-1.5 text-sm"
+                    />
+                    <button className="inline-flex items-center px-2 py-1 text-xs border rounded">
+                      <Upload className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
 

@@ -11,6 +11,8 @@ interface VoucherData {
   noSO: string;
   soTurunan: string;
   namaProject: string;
+  namaPenerima: string;
+  noRekening: string;
   tglPengajuan: string;
   tglPembayaran: string;
   tglExpense: string;
@@ -19,11 +21,11 @@ interface VoucherData {
 }
 
 const dummyVoucherData: VoucherData[] = [
-  { no: 1, noVoucher: 'VCH001', noSO: 'SO12345', soTurunan: '-', namaProject: 'Project A', tglPengajuan: '2025-01-15', tglPembayaran: '2025-01-25', tglExpense: '2025-02-10', tglExpired: '2025-02-15', nominalPengajuan: 'Rp 13.000.000' },
-  { no: 2, noVoucher: 'VCH002', noSO: 'SO12346', soTurunan: 'SO12346.23', namaProject: 'Project B', tglPengajuan: '2025-01-16', tglPembayaran: '-', tglExpense: '2025-02-12', tglExpired: '2025-02-16', nominalPengajuan: 'Rp 20.000.000' },
-  { no: 3, noVoucher: 'VCH003', noSO: 'SO12347', soTurunan: 'SO12347.32', namaProject: 'Project C', tglPengajuan: '2025-01-17', tglPembayaran: '2025-01-27', tglExpense: '2025-02-12', tglExpired: '2025-02-17', nominalPengajuan: 'Rp 10.000.000' },
-  { no: 4, noVoucher: 'VCH004', noSO: 'SO12348', soTurunan: 'SO12348.21', namaProject: 'Project D', tglPengajuan: '2025-01-18', tglPembayaran: '2025-01-28', tglExpense: '-', tglExpired: '2025-02-18', nominalPengajuan: 'Rp 50.000.000' },
-  { no: 5, noVoucher: 'VCH005', noSO: '-', soTurunan: '-', namaProject: 'Project E', tglPengajuan: '2025-01-19', tglPembayaran: '2025-01-29', tglExpense: '2025-02-14', tglExpired: '2025-02-19', nominalPengajuan: 'Rp 40.000.000' },
+  { no: 1, noVoucher: 'VCH001', noSO: 'SO12345', soTurunan: '-', namaProject: 'Project A', namaPenerima: 'Andi Pratama', noRekening: '1234567890', tglPengajuan: '2025-01-15', tglPembayaran: '2025-01-25', tglExpense: '2025-02-10', tglExpired: '2025-02-15', nominalPengajuan: 'Rp 13.000.000' },
+  { no: 2, noVoucher: 'VCH002', noSO: 'SO12346', soTurunan: 'SO12346.23', namaProject: 'Project B', namaPenerima: 'Siti Nurhaliza', noRekening: '2345678901', tglPengajuan: '2025-01-16', tglPembayaran: '-', tglExpense: '2025-02-12', tglExpired: '2025-02-16', nominalPengajuan: 'Rp 20.000.000' },
+  { no: 3, noVoucher: 'VCH003', noSO: 'SO12347', soTurunan: 'SO12347.32', namaProject: 'Project C', namaPenerima: 'Rudi Hermawan', noRekening: '3456789012', tglPengajuan: '2025-01-17', tglPembayaran: '2025-01-27', tglExpense: '2025-02-12', tglExpired: '2025-02-17', nominalPengajuan: 'Rp 10.000.000' },
+  { no: 4, noVoucher: 'VCH004', noSO: 'SO12348', soTurunan: 'SO12348.21', namaProject: 'Project D', namaPenerima: 'Maya Sari', noRekening: '4567890123', tglPengajuan: '2025-01-18', tglPembayaran: '2025-01-28', tglExpense: '-', tglExpired: '2025-02-18', nominalPengajuan: 'Rp 50.000.000' },
+  { no: 5, noVoucher: 'VCH005', noSO: '-', soTurunan: '-', namaProject: 'Project E', namaPenerima: 'PT. Supplier XYZ', noRekening: '9876543210', tglPengajuan: '2025-01-19', tglPembayaran: '2025-01-29', tglExpense: '2025-02-14', tglExpired: '2025-02-19', nominalPengajuan: 'Rp 40.000.000' },
 ];
 
 const GeneralProsesVoucherDashboard: React.FC = () => {

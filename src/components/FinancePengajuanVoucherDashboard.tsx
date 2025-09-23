@@ -53,8 +53,10 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
       tglPPDFrom: new Date(row.tanggal),
       tglPPDTo: new Date(row.tanggal),
       divisi: row.divisi,
-      kodeSupplier: '',
-      namaSupplier: '',
+      dibayarkanKepada: '',
+      namaPemohon: row.pemohon,
+      namaPenerima: '',
+      noRekening: '',
       mataUang: 'IDR',
       statusLunas: 'Belum',
       jenisDokumen: '',
@@ -70,7 +72,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
     const tanggalStr = data.tglPPDFrom ? data.tglPPDFrom.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
     const firstDetail = data.detailItems[0];
     const keperluan = firstDetail?.keterangan || '';
-    const bankDisplay = data.namaSupplier || '';
+    const bankDisplay = data.namaPemohon || '';
     const total = data.totalPembayaran;
 
     if (data.id) {

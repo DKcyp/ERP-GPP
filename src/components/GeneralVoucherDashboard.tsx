@@ -9,6 +9,8 @@ interface VoucherEntry {
   noSOTurunan: string;
   namaProject: string;
   namaPemohon: string;
+  namaPenerima: string;
+  noRekening: string;
   tglPengajuanVoucher: string;
   tglPembayaranVoucher: string;
   tglExpired: string;
@@ -26,6 +28,8 @@ const GeneralVoucherDashboard: React.FC = () => {
       noSOTurunan: '-',
       namaProject: 'Project A',
       namaPemohon: 'Abdul Karim',
+      namaPenerima: 'Andi Pratama',
+      noRekening: '1234567890',
       tglPengajuanVoucher: '10-01-2025',
       tglPembayaranVoucher: '15-01-2025',
       tglExpired: '25-01-2025',
@@ -40,6 +44,8 @@ const GeneralVoucherDashboard: React.FC = () => {
       noSOTurunan: 'SO002.4',
       namaProject: 'Project B',
       namaPemohon: 'Juna Saputra',
+      namaPenerima: 'Siti Nurhaliza',
+      noRekening: '2345678901',
       tglPengajuanVoucher: '10-01-2025',
       tglPembayaranVoucher: '15-01-2025',
       tglExpired: '25-01-2025',
@@ -54,54 +60,62 @@ const GeneralVoucherDashboard: React.FC = () => {
       noSOTurunan: 'SO003.12',
       namaProject: 'Inspeksi Rope Access',
       namaPemohon: 'Rizky Andrian',
+      namaPenerima: 'Rudi Hermawan',
+      noRekening: '3456789012',
       tglPengajuanVoucher: '12-02-2025',
       tglPembayaranVoucher: '17-02-2025',
       tglExpired: '27-02-2025',
-      tglLaporanExpense: '05-03-2025',
+      tglLaporanExpense: '04-03-2025',
       nominal: 'Rp 15,000,000',
-      keterangan: 'Perjalanan Dinas ke Site',
+      keterangan: 'Inspeksi Rope Access',
     },
     {
       no: 4,
       noVoucher: 'VCH004',
-      noSO: '-',
-      noSOTurunan: '-',
-      namaProject: 'Training Keselamatan Kerja',
-      namaPemohon: 'Hendra Prasetyo',
+      noSO: 'SO004',
+      noSOTurunan: 'SO004.8',
+      namaProject: 'Project D',
+      namaPemohon: 'Sari Indah',
+      namaPenerima: 'Maya Sari',
+      noRekening: '4567890123',
       tglPengajuanVoucher: '15-02-2025',
       tglPembayaranVoucher: '20-02-2025',
-      tglExpired: '01-03-2025',
+      tglExpired: '02-03-2025',
       tglLaporanExpense: '07-03-2025',
       nominal: 'Rp 30,000,000',
-      keterangan: 'Pelatihan Internal',
+      keterangan: 'Tugas Luar Kota',
     },
     {
       no: 5,
       noVoucher: 'VCH005',
       noSO: 'SO005',
-      noSOTurunan: '-',
-      namaProject: 'Audit Sistem Manajemen K3',
-      namaPemohon: 'Indra Wijaya',
+      noSOTurunan: 'SO005.15',
+      namaProject: 'Project E',
+      namaPemohon: 'Budi Santoso',
+      namaPenerima: 'Budi Santoso',
+      noRekening: '5678901234',
       tglPengajuanVoucher: '18-02-2025',
       tglPembayaranVoucher: '23-02-2025',
       tglExpired: '05-03-2025',
-      tglLaporanExpense: '12-03-2025',
-      nominal: 'Rp 22,000,000',
-      keterangan: 'Proyek Audit K3',
+      tglLaporanExpense: '10-03-2025',
+      nominal: 'Rp 18,000,000',
+      keterangan: 'Tugas Luar Kota',
     },
     {
       no: 6,
       noVoucher: 'VCH006',
       noSO: 'SO006',
-      noSOTurunan: 'SO006.13',
-      namaProject: 'Pemeliharaan Struktur Baja',
-      namaPemohon: 'Doni Saputra',
-      tglPengajuanVoucher: '22-02-2025',
-      tglPembayaranVoucher: '27-02-2025',
-      tglExpired: '10-03-2025',
-      tglLaporanExpense: '17-03-2025',
-      nominal: 'Rp 18,500,000',
-      keterangan: 'Pemeliharaan Rutin',
+      noSOTurunan: 'SO006.3',
+      namaProject: 'Project F',
+      namaPemohon: 'Dewi Lestari',
+      namaPenerima: 'PT. Supplier ABC',
+      noRekening: '9876543210',
+      tglPengajuanVoucher: '20-02-2025',
+      tglPembayaranVoucher: '25-02-2025',
+      tglExpired: '07-03-2025',
+      tglLaporanExpense: '12-03-2025',
+      nominal: 'Rp 22,000,000',
+      keterangan: 'Tugas Luar Kota',
     },
   ];
 
@@ -119,6 +133,8 @@ const GeneralVoucherDashboard: React.FC = () => {
     noSOTurunan: '',
     namaProject: '',
     namaPemohon: '',
+    namaPenerima: '',
+    noRekening: '',
     tglPengajuanVoucher: '',
     tglPembayaranVoucher: '',
     tglExpired: '',
@@ -146,7 +162,7 @@ const GeneralVoucherDashboard: React.FC = () => {
 
   const openAdd = () => {
     setEditing(null);
-    setForm({ no: 0, noVoucher: '', noSO: '', noSOTurunan: '', namaProject: '', namaPemohon: '', tglPengajuanVoucher: '', tglPembayaranVoucher: '', tglExpired: '', tglLaporanExpense: '', nominal: '', keterangan: '' });
+    setForm({ no: 0, noVoucher: '', noSO: '', noSOTurunan: '', namaProject: '', namaPemohon: '', namaPenerima: '', noRekening: '', tglPengajuanVoucher: '', tglPembayaranVoucher: '', tglExpired: '', tglLaporanExpense: '', nominal: '', keterangan: '' });
     setShowForm(true);
   };
 

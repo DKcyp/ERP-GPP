@@ -467,12 +467,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                 {(filteredData as KasData[]).map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleViewMutasi(item)}
-                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium transition-colors duration-200"
-                      >
                         {item.namaKas}
-                      </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.lokasi}
