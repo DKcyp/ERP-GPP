@@ -1393,7 +1393,7 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/voucher/dashboard",
       },
       {
-        title: "Pencairan Voucher",
+        title: "Pencairan Dana Voucher",
         icon: "Ticket",
         path: "/finance/pengajuan-voucher",
       },

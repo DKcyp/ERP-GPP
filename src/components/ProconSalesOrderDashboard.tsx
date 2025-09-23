@@ -29,18 +29,18 @@ interface ProconSalesOrder {
   scopeOfWork: string;
   manPower: string;
   location: string;
-  periodByHour: string;
+  mob: string; // Changed from periodByHour
+  demob: string; // Changed from periodByReportTo
   duration: string;
-  periodByReportTo: string;
-  reported: string;
-  dueDate: string;
-  delaySubmitReport: string;
+  reportMob: string; // Changed from reported
+  reportDemob: string; // Changed from dueDate
+  reportDuration: string; // Changed from delaySubmitReport
   reportReceived: string;
   dueDateFinance: string;
   delaySubmitToFinance: string;
   piAmount: string;
   keterangan: string;
-  piNo: string;
+  contractReceived: string; // Changed from piNo
   remarkProjectControl: string;
   invoiceNo: string;
   invoiceAmount: string;
@@ -95,20 +95,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "COMPLETE",
       scopeOfWork: "STAT",
-      manPower: "4",
+      manPower: "Andi (NDT Lv.2), Budi (Helper)",
       location: "KARAWANG",
-      periodByHour: "8",
+      mob: "01-Jan-25",
+      demob: "01-Jan-25",
       duration: "1 DAY",
-      periodByReportTo: "01-Jan-25",
-      reported: "YES",
-      dueDate: "02-Jan-25",
-      delaySubmitReport: "15",
+      reportMob: "01-Jan-25",
+      reportDemob: "02-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "17-Jan-25",
       dueDateFinance: "03-Jan-25",
       delaySubmitToFinance: "14",
       piAmount: "15,000,000",
       keterangan: "OVERDUE",
-      piNo: "PI-2025-001",
+      contractReceived: "18-Jan-25",
       remarkProjectControl: "CRITICAL DELAY",
       invoiceNo: "INV-2025-001",
       invoiceAmount: "15,000,000",
@@ -136,20 +136,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "PARTIAL",
       scopeOfWork: "NDT INSPECTION",
-      manPower: "6",
+      manPower: "Eka (Supervisor), Fajar (NDT Lv.3), Gani (Welder)",
       location: "TUBAN",
-      periodByHour: "16",
+      mob: "05-Jan-25",
+      demob: "07-Jan-25",
       duration: "2 DAYS",
-      periodByReportTo: "07-Jan-25",
-      reported: "NO",
-      dueDate: "08-Jan-25",
-      delaySubmitReport: "12",
+      reportMob: "07-Jan-25",
+      reportDemob: "08-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "",
       dueDateFinance: "09-Jan-25",
       delaySubmitToFinance: "11",
       piAmount: "25,000,000",
       keterangan: "CRITICAL",
-      piNo: "PI-2025-002",
+      contractReceived: "20-Jan-25",
       remarkProjectControl: "EQUIPMENT MISSING",
       invoiceNo: "",
       invoiceAmount: "",
@@ -178,20 +178,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "OFFSHORE",
       equipmentReceived: "COMPLETE",
       scopeOfWork: "ULTRASONIC INSPECTION",
-      manPower: "8",
+      manPower: "Kiki (Lead Inspector), Lutfi (NDT Lv.3), Maman (NDT Lv.2)",
       location: "OFFSHORE PLATFORM",
-      periodByHour: "24",
+      mob: "10-Jan-25",
+      demob: "13-Jan-25",
       duration: "3 DAYS",
-      periodByReportTo: "13-Jan-25",
-      reported: "YES",
-      dueDate: "14-Jan-25",
-      delaySubmitReport: "0",
+      reportMob: "13-Jan-25",
+      reportDemob: "14-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "14-Jan-25",
       dueDateFinance: "15-Jan-25",
       delaySubmitToFinance: "0",
       piAmount: "45,000,000",
       keterangan: "COMPLETED",
-      piNo: "PI-2025-003",
+      contractReceived: "16-Jan-25",
       remarkProjectControl: "ON SCHEDULE",
       invoiceNo: "INV-2025-003",
       invoiceAmount: "45,000,000",
@@ -219,20 +219,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "COMPLETE",
       scopeOfWork: "RADIOGRAPHIC INSPECTION",
-      manPower: "4",
+      manPower: "Sandi (NDT Lv.2), Toni (Helper)",
       location: "GRESIK",
-      periodByHour: "12",
+      mob: "12-Jan-25",
+      demob: "14-Jan-25",
       duration: "1.5 DAYS",
-      periodByReportTo: "14-Jan-25",
-      reported: "YES",
-      dueDate: "15-Jan-25",
-      delaySubmitReport: "0",
+      reportMob: "14-Jan-25",
+      reportDemob: "15-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "15-Jan-25",
       dueDateFinance: "16-Jan-25",
       delaySubmitToFinance: "0",
       piAmount: "18,000,000",
       keterangan: "COMPLETED",
-      piNo: "PI-2025-004",
+      contractReceived: "17-Jan-25",
       remarkProjectControl: "GOOD PERFORMANCE",
       invoiceNo: "INV-2025-004",
       invoiceAmount: "18,000,000",
@@ -261,20 +261,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "OFFSHORE",
       equipmentReceived: "COMPLETE",
       scopeOfWork: "STAT",
-      manPower: "6",
+      manPower: "Wawan (Supervisor), Xavi (NDT Lv.3), Yayan (Welder)",
       location: "MUARA BAKAU",
-      periodByHour: "48",
+      mob: "15-Jan-25",
+      demob: "21-Jan-25",
       duration: "6 DAYS",
-      periodByReportTo: "21-Jan-25",
-      reported: "YES",
-      dueDate: "22-Jan-25",
-      delaySubmitReport: "3",
+      reportMob: "21-Jan-25",
+      reportDemob: "22-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "25-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "2",
       piAmount: "75,000,000",
       keterangan: "MINOR DELAY",
-      piNo: "PI-2025-005",
+      contractReceived: "26-Jan-25",
       remarkProjectControl: "SLIGHT DELAY",
       invoiceNo: "INV-2025-005",
       invoiceAmount: "75,000,000",
@@ -303,20 +303,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "COMPLETE",
       scopeOfWork: "MAGNETIC PARTICLE INSPECTION",
-      manPower: "5",
+      manPower: "Candra (Lead), Dedi (NDT Lv.2), Eko (Helper)",
       location: "SURABAYA",
-      periodByHour: "20",
+      mob: "18-Jan-25",
+      demob: "21-Jan-25",
       duration: "2.5 DAYS",
-      periodByReportTo: "21-Jan-25",
-      reported: "PARTIAL",
-      dueDate: "22-Jan-25",
-      delaySubmitReport: "0",
+      reportMob: "21-Jan-25",
+      reportDemob: "22-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "0",
       piAmount: "32,000,000",
       keterangan: "IN PROGRESS",
-      piNo: "PI-2025-006",
+      contractReceived: "24-Jan-25",
       remarkProjectControl: "ON TRACK",
       invoiceNo: "",
       invoiceAmount: "",
@@ -345,20 +345,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
       equipmentScopeLocation: "OFFSHORE",
       equipmentReceived: "COMPLETE",
       scopeOfWork: "COMPREHENSIVE INSPECTION",
-      manPower: "10",
+      manPower: "Hendra (PM), Ilham (Supervisor), Jajang (Lead Inspector)",
       location: "OFFSHORE RIG",
-      periodByHour: "72",
+      mob: "20-Jan-25",
+      demob: "29-Jan-25",
       duration: "9 DAYS",
-      periodByReportTo: "29-Jan-25",
-      reported: "YES",
-      dueDate: "30-Jan-25",
-      delaySubmitReport: "-2",
+      reportMob: "29-Jan-25",
+      reportDemob: "30-Jan-25",
+      reportDuration: "1 DAY",
       reportReceived: "28-Jan-25",
       dueDateFinance: "31-Jan-25",
       delaySubmitToFinance: "-3",
       piAmount: "95,000,000",
       keterangan: "EXCELLENT",
-      piNo: "PI-2025-007",
+      contractReceived: "29-Jan-25",
       remarkProjectControl: "AHEAD OF SCHEDULE",
       invoiceNo: "INV-2025-007",
       invoiceAmount: "95,000,000",
@@ -401,7 +401,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
     const matchesNoSO = item.soNo
       .toLowerCase()
       .includes(searchNoSO.toLowerCase());
-    const matchesNomorKontrak = item.piNo
+    const matchesNomorKontrak = item.contractReceived
       .toLowerCase()
       .includes(searchNomorKontrak.toLowerCase());
     const matchesClient = item.client
@@ -523,10 +523,11 @@ const ProconSalesOrderDashboard: React.FC = () => {
       statusAR: "NOT STARTED",
       statusAP: "NOT STARTED",
       lir: "NO",
-      reported: "NO",
+      reportMob: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: '2-digit' }),
+      reportDemob: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: '2-digit' }),
+      reportDuration: "0",
       equipmentReceived: "PARTIAL",
       equipmentScopeLocation: "ONSHORE",
-      delaySubmitReport: "0",
       delaySubmitToFinance: "0",
       delayPayment: "0",
       logDataPak: "PENDING",
@@ -556,14 +557,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       const newId = (salesOrders.length + 1).toString();
       const newNo = salesOrders.length + 1;
       const newSoNo = `SO-2025-${String(newNo).padStart(3, "0")}`;
-      const newPiNo = `PI-2025-${String(newNo).padStart(3, "0")}`;
 
       const newItem: ProconSalesOrder = {
         ...(formData as ProconSalesOrder),
         id: newId,
         no: newNo,
         soNo: newSoNo,
-        piNo: newPiNo,
+        contractReceived: new Date().toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: '2-digit' }),
       };
 
       setSalesOrders((prev) => [newItem, ...prev]);
@@ -996,13 +996,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
                 </tr>
                 {/* Second row - Sub headers */}
                 <tr>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]">
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">
                     MOB
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]">
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">
                     DEMOB
                   </th>
-                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]">
+                  <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]">
                     DURATION
                   </th>
                   <th className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[50px]">
@@ -1049,7 +1049,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium`}
                       >
-                        {item.piNo}
+                        {item.contractReceived}
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">
@@ -1058,46 +1058,26 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-bold">
                       {item.manPower}
                     </td>
-                    <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">
-                      {item.location}
+                    <td className="px-2 py-2 text-center border border-gray-300">
+                    {item.contractReceived}
+                  </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
+                      {item.mob}
                     </td>
-                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-medium">
-                      {item.periodByHour}
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
+                      {item.demob}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-medium">
                       {item.duration}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
-                      {item.periodByReportTo}
-                    </td>
-                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          item.reported === "YES"
-                            ? "text-green-600 bg-green-100"
-                            : item.reported === "NO"
-                            ? "text-red-600 bg-red-100"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {item.reported}
-                      </span>
+                      {item.reportMob}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
-                      {item.dueDate}
+                      {item.reportDemob}
                     </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span
-                        className={`font-bold ${
-                          parseInt(item.delaySubmitReport) > 0
-                            ? "text-red-600 bg-red-100 px-2 py-1 rounded-full"
-                            : parseInt(item.delaySubmitReport) < 0
-                            ? "text-green-600 bg-green-100 px-2 py-1 rounded-full"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {item.delaySubmitReport}
-                      </span>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center font-medium">
+                      {item.reportDuration}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
                       {item.reportReceived}
@@ -1131,7 +1111,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-2 py-3 text-blue-600 text-xs border border-gray-300 font-medium text-center">
-                      {item.piNo}
+                      {item.contractReceived}
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">
                       {item.remarkProjectControl}
