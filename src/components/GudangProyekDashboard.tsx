@@ -19,7 +19,6 @@ const GudangProyekDashboard: React.FC = () => {
   const gudangProyekItems = [
     {
       no: 1,
-      noSo: "SO001",
       namaGudangProyek: "Gudang Pusat",
       lokasiGudang: "Jakarta",
       pic: "Andi",
@@ -29,7 +28,6 @@ const GudangProyekDashboard: React.FC = () => {
     },
     {
       no: 2,
-      noSo: "SO002",
       namaGudangProyek: "Gudang Surabaya",
       lokasiGudang: "Surabaya",
       pic: "Rizki",
@@ -39,7 +37,6 @@ const GudangProyekDashboard: React.FC = () => {
     },
     {
       no: 3,
-      noSo: "SO003",
       namaGudangProyek: "Gudang Bandung",
       lokasiGudang: "Bandung",
       pic: "Ari",
@@ -83,16 +80,16 @@ const GudangProyekDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div className="relative">
               <label
-                htmlFor="noSo"
+                htmlFor="namaGudang"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Cari No SO
+                Nama Gudang
               </label>
               <input
                 type="text"
-                id="noSo"
+                id="namaGudang"
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="SO001"
+                placeholder="Nama Gudang"
               />
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
@@ -233,9 +230,6 @@ const GudangProyekDashboard: React.FC = () => {
                     No
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    No SO
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama Gudang Proyek
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -266,9 +260,6 @@ const GudangProyekDashboard: React.FC = () => {
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.no}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.noSo}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.namaGudangProyek}

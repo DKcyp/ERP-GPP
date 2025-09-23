@@ -16,6 +16,15 @@ interface RowData {
   keterangan: string;
 }
 
+// Data master PO-Supplier untuk auto-select
+const masterPoSupplier = [
+  { noPo: 'PO001', namaSupplier: 'Supplier A' },
+  { noPo: 'PO002', namaSupplier: 'Supplier B' },
+  { noPo: 'PO003', namaSupplier: 'Supplier C' },
+  { noPo: 'PO004', namaSupplier: 'Supplier D' },
+  { noPo: 'PO005', namaSupplier: 'Supplier E' },
+];
+
 const PenerimaanBarangMasukDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<Mode>('create');
@@ -54,7 +63,7 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {/* Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
             <div className="relative">
               <label htmlFor="noInvoice" className="block text-xs font-medium text-gray-700 mb-1">Cari No Invoice</label>
               <input
@@ -82,6 +91,26 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                 id="namaSupplier"
                 className="pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
                 placeholder="PT Clock Tower"
+              />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            </div>
+            <div className="relative">
+              <label htmlFor="namaBarang" className="block text-xs font-medium text-gray-700 mb-1">Cari Nama Barang</label>
+              <input
+                type="text"
+                id="namaBarang"
+                className="pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                placeholder="Nama Barang"
+              />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            </div>
+            <div className="relative">
+              <label htmlFor="serialNumber" className="block text-xs font-medium text-gray-700 mb-1">Cari Serial Number</label>
+              <input
+                type="text"
+                id="serialNumber"
+                className="pl-8 pr-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                placeholder="SN001-005"
               />
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>

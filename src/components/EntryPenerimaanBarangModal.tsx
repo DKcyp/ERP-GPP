@@ -1,5 +1,5 @@
-import React from "react";
-import { X, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { X, Trash2, Plus } from "lucide-react";
 
 type Mode = "create" | "view" | "edit";
 
@@ -32,6 +32,15 @@ interface EntryPenerimaanBarangModalProps {
   itemsData?: ItemData[];
 }
 
+// Data master PO-Supplier untuk auto-select
+const masterPoSupplier = [
+  { noPo: 'PO001', namaSupplier: 'Supplier A' },
+  { noPo: 'PO002', namaSupplier: 'Supplier B' },
+  { noPo: 'PO003', namaSupplier: 'Supplier C' },
+  { noPo: 'PO004', namaSupplier: 'Supplier D' },
+  { noPo: 'PO005', namaSupplier: 'Supplier E' },
+];
+
 const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
   isOpen,
   onClose,
@@ -39,48 +48,79 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
   headerData,
   itemsData,
 }) => {
-  if (!isOpen) return null;
+  const [headerForm, setHeaderForm] = useState<HeaderData>(headerData ?? {
+    noInvoice: "",
+    noPo: "",
+    namaSupplier: "",
+    tanggalPenerimaan: new Date().toISOString().split("T")[0],
+    catatan: "",
+  });
 
-  const isReadOnly = mode === "view";
-
-  const modalBarangItems: ItemData[] = itemsData ?? [
+  const [items, setItems] = useState<ItemData[]>(itemsData ?? [
     {
       kode: "BRG001",
       nama: "Besi Beton",
       kategori: "Material Konstruksi",
       satuan: "Batang",
-      diminta: 10,
-      diterima: 10,
-      hargaSatuan: "Rp 50.000",
-      hargaTotal: "Rp 500.000",
+      diminta: 5,
+      diterima: 5,
+      hargaSatuan: "15,000",
+      hargaTotal: "75,000",
       kondisi: "Baik",
-      tglExp: "2026-12-31",
+      tglExp: "2025-12-31",
     },
     {
       kode: "BRG002",
       nama: "Semen Portland",
       kategori: "Material Konstruksi",
       satuan: "Sak",
-      diminta: 5,
-      diterima: 5,
-      hargaSatuan: "Rp 70.000",
-      hargaTotal: "Rp 350.000",
+      diminta: 2,
+      diterima: 2,
+      hargaSatuan: "65,000",
+      hargaTotal: "130,000",
       kondisi: "Baik",
-      tglExp: "2025-10-15",
+      tglExp: "2025-06-30",
     },
-    {
-      kode: "BRG003",
-      nama: "Pipa PVC",
-      kategori: "Material Plumbing",
-      satuan: "Meter",
-      diminta: 8,
-      diterima: 8,
-      hargaSatuan: "Rp 25.000",
-      hargaTotal: "Rp 200.000",
+  ]);
+
+  if (!isOpen) return null;
+
+  const isReadOnly = mode === "view";
+
+  const addNewRow = () => {
+    const newItem: ItemData = {
+      kode: "",
+      nama: "",
+      kategori: "",
+      satuan: "",
+      diminta: 0,
+      diterima: 0,
+      hargaSatuan: "",
+      hargaTotal: "",
       kondisi: "Baik",
-      tglExp: "2027-03-20",
-    },
-  ];
+      tglExp: "",
+    };
+    setItems(prev => [...prev, newItem]);
+  };
+
+  const removeRow = (index: number) => {
+    setItems(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateItem = (index: number, field: keyof ItemData, value: any) => {
+    setItems(prev => prev.map((item, i) => 
+      i === index ? { ...item, [field]: value } : item
+    ));
+  };
+
+  const handlePoChange = (noPo: string) => {
+    const selectedSupplier = masterPoSupplier.find(item => item.noPo === noPo);
+    setHeaderForm(prev => ({
+      ...prev,
+      noPo: noPo,
+      namaSupplier: selectedSupplier ? selectedSupplier.namaSupplier : ""
+    }));
+  };
 
   const resolvedTanggal =
     headerData?.tanggalPenerimaan ?? new Date().toISOString().split("T")[0];
@@ -132,14 +172,15 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               </label>
               <select
                 id="noPo"
-                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
-                defaultValue={headerData?.noPo ?? ""}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                value={headerForm.noPo}
+                onChange={(e) => handlePoChange(e.target.value)}
                 disabled={isReadOnly}
               >
                 <option value="">--Pilih No PO--</option>
-                <option value="PO001">PO001</option>
-                <option value="PO002">PO002</option>
-                <option value="PO003">PO003</option>
+                {masterPoSupplier.map(item => (
+                  <option key={item.noPo} value={item.noPo}>{item.noPo} - {item.namaSupplier}</option>
+                ))}
               </select>
             </div>
             <div>
@@ -152,11 +193,10 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               <input
                 type="text"
                 id="namaSupplier"
-                className={`px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${
-                  isReadOnly ? "bg-gray-50" : "bg-white"
-                }`}
-                defaultValue={headerData?.namaSupplier ?? ""}
-                readOnly={isReadOnly}
+                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full bg-gray-50 text-xs"
+                value={headerForm.namaSupplier}
+                placeholder="Akan terisi otomatis saat memilih No PO"
+                readOnly
               />
             </div>
             <div className="relative">
@@ -219,6 +259,18 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
           </div>
 
           {/* Barang Table */}
+          <div className="mb-4 flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-900">Detail Barang</h3>
+            {!isReadOnly && (
+              <button
+                onClick={addNewRow}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Tambah Baris
+              </button>
+            )}
+          </div>
           <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
             <table className="min-w-full divide-y divide-gray-200 text-xs">
               <thead className="bg-gray-50">
@@ -256,7 +308,7 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {modalBarangItems.map((item, index) => (
+                {items.map((item: ItemData, index: number) => (
                   <tr
                     key={index}
                     className="hover:bg-gray-50 transition-colors duration-150"
@@ -309,7 +361,11 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
                       {!isReadOnly && (
-                        <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
+                        <button 
+                          onClick={() => removeRow(index)}
+                          className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
+                          title="Hapus Baris"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       )}
