@@ -5,8 +5,10 @@ type PembayaranRow = {
   id: number;
   tanggal: string; // yyyy-mm-dd
   vendor: string;
-  noInvoice: string;
-  metode: "Transfer" | "Giro" | "Tunai";
+  noPo: string; // Mengganti noInvoice menjadi noPo
+  metode: "Transfer" | "Giro" | "Tunai" | "";
+  sumberPembayaran?: "Kas" | "Bank"; // Sumber pembayaran (opsional)
+  rekeningSumber?: string; // Rekening sumber (opsional)
   dpp: number;
   ppn: number;
   total: number;
@@ -16,15 +18,47 @@ type PembayaranRow = {
 const FinancePembayaranHutangDashboard: React.FC = () => {
   const today = new Date();
   const [rows, setRows] = useState<PembayaranRow[]>([
-    { id: 1, tanggal: "2025-09-08", vendor: "PT Jaya", noInvoice: "INV-001", metode: "Transfer", dpp: 10000000, ppn: 1100000, total: 11100000, noBuktiBayar: "BB-001" },
+    { id: 1, tanggal: "2025-09-08", vendor: "PT Jaya", noPo: "PO-001", metode: "Transfer", sumberPembayaran: "Bank", rekeningSumber: "BCA 123456", dpp: 10000000, ppn: 1100000, total: 11100000, noBuktiBayar: "BB-202509-0001" },
   ]);
   const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PembayaranRow | null>(null);
 
-  const filtered = useMemo(() => rows.filter(r => [r.noInvoice, r.vendor, r.noBuktiBayar].join(" ").toLowerCase().includes(search.toLowerCase())), [rows, search]);
+  const filtered = useMemo(() => rows.filter(r => [r.noPo, r.vendor, r.noBuktiBayar].join(" ").toLowerCase().includes(search.toLowerCase())), [rows, search]);
 
-  const startAdd = () => { setEditing({ id: 0, tanggal: new Date().toISOString().split('T')[0], vendor: '', noInvoice: '', metode: 'Transfer', dpp: 0, ppn: 0, total: 0, noBuktiBayar: '' }); setFormOpen(true); };
+  // Dummy data untuk dropdown No. PO
+  const [purchaseOrders] = useState(['PO-001', 'PO-002', 'PO-003', 'PO-004']);
+
+  const generateNoBuktiBayar = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const lastEntry = rows
+      .filter(r => r.noBuktiBayar.startsWith(`BB-${year}${month}`))
+      .sort((a, b) => b.noBuktiBayar.localeCompare(a.noBuktiBayar))[0];
+
+    let nextId = 1;
+    if (lastEntry) {
+      const lastId = parseInt(lastEntry.noBuktiBayar.split('-').pop() || '0', 10);
+      nextId = lastId + 1;
+    }
+    return `BB-${year}${month}-${nextId.toString().padStart(4, '0')}`;
+  };
+
+  const startAdd = () => { 
+    setEditing({ 
+      id: 0, 
+      tanggal: new Date().toISOString().split('T')[0], 
+      vendor: '', 
+      noPo: '', 
+      metode: '', 
+      dpp: 0, 
+      ppn: 0, 
+      total: 0, 
+      noBuktiBayar: generateNoBuktiBayar()
+    }); 
+    setFormOpen(true); 
+  };
   const startEdit = (row: PembayaranRow) => { setEditing(row); setFormOpen(true); };
   const remove = (id: number) => setRows(prev => prev.filter(r => r.id !== id));
   const onSave = (data: PembayaranRow) => {
@@ -61,7 +95,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Cari</label>
               <div className="relative">
-                <input value={search} onChange={e => setSearch(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-9" placeholder="Vendor/No Invoice/No Bukti Bayar" />
+                <input value={search} onChange={e => setSearch(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-9" placeholder="Vendor/No. PO/No Bukti Bayar" />
                 <Search className="h-4 w-4 text-gray-400 absolute right-2 top-1/2 -translate-y-1/2" />
               </div>
             </div>
@@ -83,7 +117,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tanggal</th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Vendor</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">No Invoice</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">No. PO</th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Metode</th>
                   <th className="px-4 py-2 text-right text-xs font-semibold text-gray-600">DPP</th>
                   <th className="px-4 py-2 text-right text-xs font-semibold text-gray-600">PPN</th>
@@ -97,7 +131,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                   <tr key={row.id}>
                     <td className="px-4 py-2 text-sm">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
                     <td className="px-4 py-2 text-sm">{row.vendor}</td>
-                    <td className="px-4 py-2 text-sm">{row.noInvoice}</td>
+                    <td className="px-4 py-2 text-sm">{row.noPo}</td>
                     <td className="px-4 py-2 text-sm">{row.metode}</td>
                     <td className="px-4 py-2 text-sm text-right">Rp {row.dpp.toLocaleString('id-ID')}</td>
                     <td className="px-4 py-2 text-sm text-right">Rp {row.ppn.toLocaleString('id-ID')}</td>
@@ -135,17 +169,38 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                   <input value={editing.vendor} onChange={e => setEditing({ ...editing, vendor: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">No Invoice</label>
-                  <input value={editing.noInvoice} onChange={e => setEditing({ ...editing, noInvoice: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm" />
+                  <label className="block text-xs font-medium text-gray-700 mb-1">No. PO</label>
+                  <select value={editing.noPo} onChange={e => setEditing({ ...editing, noPo: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
+                    <option value="">Pilih No. PO</option>
+                    {purchaseOrders.map(po => (
+                      <option key={po} value={po}>{po}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Metode</label>
-                  <select value={editing.metode} onChange={e => setEditing({ ...editing, metode: e.target.value as any })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none">
+                  <select value={editing.metode} onChange={e => setEditing({ ...editing, metode: e.target.value as any, sumberPembayaran: undefined, rekeningSumber: '' })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
                     <option value="Transfer">Transfer</option>
                     <option value="Giro">Giro</option>
                     <option value="Tunai">Tunai</option>
                   </select>
                 </div>
+                {editing.metode && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sumber</label>
+                    <select value={editing.sumberPembayaran || ''} onChange={e => setEditing({ ...editing, sumberPembayaran: e.target.value as any, rekeningSumber: '' })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
+                      <option value="">Pilih Sumber</option>
+                      <option value="Kas">Kas</option>
+                      <option value="Bank">Bank</option>
+                    </select>
+                  </div>
+                )}
+                {editing.sumberPembayaran === 'Bank' && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Rekening Sumber</label>
+                    <input value={editing.rekeningSumber || ''} onChange={e => setEditing({ ...editing, rekeningSumber: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm" />
+                  </div>
+                )}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">DPP</label>
                   <input type="number" value={editing.dpp} onChange={e => setEditing({ ...editing, dpp: parseFloat(e.target.value)||0 })} className="w-full border rounded px-2 py-1.5 text-sm" />
@@ -156,7 +211,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-gray-700 mb-1">No Bukti Bayar</label>
-                  <input value={editing.noBuktiBayar} onChange={e => setEditing({ ...editing, noBuktiBayar: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm" />
+                  <input value={editing.noBuktiBayar} readOnly className="w-full border rounded px-2 py-1.5 text-sm bg-gray-100" />
                 </div>
               </div>
             </div>
