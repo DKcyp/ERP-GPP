@@ -437,6 +437,9 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Detail Mutasi
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nama Kas
                   </th>
@@ -458,21 +461,23 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Saldo Akhir
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Detail Mutasi
-                  </th>
+                  
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {(filteredData as KasData[]).map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
                       <button
                         onClick={() => handleViewMutasi(item)}
-                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium transition-colors duration-200"
+                        className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full hover:bg-blue-200 transition-colors duration-200"
                       >
-                        {item.namaKas}
+                        <Eye className="w-3 h-3 mr-1" />
+                        Detail
                       </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {item.namaKas}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.lokasi}
@@ -492,15 +497,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-blue-600 font-semibold">
                       Rp {item.saldoAkhir.toLocaleString('id-ID')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <button
-                        onClick={() => handleViewMutasi(item)}
-                        className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full hover:bg-blue-200 transition-colors duration-200"
-                      >
-                        <Eye className="w-3 h-3 mr-1" />
-                        Detail
-                      </button>
-                    </td>
+                    
                   </tr>
                 ))}
               </tbody>
