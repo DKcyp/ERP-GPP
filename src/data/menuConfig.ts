@@ -1361,14 +1361,22 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/voucher-reimburse/approval-voucher",
       },
       {
-        title: "Approval Reimburse",
-        icon: "CheckSquare",
-        path: "/finance/voucher-reimburse/approval-reimburse",
+        title: "Approval Pertanggung Jawaban Voucher",
+        icon: "UserCheck",
+        path: "/finance/voucher-reimburse/approval-ptj-voucher",
       },
+      // {
+      //   title: "Pertanggung Jawaban Voucher",
+      //   icon: "FileCheck",
+      //   path: "/finance/voucher-reimburse/pertanggung-jawaban-voucher",
+      // },
+      // {
+      //   title: "Laporan Pertanggung Jawaban Voucher",
+      //   icon: "FileText",
+      //   path: "/finance/voucher-reimburse/laporan-pertanggung-jawaban-voucher",
+      // },
     ],
   },
-  // {
-  //   title: "Tanda Terima Dokumen Penagihan",
   //   icon: "FileText",
   //   items: [],
   //   directPath: "/finance/tanda-terima-dokumeni",
@@ -1628,7 +1636,7 @@ export const managementMenu: MenuSection[] = [
     title: "Approval Voucher",
     icon: "CheckCircle",
     items: [],
-    directPath: "/finance/voucher-reimburse/approval-voucher",
+    directPath: "/management/voucher-reimburse/approval-voucher",
   },
 ];
 

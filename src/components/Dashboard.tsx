@@ -70,6 +70,7 @@ import ApprovalInvoiceDashboard from "./ApprovalInvoiceDashboard";
 import ApprovalPenggajianDashboard from "./ApprovalPenggajianDashboard";
 import ApprovalPOTrainingDashboard from "./ApprovalPOTrainingDashboard";
 import ApprovalVoucherDashboard from "./ApprovalVoucherDashboard";
+import ApprovalVoucherDashboardManajement from "./ApprovalVoucherDashboardManajement";
 import DaftarPembayaranDashboard from "./DaftarPembayaranDashboard";
 import ProconLRPExcelDashboard from "./ProconLRPExcelDashboard";
 import DaftarVoucherDashboard from "./DaftarVoucherDashboard";
@@ -106,6 +107,7 @@ import FinanceApprovalVoucherDashboard from "./FinanceApprovalVoucherDashboard";
 import FinanceApprovalReimburseDashboard from "./FinanceApprovalReimburseDashboard";
 import FinancePengajuanHutangUsahaDashboard from "./FinancePengajuanHutangUsahaDashboard";
 import FinancePengajuanVoucherDashboard from "./FinancePengajuanVoucherDashboard";
+import FinanceApprovalPTJVoucherDashboard from "./FinanceApprovalPTJVoucherDashboard";
 import FinanceARInvoiceDashboard from "./FinanceARInvoiceDashboard";
 import FinanceLaporanARDashboard from "./FinanceLaporanARDashboard";
 import CollectionDashboardSO from "./CollectionDashboardSO";
@@ -1660,6 +1662,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/finance/voucher-reimburse/approval-voucher") {
       return <FinanceApprovalVoucherDashboard />;
     }
+
+    if (currentPage === "/finance/voucher-reimburse/approval-ptj-voucher") {
+      return <FinanceApprovalPTJVoucherDashboard />;
+    }
     if (currentPage === "/finance/voucher-reimburse/approval-reimburse") {
       return <FinanceApprovalReimburseDashboard />;
     }
@@ -1730,6 +1736,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/management/po/barang") {
       return <POBarangDashboard />;
+    }
+    if (currentPage === "/management/voucher-reimburse/approval-voucher") {
+      return <ApprovalVoucherDashboardManajement />;
     }
     // QHSE Routes
     if (currentPage === "/qhse/dashboard") {

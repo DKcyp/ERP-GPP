@@ -18,14 +18,14 @@ export interface POTrainingDetailData {
   vendor: string;
   budget: number;
   keterangan: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: "Pending" | "Approved" | "Rejected";
   approver: string;
   peserta: PesertaData[];
 }
 
 export interface ApprovalPOTrainingActionData {
   poTrainingId: string;
-  action: 'approve' | 'reject';
+  action: "approve" | "reject";
   keterangan: string;
 }
 
@@ -36,7 +36,12 @@ export interface PerizinanAlatEntry {
   namaAlat: string;
   noSeri: string; // Tetap ada untuk logika internal/modal
   jenisPerizinan: string; // Tetap ada untuk logika internal/modal
-  status: 'Belum Berizin' | 'Menunggu Persetujuan' | 'Disetujui' | 'Izin Tersedia' | 'Aktif'; // Tetap ada untuk logika internal/modal
+  status:
+    | "Belum Berizin"
+    | "Menunggu Persetujuan"
+    | "Disetujui"
+    | "Izin Tersedia"
+    | "Aktif"; // Tetap ada untuk logika internal/modal
   tanggalAwalIzin: string; // Kolom baru
   tanggalAkhirIzin: string; // Kolom baru
   dokumen: string; // Kolom baru
@@ -72,7 +77,7 @@ export interface ProsesPengajuanTrainingFormData {
   jenisPelatihan: string;
   lokasiPelatihan: string;
   tanggalPelaksanaan: string; // ISO date
-  pid: 'PID' | 'TIDAK';
+  pid: "PID" | "TIDAK";
 }
 
 // New type for Realisasi Document Upload form data
@@ -107,13 +112,13 @@ export interface PenawaranDetailData {
 
 // ================= Generic Update Status Modal =================
 export interface UpdateStatusFormData {
-  status: 'Pending' | 'Accepted' | 'Rejected' | 'Interview' | 'Hired';
+  status: "Pending" | "Accepted" | "Rejected" | "Interview" | "Hired";
   keterangan: string;
 }
 
 export interface LamaranData {
   id: string;
-  status: UpdateStatusFormData['status'];
+  status: UpdateStatusFormData["status"];
   keterangan: string;
 }
 
@@ -203,15 +208,15 @@ export interface VoucherData {
 export interface MonitoringVoucherData {
   id: number;
   nomorVoucher: string;
-  status: 'Draft' | 'Dikirim' | 'Disetujui' | 'Ditolak';
+  status: "Draft" | "Dikirim" | "Disetujui" | "Ditolak";
   tanggal: string; // ISO date
   nilai: number;
   keterangan?: string;
 }
 
 // ================= Evaluasi Vendor =================
-export type YaTidak = 'Ya' | 'Tidak';
-export type MutuKategori = 'Baik' | 'Cukup' | 'Kurang';
+export type YaTidak = "Ya" | "Tidak";
+export type MutuKategori = "Baik" | "Cukup" | "Kurang";
 
 export interface EvaluasiVendorData {
   id: string;
@@ -328,7 +333,7 @@ export interface POBarangData {
   noPo: string;
   tanggalPo: string;
   tanggalPengiriman: string;
-  status: 'Paid' | 'Pending' | 'Unpaid';
+  status: "Paid" | "Pending" | "Unpaid";
   noSO?: string;
   metodePembayaran?: string;
   kodeVendor?: string;
@@ -353,7 +358,7 @@ export interface POBarangData {
 
 export interface ApprovalPOBarangFormData {
   poId: number;
-  action: 'approve' | 'reject';
+  action: "approve" | "reject";
   keterangan: string;
 }
 
@@ -412,11 +417,11 @@ export interface PenerimaanBarangManualData {
   kodeBarang: string;
   qty: number;
   satuan: string;
-  kondisiBarang: 'Baik' | 'Rusak' | 'Expired';
+  kondisiBarang: "Baik" | "Rusak" | "Expired";
   tanggalExpired?: string;
   alasanManual: string;
   keterangan?: string;
-  statusPersetujuan: 'Pending' | 'Disetujui' | 'Ditolak';
+  statusPersetujuan: "Pending" | "Disetujui" | "Ditolak";
   disetujuiOleh?: string;
   tanggalPersetujuan?: string;
 }
@@ -427,7 +432,7 @@ export interface PenerimaanBarangManualFormData {
   kodeBarang: string;
   qty: string; // keep as string for input
   satuan: string;
-  kondisiBarang: 'Baik' | 'Rusak' | 'Expired';
+  kondisiBarang: "Baik" | "Rusak" | "Expired";
   tanggalExpired?: string;
   alasanManual: string;
   keterangan?: string;

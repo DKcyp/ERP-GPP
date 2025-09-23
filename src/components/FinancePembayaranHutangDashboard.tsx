@@ -5,10 +5,9 @@ type PembayaranRow = {
   id: number;
   tanggal: string; // yyyy-mm-dd
   vendor: string;
-  noPo: string; // Mengganti noInvoice menjadi noPo
-  metode: "Transfer" | "Giro" | "Tunai" | "";
-  sumberPembayaran?: "Kas" | "Bank"; // Sumber pembayaran (opsional)
-  rekeningSumber?: string; // Rekening sumber (opsional)
+  noPo: string; 
+  metode: "Kas" | "Bank" | "";
+  sumberDetail: string; // Nama Kas atau Bank yang dipilih
   dpp: number;
   ppn: number;
   total: number;
@@ -18,7 +17,7 @@ type PembayaranRow = {
 const FinancePembayaranHutangDashboard: React.FC = () => {
   const today = new Date();
   const [rows, setRows] = useState<PembayaranRow[]>([
-    { id: 1, tanggal: "2025-09-08", vendor: "PT Jaya", noPo: "PO-001", metode: "Transfer", sumberPembayaran: "Bank", rekeningSumber: "BCA 123456", dpp: 10000000, ppn: 1100000, total: 11100000, noBuktiBayar: "BB-202509-0001" },
+    { id: 1, tanggal: "2025-09-08", vendor: "PT Jaya", noPo: "PO-001", metode: "Bank", sumberDetail: "BCA 123456", dpp: 10000000, ppn: 1100000, total: 11100000, noBuktiBayar: "BB-202509-0001" },
   ]);
   const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -28,6 +27,9 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
 
   // Dummy data untuk dropdown No. PO
   const [purchaseOrders] = useState(['PO-001', 'PO-002', 'PO-003', 'PO-004']);
+
+  const kasOptions = ['Kas Kecil', 'Kas Operasional', 'Kas Proyek A'];
+  const bankOptions = ['Bank Mandiri', 'Bank BCA', 'Bank BNI'];
 
   const generateNoBuktiBayar = () => {
     const now = new Date();
@@ -51,7 +53,8 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
       tanggal: new Date().toISOString().split('T')[0], 
       vendor: '', 
       noPo: '', 
-      metode: '', 
+      metode: '',
+      sumberDetail: '',
       dpp: 0, 
       ppn: 0, 
       total: 0, 
@@ -179,26 +182,21 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Metode</label>
-                  <select value={editing.metode} onChange={e => setEditing({ ...editing, metode: e.target.value as any, sumberPembayaran: undefined, rekeningSumber: '' })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
-                    <option value="Transfer">Transfer</option>
-                    <option value="Giro">Giro</option>
-                    <option value="Tunai">Tunai</option>
+                  <select value={editing.metode} onChange={e => setEditing({ ...editing, metode: e.target.value as any, sumberDetail: '' })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
+                    <option value="">Pilih Metode</option>
+                    <option value="Kas">Kas</option>
+                    <option value="Bank">Bank</option>
                   </select>
                 </div>
                 {editing.metode && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Sumber</label>
-                    <select value={editing.sumberPembayaran || ''} onChange={e => setEditing({ ...editing, sumberPembayaran: e.target.value as any, rekeningSumber: '' })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Sumber Pembayaran</label>
+                    <select value={editing.sumberDetail} onChange={e => setEditing({ ...editing, sumberDetail: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
                       <option value="">Pilih Sumber</option>
-                      <option value="Kas">Kas</option>
-                      <option value="Bank">Bank</option>
+                      {(editing.metode === 'Kas' ? kasOptions : bankOptions).map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
                     </select>
-                  </div>
-                )}
-                {editing.sumberPembayaran === 'Bank' && (
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Rekening Sumber</label>
-                    <input value={editing.rekeningSumber || ''} onChange={e => setEditing({ ...editing, rekeningSumber: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm" />
                   </div>
                 )}
                 <div>

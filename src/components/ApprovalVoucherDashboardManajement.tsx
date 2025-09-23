@@ -24,12 +24,11 @@ interface ApprovalVoucherRow {
   levelApproval: number;
   tglSubmit: string;
   tglApproval?: string;
-  tglPencairan?: string;
   keterangan: string;
   catatan?: string;
 }
 
-const FinanceApprovalVoucherDashboard: React.FC = () => {
+const ApprovalVoucherDashboardManajement: React.FC = () => {
   const today = new Date();
 
   // Filters
@@ -43,10 +42,11 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedVoucher, setSelectedVoucher] =
     useState<ApprovalVoucherRow | null>(null);
-  const [showVerifModal, setShowVerifModal] = useState(false);
-  const [showBayarModal, setShowBayarModal] = useState(false);
-  const [verifNotes, setVerifNotes] = useState("");
-  const [bayarNotes, setBayarNotes] = useState("");
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [approvalAction, setApprovalAction] = useState<"approve" | "reject">(
+    "approve"
+  );
+  const [approvalNotes, setApprovalNotes] = useState("");
 
   // Dummy data
   const [rows, setRows] = useState<ApprovalVoucherRow[]>([
@@ -144,58 +144,36 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
     setShowDetailModal(true);
   };
 
-  const handleVerif = (voucher: ApprovalVoucherRow) => {
+  const handleApproval = (
+    voucher: ApprovalVoucherRow,
+    action: "approve" | "reject"
+  ) => {
     setSelectedVoucher(voucher);
-    setVerifNotes("");
-    setShowVerifModal(true);
+    setApprovalAction(action);
+    setApprovalNotes("");
+    setShowApprovalModal(true);
   };
 
-  const handleBayar = (voucher: ApprovalVoucherRow) => {
-    setSelectedVoucher(voucher);
-    setBayarNotes("");
-    setShowBayarModal(true);
-  };
-
-  const confirmVerif = () => {
+  const confirmApproval = () => {
     if (!selectedVoucher) return;
 
     const updatedRows = rows.map((row) => {
       if (row.id === selectedVoucher.id) {
         return {
           ...row,
-          statusApproval: "Approval 1" as any,
+          statusApproval:
+            approvalAction === "approve" ? "Approved" : ("Rejected" as any),
           tglApproval: new Date().toISOString().split("T")[0],
-          catatan: verifNotes || undefined,
+          catatan: approvalNotes || undefined,
         };
       }
       return row;
     });
 
     setRows(updatedRows);
-    setShowVerifModal(false);
+    setShowApprovalModal(false);
     setSelectedVoucher(null);
-    setVerifNotes("");
-  };
-
-  const confirmBayar = () => {
-    if (!selectedVoucher) return;
-
-    const updatedRows = rows.map((row) => {
-      if (row.id === selectedVoucher.id) {
-        return {
-          ...row,
-          statusApproval: "Paid" as any,
-          tglPencairan: new Date().toISOString().split("T")[0],
-          catatan: bayarNotes || undefined,
-        };
-      }
-      return row;
-    });
-
-    setRows(updatedRows);
-    setShowBayarModal(false);
-    setSelectedVoucher(null);
-    setBayarNotes("");
+    setApprovalNotes("");
   };
 
   const getStatusBadge = (status: string) => {
@@ -258,7 +236,7 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
-                  Finance
+                  Management
                 </span>
                 <span className="mx-2">›</span>
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
@@ -484,9 +462,6 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
                     Approver
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tanggal Pencairan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
@@ -515,11 +490,6 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {row.approver}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {row.tglPencairan
-                        ? new Date(row.tglPencairan).toLocaleDateString("id-ID")
-                        : "-"}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button
@@ -529,23 +499,25 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
                           <Eye className="h-3 w-3 mr-1" />
                           Detail
                         </button>
-                        {row.statusApproval === "Verify" && (
-                          <button
-                            onClick={() => handleVerif(row)}
-                            className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200"
-                          >
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Verif
-                          </button>
-                        )}
-                        {row.statusApproval === "Approval 1" && (
-                          <button
-                            onClick={() => handleBayar(row)}
-                            className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200"
-                          >
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Bayar
-                          </button>
+                        {(row.statusApproval === "Verify" ||
+                          row.statusApproval === "Approval 1" ||
+                          row.statusApproval === "Approval 2") && (
+                          <>
+                            <button
+                              onClick={() => handleApproval(row, "approve")}
+                              className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200"
+                            >
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleApproval(row, "reject")}
+                              className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
+                            >
+                              <XCircle className="h-3 w-3 mr-1" />
+                              Reject
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>
@@ -636,19 +608,6 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
                 </p>
               </div>
 
-              {selectedVoucher.tglPencairan && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Tanggal Pencairan
-                  </label>
-                  <p className="text-sm text-gray-900">
-                    {new Date(selectedVoucher.tglPencairan).toLocaleDateString(
-                      "id-ID"
-                    )}
-                  </p>
-                </div>
-              )}
-
               {selectedVoucher.catatan && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
@@ -673,16 +632,18 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Verif Modal */}
-      {showVerifModal && selectedVoucher && (
+      {/* Approval Modal */}
+      {showApprovalModal && selectedVoucher && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">
-                Verifikasi Voucher
+                {approvalAction === "approve"
+                  ? "Approve Voucher"
+                  : "Reject Voucher"}
               </h3>
               <button
-                onClick={() => setShowVerifModal(false)}
+                onClick={() => setShowApprovalModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <XCircle className="h-6 w-6" />
@@ -707,94 +668,37 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Catatan Verifikasi
+                  Catatan{" "}
+                  {approvalAction === "approve" ? "Approval" : "Penolakan"}
                 </label>
                 <textarea
-                  value={verifNotes}
-                  onChange={(e) => setVerifNotes(e.target.value)}
+                  value={approvalNotes}
+                  onChange={(e) => setApprovalNotes(e.target.value)}
                   rows={3}
                   className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Masukkan catatan verifikasi..."
+                  placeholder={`Masukkan catatan ${
+                    approvalAction === "approve" ? "approval" : "penolakan"
+                  }...`}
                 />
               </div>
             </div>
 
             <div className="mt-6 flex justify-end space-x-3">
               <button
-                onClick={() => setShowVerifModal(false)}
+                onClick={() => setShowApprovalModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
               >
                 Batal
               </button>
               <button
-                onClick={confirmVerif}
-                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-md"
+                onClick={confirmApproval}
+                className={`px-4 py-2 text-sm font-medium text-white rounded-md ${
+                  approvalAction === "approve"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
               >
-                Verifikasi
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Bayar Modal */}
-      {showBayarModal && selectedVoucher && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                Pembayaran Voucher
-              </h3>
-              <button
-                onClick={() => setShowBayarModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <XCircle className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">
-                  Voucher:{" "}
-                  <span className="font-medium">
-                    {selectedVoucher.noVoucher}
-                  </span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Nominal:{" "}
-                  <span className="font-medium">
-                    Rp {selectedVoucher.nominalVoucher.toLocaleString("id-ID")}
-                  </span>
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Catatan Pembayaran
-                </label>
-                <textarea
-                  value={bayarNotes}
-                  onChange={(e) => setBayarNotes(e.target.value)}
-                  rows={3}
-                  className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Masukkan catatan pembayaran..."
-                />
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowBayarModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-              >
-                Batal
-              </button>
-              <button
-                onClick={confirmBayar}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
-              >
-                Bayar
+                {approvalAction === "approve" ? "Approve" : "Reject"}
               </button>
             </div>
           </div>
@@ -804,4 +708,4 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   );
 };
 
-export default FinanceApprovalVoucherDashboard;
+export default ApprovalVoucherDashboardManajement;
