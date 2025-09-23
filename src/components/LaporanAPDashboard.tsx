@@ -1,33 +1,25 @@
 import React, { useState, useMemo } from "react";
 import { Clock, FileText, Download, FileSpreadsheet, Search, Filter } from "lucide-react";
+import DetailPembayaranHutangModal from './DetailPembayaranHutangModal';
 
 interface LaporanAPData {
   id: number;
-  kodeSupplier: string;
   namaSupplier: string;
-  noNpwpNik: string;
   noInvoice: string;
-  noFakturPajak: string;
-  jenisDokumen: string;
-  noDokumen: string;
-  tglDokumen: string;
+  noPO: string;
+  tglPO: string;
   tglJatuhTempo: string;
-  keterangan: string;
   mataUang: string;
   nominalDpp: number;
   nominalPpn: number;
   subTotal: number;
-  umurHutang: string;
   statusHutang: 'Belum Bayar' | 'Sebagian Bayar' | 'Lunas' | 'Overdue';
-  tglPembayaran?: string;
-  nomerBayar?: string;
-  bayar1: number;
-  bayar2: number;
-  bayar3: number;
-  bayar4: number;
-  bayar5: number;
-  bayar6: number;
   totalOutstanding: number;
+  belumJatuhTempo: number;
+  jatuhTempo0_30: number;
+  jatuhTempo31_60: number;
+  lebihDari60: number;
+  rincianPembayaran: { termin: string; tanggalBayar: string; nominal: number }[];
 }
 
 const LaporanAPDashboard: React.FC = () => {
@@ -35,121 +27,121 @@ const LaporanAPDashboard: React.FC = () => {
   const [filterSupplier, setFilterSupplier] = useState('');
   const [filterInvoice, setFilterInvoice] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [tglDokumenDari, setTglDokumenDari] = useState('');
-  const [tglDokumenSampai, setTglDokumenSampai] = useState('');
+  const [tglPODari, setTglPODari] = useState('');
+  const [tglPOSampai, setTglPOSampai] = useState('');
   const [tglJatuhTempoDari, setTglJatuhTempoDari] = useState('');
   const [tglJatuhTempoSampai, setTglJatuhTempoSampai] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<LaporanAPData | null>(null);
+
+  const handleNominalClick = (rowData: LaporanAPData) => {
+    setSelectedRow(rowData);
+    setIsModalOpen(true);
+  };
 
   const [dummyTableData] = useState<LaporanAPData[]>([
     {
       id: 1,
-      kodeSupplier: 'SUP-001',
       namaSupplier: 'PT Maju Jaya',
-      noNpwpNik: '01.234.567.8-901.000',
       noInvoice: 'INV-001/2025',
-      noFakturPajak: '010.001-22.12345678',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AP-001',
-      tglDokumen: '2025-08-25',
+      noPO: 'PO-AP-001',
+      tglPO: '2025-08-25',
       tglJatuhTempo: '2025-09-24',
-      keterangan: 'Pembelian material',
       mataUang: 'IDR',
       nominalDpp: 20000000,
       nominalPpn: 2000000,
       subTotal: 22000000,
-      umurHutang: '15 hari',
       statusHutang: 'Sebagian Bayar',
-      tglPembayaran: '2025-09-01',
-      nomerBayar: 'BKK-001/2025',
-      bayar1: 10000000,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
       totalOutstanding: 12000000,
+      belumJatuhTempo: 12000000,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 0,
+      lebihDari60: 0,
+      rincianPembayaran: [
+        { termin: 'Pembayaran ke-1', tanggalBayar: '2025-09-01', nominal: 10000000 },
+      ],
     },
     {
       id: 2,
-      kodeSupplier: 'SUP-002',
       namaSupplier: 'CV Solusi Digital',
-      noNpwpNik: '3275xxxxxxxxxxxx',
       noInvoice: 'INV-045/2025',
-      noFakturPajak: '-',
-      jenisDokumen: 'Tagihan Jasa',
-      noDokumen: 'DOC-AP-045',
-      tglDokumen: '2025-08-18',
+      noPO: 'PO-AP-045',
+      tglPO: '2025-08-18',
       tglJatuhTempo: '2025-09-17',
-      keterangan: 'Lisensi software',
       mataUang: 'IDR',
       nominalDpp: 12000000,
       nominalPpn: 1200000,
       subTotal: 13200000,
-      umurHutang: '22 hari',
-      statusHutang: 'Sebagian Bayar',
-      tglPembayaran: '2025-08-30',
-      nomerBayar: 'BKK-002/2025',
-      bayar1: 5000000,
-      bayar2: 2500000,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
+      statusHutang: 'Overdue',
       totalOutstanding: 5700000,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 5700000,
+      jatuhTempo31_60: 0,
+      lebihDari60: 0,
+      rincianPembayaran: [
+        { termin: 'Pembayaran ke-1', tanggalBayar: '2025-08-30', nominal: 5000000 },
+        { termin: 'Pembayaran ke-2', tanggalBayar: '2025-09-10', nominal: 2500000 },
+      ],
     },
     {
       id: 3,
-      kodeSupplier: 'SUP-003',
       namaSupplier: 'PT Teknologi Maju',
-      noNpwpNik: '02.345.678.9-012.000',
       noInvoice: 'INV-078/2025',
-      noFakturPajak: '010.002-22.87654321',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AP-078',
-      tglDokumen: '2025-09-01',
+      noPO: 'PO-AP-078',
+      tglPO: '2025-09-01',
       tglJatuhTempo: '2025-10-01',
-      keterangan: 'Pembelian hardware',
       mataUang: 'IDR',
       nominalDpp: 15000000,
       nominalPpn: 1500000,
       subTotal: 16500000,
-      umurHutang: '0 hari',
       statusHutang: 'Lunas',
-      tglPembayaran: '2025-09-15',
-      nomerBayar: 'BKK-003/2025',
-      bayar1: 16500000,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
       totalOutstanding: 0,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 0,
+      lebihDari60: 0,
+      rincianPembayaran: [
+        { termin: 'Pembayaran ke-1', tanggalBayar: '2025-09-15', nominal: 16500000 },
+      ],
     },
     {
       id: 4,
-      kodeSupplier: 'SUP-004',
       namaSupplier: 'CV Berkah Mandiri',
-      noNpwpNik: '3174xxxxxxxxxxxx',
       noInvoice: 'INV-099/2025',
-      noFakturPajak: '-',
-      jenisDokumen: 'Tagihan Jasa',
-      noDokumen: 'DOC-AP-099',
-      tglDokumen: '2025-07-15',
+      noPO: 'PO-AP-099',
+      tglPO: '2025-07-15',
       tglJatuhTempo: '2025-08-14',
-      keterangan: 'Jasa konsultasi',
       mataUang: 'IDR',
       nominalDpp: 8000000,
       nominalPpn: 800000,
       subTotal: 8800000,
-      umurHutang: '36 hari',
       statusHutang: 'Overdue',
-      bayar1: 0,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
       totalOutstanding: 8800000,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 8800000,
+      lebihDari60: 0,
+      rincianPembayaran: [],
+    },
+    {
+      id: 5,
+      namaSupplier: 'PT Sinar Abadi',
+      noInvoice: 'INV-101/2025',
+      noPO: 'PO-AP-101',
+      tglPO: '2025-06-10',
+      tglJatuhTempo: '2025-07-10',
+      mataUang: 'IDR',
+      nominalDpp: 30000000,
+      nominalPpn: 3000000,
+      subTotal: 33000000,
+      statusHutang: 'Overdue',
+      totalOutstanding: 33000000,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 0,
+      lebihDari60: 33000000,
+      rincianPembayaran: [],
     },
   ]);
 
@@ -157,23 +149,22 @@ const LaporanAPDashboard: React.FC = () => {
   const filteredData = useMemo(() => {
     return dummyTableData.filter(item => {
       const supplierMatch = filterSupplier === '' || 
-        item.namaSupplier.toLowerCase().includes(filterSupplier.toLowerCase()) ||
-        item.kodeSupplier.toLowerCase().includes(filterSupplier.toLowerCase());
+        item.namaSupplier.toLowerCase().includes(filterSupplier.toLowerCase());
       
       const invoiceMatch = filterInvoice === '' || 
         item.noInvoice.toLowerCase().includes(filterInvoice.toLowerCase());
       
       const statusMatch = filterStatus === '' || item.statusHutang === filterStatus;
       
-      const tglDokumenMatch = (!tglDokumenDari || new Date(item.tglDokumen) >= new Date(tglDokumenDari)) &&
-        (!tglDokumenSampai || new Date(item.tglDokumen) <= new Date(tglDokumenSampai));
+      const tglPOMatch = (!tglPODari || new Date(item.tglPO) >= new Date(tglPODari)) &&
+        (!tglPOSampai || new Date(item.tglPO) <= new Date(tglPOSampai));
       
       const tglJatuhTempoMatch = (!tglJatuhTempoDari || new Date(item.tglJatuhTempo) >= new Date(tglJatuhTempoDari)) &&
         (!tglJatuhTempoSampai || new Date(item.tglJatuhTempo) <= new Date(tglJatuhTempoSampai));
       
-      return supplierMatch && invoiceMatch && statusMatch && tglDokumenMatch && tglJatuhTempoMatch;
+      return supplierMatch && invoiceMatch && statusMatch && tglPOMatch && tglJatuhTempoMatch;
     });
-  }, [dummyTableData, filterSupplier, filterInvoice, filterStatus, tglDokumenDari, tglDokumenSampai, tglJatuhTempoDari, tglJatuhTempoSampai]);
+  }, [dummyTableData, filterSupplier, filterInvoice, filterStatus, tglPODari, tglPOSampai, tglJatuhTempoDari, tglJatuhTempoSampai]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -275,21 +266,21 @@ const LaporanAPDashboard: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tgl Dokumen Dari</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tgl PO Dari</label>
               <input
                 type="date"
-                value={tglDokumenDari}
-                onChange={(e) => setTglDokumenDari(e.target.value)}
+                value={tglPODari}
+                onChange={(e) => setTglPODari(e.target.value)}
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tgl Dokumen Sampai</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tgl PO Sampai</label>
               <input
                 type="date"
-                value={tglDokumenSampai}
-                onChange={(e) => setTglDokumenSampai(e.target.value)}
+                value={tglPOSampai}
+                onChange={(e) => setTglPOSampai(e.target.value)}
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
@@ -335,60 +326,56 @@ const LaporanAPDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Supplier</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Supplier</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No NPWP/NIK</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Invoice</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Faktur Pajak</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Dokumen</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Dokumen</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Dokumen</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. PO</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal PO</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Jatuh Tempo</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Hutang</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pembayaran</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomer Bayar</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Uang</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal DPP</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal PPN</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub Total</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umur Hutang</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 1</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 2</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 3</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 4</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 5</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 6</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Belum Jatuh Tempo</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">0 - 30 Hari</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">31 - 60 Hari</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> &gt; 60 Hari</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Outstanding Hutang</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeSupplier}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaSupplier}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noNpwpNik}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noInvoice}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noFakturPajak}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.jenisDokumen}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noDokumen}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglDokumen).toLocaleDateString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noPO}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglPO).toLocaleDateString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglJatuhTempo).toLocaleDateString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(item.statusHutang)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tglPembayaran ? new Date(item.tglPembayaran).toLocaleDateString('id-ID') : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nomerBayar || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.keterangan}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.mataUang}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.nominalDpp.toLocaleString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.nominalPpn.toLocaleString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.subTotal.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.umurHutang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar1.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar2.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar3.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar4.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar5.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar6.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button onClick={() => handleNominalClick(item)} className="text-blue-600 underline cursor-pointer hover:text-blue-800">
+                        Rp {item.belumJatuhTempo.toLocaleString('id-ID')}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button onClick={() => handleNominalClick(item)} className="text-blue-600 underline cursor-pointer hover:text-blue-800">
+                        Rp {item.jatuhTempo0_30.toLocaleString('id-ID')}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button onClick={() => handleNominalClick(item)} className="text-blue-600 underline cursor-pointer hover:text-blue-800">
+                        Rp {item.jatuhTempo31_60.toLocaleString('id-ID')}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button onClick={() => handleNominalClick(item)} className="text-blue-600 underline cursor-pointer hover:text-blue-800">
+                        Rp {item.lebihDari60.toLocaleString('id-ID')}
+                      </button>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {item.totalOutstanding.toLocaleString('id-ID')}</td>
                   </tr>
                 ))}
@@ -397,6 +384,12 @@ const LaporanAPDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <DetailPembayaranHutangModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        data={selectedRow}
+      />
     </div>
   );
 };

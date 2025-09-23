@@ -1403,7 +1403,7 @@ export const financeMenu: MenuSection[] = [
     icon: "Wallet", // Icon for Voucher dan Reimburse
     items: [
       {
-        title: "Pengajuan Voucher",
+        title: "Pencairan Voucher",
         icon: "Ticket",
         path: "/finance/pengajuan-voucher",
       },

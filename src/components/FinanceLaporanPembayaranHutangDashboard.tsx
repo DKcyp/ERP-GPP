@@ -55,9 +55,9 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
       status: "Posted",
       tanggalBayar: "2025-09-02",
       detailPembayaran: [
-        { tanggal: '2025-09-02', nominal: 5000000 },
-        { tanggal: '2025-09-10', nominal: 3500000 },
-      ]
+        { tanggal: "2025-09-02", nominal: 5000000 },
+        { tanggal: "2025-09-10", nominal: 3500000 },
+      ],
     },
     {
       id: 2,
@@ -72,9 +72,7 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
       totalPembayaran: 3000000,
       status: "Pending",
       tanggalBayar: "2025-09-05",
-      detailPembayaran: [
-        { tanggal: '2025-09-05', nominal: 3000000 },
-      ]
+      detailPembayaran: [{ tanggal: "2025-09-05", nominal: 3000000 }],
     },
   ]);
 
@@ -123,7 +121,7 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                LAPORAN PEMBAYARAN HUTANG 22
+                LAPORAN PEMBAYARAN HUTANG
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
@@ -268,14 +266,18 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Sisa Pembayaran
                   </th>
-                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-100 cursor-pointer" onClick={() => handleRowClick(row)}>
+                  <tr
+                    key={row.id}
+                    className="hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleRowClick(row)}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {row.vendor}
                     </td>
@@ -297,11 +299,20 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
                       Rp {row.totalPembayaran.toLocaleString("id-ID")}
                     </td>
-                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600 text-right">
-                      Rp {(row.subTotal - row.totalPembayaran).toLocaleString("id-ID")}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600 text-right">
+                      Rp{" "}
+                      {(row.subTotal - row.totalPembayaran).toLocaleString(
+                        "id-ID"
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <button onClick={(e) => { e.stopPropagation(); handleRowClick(row); }} className="text-blue-600 hover:text-blue-800">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRowClick(row);
+                        }}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
                         <Eye size={18} />
                       </button>
                     </td>
@@ -320,7 +331,14 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
                     Rp {totalBayar.toLocaleString("id-ID")}
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-gray-900">
-                    Rp {filtered.reduce((acc, row) => acc + (row.subTotal - row.totalPembayaran), 0).toLocaleString("id-ID")}
+                    Rp{" "}
+                    {filtered
+                      .reduce(
+                        (acc, row) =>
+                          acc + (row.subTotal - row.totalPembayaran),
+                        0
+                      )
+                      .toLocaleString("id-ID")}
                   </td>
                   <td></td>
                 </tr>
@@ -330,17 +348,13 @@ const FinanceLaporanPembayaranHutangDashboard: React.FC = () => {
         </div>
       </div>
 
-      <PembayaranHutangDetailModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        data={selectedRow} 
+      <PembayaranHutangDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={selectedRow}
       />
-
     </div>
   );
-
-  
-  
 };
 
 export default FinanceLaporanPembayaranHutangDashboard;
