@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Clock, Search, CalendarDays, FileSpreadsheet, FileText, FileBarChart } from 'lucide-react';
 
 const MonitoringAlatProyekDashboard: React.FC = () => {
-  const alatProyekData = [
+  const [filterStatus, setFilterStatus] = useState('Semua');
+    const alatProyekData = [
     { no: 1, noSO: 'SO0001', soTurunan: 'SO0001.1', namaAlat: 'Barang 001', mob: '20-01-2025', demob: '29-01-2025', tanggalHarusKembali: '30-01-2025', status: 'Di Proyek' },
     { no: 2, noSO: 'SO0002', soTurunan: 'SO0002.1', namaAlat: 'Barang 002', mob: '15-01-2025', demob: '24-01-2025', tanggalHarusKembali: '25-01-2025', status: 'Kembali' },
     { no: 3, noSO: 'SO0003', soTurunan: 'SO0003.1', namaAlat: 'Barang 003', mob: '12-01-2025', demob: '21-01-2025', tanggalHarusKembali: '22-01-2025', status: 'Harus Kembali' },
@@ -11,6 +12,13 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
     { no: 6, noSO: 'SO0006', soTurunan: 'SO0006.1', namaAlat: 'Barang 006', mob: '08-01-2025', demob: '17-01-2025', tanggalHarusKembali: '18-01-2025', status: 'Harus Kembali' },
     { no: 7, noSO: 'SO0007', soTurunan: 'SO0007.1', namaAlat: 'Barang 007', mob: '25-01-2025', demob: '31-01-2025', tanggalHarusKembali: '01-02-2025', status: 'Di Proyek' },
   ];
+
+  const filteredData = alatProyekData.filter(item => {
+    if (filterStatus === 'Semua') {
+      return true;
+    }
+    return item.status === filterStatus;
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -50,7 +58,7 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           {/* Filter Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div className="relative">
               <label htmlFor="cariNoSO" className="block text-sm font-medium text-gray-700 mb-1">Cari No SO</label>
               <input
@@ -80,6 +88,20 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
                 placeholder="Alat a"
               />
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+            </div>
+            <div className="relative">
+              <label htmlFor="filterStatus" className="block text-sm font-medium text-gray-700 mb-1">Filter Status</label>
+              <select
+                id="filterStatus"
+                className="pl-4 pr-10 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option>Semua</option>
+                <option>Di Proyek</option>
+                <option>Kembali</option>
+                <option>Harus Kembali</option>
+              </select>
             </div>
           </div>
 
@@ -165,7 +187,7 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {alatProyekData.map((item) => (
+                {filteredData.map((item) => (
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noSO}</td>
@@ -186,7 +208,7 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {alatProyekData.length} of {alatProyekData.length} entries
+              Showing 1 to {filteredData.length} of {filteredData.length} entries
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">

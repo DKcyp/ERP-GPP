@@ -1558,29 +1558,29 @@ export const gudangMenu: MenuSection[] = [
     directPath: "/gudang/monitoring-alat-proyek/dashboard",
   },
   // Grouped 'Izin Alat' menu
-  {
-    title: "Izin Alat", // Parent menu title
-    icon: "Tool", // Parent menu icon
-    subSections: [
-      {
-        title: "Manajemen Izin Alat", // Sub-section title
-        icon: "Tool", // Sub-section icon
-        items: [
-          // { title: 'Monitoring Izin Alat', icon: 'Tool', path: '/gudang/monitoring-izin-alat' },
-          {
-            title: "Perizinan Alat",
-            icon: "FileText",
-            path: "/gudang/perizinan-alat",
-          },
-          {
-            title: "Monitoring Perizinan",
-            icon: "ClipboardCheck",
-            path: "/gudang/monitoring-perizinan",
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   title: "Izin Alat", // Parent menu title
+  //   icon: "Tool", // Parent menu icon
+  //   subSections: [
+  //     {
+  //       title: "Manajemen Izin Alat", // Sub-section title
+  //       icon: "Tool", // Sub-section icon
+  //       items: [
+  //         // { title: 'Monitoring Izin Alat', icon: 'Tool', path: '/gudang/monitoring-izin-alat' },
+  //         {
+  //           title: "Perizinan Alat",
+  //           icon: "FileText",
+  //           path: "/gudang/perizinan-alat",
+  //         },
+  //         {
+  //           title: "Monitoring Perizinan",
+  //           icon: "ClipboardCheck",
+  //           path: "/gudang/monitoring-perizinan",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
   createGeneralMenu("gudang"),
 ];
 
@@ -1932,34 +1932,36 @@ export const accountingMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Buku Besar",
-    icon: "BookOpen",
-    items: [],
-    directPath: "/accounting/buku-besar",
-  },
-  {
-    title: "Trial Balance",
+    title: "Report",
     icon: "ClipboardList",
-    items: [],
-    directPath: "/accounting/trial-balance",
+    items: [
+      {
+        title: "Buku Besar",
+        icon: "BookOpen",
+        path: "/accounting/buku-besar",
+      },
+      {
+        title: "Trial Balance",
+        icon: "ClipboardList",
+        path: "/accounting/trial-balance",
+      },
+      {
+        title: "Laba Rugi",
+        icon: "TrendingUp", // Icon for profit/loss
+        path: "/accounting/laba-rugi",
+      },
+      {
+        title: "Neraca",
+        icon: "Scale", // Icon for balance sheet
+        path: "/accounting/neraca",
+      },
+    ],
   },
   {
     title: "Tutup Buku",
     icon: "BookX", // Icon for closing books
     items: [],
     directPath: "/accounting/tutup-buku",
-  },
-  {
-    title: "Laba Rugi",
-    icon: "TrendingUp", // Icon for profit/loss
-    items: [],
-    directPath: "/accounting/laba-rugi",
-  },
-  {
-    title: "Neraca",
-    icon: "Scale", // Icon for balance sheet
-    items: [],
-    directPath: "/accounting/neraca",
   },
   {
     title: "Stock Opname",
