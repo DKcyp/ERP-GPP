@@ -1,23 +1,68 @@
-import React, { useState } from 'react';
-import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, FileUp, Eye, Edit, Trash2, Printer, CalendarDays } from 'lucide-react';
-import EntryStockOpnameModal from './EntryStockOpnameModal'; // Import the new modal
+import React, { useState } from "react";
+import {
+  Clock,
+  Search,
+  Plus,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  FileUp,
+  Eye,
+  Edit,
+  Trash2,
+  Printer,
+  CalendarDays,
+} from "lucide-react";
+import EntryStockOpnameModal from "./EntryStockOpnameModal"; // Import the new modal
 
 const StockOpnameDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const stockOpnameItems = [
-    { no: 1, periodeTahun: 2025, periodeBulan: 'Maret', gudang: 'Gudang Proyek MEDCO', tanggalOpname: '10-03-2025', waktuOpname: '13:00:21', jumlahItem: 120, status: 'Selesai' },
-    { no: 2, periodeTahun: 2025, periodeBulan: 'Februari', gudang: 'Gudang Proyek SSB', tanggalOpname: '10-02-2025', waktuOpname: '13:00:00', jumlahItem: 120, status: 'Proses' },
+    {
+      no: 1,
+      periodeTahun: 2025,
+      periodeBulan: "Maret",
+      gudang: "Gudang Proyek MEDCO",
+      tanggalOpname: "10-03-2025",
+      waktuOpname: "13:00:21",
+      jumlahItem: 120,
+      status: "Selesai",
+      namaPegawai: "Budi Santoso",
+    },
+    {
+      no: 2,
+      periodeTahun: 2025,
+      periodeBulan: "Februari",
+      gudang: "Gudang Proyek SSB",
+      tanggalOpname: "10-02-2025",
+      waktuOpname: "13:00:00",
+      jumlahItem: 120,
+      status: "Proses",
+      namaPegawai: "Siti Aminah",
+    },
   ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Selesai':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Selesai</span>;
-      case 'Proses':
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Proses</span>;
+      case "Selesai":
+        return (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+            Selesai
+          </span>
+        );
+      case "Proses":
+        return (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+            Proses
+          </span>
+        );
       default:
-        return <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">-</span>;
+        return (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+            -
+          </span>
+        );
     }
   };
 
@@ -31,16 +76,20 @@ const StockOpnameDashboard: React.FC = () => {
                 STOCK OPNAME
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Stock Opname</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Stock Opname
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Stock Opname</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -50,7 +99,12 @@ const StockOpnameDashboard: React.FC = () => {
           {/* Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="relative">
-              <label htmlFor="namaGudang" className="block text-sm font-medium text-gray-700 mb-1">Cari Nama Gudang</label>
+              <label
+                htmlFor="namaGudang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Nama Gudang
+              </label>
               <input
                 type="text"
                 id="namaGudang"
@@ -60,7 +114,12 @@ const StockOpnameDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Pilih Status</label>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Pilih Status
+              </label>
               <select
                 id="status"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -84,7 +143,12 @@ const StockOpnameDashboard: React.FC = () => {
           {/* Periode and Search Button */}
           <div className="flex items-end space-x-4 mb-6">
             <div className="relative flex-1">
-              <label htmlFor="periodeStart" className="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+              <label
+                htmlFor="periodeStart"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Periode
+              </label>
               <div className="flex items-center space-x-2">
                 <div className="relative w-1/2">
                   <input
@@ -156,27 +220,68 @@ const StockOpnameDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode Tahun</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode Bulan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Opname</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Opname</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Item</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Periode Tahun
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Periode Bulan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Gudang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Pegawai
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tanggal Opname
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Waktu Opname
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah Item
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {stockOpnameItems.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.periodeTahun}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.periodeBulan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.gudang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalOpname}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.waktuOpname}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.jumlahItem}</td>
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.periodeTahun}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.periodeBulan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.gudang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.namaPegawai}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.tanggalOpname}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.waktuOpname}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.jumlahItem}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {getStatusBadge(item.status)}
                     </td>
@@ -203,7 +308,8 @@ const StockOpnameDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {stockOpnameItems.length} of {stockOpnameItems.length} entries
+              Showing 1 to {stockOpnameItems.length} of{" "}
+              {stockOpnameItems.length} entries
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">
@@ -227,7 +333,10 @@ const StockOpnameDashboard: React.FC = () => {
         </span>
       </footer>
 
-      <EntryStockOpnameModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <EntryStockOpnameModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

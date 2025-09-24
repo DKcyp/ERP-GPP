@@ -853,11 +853,6 @@ export const hrdMenu: MenuSection[] = [
         icon: "Plane",
         path: "/hrd/allowance/perjalanan-dinas",
       },
-      {
-        title: "Lembur",
-        icon: "Clock",
-        path: "/hrd/lembur/dashboard",
-      },
     ],
   },
 
@@ -1468,6 +1463,11 @@ export const gudangMenu: MenuSection[] = [
         title: "Laporan Stok Pergudang",
         icon: "Layers",
         path: "/gudang/barang/stock",
+      },
+      {
+        title: "Barang Rusak",
+        icon: "AlertTriangle",
+        path: "/gudang/barang-rusak/dashboard",
       },
     ],
   },

@@ -22,6 +22,7 @@ interface BarangItem {
   stokSebenarnya: number | "";
   selisih: number | "";
   keterangan: string;
+  serialNumber: string; // New field for Serial Number
 }
 
 const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
@@ -66,6 +67,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
         stokSebenarnya: "",
         selisih: "",
         keterangan: "",
+        serialNumber: "", // Initialize new field
       },
     ]);
     setNextItemId(nextItemId + 1);
@@ -310,6 +312,9 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                       Nama Barang
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Serial Number
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Stok Tercatat
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -355,6 +360,20 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                           className="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-50 cursor-not-allowed"
                           value={item.namaBarang}
                           readOnly
+                        />
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <input
+                          type="text"
+                          className="border border-gray-300 rounded-lg px-2 py-1 w-full"
+                          value={item.serialNumber}
+                          onChange={(e) =>
+                            handleBarangChange(
+                              item.id,
+                              "serialNumber",
+                              e.target.value
+                            )
+                          }
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">

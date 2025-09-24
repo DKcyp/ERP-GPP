@@ -152,6 +152,7 @@ import PermintaanBarangGudangDashboard from "./PermintaanBarangGudangDashboard";
 import KartuStockDashboard from "./KartuStockDashboard";
 import LaporanEvaluasiVendorDashboard from "./LaporanEvaluasiVendorDashboard";
 import GudangMainDashboard from "./GudangMainDashboard";
+import BarangRusakDashboardPage from "../pages/gudang/BarangRusakDashboardPage";
 import DashboardKPIDashboard from "./DashboardKPIDashboard"; // New import for KPI Dashboard
 import GeneralMasterKPIDashboard from "./GeneralMasterKPIDashboard"; // Import the new Master KPI component
 import GeneralListKPIDashboard from "./GeneralListKPIDashboard"; // Import the new List KPI component
@@ -578,6 +579,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/gudang/timesheet-barang/approval") {
       return <ApprovalTimesheetBarangDashboard />;
+    }
+    if (currentPage === "/gudang/barang-rusak/dashboard") {
+      return <BarangRusakDashboardPage />;
     }
     // NEW Gudang 'Izin Alat' Routes
     if (currentPage === "/gudang/monitoring-izin-alat") {

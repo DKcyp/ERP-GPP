@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import ActionConfirmationModal from "./ActionConfirmationModal";
+import DetailBarangModal from './DetailBarangModal'; // Import the new modal
 import {
   Search,
   FileSpreadsheet,
@@ -20,6 +21,13 @@ import {
   XCircle,
 } from "lucide-react";
 
+interface DetailItem {
+  id: string;
+  namaBarang: string;
+  jumlah: number;
+  dikembalikan: number;
+}
+
 interface TimesheetBarang {
   id: string;
   no: number;
@@ -34,6 +42,7 @@ interface TimesheetBarang {
   status: "Approve by Gudang" | "Approve by QHSE" | "Pending" | "Rejected";
   noManifest?: string;
   detailBarang?: string;
+  barangItems?: DetailItem[]; // Structured detail items
 }
 
 interface TimesheetBarangDashboardProps {
@@ -65,6 +74,10 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const [modalState, setModalState] = useState<{isOpen: boolean, type: 'approve' | 'reject' | null, item: TimesheetBarang | null}>({isOpen: false, type: null, item: null});
+
+  // Detail Barang Modal state
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedItemForDetail, setSelectedItemForDetail] = useState<TimesheetBarang | null>(null);
 
   // Add Timesheet Barang modal state and form
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -126,6 +139,10 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
       tanggalPenyerahan: "22-01-2025",
       kondisiBarang: "Baik",
       status: "Approve by Gudang",
+      barangItems: [
+        { id: 'b1', namaBarang: 'Besi Beton 10mm', jumlah: 50, dikembalikan: 50 },
+        { id: 'b2', namaBarang: 'Paku Beton', jumlah: 2, dikembalikan: 2 },
+      ]
     },
     {
       id: "2",
@@ -139,6 +156,10 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
       tanggalPenyerahan: "25-01-2025",
       kondisiBarang: "Baik",
       status: "Approve by Gudang",
+      barangItems: [
+        { id: 'b3', namaBarang: 'Semen Tiga Roda', jumlah: 100, dikembalikan: 98 },
+        { id: 'b4', namaBarang: 'Pasir Lumajang', jumlah: 5, dikembalikan: 5 },
+      ]
     },
     {
       id: "3",
@@ -750,8 +771,16 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                     {approvalMode && (
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => handleActionClick('approve', item)} className="p-1 text-gray-500 hover:text-green-600"><CheckCircle size={16} /></button>
-                          <button onClick={() => handleActionClick('reject', item)} className="p-1 text-gray-500 hover:text-red-600"><XCircle size={16} /></button>
+                          <button 
+                            onClick={() => {
+                              setSelectedItemForDetail(item);
+                              setIsDetailModalOpen(true);
+                            }}
+                            className="p-1 text-gray-500 hover:text-blue-600" title="Lihat Detail">
+                              <Eye size={16} />
+                          </button>
+                          <button onClick={() => handleActionClick('approve', item)} className="p-1 text-gray-500 hover:text-green-600" title="Approve"><CheckCircle size={16} /></button>
+                          <button onClick={() => handleActionClick('reject', item)} className="p-1 text-gray-500 hover:text-red-600" title="Reject"><XCircle size={16} /></button>
                         </div>
                       </td>
                     )}
@@ -819,6 +848,13 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.noSO}
+      />
+
+      <DetailBarangModal 
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        items={selectedItemForDetail?.barangItems || []}
+        noSO={selectedItemForDetail?.noSO || ''}
       />
 
       {/* Add Timesheet Barang Modal */}
