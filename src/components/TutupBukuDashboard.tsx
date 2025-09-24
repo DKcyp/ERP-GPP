@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, Lock, Unlock, CalendarDays, Search, FileSpreadsheet, FileDown, PlusCircle } from 'lucide-react';
-import TutupBukuModal from './TutupBukuModal'; // Import the new modal component
-import Modal from './Modal'; // Import the generic Modal component
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  Clock,
+  Lock,
+  Unlock,
+  CalendarDays,
+  Search,
+  FileSpreadsheet,
+  FileDown,
+  PlusCircle,
+} from "lucide-react";
+import TutupBukuModal from "./TutupBukuModal"; // Import the new modal component
+import Modal from "./Modal"; // Import the generic Modal component
 
 interface TutupBukuEntry {
   id: string;
   tanggalTutup: string;
   periodeBulan: string;
   periodeTahun: number;
-  status: 'Closed' | 'Open';
+  status: "Closed" | "Open";
 }
 
 interface HistoryEntry {
   id: string;
-  action: 'Tutup Buku' | 'Buka Buku';
+  action: "Tutup Buku" | "Buka Buku";
   tanggal: string; // yyyy-mm-dd
   periodeBulan: string;
   periodeTahun: number;
@@ -28,69 +37,159 @@ const TutupBukuDashboard: React.FC = () => {
   const [showTutupBukuModal, setShowTutupBukuModal] = useState(false);
 
   // State for Buka Tutup Buku confirmation modal
-  const [showBukaTutupBukuConfirmModal, setShowBukaTutupBukuConfirmModal] = useState(false);
-  const [selectedEntryToOpen, setSelectedEntryToOpen] = useState<TutupBukuEntry | null>(null);
+  const [showBukaTutupBukuConfirmModal, setShowBukaTutupBukuConfirmModal] =
+    useState(false);
+  const [selectedEntryToOpen, setSelectedEntryToOpen] =
+    useState<TutupBukuEntry | null>(null);
 
   // State for search and filter
-  const [filterPeriodeBulan, setFilterPeriodeBulan] = useState('');
-  const [filterPeriodeTahun, setFilterPeriodeTahun] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
+  const [filterPeriodeBulan, setFilterPeriodeBulan] = useState("");
+  const [filterPeriodeTahun, setFilterPeriodeTahun] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const [filterDateFrom, setFilterDateFrom] = useState<Date | null>(null);
   const [filterDateTo, setFilterDateTo] = useState<Date | null>(null);
 
   const [dummyData, setDummyData] = useState<TutupBukuEntry[]>([
-    { id: '1', tanggalTutup: '2024-06-30', periodeBulan: 'Juni', periodeTahun: 2024, status: 'Closed' },
-    { id: '2', tanggalTutup: '2024-05-31', periodeBulan: 'Mei', periodeTahun: 2024, status: 'Closed' },
-    { id: '3', tanggalTutup: '2024-04-30', periodeBulan: 'April', periodeTahun: 2024, status: 'Closed' },
-    { id: '4', tanggalTutup: '2024-03-31', periodeBulan: 'Maret', periodeTahun: 2024, status: 'Closed' },
-    { id: '5', tanggalTutup: '2024-02-29', periodeBulan: 'Februari', periodeTahun: 2024, status: 'Closed' },
-    { id: '6', tanggalTutup: '2024-01-31', periodeBulan: 'Januari', periodeTahun: 2024, status: 'Closed' },
+    {
+      id: "1",
+      tanggalTutup: "2024-06-30",
+      periodeBulan: "Juni",
+      periodeTahun: 2024,
+      status: "Closed",
+    },
+    {
+      id: "2",
+      tanggalTutup: "2024-05-31",
+      periodeBulan: "Mei",
+      periodeTahun: 2024,
+      status: "Closed",
+    },
+    {
+      id: "3",
+      tanggalTutup: "2024-04-30",
+      periodeBulan: "April",
+      periodeTahun: 2024,
+      status: "Closed",
+    },
+    {
+      id: "4",
+      tanggalTutup: "2024-03-31",
+      periodeBulan: "Maret",
+      periodeTahun: 2024,
+      status: "Closed",
+    },
+    {
+      id: "5",
+      tanggalTutup: "2024-02-29",
+      periodeBulan: "Februari",
+      periodeTahun: 2024,
+      status: "Closed",
+    },
+    {
+      id: "6",
+      tanggalTutup: "2024-01-31",
+      periodeBulan: "Januari",
+      periodeTahun: 2024,
+      status: "Closed",
+    },
   ]);
 
-  const [history, setHistory] = useState<HistoryEntry[]>(() =>
-    [
-      { id: 'h1', action: 'Tutup Buku', tanggal: '2024-06-30', periodeBulan: 'Juni', periodeTahun: 2024 },
-      { id: 'h2', action: 'Tutup Buku', tanggal: '2024-05-31', periodeBulan: 'Mei', periodeTahun: 2024 },
-      { id: 'h3', action: 'Tutup Buku', tanggal: '2024-04-30', periodeBulan: 'April', periodeTahun: 2024 },
-      { id: 'h4', action: 'Tutup Buku', tanggal: '2024-03-31', periodeBulan: 'Maret', periodeTahun: 2024 },
-      { id: 'h5', action: 'Tutup Buku', tanggal: '2024-02-29', periodeBulan: 'Februari', periodeTahun: 2024 },
-      { id: 'h6', action: 'Tutup Buku', tanggal: '2024-01-31', periodeBulan: 'Januari', periodeTahun: 2024 },
-    ]
-  );
+  const [history, setHistory] = useState<HistoryEntry[]>(() => [
+    {
+      id: "h1",
+      action: "Tutup Buku",
+      tanggal: "2024-06-30",
+      periodeBulan: "Juni",
+      periodeTahun: 2024,
+    },
+    {
+      id: "h2",
+      action: "Tutup Buku",
+      tanggal: "2024-05-31",
+      periodeBulan: "Mei",
+      periodeTahun: 2024,
+    },
+    {
+      id: "h3",
+      action: "Tutup Buku",
+      tanggal: "2024-04-30",
+      periodeBulan: "April",
+      periodeTahun: 2024,
+    },
+    {
+      id: "h4",
+      action: "Tutup Buku",
+      tanggal: "2024-03-31",
+      periodeBulan: "Maret",
+      periodeTahun: 2024,
+    },
+    {
+      id: "h5",
+      action: "Tutup Buku",
+      tanggal: "2024-02-29",
+      periodeBulan: "Februari",
+      periodeTahun: 2024,
+    },
+    {
+      id: "h6",
+      action: "Tutup Buku",
+      tanggal: "2024-01-31",
+      periodeBulan: "Januari",
+      periodeTahun: 2024,
+    },
+  ]);
 
   const months = [
-    { value: '1', label: 'Januari' }, { value: '2', label: 'Februari' },
-    { value: '3', label: 'Maret' }, { value: '4', label: 'April' },
-    { value: '5', label: 'Mei' }, { value: '6', label: 'Juni' },
-    { value: '7', label: 'Juli' }, { value: '8', label: 'Agustus' },
-    { value: '9', label: 'September' }, { value: '10', label: 'Oktober' },
-    { value: '11', label: 'November' }, { value: '12', label: 'Desember' },
+    { value: "1", label: "Januari" },
+    { value: "2", label: "Februari" },
+    { value: "3", label: "Maret" },
+    { value: "4", label: "April" },
+    { value: "5", label: "Mei" },
+    { value: "6", label: "Juni" },
+    { value: "7", label: "Juli" },
+    { value: "8", label: "Agustus" },
+    { value: "9", label: "September" },
+    { value: "10", label: "Oktober" },
+    { value: "11", label: "November" },
+    { value: "12", label: "Desember" },
   ];
 
-  const years = Array.from({ length: 5 }, (_, i) => (today.getFullYear() - i).toString());
+  const years = Array.from({ length: 5 }, (_, i) =>
+    (today.getFullYear() - i).toString()
+  );
 
-  const handleTutupBuku = (tanggalTutup: Date | null, bulanValue: string, tahun: string) => {
-    const selectedMonthLabel = months.find(m => m.value === bulanValue)?.label;
+  const handleTutupBuku = (
+    tanggalTutup: Date | null,
+    bulanValue: string,
+    tahun: string
+  ) => {
+    const selectedMonthLabel = months.find(
+      (m) => m.value === bulanValue
+    )?.label;
     if (tanggalTutup && selectedMonthLabel) {
       const newEntry: TutupBukuEntry = {
         id: (dummyData.length + 1).toString(),
-        tanggalTutup: tanggalTutup.toISOString().split('T')[0],
+        tanggalTutup: tanggalTutup.toISOString().split("T")[0],
         periodeBulan: selectedMonthLabel,
         periodeTahun: parseInt(tahun),
-        status: 'Closed',
+        status: "Closed",
       };
-      setDummyData(prev => [newEntry, ...prev]);
-      setHistory(prev => [
+      setDummyData((prev) => [newEntry, ...prev]);
+      setHistory((prev) => [
         {
           id: `h${Date.now()}`,
-          action: 'Tutup Buku',
+          action: "Tutup Buku",
           tanggal: newEntry.tanggalTutup,
           periodeBulan: newEntry.periodeBulan,
           periodeTahun: newEntry.periodeTahun,
         },
         ...prev,
       ]);
-      alert(`Melakukan Tutup Buku untuk periode ${selectedMonthLabel} ${tahun} pada tanggal ${tanggalTutup.toLocaleDateString('id-ID')}`);
+      alert(
+        `Melakukan Tutup Buku untuk periode ${selectedMonthLabel} ${tahun} pada tanggal ${tanggalTutup.toLocaleDateString(
+          "id-ID"
+        )}`
+      );
     }
   };
 
@@ -101,37 +200,55 @@ const TutupBukuDashboard: React.FC = () => {
 
   const handleConfirmBukaTutupBuku = () => {
     if (selectedEntryToOpen) {
-      setDummyData(prev =>
-        prev.map(entry =>
-          entry.id === selectedEntryToOpen.id ? { ...entry, status: 'Open' } : entry
+      setDummyData((prev) =>
+        prev.map((entry) =>
+          entry.id === selectedEntryToOpen.id
+            ? { ...entry, status: "Open" }
+            : entry
         )
       );
-      setHistory(prev => [
+      setHistory((prev) => [
         {
           id: `h${Date.now()}`,
-          action: 'Buka Buku',
-          tanggal: new Date().toISOString().split('T')[0],
+          action: "Buka Buku",
+          tanggal: new Date().toISOString().split("T")[0],
           periodeBulan: selectedEntryToOpen.periodeBulan,
           periodeTahun: selectedEntryToOpen.periodeTahun,
         },
         ...prev,
       ]);
-      alert(`Membuka kembali buku untuk entri: ${selectedEntryToOpen.id} (${selectedEntryToOpen.periodeBulan} ${selectedEntryToOpen.periodeTahun})`);
+      alert(
+        `Membuka kembali buku untuk entri: ${selectedEntryToOpen.id} (${selectedEntryToOpen.periodeBulan} ${selectedEntryToOpen.periodeTahun})`
+      );
       setSelectedEntryToOpen(null);
       setShowBukaTutupBukuConfirmModal(false);
     }
   };
 
-  const filteredData = dummyData.filter(entry => {
-    const matchesBulan = filterPeriodeBulan ? entry.periodeBulan.toLowerCase().includes(filterPeriodeBulan.toLowerCase()) : true;
-    const matchesTahun = filterPeriodeTahun ? entry.periodeTahun.toString().includes(filterPeriodeTahun) : true;
-    const matchesStatus = filterStatus ? entry.status.toLowerCase() === filterStatus.toLowerCase() : true;
+  const filteredData = dummyData.filter((entry) => {
+    const matchesBulan = filterPeriodeBulan
+      ? entry.periodeBulan
+          .toLowerCase()
+          .includes(filterPeriodeBulan.toLowerCase())
+      : true;
+    const matchesTahun = filterPeriodeTahun
+      ? entry.periodeTahun.toString().includes(filterPeriodeTahun)
+      : true;
+    const matchesStatus = filterStatus
+      ? entry.status.toLowerCase() === filterStatus.toLowerCase()
+      : true;
 
     const entryDate = new Date(entry.tanggalTutup);
     const matchesDateFrom = filterDateFrom ? entryDate >= filterDateFrom : true;
     const matchesDateTo = filterDateTo ? entryDate <= filterDateTo : true;
 
-    return matchesBulan && matchesTahun && matchesStatus && matchesDateFrom && matchesDateTo;
+    return (
+      matchesBulan &&
+      matchesTahun &&
+      matchesStatus &&
+      matchesDateFrom &&
+      matchesDateTo
+    );
   });
 
   return (
@@ -145,14 +262,16 @@ const TutupBukuDashboard: React.FC = () => {
                 TUTUP BUKU
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Accounting</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Accounting
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Tutup Buku</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {today.toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -161,10 +280,17 @@ const TutupBukuDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Search and Filter Section */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Filter Tutup Buku</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            Filter Tutup Buku
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label htmlFor="filterPeriodeBulan" className="block text-sm font-medium text-gray-700 mb-2">Pilih Bulan</label>
+              <label
+                htmlFor="filterPeriodeBulan"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Pilih Bulan
+              </label>
               <select
                 id="filterPeriodeBulan"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
@@ -173,12 +299,19 @@ const TutupBukuDashboard: React.FC = () => {
               >
                 <option value="">Semua Bulan</option>
                 {months.map((m) => (
-                  <option key={m.label} value={m.label}>{m.label}</option>
+                  <option key={m.label} value={m.label}>
+                    {m.label}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="filterPeriodeTahun" className="block text-sm font-medium text-gray-700 mb-2">Pilih Tahun</label>
+              <label
+                htmlFor="filterPeriodeTahun"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Pilih Tahun
+              </label>
               <select
                 id="filterPeriodeTahun"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
@@ -187,12 +320,19 @@ const TutupBukuDashboard: React.FC = () => {
               >
                 <option value="">Semua Tahun</option>
                 {years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="filterStatus" className="block text-sm font-medium text-gray-700 mb-2">Pilih Status</label>
+              <label
+                htmlFor="filterStatus"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Pilih Status
+              </label>
               <select
                 id="filterStatus"
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
@@ -205,7 +345,12 @@ const TutupBukuDashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="filterDateFrom" className="block text-sm font-medium text-gray-700 mb-2">Tanggal Tutup Dari</label>
+              <label
+                htmlFor="filterDateFrom"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Tanggal Tutup Dari
+              </label>
               <DatePicker
                 selected={filterDateFrom}
                 onChange={(date: Date | null) => setFilterDateFrom(date)}
@@ -215,7 +360,12 @@ const TutupBukuDashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="filterDateTo" className="block text-sm font-medium text-gray-700 mb-2">Tanggal Tutup Sampai</label>
+              <label
+                htmlFor="filterDateTo"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Tanggal Tutup Sampai
+              </label>
               <DatePicker
                 selected={filterDateTo}
                 onChange={(date: Date | null) => setFilterDateTo(date)}
@@ -226,7 +376,9 @@ const TutupBukuDashboard: React.FC = () => {
             </div>
             <div className="flex items-end">
               <button
-                onClick={() => { /* Filter logic is already applied by state changes, this button can trigger a re-render or more complex server-side filtering */ }}
+                onClick={() => {
+                  /* Filter logic is already applied by state changes, this button can trigger a re-render or more complex server-side filtering */
+                }}
                 className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full h-[42px]"
               >
                 <Search className="h-4 w-4 mr-2" /> Cari
@@ -251,33 +403,53 @@ const TutupBukuDashboard: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <h3 className="text-2xl font-bold text-gray-900 p-8 pb-4">Daftar Tutup Buku Sebelumnya</h3>
+          <h3 className="text-2xl font-bold text-gray-900 p-8 pb-4">
+            Daftar Tutup Buku Sebelumnya
+          </h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tanggal Tutup
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Periode Bulan
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Periode Tahun
                   </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Status
                   </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={entry.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {new Date(entry.tanggalTutup).toLocaleDateString('id-ID')}
+                      {new Date(entry.tanggalTutup).toLocaleDateString("id-ID")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {entry.periodeBulan}
@@ -286,14 +458,18 @@ const TutupBukuDashboard: React.FC = () => {
                       {entry.periodeTahun}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        entry.status === 'Closed' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                      }`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          entry.status === "Closed"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-green-100 text-green-800"
+                        }`}
+                      >
                         {entry.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      {entry.status === 'Closed' && (
+                      {entry.status === "Closed" && (
                         <button
                           onClick={() => handleBukaTutupBuku(entry)}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
@@ -304,44 +480,6 @@ const TutupBukuDashboard: React.FC = () => {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* History Tutup Buku */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mt-8">
-          <h3 className="text-2xl font-bold text-gray-900 p-8 pb-4">History Tutup Buku</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode Bulan</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode Tahun</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {history.map((h) => (
-                  <tr key={h.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{new Date(h.tanggal).toLocaleDateString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${h.action === 'Tutup Buku' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                        {h.action}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{h.periodeBulan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{h.periodeTahun}</td>
-                  </tr>
-                ))}
-                {history.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-500">Belum ada history</td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
@@ -365,14 +503,16 @@ const TutupBukuDashboard: React.FC = () => {
       >
         <div className="space-y-4">
           <p className="text-textSecondary">
-            Apakah Anda yakin ingin membuka kembali buku untuk periode{' '}
+            Apakah Anda yakin ingin membuka kembali buku untuk periode{" "}
             <span className="font-semibold text-text">
-              {selectedEntryToOpen?.periodeBulan} {selectedEntryToOpen?.periodeTahun}
+              {selectedEntryToOpen?.periodeBulan}{" "}
+              {selectedEntryToOpen?.periodeTahun}
             </span>
             ?
           </p>
           <p className="text-sm text-red-500">
-            Membuka kembali buku dapat mempengaruhi laporan keuangan yang sudah ditutup.
+            Membuka kembali buku dapat mempengaruhi laporan keuangan yang sudah
+            ditutup.
           </p>
           <div className="flex justify-end space-x-3 pt-4">
             <button
