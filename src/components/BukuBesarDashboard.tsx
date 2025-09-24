@@ -120,6 +120,19 @@ const BukuBesarDashboard: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const goPage = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
 
+  // Handle jurnal click navigation
+  const handleJurnalClick = (noJurnal: string) => {
+    try {
+      // Navigate to Posting Jurnal with noJurnal parameter
+      window.location.hash = `/accounting/posting-jurnal?noJurnal=${encodeURIComponent(noJurnal)}`;
+      console.log('Navigating to Posting Jurnal with noJurnal:', noJurnal);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback navigation
+      window.location.href = window.location.origin + window.location.pathname + `#/accounting/posting-jurnal?noJurnal=${encodeURIComponent(noJurnal)}`;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -245,8 +258,14 @@ const BukuBesarDashboard: React.FC = () => {
                     <td className="px-6 py-3 text-sm text-gray-700">
                       {r.tglJurnal.split("-").reverse().join("/")}
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-700">
-                      {r.noJurnal}
+                    <td className="px-6 py-3 text-sm">
+                      <button
+                        onClick={() => handleJurnalClick(r.noJurnal)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium transition-colors duration-200 cursor-pointer"
+                        title="Klik untuk ke Posting Jurnal"
+                      >
+                        {r.noJurnal}
+                      </button>
                     </td>
                     <td className="px-6 py-3 text-sm text-gray-700">
                       {r.noBukti}

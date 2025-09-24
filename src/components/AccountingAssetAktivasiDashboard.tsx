@@ -40,6 +40,7 @@ interface AktivasiAssetItem {
   totalDepresiasi: number;
   penyusutan: number; // per bulan
   sisaUmur: number; // dalam bulan
+  sisaPenyusutan: number; // sisa nilai yang belum disusutkan
 }
 
 const mockPOs: PO[] = [
@@ -79,6 +80,7 @@ const seed: AktivasiAssetItem[] = [
     penyusutan: 312500,
     totalDepresiasi: 937500,
     sisaUmur: 45,
+    sisaPenyusutan: 14062500, // harga - totalDepresiasi
   },
   {
     id: "aa-002",
@@ -95,6 +97,7 @@ const seed: AktivasiAssetItem[] = [
     penyusutan: 222222,
     totalDepresiasi: 444444,
     sisaUmur: 34,
+    sisaPenyusutan: 7555556, // harga - totalDepresiasi
   },
 ];
 
@@ -110,7 +113,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
   const [endDate, setEndDate] = useState<string>("");
 
   const [form, setForm] = useState<
-    Omit<AktivasiAssetItem, "totalDepresiasi" | "penyusutan" | "sisaUmur">
+    Omit<AktivasiAssetItem, "totalDepresiasi" | "penyusutan" | "sisaUmur" | "sisaPenyusutan">
   >({
     id: "",
     tanggal: "",
@@ -225,6 +228,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
         totalDepresiasi: 0,
         penyusutan: form.harga > 0 ? form.harga / 48 : 0, // Assuming 48 months (4 years) lifetime
         sisaUmur: 48,
+        sisaPenyusutan: form.harga, // Initially, sisa penyusutan = harga (belum ada depresiasi)
       };
       setRows((prev) => [newItem, ...prev]);
     }
@@ -311,6 +315,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                 <th className="px-3 py-2 text-right">Harga</th>
                 <th className="px-3 py-2 text-right">Total Depresiasi</th>
                 <th className="px-3 py-2 text-right">Penyusutan (Bulan)</th>
+                <th className="px-3 py-2 text-right">Sisa Penyusutan</th>
                 <th className="px-3 py-2 text-right">Sisa Umur (Bulan)</th>
                 <th className="px-3 py-2 text-left">Kategori</th>
                 <th className="px-3 py-2 text-right">Aksi</th>
@@ -340,6 +345,9 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                   <td className="px-3 py-2 text-right">
                     Rp {r.penyusutan.toLocaleString("id-ID")}
                   </td>
+                  <td className="px-3 py-2 text-right">
+                    Rp {r.sisaPenyusutan.toLocaleString("id-ID")}
+                  </td>
                   <td className="px-3 py-2 text-right">{r.sisaUmur}</td>
                   <td className="px-3 py-2">{r.kategori || "-"}</td>
                   <td className="px-3 py-2 text-right space-x-1">
@@ -367,7 +375,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
               {filtered.length === 0 && (
                 <tr>
                   <td
-                    colSpan={12}
+                    colSpan={13}
                     className="px-3 py-8 text-center text-gray-500"
                   >
                     Tidak ada data
@@ -427,6 +435,10 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                 <div className="text-gray-500">Penyusutan / Bulan</div>
                 <div className="col-span-2 font-medium">
                   Rp {detailItem.penyusutan.toLocaleString("id-ID")}
+                </div>
+                <div className="text-gray-500">Sisa Penyusutan</div>
+                <div className="col-span-2 font-medium">
+                  Rp {detailItem.sisaPenyusutan.toLocaleString("id-ID")}
                 </div>
                 <div className="text-gray-500">Sisa Umur</div>
                 <div className="col-span-2 font-medium">

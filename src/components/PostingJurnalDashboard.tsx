@@ -526,7 +526,6 @@ const PostingJurnalDashboard: React.FC = () => {
                           className="rounded text-blue-600 focus:ring-blue-500"
                           checked={selectedJurnals.has(entry.id)}
                           onChange={() => toggleSelectJurnal(entry.id)}
-                          disabled={entry.isPosted}
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -647,7 +646,7 @@ const PostingJurnalDashboard: React.FC = () => {
           </div>
         </div>
 
-      <div className="flex justify-end space-x-3 mb-8">
+        <div className="flex justify-end space-x-3 mb-8">
           <button
             onClick={handleUnpostingJurnal}
             disabled={
@@ -666,9 +665,13 @@ const PostingJurnalDashboard: React.FC = () => {
           </button>
           <button
             onClick={handlePostingJurnal}
-            disabled={selectedJurnals.size === 0}
+            disabled={
+              selectedJurnals.size === 0 ||
+              selectedJurnalEntries.some((entry) => entry.isPosted)
+            }
             className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
-              selectedJurnals.size > 0
+              selectedJurnals.size > 0 &&
+              selectedJurnalEntries.every((entry) => !entry.isPosted)
                 ? "bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 : "bg-gray-400 cursor-not-allowed"
             } transition-colors`}
@@ -678,142 +681,142 @@ const PostingJurnalDashboard: React.FC = () => {
           </button>
         </div>
 
-      {/* Posting Confirmation Modal */}
-      <Modal
-        isOpen={isPostingModalOpen}
-        onClose={() => setIsPostingModalOpen(false)}
-        title="Konfirmasi Posting Jurnal"
-        size="lg"
-      >
-        <div className="space-y-4">
-          <p className="text-textSecondary">
-            Anda akan memposting jurnal-jurnal berikut. Pastikan semua data
-            sudah benar.
-          </p>
-          <div className="max-h-60 overflow-y-auto border border-border rounded-lg p-3 bg-surface">
-            {selectedJurnalEntries.length > 0 ? (
-              <ul className="list-disc list-inside space-y-1 text-text">
-                {selectedJurnalEntries.map((entry) => (
-                  <li
-                    key={entry.id}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span>
-                      <span className="font-semibold">{entry.noJurnal}</span> -{" "}
-                      {entry.keterangan}
-                    </span>
-                    {entry.isPosted && (
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
-                        Sudah Diposting
+        {/* Posting Confirmation Modal */}
+        <Modal
+          isOpen={isPostingModalOpen}
+          onClose={() => setIsPostingModalOpen(false)}
+          title="Konfirmasi Posting Jurnal"
+          size="lg"
+        >
+          <div className="space-y-4">
+            <p className="text-textSecondary">
+              Anda akan memposting jurnal-jurnal berikut. Pastikan semua data
+              sudah benar.
+            </p>
+            <div className="max-h-60 overflow-y-auto border border-border rounded-lg p-3 bg-surface">
+              {selectedJurnalEntries.length > 0 ? (
+                <ul className="list-disc list-inside space-y-1 text-text">
+                  {selectedJurnalEntries.map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span>
+                        <span className="font-semibold">{entry.noJurnal}</span>{" "}
+                        - {entry.keterangan}
                       </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-textSecondary text-sm italic">
-                Tidak ada jurnal yang dipilih untuk diposting.
-              </p>
-            )}
+                      {entry.isPosted && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
+                          Sudah Diposting
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-textSecondary text-sm italic">
+                  Tidak ada jurnal yang dipilih untuk diposting.
+                </p>
+              )}
+            </div>
+            <p className="text-sm text-red-500">
+              Perhatian: Jurnal yang sudah diposting tidak dapat diubah atau
+              dihapus.
+            </p>
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsPostingModalOpen(false)}
+                className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmPosting}
+                disabled={
+                  selectedJurnalEntries.filter((j) => !j.isPosted).length === 0
+                }
+                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                  selectedJurnalEntries.filter((j) => !j.isPosted).length > 0
+                    ? "bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    : "bg-gray-400 cursor-not-allowed"
+                } transition-colors`}
+              >
+                <CheckSquare className="h-5 w-5 mr-2" /> Konfirmasi Posting
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-red-500">
-            Perhatian: Jurnal yang sudah diposting tidak dapat diubah atau
-            dihapus.
-          </p>
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={() => setIsPostingModalOpen(false)}
-              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirmPosting}
-              disabled={
-                selectedJurnalEntries.filter((j) => !j.isPosted).length === 0
-              }
-              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                selectedJurnalEntries.filter((j) => !j.isPosted).length > 0
-                  ? "bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  : "bg-gray-400 cursor-not-allowed"
-              } transition-colors`}
-            >
-              <CheckSquare className="h-5 w-5 mr-2" /> Konfirmasi Posting
-            </button>
-          </div>
-        </div>
-      </Modal>
+        </Modal>
 
-      {/* Unposting Confirmation Modal */}
-      <Modal
-        isOpen={isUnpostingModalOpen}
-        onClose={() => setIsUnpostingModalOpen(false)}
-        title="Konfirmasi Unposting Jurnal"
-        size="lg"
-      >
-        <div className="space-y-4">
-          <p className="text-textSecondary">
-            Anda akan meng-unposting jurnal-jurnal berikut. Pastikan semua data
-            sudah benar.
-          </p>
-          <div className="max-h-60 overflow-y-auto border border-border rounded-lg p-3 bg-surface">
-            {selectedJurnalEntries.length > 0 ? (
-              <ul className="list-disc list-inside space-y-1 text-text">
-                {selectedJurnalEntries.map((entry) => (
-                  <li
-                    key={entry.id}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span>
-                      <span className="font-semibold">{entry.noJurnal}</span> -{" "}
-                      {entry.keterangan}
-                    </span>
-                    {entry.isPosted && (
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
-                        Sudah Diposting
+        {/* Unposting Confirmation Modal */}
+        <Modal
+          isOpen={isUnpostingModalOpen}
+          onClose={() => setIsUnpostingModalOpen(false)}
+          title="Konfirmasi Unposting Jurnal"
+          size="lg"
+        >
+          <div className="space-y-4">
+            <p className="text-textSecondary">
+              Anda akan meng-unposting jurnal-jurnal berikut. Pastikan semua
+              data sudah benar.
+            </p>
+            <div className="max-h-60 overflow-y-auto border border-border rounded-lg p-3 bg-surface">
+              {selectedJurnalEntries.length > 0 ? (
+                <ul className="list-disc list-inside space-y-1 text-text">
+                  {selectedJurnalEntries.map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span>
+                        <span className="font-semibold">{entry.noJurnal}</span>{" "}
+                        - {entry.keterangan}
                       </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-textSecondary text-sm italic">
-                Tidak ada jurnal yang dipilih untuk diunposting.
-              </p>
-            )}
+                      {entry.isPosted && (
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 ml-2">
+                          Sudah Diposting
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-textSecondary text-sm italic">
+                  Tidak ada jurnal yang dipilih untuk diunposting.
+                </p>
+              )}
+            </div>
+            <p className="text-sm text-red-500">
+              Perhatian: Jurnal yang sudah diunposting tidak dapat dikembalikan
+              ke status posted.
+            </p>
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsUnpostingModalOpen(false)}
+                className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmUnposting}
+                disabled={
+                  selectedJurnalEntries.filter((j) => j.isPosted).length === 0
+                }
+                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                  selectedJurnalEntries.filter((j) => j.isPosted).length > 0
+                    ? "bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    : "bg-gray-400 cursor-not-allowed"
+                } transition-colors`}
+              >
+                <CheckSquare className="h-5 w-5 mr-2" /> Konfirmasi Unposting
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-red-500">
-            Perhatian: Jurnal yang sudah diunposting tidak dapat dikembalikan ke
-            status posted.
-          </p>
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={() => setIsUnpostingModalOpen(false)}
-              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-textSecondary bg-surface hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirmUnposting}
-              disabled={
-                selectedJurnalEntries.filter((j) => j.isPosted).length === 0
-              }
-              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-                selectedJurnalEntries.filter((j) => j.isPosted).length > 0
-                  ? "bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  : "bg-gray-400 cursor-not-allowed"
-              } transition-colors`}
-            >
-              <CheckSquare className="h-5 w-5 mr-2" /> Konfirmasi Unposting
-            </button>
-          </div>
-        </div>
-      </Modal>
-    </div>
+        </Modal>
+      </div>
     </div>
   );
 };
