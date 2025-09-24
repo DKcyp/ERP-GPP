@@ -7,6 +7,8 @@ import {
   FileText,
   Eye,
   ArrowUpDown,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import TambahBarangModal from "./TambahBarangModal"; // Import the new modal component
 
@@ -373,9 +375,17 @@ const MasterBarangDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 transition-colors">
-                        <Eye className="h-5 w-5" />
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <button className="p-2 text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 hover:text-blue-800 transition-colors">
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button className="p-2 text-yellow-600 bg-yellow-100 rounded-full hover:bg-yellow-200 hover:text-yellow-800 transition-colors">
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button className="p-2 text-red-600 bg-red-100 rounded-full hover:bg-red-200 hover:text-red-800 transition-colors">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

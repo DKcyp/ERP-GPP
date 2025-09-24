@@ -17,7 +17,6 @@ const TambahBarangModal: React.FC<TambahBarangModalProps> = ({ isOpen, onClose }
     quantity: '',
     satuan: '',
     masaExpired: '',
-    perizinan: 'belum', // 'sudah' or 'belum'
     barangActive: 'active', // 'active' or 'non-active'
   });
 
@@ -190,33 +189,6 @@ const TambahBarangModal: React.FC<TambahBarangModalProps> = ({ isOpen, onClose }
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Perizinan Barang</label>
-              <div className="flex items-center space-x-4">
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="perizinan"
-                    value="sudah"
-                    checked={formData.perizinan === 'sudah'}
-                    onChange={handleChange}
-                    className="form-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-gray-700">Sudah</span>
-                </label>
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="perizinan"
-                    value="belum"
-                    checked={formData.perizinan === 'belum'}
-                    onChange={handleChange}
-                    className="form-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-gray-700">Belum</span>
-                </label>
-              </div>
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Barang Active</label>
               <div className="flex items-center space-x-4">
