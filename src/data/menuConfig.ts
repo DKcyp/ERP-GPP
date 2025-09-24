@@ -358,6 +358,17 @@ const createGeneralMenu = (role: string): MenuSection => ({
           },
         ]
       : []),
+    {
+      title: "Audit Trail",
+      icon: "History",
+      items: [
+        {
+          title: "Log Aktivitas",
+          icon: "ListChecks",
+          path: `/${role}/general/audit-trail`,
+        },
+      ],
+    },
   ],
 });
 
@@ -406,7 +417,6 @@ export const monitoringManajementMenu: MenuSection[] = [
     ],
   },
 ];
-
 export const marketingMenu: MenuSection[] = [
   {
     title: "Dashboard", // NEW: Main Dashboard for Marketing

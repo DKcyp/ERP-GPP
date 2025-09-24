@@ -366,6 +366,7 @@ import MonitoringPenilaianTKDNDashboard from "./MonitoringPenilaianTKDNDashboard
 import GeneralBudgetPengajuanDashboard from "./GeneralBudgetPengajuanDashboard";
 import GeneralBudgetLaporanDashboard from "./GeneralBudgetLaporanDashboard";
 import GeneralPengajuanResignDashboard from "./GeneralPengajuanResignDashboard";
+import AuditTrailDashboard from "./AuditTrailDashboard"; // Import the new Audit Trail component
 
 // General Kendaraan
 import GeneralKendaraanPengajuanDriver from "./GeneralKendaraanPengajuanDriver";
@@ -606,6 +607,11 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/gudang/general/kpi/list") {
       return <GeneralListKPIDashboard />;
+    }
+
+    // Generic Audit Trail Route for all roles
+    if (currentPage.endsWith("/general/audit-trail")) {
+      return <AuditTrailDashboard />;
     }
     if (currentPage === "/gudang/general/voucher/dashboard") {
       return <GeneralVoucherDashboard />;
