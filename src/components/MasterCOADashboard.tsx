@@ -48,7 +48,7 @@ const MasterCOADashboard: React.FC = () => {
 
   const handleAdd = () => {
     setIsEditing(false);
-    setEditingCOA({ id: '', kodeCOA: '', namaCOA: '', kategori: 'Aset Lancar' }); // Initialize with empty values
+    setEditingCOA({ id: '', kodeCOA: '', namaCOA: '', kategori: '' }); // Initialize with empty values, kategori is empty for placeholder
     setIsModalOpen(true);
   };
 
@@ -335,11 +335,12 @@ const MasterCOADashboard: React.FC = () => {
             <select
               id="kategori"
               name="kategori"
-              value={editingCOA?.kategori || 'Aset Lancar'}
+              value={editingCOA?.kategori || ''}
               onChange={handleFormInputChange}
               className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text appearance-none"
               required
             >
+              <option value="" disabled>-- Pilih Kategori --</option>
               {availableCategories.map(category => (
                 <option key={category} value={category}>{category}</option>
               ))}
