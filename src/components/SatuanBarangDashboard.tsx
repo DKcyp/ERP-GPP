@@ -1,20 +1,185 @@
-import React, { useState } from 'react';
-import { Clock, Search, Plus, FileText, FileBarChart, FileSpreadsheet, Edit, Trash2 } from 'lucide-react';
-import TambahSatuanBarangModal from './TambahSatuanBarangModal';
+import React, { useState } from "react";
+import {
+  Clock,
+  Search,
+  Plus,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import TambahSatuanBarangModal from "./TambahSatuanBarangModal";
+
+interface SatuanBarang {
+  no: number;
+  nama: string;
+  deskripsi: string;
+  satuanDasar: string;
+  satuanKonversi: string;
+  faktorKonversi: number;
+}
 
 const SatuanBarangDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [satuanBarang, setSatuanBarang] = useState<SatuanBarang[]>([
+    {
+      no: 1,
+      nama: "KG",
+      deskripsi: "Kilogram",
+      satuanDasar: "G",
+      satuanKonversi: "KG",
+      faktorKonversi: 1000,
+    },
+    {
+      no: 2,
+      nama: "G",
+      deskripsi: "Gram",
+      satuanDasar: "G",
+      satuanKonversi: "G",
+      faktorKonversi: 1,
+    },
+    {
+      no: 3,
+      nama: "Kardus",
+      deskripsi: "Kardus/Box",
+      satuanDasar: "Pcs",
+      satuanKonversi: "Kardus",
+      faktorKonversi: 12,
+    },
+    {
+      no: 4,
+      nama: "Lusin",
+      deskripsi: "Lusin",
+      satuanDasar: "Pcs",
+      satuanKonversi: "Lusin",
+      faktorKonversi: 12,
+    },
+    {
+      no: 5,
+      nama: "Pcs",
+      deskripsi: "Pieces/Buah",
+      satuanDasar: "Pcs",
+      satuanKonversi: "Pcs",
+      faktorKonversi: 1,
+    },
+    {
+      no: 6,
+      nama: "Pack",
+      deskripsi: "Pack/Kemasan",
+      satuanDasar: "Pcs",
+      satuanKonversi: "Pack",
+      faktorKonversi: 6,
+    },
+    {
+      no: 7,
+      nama: "L",
+      deskripsi: "Liter",
+      satuanDasar: "ML",
+      satuanKonversi: "L",
+      faktorKonversi: 1000,
+    },
+    {
+      no: 8,
+      nama: "ML",
+      deskripsi: "Mililiter",
+      satuanDasar: "ML",
+      satuanKonversi: "ML",
+      faktorKonversi: 1,
+    },
+    {
+      no: 9,
+      nama: "M",
+      deskripsi: "Meter",
+      satuanDasar: "CM",
+      satuanKonversi: "M",
+      faktorKonversi: 100,
+    },
+    {
+      no: 10,
+      nama: "CM",
+      deskripsi: "Centimeter",
+      satuanDasar: "CM",
+      satuanKonversi: "CM",
+      faktorKonversi: 1,
+    },
+    {
+      no: 11,
+      nama: "Roll",
+      deskripsi: "Roll/Gulungan",
+      satuanDasar: "M",
+      satuanKonversi: "Roll",
+      faktorKonversi: 50,
+    },
+    {
+      no: 12,
+      nama: "Rim",
+      deskripsi: "Rim Kertas",
+      satuanDasar: "Lembar",
+      satuanKonversi: "Rim",
+      faktorKonversi: 500,
+    },
+  ]);
+  const [editingUnit, setEditingUnit] = useState<SatuanBarang | null>(null); // New state for editing unit
 
-  const handleOpenModal = () => setIsModalOpen(true);
+  const handleOpenModal = () => {
+    setEditingUnit(null); // Reset for new entry
+    setIsModalOpen(true);
+  };
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const units = [
-    { no: 1, nama: 'KG', deskripsi: 'Kilogram' },
-    { no: 2, nama: 'G', deskripsi: 'Gram' },
-    { no: 3, nama: 'L', deskripsi: 'Liter' },
-    { no: 4, nama: 'M', deskripsi: 'Meter' },
-    { no: 5, nama: 'CM', deskripsi: 'Centimeter' },
-  ];
+  const handleSaveSatuan = (
+    nama: string,
+    deskripsi: string,
+    satuanDasar: string,
+    satuanKonversi: string,
+    faktorKonversi: number
+  ) => {
+    if (editingUnit) {
+      // Update existing unit
+      setSatuanBarang((prev) =>
+        prev.map((s) =>
+          s.no === editingUnit.no
+            ? {
+                ...s,
+                nama,
+                deskripsi,
+                satuanDasar,
+                satuanKonversi,
+                faktorKonversi,
+              }
+            : s
+        )
+      );
+    } else {
+      // Add new unit
+      const newNo =
+        satuanBarang.length > 0
+          ? Math.max(...satuanBarang.map((s) => s.no)) + 1
+          : 1;
+      setSatuanBarang((prev) => [
+        ...prev,
+        {
+          no: newNo,
+          nama,
+          deskripsi,
+          satuanDasar,
+          satuanKonversi,
+          faktorKonversi,
+        },
+      ]);
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteSatuan = (no: number) => {
+    setSatuanBarang((prev) => prev.filter((s) => s.no !== no));
+  };
+
+  const handleEditClick = (unit: SatuanBarang) => {
+    setEditingUnit(unit);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -26,16 +191,20 @@ const SatuanBarangDashboard: React.FC = () => {
                 SATUAN BARANG
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Barang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Barang
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Satuan Barang</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -92,24 +261,67 @@ const SatuanBarangDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Satuan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Satuan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Deskripsi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan Dasar
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan Konversi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Faktor Konversi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {units.map((unit) => (
-                  <tr key={unit.no} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{unit.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{unit.nama}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{unit.deskripsi}</td>
+                {satuanBarang.map((unit) => (
+                  <tr
+                    key={unit.no}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {unit.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-semibold text-blue-600">
+                        {unit.nama}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {unit.deskripsi}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {unit.satuanDasar}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {unit.satuanKonversi}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {unit.faktorKonversi}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-3">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors duration-200">
+                        <button
+                          onClick={() => handleEditClick(unit)}
+                          className="text-blue-600 hover:text-blue-900 transition-colors duration-200"
+                        >
                           <Edit className="h-5 w-5" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 transition-colors duration-200">
+                        <button
+                          onClick={() => handleDeleteSatuan(unit.no)}
+                          className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                        >
                           <Trash2 className="h-5 w-5" />
                         </button>
                       </div>
@@ -123,13 +335,14 @@ const SatuanBarangDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {units.length} of {units.length} entries
+              Showing 1 to {satuanBarang.length} of {satuanBarang.length}{" "}
+              entries
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                 Previous
               </button>
-              <button className="px-4 py-2 border border-blue-500 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200">
+              <button className="px-4 py-2 border border-blue-500 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm">
                 1
               </button>
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200">
@@ -140,7 +353,12 @@ const SatuanBarangDashboard: React.FC = () => {
         </div>
       </div>
 
-      <TambahSatuanBarangModal isOpen={isModalOpen} onClose={handleCloseModal} />
+      <TambahSatuanBarangModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSatuan}
+        editingUnit={editingUnit}
+      />
     </div>
   );
 };

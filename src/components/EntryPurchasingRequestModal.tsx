@@ -10,7 +10,7 @@ interface EntryPurchasingRequestModalProps {
 }
 
 const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState<EntryPurchasingRequestFormData>({
+    const [formData, setFormData] = useState<EntryPurchasingRequestFormData & { noPBG: string }>({
     tanggalPR: '',
     noPR: '',
     noSO: '',
@@ -141,6 +141,20 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
                 <option key={so} value={so}>{so}</option>
               ))}
             </select>
+          </div>
+
+          {/* No PBG */}
+          <div>
+            <label htmlFor="noPBG" className="block text-sm font-medium text-textSecondary mb-1">No. PBG</label>
+            <input
+              type="text"
+              id="noPBG"
+              name="noPBG"
+              value={formData.noPBG}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+              placeholder="Masukkan No. PBG"
+            />
           </div>
 
           {/* Departemen */}
