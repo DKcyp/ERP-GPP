@@ -8,6 +8,7 @@ interface AktivasiAssetItem {
   id: string;
   tanggal: string; // yyyy-mm-dd
   noPO: string;
+  noRFI: string;
   vendor: string;
   barangPOId: string; // id item di PO
   namaBarang: string;
@@ -43,6 +44,7 @@ const seed: AktivasiAssetItem[] = [
     id: "aa-001",
     tanggal: "2025-09-02",
     noPO: "PO-001/2025",
+    noRFI: "RFI-001",
     vendor: "PT Sumber Makmur",
     barangPOId: "it-1",
     namaBarang: "Laptop A",
@@ -55,6 +57,7 @@ const seed: AktivasiAssetItem[] = [
     id: "aa-002",
     tanggal: "2025-09-03",
     noPO: "PO-002/2025",
+    noRFI: "RFI-002",
     vendor: "CV Elektronik Jaya",
     barangPOId: "it-4",
     namaBarang: "Kamera D",
@@ -72,10 +75,11 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState<AktivasiAssetItem>({
+    const [form, setForm] = useState<AktivasiAssetItem>({
     id: "",
     tanggal: "",
     noPO: "",
+    noRFI: "",
     vendor: "",
     barangPOId: "",
     namaBarang: "",
@@ -88,7 +92,8 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
   const filtered = useMemo(() => {
     const qq = q.toLowerCase();
     return rows.filter(r => (
-      r.noPO.toLowerCase().includes(qq) ||
+            r.noPO.toLowerCase().includes(qq) ||
+      r.noRFI.toLowerCase().includes(qq) ||
       r.vendor.toLowerCase().includes(qq) ||
       r.namaBarang.toLowerCase().includes(qq)
     ));
@@ -96,7 +101,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ id: crypto.randomUUID(), tanggal: "", noPO: "", vendor: "", barangPOId: "", namaBarang: "", qty: 0, harga: 0, kategori: "", keterangan: "" });
+    setForm({ id: crypto.randomUUID(), tanggal: "", noPO: "", noRFI: "", vendor: "", barangPOId: "", namaBarang: "", qty: 0, harga: 0, kategori: "", keterangan: "" });
     setIsOpen(true);
   };
 
@@ -188,6 +193,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                 <th className="px-3 py-2 text-left">No</th>
                 <th className="px-3 py-2 text-left">Tanggal</th>
                 <th className="px-3 py-2 text-left">No PO</th>
+                <th className="px-3 py-2 text-left">No RFI</th>
                 <th className="px-3 py-2 text-left">Vendor</th>
                 <th className="px-3 py-2 text-left">Barang</th>
                 <th className="px-3 py-2 text-right">Qty</th>
@@ -203,6 +209,7 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                   <td className="px-3 py-2">{idx+1}</td>
                   <td className="px-3 py-2">{new Date(r.tanggal).toLocaleDateString("id-ID")}</td>
                   <td className="px-3 py-2">{r.noPO}</td>
+                  <td className="px-3 py-2">{r.noRFI}</td>
                   <td className="px-3 py-2">{r.vendor}</td>
                   <td className="px-3 py-2 font-medium text-gray-900">{r.namaBarang}</td>
                   <td className="px-3 py-2 text-right">{r.qty.toLocaleString("id-ID")}</td>
@@ -231,10 +238,14 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
               <button onClick={()=>setIsOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"><X className="h-5 w-5"/></button>
             </div>
             <form onSubmit={saveForm} className="p-5 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal Aktivasi</label>
                   <input type="date" value={form.tanggal} onChange={e=>setForm(f=>({...f, tanggal:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">No. RFI</label>
+                  <input value={form.noRFI} onChange={e=>setForm(f=>({...f, noRFI:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">No PO</label>
