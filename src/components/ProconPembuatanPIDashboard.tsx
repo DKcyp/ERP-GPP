@@ -374,8 +374,8 @@ const ProconPembuatanPIDashboard: React.FC = () => {
 
   const handlePrint = () => {
     const link = document.createElement("a");
-    // Assuming the '.folder' directory is in your public assets folder
-    link.href = "/folder/cetakprovorma.pdf";
+    // Download from Google Drive link
+    link.href = "https://drive.google.com/uc?export=download&id=1rqaQQJIXnM7vozNxFz_-R5M13H3LTvjo";
     link.setAttribute("download", "Proforma-Invoice.pdf"); // Sets the downloaded file name
     document.body.appendChild(link);
     link.click();
