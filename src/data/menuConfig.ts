@@ -1511,7 +1511,7 @@ export const gudangMenu: MenuSection[] = [
         path: "/gudang/penerimaan-barang-manual/dashboard",
       },
       {
-        title: "Pertmintaan Barang Gudang",
+        title: "Permintaan Barang Gudang",
         icon: "ShoppingCart",
         path: "/gudang/permintaan-barang-gudang/dashboard",
       },

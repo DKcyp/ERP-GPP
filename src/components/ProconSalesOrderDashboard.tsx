@@ -40,6 +40,9 @@ interface ProconSalesOrder {
   dueDateReport?: string; // New field for Due Date Report
   dueDateFinance: string;
   delaySubmitToFinance: string;
+  dueDatePI?: string; // New: Due Date PI
+  delaySubmitPI?: string; // New: Delay Submit PI
+  submitToFinance?: string; // New: Submit to Finance
   piAmount: string;
   keterangan: string;
   piNo: string;
@@ -110,6 +113,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "03-Jan-25",
       dueDateFinance: "03-Jan-25",
       delaySubmitToFinance: "14",
+      dueDatePI: "03-Jan-25",
+      delaySubmitPI: "14",
+      submitToFinance: "14",
       piAmount: "75",
       keterangan: "OVERDUE",
       piNo: "PI-2025-001",
@@ -155,6 +161,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "09-Jan-25",
       dueDateFinance: "09-Jan-25",
       delaySubmitToFinance: "11",
+      dueDatePI: "09-Jan-25",
+      delaySubmitPI: "11",
+      submitToFinance: "11",
       piAmount: "45",
       keterangan: "CRITICAL",
       piNo: "PI-2025-002",
@@ -200,6 +209,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "15-Jan-25",
       dueDateFinance: "15-Jan-25",
       delaySubmitToFinance: "0",
+      dueDatePI: "15-Jan-25",
+      delaySubmitPI: "0",
+      submitToFinance: "0",
       piAmount: "100",
       keterangan: "COMPLETED",
       piNo: "PI-2025-003",
@@ -244,6 +256,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "16-Jan-25",
       dueDateFinance: "16-Jan-25",
       delaySubmitToFinance: "0",
+      dueDatePI: "16-Jan-25",
+      delaySubmitPI: "0",
+      submitToFinance: "0",
       piAmount: "90",
       keterangan: "COMPLETED",
       piNo: "PI-2025-004",
@@ -289,6 +304,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "23-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "2",
+      dueDatePI: "23-Jan-25",
+      delaySubmitPI: "2",
+      submitToFinance: "2",
       piAmount: "65",
       keterangan: "MINOR DELAY",
       piNo: "PI-2025-005",
@@ -335,6 +353,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "23-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "0",
+      dueDatePI: "23-Jan-25",
+      delaySubmitPI: "0",
+      submitToFinance: "0",
       piAmount: "30",
       keterangan: "IN PROGRESS",
       piNo: "PI-2025-006",
@@ -380,6 +401,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDateReport: "31-Jan-25",
       dueDateFinance: "31-Jan-25",
       delaySubmitToFinance: "-3",
+      dueDatePI: "31-Jan-25",
+      delaySubmitPI: "-3",
+      submitToFinance: "-3",
       piAmount: "95",
       keterangan: "EXCELLENT",
       piNo: "PI-2025-007",
@@ -607,6 +631,17 @@ const ProconSalesOrderDashboard: React.FC = () => {
         formData.demob || "",
         formData.statusPekerjaan || ""
       ),
+      dueDatePI: new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      }),
+      delaySubmitPI: "0",
+      submitToFinance: new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      }),
     });
   };
 
@@ -656,6 +691,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
                 ...(formData as ProconSalesOrder),
                 id: selectedItem.id,
                 no: selectedItem.no,
+                dueDatePI: formData.dueDatePI,
+                delaySubmitPI: formData.delaySubmitPI,
+                submitToFinance: formData.submitToFinance,
               }
             : item
         )
@@ -981,6 +1019,24 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
+                    DUE DATE PI
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    DELAY SUBMIT PI
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    SUBMIT TO FINANCE
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
                     PI AMOUNT
                   </th>
                   <th
@@ -1157,6 +1213,25 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       >
                         {item.delaySubmitToFinance}
                       </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
+                      {item.dueDatePI}
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span
+                        className={`font-bold ${
+                          parseInt(item.delaySubmitPI) > 0
+                            ? "text-red-600 bg-red-100 px-2 py-1 rounded-full"
+                            : parseInt(item.delaySubmitPI) < 0
+                            ? "text-green-600 bg-green-100 px-2 py-1 rounded-full"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        {item.delaySubmitPI}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
+                      {item.submitToFinance}
                     </td>
                     <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-center">
                       {item.piAmount}%

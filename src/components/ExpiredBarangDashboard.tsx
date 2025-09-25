@@ -1,5 +1,17 @@
-import React, { useState } from 'react';
-import { Clock, Search, Calendar, FileText, FileBarChart, FileSpreadsheet, ShoppingCart, Trash2, FileCheck, CheckCircle } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Clock,
+  Search,
+  Calendar,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  ShoppingCart,
+  Trash2,
+  FileCheck,
+  CheckCircle,
+  Eye,
+} from "lucide-react";
 
 interface ExpiredBarangItem {
   no: number;
@@ -13,66 +25,141 @@ interface ExpiredBarangItem {
   statusColor: string;
   serialNumber: string;
   keterangan: string;
-  baStatus: 'Pending' | 'Generated' | 'Completed';
-  qhseApproval: 'Pending' | 'Approved' | 'Rejected';
+  baStatus: "Pending" | "Generated" | "Completed";
+  qhseApproval: "Pending" | "Approved" | "Rejected";
+  tanggalPO?: string;
+  tanggalKedatangan?: string;
 }
 
 const ExpiredBarangDashboard: React.FC = () => {
-  const [serialNumberFilter, setSerialNumberFilter] = useState('');
+  const [serialNumberFilter, setSerialNumberFilter] = useState("");
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedDetailItem, setSelectedDetailItem] =
+    useState<ExpiredBarangItem | null>(null);
   const [expiredItems, setExpiredItems] = useState<ExpiredBarangItem[]>([
-    { 
-      no: 1, kodeBarang: 'BRG001', namaBarang: 'Helm Safety', kategori: 'Alat', satuan: 'Unit', 
-      jumlahExpired: 120, tanggal: '13-02-2025', status: 'Expired Dalam 2 Hari', statusColor: 'bg-yellow-100 text-yellow-800',
-      serialNumber: 'HSF-2024-001', keterangan: 'Batch produksi Januari, masih layak pakai untuk training',
-      baStatus: 'Pending', qhseApproval: 'Pending'
+    {
+      no: 1,
+      kodeBarang: "BRG001",
+      namaBarang: "Helm Safety",
+      kategori: "Alat",
+      satuan: "Unit",
+      jumlahExpired: 120,
+      tanggal: "13-02-2025",
+      status: "Expired Dalam 2 Hari",
+      statusColor: "bg-yellow-100 text-yellow-800",
+      serialNumber: "HSF-2024-001",
+      keterangan: "Batch produksi Januari, masih layak pakai untuk training",
+      baStatus: "Pending",
+      qhseApproval: "Pending",
+      tanggalPO: "2024-12-01",
+      tanggalKedatangan: "2025-01-10",
     },
-    { 
-      no: 2, kodeBarang: 'BRG002', namaBarang: 'Masker Respirator', kategori: 'Alat', satuan: 'Box', 
-      jumlahExpired: 50, tanggal: '15-02-2025', status: 'Expired Dalam 4 Hari', statusColor: 'bg-yellow-100 text-yellow-800',
-      serialNumber: 'MR-2024-002', keterangan: 'Filter masih berfungsi baik, perlu pengecekan ulang',
-      baStatus: 'Generated', qhseApproval: 'Pending'
+    {
+      no: 2,
+      kodeBarang: "BRG002",
+      namaBarang: "Masker Respirator",
+      kategori: "Alat",
+      satuan: "Box",
+      jumlahExpired: 50,
+      tanggal: "15-02-2025",
+      status: "Expired Dalam 4 Hari",
+      statusColor: "bg-yellow-100 text-yellow-800",
+      serialNumber: "MR-2024-002",
+      keterangan: "Filter masih berfungsi baik, perlu pengecekan ulang",
+      baStatus: "Generated",
+      qhseApproval: "Pending",
+      tanggalPO: "2024-12-15",
+      tanggalKedatangan: "2025-01-20",
     },
-    { 
-      no: 3, kodeBarang: 'BRG003', namaBarang: 'Sarung Tangan Safety', kategori: 'Alat', satuan: 'Pasang', 
-      jumlahExpired: 75, tanggal: '22-02-2025', status: 'Expired Dalam 7 Hari', statusColor: 'bg-yellow-100 text-yellow-800',
-      serialNumber: 'SGS-2024-003', keterangan: 'Kualitas material masih baik, dapat digunakan untuk pekerjaan ringan',
-      baStatus: 'Completed', qhseApproval: 'Approved'
+    {
+      no: 3,
+      kodeBarang: "BRG003",
+      namaBarang: "Sarung Tangan Safety",
+      kategori: "Alat",
+      satuan: "Pasang",
+      jumlahExpired: 75,
+      tanggal: "22-02-2025",
+      status: "Expired Dalam 7 Hari",
+      statusColor: "bg-yellow-100 text-yellow-800",
+      serialNumber: "SGS-2024-003",
+      keterangan:
+        "Kualitas material masih baik, dapat digunakan untuk pekerjaan ringan",
+      baStatus: "Completed",
+      qhseApproval: "Approved",
+      tanggalPO: "2025-01-05",
+      tanggalKedatangan: "2025-01-25",
     },
-    { 
-      no: 4, kodeBarang: 'BRG004', namaBarang: 'Sepatu Boot Safety', kategori: 'Alat', satuan: 'Pasang', 
-      jumlahExpired: 30, tanggal: '25-01-2025', status: 'Sudah Expired', statusColor: 'bg-red-100 text-red-800',
-      serialNumber: 'SBS-2024-004', keterangan: 'Sol sepatu mulai retak, tidak disarankan untuk digunakan',
-      baStatus: 'Completed', qhseApproval: 'Rejected'
+    {
+      no: 4,
+      kodeBarang: "BRG004",
+      namaBarang: "Sepatu Boot Safety",
+      kategori: "Alat",
+      satuan: "Pasang",
+      jumlahExpired: 30,
+      tanggal: "25-01-2025",
+      status: "Sudah Expired",
+      statusColor: "bg-red-100 text-red-800",
+      serialNumber: "SBS-2024-004",
+      keterangan: "Sol sepatu mulai retak, tidak disarankan untuk digunakan",
+      baStatus: "Completed",
+      qhseApproval: "Rejected",
+      tanggalPO: "2024-11-10",
+      tanggalKedatangan: "2024-12-01",
     },
-    { 
-      no: 5, kodeBarang: 'BRG005', namaBarang: 'Jaket Safety', kategori: 'Alat', satuan: 'Unit', 
-      jumlahExpired: 20, tanggal: '30-01-2025', status: 'Sudah Expired', statusColor: 'bg-red-100 text-red-800',
-      serialNumber: 'JS-2024-005', keterangan: 'Reflective tape mulai pudar, perlu penggantian segera',
-      baStatus: 'Generated', qhseApproval: 'Pending'
+    {
+      no: 5,
+      kodeBarang: "BRG005",
+      namaBarang: "Jaket Safety",
+      kategori: "Alat",
+      satuan: "Unit",
+      jumlahExpired: 20,
+      tanggal: "30-01-2025",
+      status: "Sudah Expired",
+      statusColor: "bg-red-100 text-red-800",
+      serialNumber: "JS-2024-005",
+      keterangan: "Reflective tape mulai pudar, perlu penggantian segera",
+      baStatus: "Generated",
+      qhseApproval: "Pending",
+      tanggalPO: "2024-11-20",
+      tanggalKedatangan: "2024-12-05",
     },
   ]);
 
   const handleGenerateBA = (id: number) => {
-    setExpiredItems(prev => prev.map(item => 
-      item.no === id ? { ...item, baStatus: 'Generated' } : item
-    ));
+    setExpiredItems((prev) =>
+      prev.map((item) =>
+        item.no === id ? { ...item, baStatus: "Generated" } : item
+      )
+    );
   };
 
-  const handleQHSEApproval = (id: number, approval: 'Approved' | 'Rejected') => {
-    setExpiredItems(prev => prev.map(item => 
-      item.no === id ? { ...item, qhseApproval: approval } : item
-    ));
+  const handleQHSEApproval = (
+    id: number,
+    approval: "Approved" | "Rejected"
+  ) => {
+    setExpiredItems((prev) =>
+      prev.map((item) =>
+        item.no === id ? { ...item, qhseApproval: approval } : item
+      )
+    );
+  };
+
+  const handleViewDetail = (item: ExpiredBarangItem) => {
+    setSelectedDetailItem(item);
+    setIsDetailModalOpen(true);
   };
 
   const getBAStatusBadge = (status: string) => {
     const config = {
-      'Pending': { color: 'bg-gray-100 text-gray-800', icon: '⏳' },
-      'Generated': { color: 'bg-blue-100 text-blue-800', icon: '📄' },
-      'Completed': { color: 'bg-green-100 text-green-800', icon: '✅' }
+      Pending: { color: "bg-gray-100 text-gray-800", icon: "⏳" },
+      Generated: { color: "bg-blue-100 text-blue-800", icon: "📄" },
+      Completed: { color: "bg-green-100 text-green-800", icon: "✅" },
     };
     const { color, icon } = config[status as keyof typeof config];
     return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${color}`}>
+      <span
+        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${color}`}
+      >
         <span className="mr-1">{icon}</span>
         {status}
       </span>
@@ -81,13 +168,15 @@ const ExpiredBarangDashboard: React.FC = () => {
 
   const getQHSEApprovalBadge = (status: string) => {
     const config = {
-      'Pending': { color: 'bg-yellow-100 text-yellow-800', icon: '⏳' },
-      'Approved': { color: 'bg-green-100 text-green-800', icon: '✅' },
-      'Rejected': { color: 'bg-red-100 text-red-800', icon: '❌' }
+      Pending: { color: "bg-yellow-100 text-yellow-800", icon: "⏳" },
+      Approved: { color: "bg-green-100 text-green-800", icon: "✅" },
+      Rejected: { color: "bg-red-100 text-red-800", icon: "❌" },
     };
     const { color, icon } = config[status as keyof typeof config];
     return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${color}`}>
+      <span
+        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${color}`}
+      >
         <span className="mr-1">{icon}</span>
         {status}
       </span>
@@ -95,7 +184,7 @@ const ExpiredBarangDashboard: React.FC = () => {
   };
 
   // Filter data based on serial number
-  const filteredItems = expiredItems.filter(item => 
+  const filteredItems = expiredItems.filter((item) =>
     item.serialNumber.toLowerCase().includes(serialNumberFilter.toLowerCase())
   );
 
@@ -109,16 +198,22 @@ const ExpiredBarangDashboard: React.FC = () => {
                 DAFTAR EXPIRED BARANG
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Barang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Barang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Expired Barang</span>
+                <span className="text-blue-600 font-medium">
+                  Expired Barang
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -128,7 +223,12 @@ const ExpiredBarangDashboard: React.FC = () => {
           {/* Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <div className="relative">
-              <label htmlFor="kodeBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Kode Barang</label>
+              <label
+                htmlFor="kodeBarang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Kode Barang
+              </label>
               <input
                 type="text"
                 id="kodeBarang"
@@ -138,7 +238,12 @@ const ExpiredBarangDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="namaBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Nama Barang</label>
+              <label
+                htmlFor="namaBarang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Nama Barang
+              </label>
               <input
                 type="text"
                 id="namaBarang"
@@ -148,7 +253,12 @@ const ExpiredBarangDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-1">Serial Number/Batch Number</label>
+              <label
+                htmlFor="serialNumber"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Serial Number/Batch Number
+              </label>
               <input
                 type="text"
                 id="serialNumber"
@@ -160,7 +270,12 @@ const ExpiredBarangDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div>
-              <label htmlFor="kategori" className="block text-sm font-medium text-gray-700 mb-1">Cari Kategori</label>
+              <label
+                htmlFor="kategori"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Kategori
+              </label>
               <select
                 id="kategori"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -171,7 +286,12 @@ const ExpiredBarangDashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="satuan" className="block text-sm font-medium text-gray-700 mb-1">Cari Satuan</label>
+              <label
+                htmlFor="satuan"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Satuan
+              </label>
               <select
                 id="satuan"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -183,7 +303,12 @@ const ExpiredBarangDashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Cari Status</label>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Status
+              </label>
               <select
                 id="status"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -195,7 +320,12 @@ const ExpiredBarangDashboard: React.FC = () => {
             </div>
             <div className="flex items-end space-x-2">
               <div className="relative w-1/2">
-                <label htmlFor="periodeStart" className="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+                <label
+                  htmlFor="periodeStart"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Periode
+                </label>
                 <input
                   type="date"
                   id="periodeStart"
@@ -254,34 +384,81 @@ const ExpiredBarangDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Barang</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Expired</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BA Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">QHSE Approval</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kode Barang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Barang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Serial Number
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kategori
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah Expired
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tanggal
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    BA Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    QHSE Approval
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Keterangan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredItems.map((item) => (
-                  <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeBarang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaBarang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-blue-600">{item.serialNumber}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kategori}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.satuan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.jumlahExpired}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggal}</td>
+                  <tr
+                    key={item.no}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.kodeBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.namaBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium text-blue-600">
+                      {item.serialNumber}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.kategori}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.satuan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.jumlahExpired}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.tanggal}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${item.statusColor}`}>
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${item.statusColor}`}
+                      >
                         {item.status}
                       </span>
                     </td>
@@ -298,9 +475,17 @@ const ExpiredBarangDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
+                        {/* Detail Button */}
+                        <button
+                          onClick={() => handleViewDetail(item)}
+                          className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100"
+                          title="View Detail"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                         {/* BA Button */}
-                        {item.baStatus === 'Pending' && (
-                          <button 
+                        {item.baStatus === "Pending" && (
+                          <button
                             onClick={() => handleGenerateBA(item.no)}
                             className="text-purple-600 hover:text-purple-900 transition-colors duration-200 p-1 rounded-full hover:bg-purple-100"
                             title="Generate BA"
@@ -308,27 +493,32 @@ const ExpiredBarangDashboard: React.FC = () => {
                             <FileCheck className="h-4 w-4" />
                           </button>
                         )}
-                        
+
                         {/* QHSE Approval Buttons */}
-                        {item.baStatus !== 'Pending' && item.qhseApproval === 'Pending' && (
-                          <>
-                            <button 
-                              onClick={() => handleQHSEApproval(item.no, 'Approved')}
-                              className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100"
-                              title="QHSE Approve"
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </button>
-                            <button 
-                              onClick={() => handleQHSEApproval(item.no, 'Rejected')}
-                              className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
-                              title="QHSE Reject"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </>
-                        )}
-                        
+                        {item.baStatus !== "Pending" &&
+                          item.qhseApproval === "Pending" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  handleQHSEApproval(item.no, "Approved")
+                                }
+                                className="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded-full hover:bg-green-100"
+                                title="QHSE Approve"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleQHSEApproval(item.no, "Rejected")
+                                }
+                                className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100"
+                                title="QHSE Reject"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
+
                         {/* Default Actions */}
                         <button className="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded-full hover:bg-blue-100">
                           <ShoppingCart className="h-4 w-4" />
@@ -344,7 +534,8 @@ const ExpiredBarangDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {expiredItems.length} of {expiredItems.length} entries
+              Showing 1 to {expiredItems.length} of {expiredItems.length}{" "}
+              entries
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200">
@@ -360,6 +551,150 @@ const ExpiredBarangDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Detail Modal */}
+      {isDetailModalOpen && selectedDetailItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Detail Barang Expired - {selectedDetailItem.kodeBarang}
+              </h2>
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                ×
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      No
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.no}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Kode Barang
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.kodeBarang}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Nama Barang
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.namaBarang}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Kategori
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.kategori}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Satuan
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.satuan}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Jumlah Expired
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.jumlahExpired}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Tanggal Expired
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.tanggal}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Status
+                    </label>
+                    <span
+                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${selectedDetailItem.statusColor}`}
+                    >
+                      {selectedDetailItem.status}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Serial Number
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.serialNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Tanggal PO
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.tanggalPO || "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Tanggal Kedatangan
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {selectedDetailItem.tanggalKedatangan || "-"}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Keterangan
+                  </label>
+                  <p className="text-sm text-gray-900">
+                    {selectedDetailItem.keterangan}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      BA Status
+                    </label>
+                    {getBAStatusBadge(selectedDetailItem.baStatus)}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      QHSE Approval
+                    </label>
+                    {getQHSEApprovalBadge(selectedDetailItem.qhseApproval)}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end p-4 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
