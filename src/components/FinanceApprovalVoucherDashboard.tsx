@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Clock,
   FileSpreadsheet,
@@ -47,6 +49,13 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   const [showBayarModal, setShowBayarModal] = useState(false);
   const [verifNotes, setVerifNotes] = useState("");
   const [bayarNotes, setBayarNotes] = useState("");
+  const [metodeBayar, setMetodeBayar] = useState<'Kas' | 'Bank' | ''>('');
+  const [detailBayar, setDetailBayar] = useState('');
+  const [tanggalBayar, setTanggalBayar] = useState<Date | null>(new Date());
+
+  // Dummy data for payment methods
+  const kasOptions = ["Kas Kecil Kantor", "Kas Besar Proyek A"];
+  const bankOptions = ["BCA Operasional - 123456789", "Mandiri Payroll - 987654321"];
 
   // Dummy data
   const [rows, setRows] = useState<ApprovalVoucherRow[]>([
@@ -153,6 +162,9 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   const handleBayar = (voucher: ApprovalVoucherRow) => {
     setSelectedVoucher(voucher);
     setBayarNotes("");
+    setMetodeBayar('');
+    setDetailBayar('');
+    setTanggalBayar(new Date());
     setShowBayarModal(true);
   };
 
@@ -178,15 +190,20 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   };
 
   const confirmBayar = () => {
-    if (!selectedVoucher) return;
+    if (!selectedVoucher || !metodeBayar || !detailBayar || !tanggalBayar) {
+      alert("Harap lengkapi semua field pembayaran.");
+      return;
+    }
+
+    const catatanPembayaran = `Dibayar melalui ${metodeBayar}: ${detailBayar}. Catatan: ${bayarNotes || '-'}`;
 
     const updatedRows = rows.map((row) => {
       if (row.id === selectedVoucher.id) {
         return {
           ...row,
           statusApproval: "Paid" as any,
-          tglPencairan: new Date().toISOString().split("T")[0],
-          catatan: bayarNotes || undefined,
+          tglPencairan: tanggalBayar.toISOString().split("T")[0],
+          catatan: catatanPembayaran,
         };
       }
       return row;
@@ -196,6 +213,9 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
     setShowBayarModal(false);
     setSelectedVoucher(null);
     setBayarNotes("");
+    setMetodeBayar('');
+    setDetailBayar('');
+    setTanggalBayar(new Date());
   };
 
   const getStatusBadge = (status: string) => {
@@ -755,18 +775,50 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600">
-                  Voucher:{" "}
-                  <span className="font-medium">
-                    {selectedVoucher.noVoucher}
-                  </span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Nominal:{" "}
-                  <span className="font-medium">
-                    Rp {selectedVoucher.nominalVoucher.toLocaleString("id-ID")}
-                  </span>
-                </p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Metode Kas/Bank
+                </label>
+                <select
+                  value={metodeBayar}
+                  onChange={(e) => {
+                    setMetodeBayar(e.target.value as any);
+                    setDetailBayar(''); // Reset detail on method change
+                  }}
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Pilih Metode</option>
+                  <option value="Kas">Kas</option>
+                  <option value="Bank">Bank</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Detail Kas/Bank
+                </label>
+                <select
+                  value={detailBayar}
+                  onChange={(e) => setDetailBayar(e.target.value)}
+                  disabled={!metodeBayar}
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                >
+                  <option value="">Pilih Detail</option>
+                  {(metodeBayar === 'Kas' ? kasOptions : bankOptions).map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal Bayar
+                </label>
+                <DatePicker
+                  selected={tanggalBayar}
+                  onChange={(date) => setTanggalBayar(date)}
+                  dateFormat="dd/MM/yyyy"
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
 
               <div>
@@ -776,9 +828,9 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
                 <textarea
                   value={bayarNotes}
                   onChange={(e) => setBayarNotes(e.target.value)}
-                  rows={3}
+                  rows={2}
                   className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Masukkan catatan pembayaran..."
+                  placeholder="(Opsional)"
                 />
               </div>
             </div>

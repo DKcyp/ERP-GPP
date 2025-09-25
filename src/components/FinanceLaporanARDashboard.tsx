@@ -1,413 +1,579 @@
 import React, { useState, useMemo } from "react";
-import { FileText, Download, FileSpreadsheet, Filter, Clock } from "lucide-react";
+import {
+  Clock,
+  FileText,
+  Download,
+  FileSpreadsheet,
+  Search,
+  Filter,
+} from "lucide-react";
+import DetailPembayaranHutangModal from "./DetailPembayaranHutangModal";
 
-interface LaporanARData {
+interface LaporanAPData {
   id: number;
-  kodeCustomer: string;
-  namaCustomer: string;
-  noNpwpNik: string;
+  namaSupplier: string;
   noInvoice: string;
-  noFakturPajak: string;
-  jenisDokumen: string;
-  noDokumen: string;
-  tglDokumen: string;
+  noPO: string;
+  tglPO: string;
   tglJatuhTempo: string;
-  keterangan: string;
   mataUang: string;
   nominalDpp: number;
   nominalPpn: number;
   subTotal: number;
-  umurPiutang: string;
-  statusPiutang: 'Belum Bayar' | 'Sebagian Bayar' | 'Lunas' | 'Overdue';
-  tglPembayaran?: string;
-  nomerBayar?: string;
-  bayar1: number;
-  bayar2: number;
-  bayar3: number;
-  bayar4: number;
-  bayar5: number;
-  bayar6: number;
+  statusHutang: "Belum Bayar" | "Sebagian Bayar" | "Lunas" | "Overdue";
   totalOutstanding: number;
+  belumJatuhTempo: number;
+  jatuhTempo0_30: number;
+  jatuhTempo31_60: number;
+  lebihDari60: number;
+  rincianPembayaran: {
+    termin: string;
+    tanggalBayar: string;
+    nominal: number;
+  }[];
 }
 
 const FinanceLaporanARDashboard: React.FC = () => {
   // Filter states
-  const [filterCustomer, setFilterCustomer] = useState('');
-  const [filterInvoice, setFilterInvoice] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
-  const [tglDokumenDari, setTglDokumenDari] = useState('');
-  const [tglDokumenSampai, setTglDokumenSampai] = useState('');
-  const [tglJatuhTempoDari, setTglJatuhTempoDari] = useState('');
-  const [tglJatuhTempoSampai, setTglJatuhTempoSampai] = useState('');
+  const [filterSupplier, setFilterSupplier] = useState("");
+  const [filterInvoice, setFilterInvoice] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [tglPODari, setTglPODari] = useState("");
+  const [tglPOSampai, setTglPOSampai] = useState("");
+  const [tglJatuhTempoDari, setTglJatuhTempoDari] = useState("");
+  const [tglJatuhTempoSampai, setTglJatuhTempoSampai] = useState("");
 
-  const [dummyTableData] = useState<LaporanARData[]>([
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<LaporanAPData | null>(null);
+
+  const handleNominalClick = (rowData: LaporanAPData) => {
+    setSelectedRow(rowData);
+    setIsModalOpen(true);
+  };
+
+  const [dummyTableData] = useState<LaporanAPData[]>([
     {
       id: 1,
-      kodeCustomer: 'CUST-001',
-      namaCustomer: 'PT Pertamina Hulu Energi',
-      noNpwpNik: '01.234.567.8-901.000',
-      noInvoice: 'INV-AR-001/2025',
-      noFakturPajak: '010.001-22.12345678',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AR-001',
-      tglDokumen: '2025-08-25',
-      tglJatuhTempo: '2025-09-24',
-      keterangan: 'Jasa NDT Inspection',
-      mataUang: 'IDR',
-      nominalDpp: 50000000,
-      nominalPpn: 5000000,
-      subTotal: 55000000,
-      umurPiutang: '15 hari',
-      statusPiutang: 'Sebagian Bayar',
-      tglPembayaran: '2025-09-01',
-      nomerBayar: 'BKM-001/2025',
-      bayar1: 25000000,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
-      totalOutstanding: 30000000,
+      namaSupplier: "PT Maju Jaya",
+      noInvoice: "INV-001/2025",
+      noPO: "PO-AP-001",
+      tglPO: "2025-08-25",
+      tglJatuhTempo: "2025-09-24",
+      mataUang: "IDR",
+      nominalDpp: 20000000,
+      nominalPpn: 2000000,
+      subTotal: 22000000,
+      statusHutang: "Sebagian Bayar",
+      totalOutstanding: 12000000,
+      belumJatuhTempo: 12000000,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 0,
+      lebihDari60: 0,
+      rincianPembayaran: [
+        {
+          termin: "Pembayaran ke-1",
+          tanggalBayar: "2025-09-01",
+          nominal: 10000000,
+        },
+      ],
     },
     {
       id: 2,
-      kodeCustomer: 'CUST-002',
-      namaCustomer: 'Medco E&P Indonesia',
-      noNpwpNik: '3275xxxxxxxxxxxx',
-      noInvoice: 'INV-AR-045/2025',
-      noFakturPajak: '010.002-22.87654321',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AR-045',
-      tglDokumen: '2025-08-18',
-      tglJatuhTempo: '2025-09-17',
-      keterangan: 'Radiographic Testing',
-      mataUang: 'IDR',
-      nominalDpp: 35000000,
-      nominalPpn: 3500000,
-      subTotal: 38500000,
-      umurPiutang: '22 hari',
-      statusPiutang: 'Lunas',
-      tglPembayaran: '2025-09-10',
-      nomerBayar: 'BKM-002/2025',
-      bayar1: 38500000,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
-      totalOutstanding: 0,
+      namaSupplier: "CV Solusi Digital",
+      noInvoice: "INV-045/2025",
+      noPO: "PO-AP-045",
+      tglPO: "2025-08-18",
+      tglJatuhTempo: "2025-09-17",
+      mataUang: "IDR",
+      nominalDpp: 12000000,
+      nominalPpn: 1200000,
+      subTotal: 13200000,
+      statusHutang: "Overdue",
+      totalOutstanding: 5700000,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 5700000,
+      jatuhTempo31_60: 0,
+      lebihDari60: 0,
+      rincianPembayaran: [
+        {
+          termin: "Pembayaran ke-1",
+          tanggalBayar: "2025-08-30",
+          nominal: 5000000,
+        },
+        {
+          termin: "Pembayaran ke-2",
+          tanggalBayar: "2025-09-10",
+          nominal: 2500000,
+        },
+      ],
     },
     {
       id: 3,
-      kodeCustomer: 'CUST-003',
-      namaCustomer: 'ENI Muara Bakau B.V.',
-      noNpwpNik: '02.345.678.9-012.000',
-      noInvoice: 'INV-AR-078/2025',
-      noFakturPajak: '010.003-22.11223344',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AR-078',
-      tglDokumen: '2025-09-01',
-      tglJatuhTempo: '2025-10-01',
-      keterangan: 'Ultrasonic Testing',
-      mataUang: 'IDR',
-      nominalDpp: 42000000,
-      nominalPpn: 4200000,
-      subTotal: 46200000,
-      umurPiutang: '0 hari',
-      statusPiutang: 'Belum Bayar',
-      bayar1: 0,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
-      totalOutstanding: 46200000,
+      namaSupplier: "PT Teknologi Maju",
+      noInvoice: "INV-078/2025",
+      noPO: "PO-AP-078",
+      tglPO: "2025-09-01",
+      tglJatuhTempo: "2025-10-01",
+      mataUang: "IDR",
+      nominalDpp: 15000000,
+      nominalPpn: 1500000,
+      subTotal: 16500000,
+      statusHutang: "Lunas",
+      totalOutstanding: 0,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 0,
+      lebihDari60: 0,
+      rincianPembayaran: [
+        {
+          termin: "Pembayaran ke-1",
+          tanggalBayar: "2025-09-15",
+          nominal: 16500000,
+        },
+      ],
     },
     {
       id: 4,
-      kodeCustomer: 'CUST-004',
-      namaCustomer: 'PT Chevron Pacific Indonesia',
-      noNpwpNik: '3174xxxxxxxxxxxx',
-      noInvoice: 'INV-AR-099/2025',
-      noFakturPajak: '-',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AR-099',
-      tglDokumen: '2025-07-15',
-      tglJatuhTempo: '2025-08-14',
-      keterangan: 'Magnetic Testing',
-      mataUang: 'IDR',
-      nominalDpp: 28000000,
-      nominalPpn: 2800000,
-      subTotal: 30800000,
-      umurPiutang: '36 hari',
-      statusPiutang: 'Overdue',
-      bayar1: 0,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
-      totalOutstanding: 30800000,
+      namaSupplier: "CV Berkah Mandiri",
+      noInvoice: "INV-099/2025",
+      noPO: "PO-AP-099",
+      tglPO: "2025-07-15",
+      tglJatuhTempo: "2025-08-14",
+      mataUang: "IDR",
+      nominalDpp: 8000000,
+      nominalPpn: 800000,
+      subTotal: 8800000,
+      statusHutang: "Overdue",
+      totalOutstanding: 8800000,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 8800000,
+      lebihDari60: 0,
+      rincianPembayaran: [],
     },
     {
       id: 5,
-      kodeCustomer: 'CUST-005',
-      namaCustomer: 'PT Santos (Sampang) Pty Ltd',
-      noNpwpNik: '01.987.654.3-210.000',
-      noInvoice: 'INV-AR-112/2025',
-      noFakturPajak: '010.004-22.55667788',
-      jenisDokumen: 'Invoice',
-      noDokumen: 'DOC-AR-112',
-      tglDokumen: '2025-08-30',
-      tglJatuhTempo: '2025-09-29',
-      keterangan: 'Visual Testing',
-      mataUang: 'IDR',
-      nominalDpp: 18000000,
-      nominalPpn: 1800000,
-      subTotal: 19800000,
-      umurPiutang: '10 hari',
-      statusPiutang: 'Sebagian Bayar',
-      tglPembayaran: '2025-09-05',
-      nomerBayar: 'BKM-003/2025',
-      bayar1: 10000000,
-      bayar2: 0,
-      bayar3: 0,
-      bayar4: 0,
-      bayar5: 0,
-      bayar6: 0,
-      totalOutstanding: 9800000,
-    }
+      namaSupplier: "PT Sinar Abadi",
+      noInvoice: "INV-101/2025",
+      noPO: "PO-AP-101",
+      tglPO: "2025-06-10",
+      tglJatuhTempo: "2025-07-10",
+      mataUang: "IDR",
+      nominalDpp: 30000000,
+      nominalPpn: 3000000,
+      subTotal: 33000000,
+      statusHutang: "Overdue",
+      totalOutstanding: 33000000,
+      belumJatuhTempo: 0,
+      jatuhTempo0_30: 0,
+      jatuhTempo31_60: 0,
+      lebihDari60: 33000000,
+      rincianPembayaran: [],
+    },
   ]);
 
-  // Filter data based on search criteria
+  // Filter logic
   const filteredData = useMemo(() => {
-    return dummyTableData.filter(item => {
-      const matchesCustomer = filterCustomer === '' || 
-        item.namaCustomer.toLowerCase().includes(filterCustomer.toLowerCase()) ||
-        item.kodeCustomer.toLowerCase().includes(filterCustomer.toLowerCase());
-      
-      const matchesInvoice = filterInvoice === '' || 
-        item.noInvoice.toLowerCase().includes(filterInvoice.toLowerCase());
-      
-      const matchesStatus = filterStatus === '' || item.statusPiutang === filterStatus;
-      
-      const matchesTglDokumen = (!tglDokumenDari || item.tglDokumen >= tglDokumenDari) &&
-        (!tglDokumenSampai || item.tglDokumen <= tglDokumenSampai);
-      
-      const matchesTglJatuhTempo = (!tglJatuhTempoDari || item.tglJatuhTempo >= tglJatuhTempoDari) &&
-        (!tglJatuhTempoSampai || item.tglJatuhTempo <= tglJatuhTempoSampai);
+    return dummyTableData.filter((item) => {
+      const supplierMatch =
+        filterSupplier === "" ||
+        item.namaSupplier.toLowerCase().includes(filterSupplier.toLowerCase());
 
-      return matchesCustomer && matchesInvoice && matchesStatus && 
-             matchesTglDokumen && matchesTglJatuhTempo;
+      const invoiceMatch =
+        filterInvoice === "" ||
+        item.noInvoice.toLowerCase().includes(filterInvoice.toLowerCase());
+
+      const statusMatch =
+        filterStatus === "" || item.statusHutang === filterStatus;
+
+      const tglPOMatch =
+        (!tglPODari || new Date(item.tglPO) >= new Date(tglPODari)) &&
+        (!tglPOSampai || new Date(item.tglPO) <= new Date(tglPOSampai));
+
+      const tglJatuhTempoMatch =
+        (!tglJatuhTempoDari ||
+          new Date(item.tglJatuhTempo) >= new Date(tglJatuhTempoDari)) &&
+        (!tglJatuhTempoSampai ||
+          new Date(item.tglJatuhTempo) <= new Date(tglJatuhTempoSampai));
+
+      return (
+        supplierMatch &&
+        invoiceMatch &&
+        statusMatch &&
+        tglPOMatch &&
+        tglJatuhTempoMatch
+      );
     });
-  }, [dummyTableData, filterCustomer, filterInvoice, filterStatus, 
-      tglDokumenDari, tglDokumenSampai, tglJatuhTempoDari, tglJatuhTempoSampai]);
+  }, [
+    dummyTableData,
+    filterSupplier,
+    filterInvoice,
+    filterStatus,
+    tglPODari,
+    tglPOSampai,
+    tglJatuhTempoDari,
+    tglJatuhTempoSampai,
+  ]);
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-2 py-1 text-xs font-semibold rounded-full";
     switch (status) {
-      case 'Lunas':
-        return <span className={`${baseClasses} bg-green-100 text-green-800`}>Lunas</span>;
-      case 'Sebagian Bayar':
-        return <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Sebagian Bayar</span>;
-      case 'Belum Bayar':
-        return <span className={`${baseClasses} bg-blue-100 text-blue-800`}>Belum Bayar</span>;
-      case 'Overdue':
-        return <span className={`${baseClasses} bg-red-100 text-red-800`}>Overdue</span>;
+      case "Belum Bayar":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            Belum Bayar
+          </span>
+        );
+      case "Sebagian Bayar":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            Sebagian Bayar
+          </span>
+        );
+      case "Lunas":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Lunas
+          </span>
+        );
+      case "Overdue":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            Overdue
+          </span>
+        );
       default:
-        return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</span>;
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            {status}
+          </span>
+        );
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-blue-100 via-blue-50 to-white border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">LAPORAN PEMBAYARAN HUTANG</h1>
+              <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
+                Laporan AR
+              </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Finance</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Finance
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">AP / Laporan Pembayaran Hutang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  AP
+                </span>
+                <span className="mx-2">›</span>
+                <span className="text-blue-600 font-medium">Laporan AP</span>
               </nav>
+            </div>
+            <div className="flex items-center space-x-3 text-sm text-gray-500">
+              <Clock className="h-4 w-4" />
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">Filter Data</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
-            <input
-              type="text"
-              placeholder="Cari customer..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={filterCustomer}
-              onChange={(e) => setFilterCustomer(e.target.value)}
-            />
+        {/* Filter Section */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Filter className="h-6 w-6 text-blue-600" />
+            <h3 className="text-2xl font-bold text-gray-900">
+              Filter Laporan AR
+            </h3>
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">No Invoice</label>
-            <input
-              type="text"
-              placeholder="Cari invoice..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={filterInvoice}
-              onChange={(e) => setFilterInvoice(e.target.value)}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status Piutang</label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="">Semua Status</option>
-              <option value="Belum Bayar">Belum Bayar</option>
-              <option value="Sebagian Bayar">Sebagian Bayar</option>
-              <option value="Lunas">Lunas</option>
-              <option value="Overdue">Overdue</option>
-            </select>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Dokumen Dari</label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={tglDokumenDari}
-              onChange={(e) => setTglDokumenDari(e.target.value)}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Dokumen Sampai</label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={tglDokumenSampai}
-              onChange={(e) => setTglDokumenSampai(e.target.value)}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Jatuh Tempo Dari</label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={tglJatuhTempoDari}
-              onChange={(e) => setTglJatuhTempoDari(e.target.value)}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tgl Jatuh Tempo Sampai</label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={tglJatuhTempoSampai}
-              onChange={(e) => setTglJatuhTempoSampai(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Supplier
+              </label>
+              <input
+                type="text"
+                value={filterSupplier}
+                onChange={(e) => setFilterSupplier(e.target.value)}
+                placeholder="Nama/Kode Supplier..."
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
 
-      {/* Export Buttons */}
-      <div className="flex gap-3 mb-6">
-        <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-          <FileSpreadsheet className="h-4 w-4" />
-          Export Excel
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-          <Download className="h-4 w-4" />
-          Export PDF
-        </button>
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                No Invoice
+              </label>
+              <input
+                type="text"
+                value={filterInvoice}
+                onChange={(e) => setFilterInvoice(e.target.value)}
+                placeholder="No Invoice..."
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Daftar Laporan AR</h2>
-            <div className="text-sm text-gray-500">
-              Menampilkan {filteredData.length} dari {dummyTableData.length} data
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status Hutang
+              </label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
+              >
+                <option value="">Semua Status</option>
+                <option value="Belum Bayar">Belum Bayar</option>
+                <option value="Sebagian Bayar">Sebagian Bayar</option>
+                <option value="Lunas">Lunas</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </div>
+
+            <div className="flex items-end">
+              <button className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none h-[42px]">
+                <Search className="h-4 w-4 mr-2" /> Terapkan Filter
+              </button>
             </div>
           </div>
-          
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tgl PO Dari
+              </label>
+              <input
+                type="date"
+                value={tglPODari}
+                onChange={(e) => setTglPODari(e.target.value)}
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tgl PO Sampai
+              </label>
+              <input
+                type="date"
+                value={tglPOSampai}
+                onChange={(e) => setTglPOSampai(e.target.value)}
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tgl Jatuh Tempo Dari
+              </label>
+              <input
+                type="date"
+                value={tglJatuhTempoDari}
+                onChange={(e) => setTglJatuhTempoDari(e.target.value)}
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tgl Jatuh Tempo Sampai
+              </label>
+              <input
+                type="date"
+                value={tglJatuhTempoSampai}
+                onChange={(e) => setTglJatuhTempoSampai(e.target.value)}
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Action Bar */}
+        <div className="flex justify-end space-x-3 mb-6">
+          <button className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition-colors flex items-center space-x-2">
+            <Download className="h-5 w-5" />
+            <span>Export PDF</span>
+          </button>
+          <button className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-colors flex items-center space-x-2">
+            <FileSpreadsheet className="h-5 w-5" />
+            <span>Export Excel</span>
+          </button>
+        </div>
+
+        {/* Table List View */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            Daftar Laporan AR ({filteredData.length} items)
+          </h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Customer</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Customer</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No NPWP/NIK</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Invoice</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Faktur Pajak</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Dokumen</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Dokumen</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Dokumen</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Jatuh Tempo</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Piutang</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pembayaran</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomer Bayar</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Uang</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal DPP</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal PPN</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub Total</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umur Piutang</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 1</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 2</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 3</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 4</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 5</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Pembayaran ke 6</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Outstanding Piutang</th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Nama Supplier
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    No Invoice
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    No. PO
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Tanggal PO
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Tgl Jatuh Tempo
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status Hutang
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Mata Uang
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Nominal DPP
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Nominal PPN
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Sub Total
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Belum Jatuh Tempo
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    0 - 30 Hari
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    31 - 60 Hari
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    {" "}
+                    &gt; 60 Hari
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Total Outstanding Hutang
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeCustomer}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaCustomer}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noNpwpNik}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noInvoice}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noFakturPajak}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.jenisDokumen}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.noDokumen}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglDokumen).toLocaleDateString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(item.tglJatuhTempo).toLocaleDateString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(item.statusPiutang)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tglPembayaran ? new Date(item.tglPembayaran).toLocaleDateString('id-ID') : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nomerBayar || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.keterangan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.mataUang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.nominalDpp.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.nominalPpn.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.subTotal.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.umurPiutang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar1.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar2.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar3.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar4.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar5.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {item.bayar6.toLocaleString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {item.totalOutstanding.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.namaSupplier}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.noInvoice}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.noPO}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(item.tglPO).toLocaleDateString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(item.tglJatuhTempo).toLocaleDateString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getStatusBadge(item.statusHutang)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.mataUang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      Rp {item.nominalDpp.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      Rp {item.nominalPpn.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      Rp {item.subTotal.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button
+                        onClick={() => handleNominalClick(item)}
+                        className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                      >
+                        Rp {item.belumJatuhTempo.toLocaleString("id-ID")}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button
+                        onClick={() => handleNominalClick(item)}
+                        className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                      >
+                        Rp {item.jatuhTempo0_30.toLocaleString("id-ID")}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button
+                        onClick={() => handleNominalClick(item)}
+                        className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                      >
+                        Rp {item.jatuhTempo31_60.toLocaleString("id-ID")}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <button
+                        onClick={() => handleNominalClick(item)}
+                        className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                      >
+                        Rp {item.lebihDari60.toLocaleString("id-ID")}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                      Rp {item.totalOutstanding.toLocaleString("id-ID")}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -415,7 +581,12 @@ const FinanceLaporanARDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      <DetailPembayaranHutangModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={selectedRow}
+      />
     </div>
   );
 };

@@ -315,7 +315,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Dari
+                Tgl Pembuatan(Awal)
               </label>
               <input
                 type="date"
@@ -326,7 +326,7 @@ const FinancePengajuanVoucherDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Sampai
+                Tgl Pembuatan(Akhir)
               </label>
               <input
                 type="date"

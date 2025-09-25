@@ -19,6 +19,7 @@ export interface PermintaanPencairanDanaFormData {
   noPPD: string;
   tglPPDFrom: Date | null;
   tglPPDTo: Date | null;
+  tanggalPencairan: Date | null; // New field for Disbursement Date
   divisi: string;
   namaPemohon: string; // Changed from namaSupplier
   mataUang: string;
@@ -88,6 +89,7 @@ const FinancePermintaanPencairanDanaModal: React.FC<
       .padStart(2, "0")}-001`,
     tglPPDFrom: today,
     tglPPDTo: today,
+    tanggalPencairan: null,
     divisi: "",
     namaPemohon: "",
     mataUang: "IDR",
@@ -123,6 +125,9 @@ const FinancePermintaanPencairanDanaModal: React.FC<
               tglPPDTo: initialData.tglPPDTo
                 ? new Date(initialData.tglPPDTo)
                 : today,
+              tanggalPencairan: initialData.tanggalPencairan
+                ? new Date(initialData.tanggalPencairan)
+                : null,
               totalPembayaran: calcTotal(initialData.detailItems),
             }
           : initialEmpty
@@ -426,6 +431,20 @@ const FinancePermintaanPencairanDanaModal: React.FC<
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal Pencairan
+                </label>
+                <DatePicker
+                  selected={formData.tanggalPencairan}
+                  onChange={(date: Date | null) =>
+                    setFormData((prev) => ({ ...prev, tanggalPencairan: date }))
+                  }
+                  dateFormat="dd/MM/yyyy"
+                  className="block w-full border rounded-lg px-4 py-2 text-sm border-gray-300"
+                  placeholderText="Pilih tanggal"
+                />
               </div>
             </div>
 
