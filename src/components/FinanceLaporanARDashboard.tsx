@@ -13,15 +13,14 @@ interface LaporanAPData {
   id: number;
   namaSupplier: string;
   noInvoice: string;
-  noPO: string;
-  tglPO: string;
+  tglInvoice: string; // Renamed from tglPO
   tglJatuhTempo: string;
   mataUang: string;
   nominalDpp: number;
   nominalPpn: number;
   subTotal: number;
-  statusHutang: "Belum Bayar" | "Sebagian Bayar" | "Lunas" | "Overdue";
-  totalOutstanding: number;
+  statusPiutang: "Belum Lunas" | "Sebagian Lunas" | "Lunas" | "Overdue"; // Renamed from statusHutang
+  totalOutstandingPiutang: number; // Renamed from totalOutstanding
   belumJatuhTempo: number;
   jatuhTempo0_30: number;
   jatuhTempo31_60: number;
@@ -37,9 +36,9 @@ const FinanceLaporanARDashboard: React.FC = () => {
   // Filter states
   const [filterSupplier, setFilterSupplier] = useState("");
   const [filterInvoice, setFilterInvoice] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [tglPODari, setTglPODari] = useState("");
-  const [tglPOSampai, setTglPOSampai] = useState("");
+  const [filterStatusPiutang, setFilterStatusPiutang] = useState(""); // Renamed from filterStatus
+  const [tglInvoiceDari, setTglInvoiceDari] = useState(""); // Renamed from tglPODari
+  const [tglInvoiceSampai, setTglInvoiceSampai] = useState(""); // Renamed from tglPOSampai
   const [tglJatuhTempoDari, setTglJatuhTempoDari] = useState("");
   const [tglJatuhTempoSampai, setTglJatuhTempoSampai] = useState("");
 
@@ -56,15 +55,14 @@ const FinanceLaporanARDashboard: React.FC = () => {
       id: 1,
       namaSupplier: "PT Maju Jaya",
       noInvoice: "INV-001/2025",
-      noPO: "PO-AP-001",
-      tglPO: "2025-08-25",
+      tglInvoice: "2025-08-25", // Renamed from tglPO
       tglJatuhTempo: "2025-09-24",
       mataUang: "IDR",
       nominalDpp: 20000000,
       nominalPpn: 2000000,
       subTotal: 22000000,
-      statusHutang: "Sebagian Bayar",
-      totalOutstanding: 12000000,
+      statusPiutang: "Sebagian Lunas", // Renamed from statusHutang
+      totalOutstandingPiutang: 12000000, // Renamed from totalOutstanding
       belumJatuhTempo: 12000000,
       jatuhTempo0_30: 0,
       jatuhTempo31_60: 0,
@@ -81,15 +79,14 @@ const FinanceLaporanARDashboard: React.FC = () => {
       id: 2,
       namaSupplier: "CV Solusi Digital",
       noInvoice: "INV-045/2025",
-      noPO: "PO-AP-045",
-      tglPO: "2025-08-18",
+      tglInvoice: "2025-08-18", // Renamed from tglPO
       tglJatuhTempo: "2025-09-17",
       mataUang: "IDR",
       nominalDpp: 12000000,
       nominalPpn: 1200000,
       subTotal: 13200000,
-      statusHutang: "Overdue",
-      totalOutstanding: 5700000,
+      statusPiutang: "Overdue", // Renamed from statusHutang
+      totalOutstandingPiutang: 5700000, // Renamed from totalOutstanding
       belumJatuhTempo: 0,
       jatuhTempo0_30: 5700000,
       jatuhTempo31_60: 0,
@@ -111,15 +108,14 @@ const FinanceLaporanARDashboard: React.FC = () => {
       id: 3,
       namaSupplier: "PT Teknologi Maju",
       noInvoice: "INV-078/2025",
-      noPO: "PO-AP-078",
-      tglPO: "2025-09-01",
+      tglInvoice: "2025-09-01", // Renamed from tglPO
       tglJatuhTempo: "2025-10-01",
       mataUang: "IDR",
       nominalDpp: 15000000,
       nominalPpn: 1500000,
       subTotal: 16500000,
-      statusHutang: "Lunas",
-      totalOutstanding: 0,
+      statusPiutang: "Lunas", // Renamed from statusHutang
+      totalOutstandingPiutang: 0, // Renamed from totalOutstanding
       belumJatuhTempo: 0,
       jatuhTempo0_30: 0,
       jatuhTempo31_60: 0,
@@ -136,15 +132,14 @@ const FinanceLaporanARDashboard: React.FC = () => {
       id: 4,
       namaSupplier: "CV Berkah Mandiri",
       noInvoice: "INV-099/2025",
-      noPO: "PO-AP-099",
-      tglPO: "2025-07-15",
+      tglInvoice: "2025-07-15", // Renamed from tglPO
       tglJatuhTempo: "2025-08-14",
       mataUang: "IDR",
       nominalDpp: 8000000,
       nominalPpn: 800000,
       subTotal: 8800000,
-      statusHutang: "Overdue",
-      totalOutstanding: 8800000,
+      statusPiutang: "Overdue", // Renamed from statusHutang
+      totalOutstandingPiutang: 8800000, // Renamed from totalOutstanding
       belumJatuhTempo: 0,
       jatuhTempo0_30: 0,
       jatuhTempo31_60: 8800000,
@@ -155,15 +150,14 @@ const FinanceLaporanARDashboard: React.FC = () => {
       id: 5,
       namaSupplier: "PT Sinar Abadi",
       noInvoice: "INV-101/2025",
-      noPO: "PO-AP-101",
-      tglPO: "2025-06-10",
+      tglInvoice: "2025-06-10", // Renamed from tglPO
       tglJatuhTempo: "2025-07-10",
       mataUang: "IDR",
       nominalDpp: 30000000,
       nominalPpn: 3000000,
       subTotal: 33000000,
-      statusHutang: "Overdue",
-      totalOutstanding: 33000000,
+      statusPiutang: "Overdue", // Renamed from statusHutang
+      totalOutstandingPiutang: 33000000, // Renamed from totalOutstanding
       belumJatuhTempo: 0,
       jatuhTempo0_30: 0,
       jatuhTempo31_60: 0,
@@ -183,12 +177,15 @@ const FinanceLaporanARDashboard: React.FC = () => {
         filterInvoice === "" ||
         item.noInvoice.toLowerCase().includes(filterInvoice.toLowerCase());
 
-      const statusMatch =
-        filterStatus === "" || item.statusHutang === filterStatus;
+      const statusPiutangMatch =
+        filterStatusPiutang === "" ||
+        item.statusPiutang === filterStatusPiutang; // Updated status filter
 
-      const tglPOMatch =
-        (!tglPODari || new Date(item.tglPO) >= new Date(tglPODari)) &&
-        (!tglPOSampai || new Date(item.tglPO) <= new Date(tglPOSampai));
+      const tglInvoiceMatch =
+        (!tglInvoiceDari ||
+          new Date(item.tglInvoice) >= new Date(tglInvoiceDari)) &&
+        (!tglInvoiceSampai ||
+          new Date(item.tglInvoice) <= new Date(tglInvoiceSampai)); // Updated tglPO filter
 
       const tglJatuhTempoMatch =
         (!tglJatuhTempoDari ||
@@ -199,8 +196,8 @@ const FinanceLaporanARDashboard: React.FC = () => {
       return (
         supplierMatch &&
         invoiceMatch &&
-        statusMatch &&
-        tglPOMatch &&
+        statusPiutangMatch &&
+        tglInvoiceMatch &&
         tglJatuhTempoMatch
       );
     });
@@ -208,25 +205,25 @@ const FinanceLaporanARDashboard: React.FC = () => {
     dummyTableData,
     filterSupplier,
     filterInvoice,
-    filterStatus,
-    tglPODari,
-    tglPOSampai,
+    filterStatusPiutang,
+    tglInvoiceDari,
+    tglInvoiceSampai,
     tglJatuhTempoDari,
     tglJatuhTempoSampai,
   ]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "Belum Bayar":
+      case "Belum Lunas":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            Belum Bayar
+            Belum Lunas
           </span>
         );
-      case "Sebagian Bayar":
+      case "Sebagian Lunas":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            Sebagian Bayar
+            Sebagian Lunas
           </span>
         );
       case "Lunas":
@@ -319,16 +316,16 @@ const FinanceLaporanARDashboard: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status Hutang
+                Status Piutang
               </label>
               <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
+                value={filterStatusPiutang}
+                onChange={(e) => setFilterStatusPiutang(e.target.value)}
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none"
               >
                 <option value="">Semua Status</option>
-                <option value="Belum Bayar">Belum Bayar</option>
-                <option value="Sebagian Bayar">Sebagian Bayar</option>
+                <option value="Belum Lunas">Belum Lunas</option>
+                <option value="Sebagian Lunas">Sebagian Lunas</option>
                 <option value="Lunas">Lunas</option>
                 <option value="Overdue">Overdue</option>
               </select>
@@ -344,24 +341,24 @@ const FinanceLaporanARDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tgl PO Dari
+                Tgl Invoice Dari
               </label>
               <input
                 type="date"
-                value={tglPODari}
-                onChange={(e) => setTglPODari(e.target.value)}
+                value={tglInvoiceDari}
+                onChange={(e) => setTglInvoiceDari(e.target.value)}
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tgl PO Sampai
+                Tgl Invoice Sampai
               </label>
               <input
                 type="date"
-                value={tglPOSampai}
-                onChange={(e) => setTglPOSampai(e.target.value)}
+                value={tglInvoiceSampai}
+                onChange={(e) => setTglInvoiceSampai(e.target.value)}
                 className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
@@ -429,13 +426,7 @@ const FinanceLaporanARDashboard: React.FC = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    No. PO
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Tanggal PO
+                    Tanggal Invoice
                   </th>
                   <th
                     scope="col"
@@ -447,7 +438,7 @@ const FinanceLaporanARDashboard: React.FC = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Status Hutang
+                    Status Piutang
                   </th>
                   <th
                     scope="col"
@@ -502,7 +493,7 @@ const FinanceLaporanARDashboard: React.FC = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Total Outstanding Hutang
+                    Total Outstanding Piutang
                   </th>
                 </tr>
               </thead>
@@ -516,16 +507,13 @@ const FinanceLaporanARDashboard: React.FC = () => {
                       {item.noInvoice}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.noPO}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(item.tglPO).toLocaleDateString("id-ID")}
+                      {new Date(item.tglInvoice).toLocaleDateString("id-ID")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.tglJatuhTempo).toLocaleDateString("id-ID")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(item.statusHutang)}
+                      {getStatusBadge(item.statusPiutang)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.mataUang}
@@ -572,7 +560,7 @@ const FinanceLaporanARDashboard: React.FC = () => {
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                      Rp {item.totalOutstanding.toLocaleString("id-ID")}
+                      Rp {item.totalOutstandingPiutang.toLocaleString("id-ID")}
                     </td>
                   </tr>
                 ))}

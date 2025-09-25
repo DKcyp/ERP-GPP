@@ -1408,6 +1408,11 @@ export const financeMenu: MenuSection[] = [
         path: "/finance/voucher-reimburse/approval-voucher",
       },
       {
+        title: "Approval Reimburse",
+        icon: "CheckCircle",
+        path: "/finance/voucher-reimburse/approval-reimburse",
+      },
+      {
         title: "Approval Pertanggung Jawaban Voucher",
         icon: "UserCheck",
         path: "/finance/voucher-reimburse/approval-ptj-voucher",

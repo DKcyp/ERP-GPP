@@ -194,6 +194,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
             absorbKontrak: r.absorbKontrak,
             remainingKontrak: r.remainingKontrak,
             noPI: r.noPI ?? "", // Include noPI in mapping
+            totalPI: r.totalPI ?? 0, // Include totalPI in mapping
           }));
           setData(mapped);
         }
