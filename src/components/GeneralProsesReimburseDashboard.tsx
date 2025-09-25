@@ -38,6 +38,7 @@ const GeneralProsesReimburseDashboard: React.FC = () => {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'entry' | 'detail'>('entry');
   const [sortConfig, setSortConfig] = useState<{ key: keyof ProsesReimburseEntry; direction: 'ascending' | 'descending' } | null>(null);
 
   const sortedData = React.useMemo(() => {
@@ -78,8 +79,20 @@ const GeneralProsesReimburseDashboard: React.FC = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalMode('entry');
+  };
+
+  const openDetailModal = () => {
+    setModalMode('detail');
+    setIsModalOpen(true);
+  };
+
+  const openEntryModal = () => {
+    setModalMode('entry');
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -316,7 +329,7 @@ const GeneralProsesReimburseDashboard: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{entry.tanggalPembayaran}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <button
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={openDetailModal}
                       className="text-blue-600 hover:text-blue-800 transition-colors"
                       title="Lihat"
                     >
@@ -325,7 +338,7 @@ const GeneralProsesReimburseDashboard: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={openEntryModal}
                       className="text-indigo-600 hover:text-indigo-900 mr-2"
                       title="Edit"
                     >
@@ -371,7 +384,7 @@ const GeneralProsesReimburseDashboard: React.FC = () => {
           </nav>
         </div>
       </div>
-      <EntryReimburseModal isOpen={isModalOpen} onRequestClose={closeModal} />
+      <EntryReimburseModal isOpen={isModalOpen} onRequestClose={closeModal} mode={modalMode} />
     </div>
   );
 };

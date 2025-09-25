@@ -8,6 +8,7 @@ Modal.setAppElement('#root'); // Assuming your root element has id 'root'
 interface EntryReimburseModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
+  mode?: 'entry' | 'detail'; // Add mode prop to distinguish between entry and detail view
 }
 
 interface ReimburseItem {
@@ -17,7 +18,7 @@ interface ReimburseItem {
   namaAkunCOA: string;
 }
 
-const EntryReimburseModal: React.FC<EntryReimburseModalProps> = ({ isOpen, onRequestClose }) => {
+const EntryReimburseModal: React.FC<EntryReimburseModalProps> = ({ isOpen, onRequestClose, mode = 'entry' }) => {
   const [reimburseNo, setReimburseNo] = useState('');
   const [soNo, setSoNo] = useState('');
   const [soTurunan, setSoTurunan] = useState('');
@@ -82,7 +83,9 @@ const EntryReimburseModal: React.FC<EntryReimburseModalProps> = ({ isOpen, onReq
     >
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">Entry Reimburse</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            {mode === 'detail' ? 'Detail Reimburse' : 'Entry Reimburse'}
+          </h2>
           <button onClick={onRequestClose} className="text-gray-500 hover:text-gray-700">
             <X className="h-6 w-6" />
           </button>
@@ -243,12 +246,14 @@ const EntryReimburseModal: React.FC<EntryReimburseModalProps> = ({ isOpen, onReq
             >
               Close
             </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Simpan
-            </button>
+            {mode === 'entry' && (
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Simpan
+              </button>
+            )}
           </div>
         </form>
       </div>

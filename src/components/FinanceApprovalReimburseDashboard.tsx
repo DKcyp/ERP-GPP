@@ -538,31 +538,7 @@ const FinanceApprovalReimburseDashboard: React.FC = () => {
               )}
             </div>
             
-            <div className="flex justify-end space-x-4 mt-6 pt-6 border-t">
-              {selectedReimburse.statusApproval === 'Pending' && (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowDetailModal(false);
-                      handleApproval(selectedReimburse, 'reject');
-                    }}
-                    className="px-4 py-2 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200"
-                  >
-                    <XCircle className="h-4 w-4 inline mr-2" />
-                    Reject
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowDetailModal(false);
-                      handleApproval(selectedReimburse, 'approve');
-                    }}
-                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
-                  >
-                    <CheckCircle className="h-4 w-4 inline mr-2" />
-                    Approve
-                  </button>
-                </>
-              )}
+            <div className="flex justify-end mt-6 pt-6 border-t">
               <button
                 onClick={() => setShowDetailModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"

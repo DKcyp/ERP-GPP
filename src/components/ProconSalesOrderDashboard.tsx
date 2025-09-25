@@ -1106,6 +1106,78 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     L/R
                   </th>
                   <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    PI NO
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    KETERANGAN
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]"
+                    rowSpan={2}
+                  >
+                    REMARK PROJECT CONTROL
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    INVOICE NO
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    INVOICE AMOUNT
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    INVOICE AMOUNT PPN 11%
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    DUE DATE PAYMENT
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]"
+                    rowSpan={2}
+                  >
+                    PAID DATE
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    DELAY PAYMENT
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    REMARK FINANCE
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    STATUS
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]"
+                    rowSpan={2}
+                  >
+                    L/R
+                  </th>
+                  <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
                     rowSpan={2}
                   >
@@ -1301,8 +1373,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                         {item.lir}
                       </span>
                     </td>
-                    {/* L/R Column */}
-
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <div className="flex items-center justify-center space-x-1">
                         <button
