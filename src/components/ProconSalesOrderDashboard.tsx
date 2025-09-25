@@ -23,6 +23,7 @@ interface ProconSalesOrder {
   no: number;
   date: string;
   soNo: string;
+  contractNo: string;
   client: string;
   equipmentScopeLocation: string;
   equipmentReceived: string;
@@ -91,6 +92,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 1,
       date: "01-Jan-25",
       soNo: "SO-2025-001",
+      contractNo: "KD-001",
       client: "PT PERTAMINA HULU ENERGI ONWJ",
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "COMPLETE",
@@ -133,6 +135,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 2,
       date: "05-Jan-25",
       soNo: "SO-2025-002",
+      contractNo: "KD-002",
       client: "MEDCO E&P ONSHORE NORTH JAVA",
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "PARTIAL",
@@ -175,6 +178,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 3,
       date: "10-Jan-25",
       soNo: "SO-2025-003",
+      contractNo: "KD-003",
       client: "MEDCO E&P ONSHORE NORTH JAVA",
       equipmentScopeLocation: "OFFSHORE",
       equipmentReceived: "COMPLETE",
@@ -216,6 +220,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 4,
       date: "12-Jan-25",
       soNo: "SO-2025-004",
+      contractNo: "KD-004",
       client: "PT PERTAMINA HULU ENERGI ONWJ",
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "COMPLETE",
@@ -258,6 +263,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 5,
       date: "15-Jan-25",
       soNo: "SO-2025-005",
+      contractNo: "KD-005",
       client: "ENI MUARA BAKAU B.V.",
       equipmentScopeLocation: "OFFSHORE",
       equipmentReceived: "COMPLETE",
@@ -301,6 +307,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 6,
       date: "18-Jan-25",
       soNo: "SO-2025-006",
+      contractNo: "KD-006",
       client: "MEDCO E&P ONSHORE NORTH JAVA",
       equipmentScopeLocation: "ONSHORE",
       equipmentReceived: "COMPLETE",
@@ -343,6 +350,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       no: 7,
       date: "20-Jan-25",
       soNo: "SO-2025-007",
+      contractNo: "KD-007",
       client: "PT PERTAMINA HULU ENERGI ONWJ",
       equipmentScopeLocation: "OFFSHORE",
       equipmentReceived: "COMPLETE",
@@ -513,12 +521,14 @@ const ProconSalesOrderDashboard: React.FC = () => {
 
   // CRUD Functions
   const handleAdd = () => {
+    const nextNo = salesOrders.length + 1;
     setFormData({
       date: new Date().toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "2-digit",
       }),
+      contractNo: `KD-${String(nextNo).padStart(3, "0")}`,
       yearSheet: "2025",
       status: "IN PROGRESS",
       keterangan: "IN PROGRESS",
@@ -568,12 +578,14 @@ const ProconSalesOrderDashboard: React.FC = () => {
       const newId = (salesOrders.length + 1).toString();
       const newNo = salesOrders.length + 1;
       const newSoNo = `SO-2025-${String(newNo).padStart(3, "0")}`;
+      const newContractNo = `KD-${String(newNo).padStart(3, "0")}`;
 
       const newItem: ProconSalesOrder = {
         ...(formData as ProconSalesOrder),
         id: newId,
         no: newNo,
         soNo: newSoNo,
+        contractNo: formData.contractNo || newContractNo,
         piNo: `PI-2025-${String(newNo).padStart(3, "0")}`,
       };
 
@@ -1022,9 +1034,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium`}
+                        className={`px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800`}
                       >
-                        {item.soNo}
+                        {item.contractNo}
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
