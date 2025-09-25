@@ -214,27 +214,13 @@ const FinanceAPTresuriDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tgl Pembuatan(Awal)
+                Tgl Pembuatan
               </label>
               <input
                 type="date"
                 value={tanggalMulai}
                 onChange={(e) => {
                   setTanggalMulai(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tgl Pembuatan(Akhir)
-              </label>
-              <input
-                type="date"
-                value={tanggalAkhir}
-                onChange={(e) => {
-                  setTanggalAkhir(e.target.value);
                   setCurrentPage(1);
                 }}
                 className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"

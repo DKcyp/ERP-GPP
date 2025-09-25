@@ -21,7 +21,9 @@ const FinanceApprovePIDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedPI, setSelectedPI] = useState<PIData | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
   const [approvalData, setApprovalData] = useState<ApprovalModalData>({
     pi: {} as PIData,
     formatCetakan: '',
@@ -104,9 +106,29 @@ const FinanceApprovePIDashboard: React.FC = () => {
   };
 
   const handleReject = (pi: PIData) => {
-    setPiData(prev => prev.map(item => 
-      item.id === pi.id ? { ...item, status: 'Rejected' as const } : item
-    ));
+    setSelectedPI(pi);
+    setRejectReason('');
+    setShowRejectModal(true);
+  };
+
+  const confirmReject = () => {
+    if (selectedPI && rejectReason.trim()) {
+      setPiData(prev => prev.map(item => 
+        item.id === selectedPI.id ? { ...item, status: 'Rejected' as const } : item
+      ));
+      
+      // Log rejection details (in real implementation, this would be sent to backend)
+      console.log('PI Rejected:', {
+        piNumber: selectedPI.noPi,
+        reason: rejectReason,
+        rejectedAt: new Date().toISOString()
+      });
+      
+      alert(`PI ${selectedPI.noPi} berhasil ditolak!\nAlasan: ${rejectReason}`);
+      setShowRejectModal(false);
+      setSelectedPI(null);
+      setRejectReason('');
+    }
   };
 
   const confirmApproval = () => {
@@ -361,6 +383,68 @@ const FinanceApprovePIDashboard: React.FC = () => {
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
                 >
                   Approve PI
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reject Modal */}
+        {showRejectModal && selectedPI && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">Reject Purchase Invoice</h3>
+                <p className="text-sm text-gray-600 mt-1">PI: {selectedPI.noPi}</p>
+              </div>
+              
+              <div className="px-6 py-4 space-y-4">
+                {/* PI Details */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Detail PI</h4>
+                  <div className="space-y-1 text-sm">
+                    <p><span className="font-medium">Supplier:</span> {selectedPI.supplier}</p>
+                    <p><span className="font-medium">Total:</span> {formatCurrency(selectedPI.totalAmount)}</p>
+                    <p><span className="font-medium">Deskripsi:</span> {selectedPI.description}</p>
+                  </div>
+                </div>
+
+                {/* Rejection Reason */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <X className="inline h-4 w-4 mr-1" />
+                    Alasan Penolakan *
+                  </label>
+                  <textarea
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 resize-none"
+                    rows={4}
+                    placeholder="Masukkan alasan penolakan PI ini..."
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Alasan penolakan wajib diisi untuk dokumentasi
+                  </p>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setSelectedPI(null);
+                    setRejectReason('');
+                  }}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={confirmReject}
+                  disabled={!rejectReason.trim()}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  Reject PI
                 </button>
               </div>
             </div>
