@@ -1,6 +1,4 @@
 import React, { useMemo, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import {
   Clock,
   FileSpreadsheet,
@@ -49,13 +47,11 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   const [showBayarModal, setShowBayarModal] = useState(false);
   const [verifNotes, setVerifNotes] = useState("");
   const [bayarNotes, setBayarNotes] = useState("");
-  const [metodeBayar, setMetodeBayar] = useState<'Kas' | 'Bank' | ''>('');
-  const [detailBayar, setDetailBayar] = useState('');
-  const [tanggalBayar, setTanggalBayar] = useState<Date | null>(new Date());
-
-  // Dummy data for payment methods
-  const kasOptions = ["Kas Kecil Kantor", "Kas Besar Proyek A"];
-  const bankOptions = ["BCA Operasional - 123456789", "Mandiri Payroll - 987654321"];
+  
+  // Payment modal states
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [selectedBank, setSelectedBank] = useState("");
+  const [paymentDate, setPaymentDate] = useState("");
 
   // Dummy data
   const [rows, setRows] = useState<ApprovalVoucherRow[]>([
@@ -162,9 +158,9 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   const handleBayar = (voucher: ApprovalVoucherRow) => {
     setSelectedVoucher(voucher);
     setBayarNotes("");
-    setMetodeBayar('');
-    setDetailBayar('');
-    setTanggalBayar(new Date());
+    setPaymentMethod("");
+    setSelectedBank("");
+    setPaymentDate(new Date().toISOString().split("T")[0]);
     setShowBayarModal(true);
   };
 
@@ -190,20 +186,18 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
   };
 
   const confirmBayar = () => {
-    if (!selectedVoucher || !metodeBayar || !detailBayar || !tanggalBayar) {
-      alert("Harap lengkapi semua field pembayaran.");
+    if (!selectedVoucher || !paymentMethod || !selectedBank || !paymentDate) {
+      alert("Mohon lengkapi semua field pembayaran");
       return;
     }
-
-    const catatanPembayaran = `Dibayar melalui ${metodeBayar}: ${detailBayar}. Catatan: ${bayarNotes || '-'}`;
 
     const updatedRows = rows.map((row) => {
       if (row.id === selectedVoucher.id) {
         return {
           ...row,
           statusApproval: "Paid" as any,
-          tglPencairan: tanggalBayar.toISOString().split("T")[0],
-          catatan: catatanPembayaran,
+          tglPencairan: paymentDate,
+          catatan: bayarNotes || `Dibayar melalui ${paymentMethod} - ${selectedBank}`,
         };
       }
       return row;
@@ -213,9 +207,9 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
     setShowBayarModal(false);
     setSelectedVoucher(null);
     setBayarNotes("");
-    setMetodeBayar('');
-    setDetailBayar('');
-    setTanggalBayar(new Date());
+    setPaymentMethod("");
+    setSelectedBank("");
+    setPaymentDate("");
   };
 
   const getStatusBadge = (status: string) => {
@@ -760,7 +754,7 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
       {/* Bayar Modal */}
       {showBayarModal && selectedVoucher && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-lg shadow-lg rounded-md bg-white">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">
                 Pembayaran Voucher
@@ -774,49 +768,83 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
             </div>
 
             <div className="space-y-4">
+              <div className="bg-gray-50 p-3 rounded-md">
+                <p className="text-sm text-gray-600">
+                  Voucher:{" "}
+                  <span className="font-medium">
+                    {selectedVoucher.noVoucher}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Nominal:{" "}
+                  <span className="font-medium text-green-600">
+                    Rp {selectedVoucher.nominalVoucher.toLocaleString("id-ID")}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Karyawan:{" "}
+                  <span className="font-medium">
+                    {selectedVoucher.namaKaryawan}
+                  </span>
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Metode Kas/Bank
+                  Metode Pembayaran <span className="text-red-500">*</span>
                 </label>
                 <select
-                  value={metodeBayar}
+                  value={paymentMethod}
                   onChange={(e) => {
-                    setMetodeBayar(e.target.value as any);
-                    setDetailBayar(''); // Reset detail on method change
+                    setPaymentMethod(e.target.value);
+                    setSelectedBank(""); // Reset bank selection when method changes
                   }}
                   className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Pilih Metode</option>
+                  <option value="">Pilih Metode Pembayaran</option>
                   <option value="Kas">Kas</option>
                   <option value="Bank">Bank</option>
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Detail Kas/Bank
-                </label>
-                <select
-                  value={detailBayar}
-                  onChange={(e) => setDetailBayar(e.target.value)}
-                  disabled={!metodeBayar}
-                  className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-                >
-                  <option value="">Pilih Detail</option>
-                  {(metodeBayar === 'Kas' ? kasOptions : bankOptions).map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
+              {paymentMethod && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {paymentMethod === "Kas" ? "Detail Kas" : "Detail Bank"} <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={selectedBank}
+                    onChange={(e) => setSelectedBank(e.target.value)}
+                    className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Pilih {paymentMethod === "Kas" ? "Kas" : "Bank"}</option>
+                    {paymentMethod === "Kas" ? (
+                      <>
+                        <option value="Kas Kecil">Kas Kecil</option>
+                        <option value="Kas Besar">Kas Besar</option>
+                        <option value="Kas Operasional">Kas Operasional</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Bank Mandiri - 1400012345678">Bank Mandiri - 1400012345678</option>
+                        <option value="Bank BCA - 5551234567890">Bank BCA - 5551234567890</option>
+                        <option value="Bank BNI - 0123456789012">Bank BNI - 0123456789012</option>
+                        <option value="Bank BRI - 9876543210987">Bank BRI - 9876543210987</option>
+                        <option value="Bank CIMB - 7001234567890">Bank CIMB - 7001234567890</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tanggal Bayar
+                  Tanggal Bayar <span className="text-red-500">*</span>
                 </label>
-                <DatePicker
-                  selected={tanggalBayar}
-                  onChange={(date) => setTanggalBayar(date)}
-                  dateFormat="dd/MM/yyyy"
+                <input
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
                   className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -828,9 +856,9 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
                 <textarea
                   value={bayarNotes}
                   onChange={(e) => setBayarNotes(e.target.value)}
-                  rows={2}
+                  rows={3}
                   className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="(Opsional)"
+                  placeholder="Masukkan catatan pembayaran (opsional)..."
                 />
               </div>
             </div>
@@ -844,9 +872,10 @@ const FinanceApprovalVoucherDashboard: React.FC = () => {
               </button>
               <button
                 onClick={confirmBayar}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
+                disabled={!paymentMethod || !selectedBank || !paymentDate}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-md"
               >
-                Bayar
+                Proses Pembayaran
               </button>
             </div>
           </div>

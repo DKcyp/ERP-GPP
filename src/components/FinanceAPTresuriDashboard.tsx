@@ -75,7 +75,10 @@ const FinanceAPTresuriDashboard: React.FC = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<TresuriRow | null>(null);
   const [viewLaporanModal, setViewLaporanModal] = useState(false);
-  const [selectedLaporan, setSelectedLaporan] = useState<{fileName: string, type: string} | null>(null);
+  const [selectedLaporan, setSelectedLaporan] = useState<{
+    fileName: string;
+    type: string;
+  } | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -87,12 +90,12 @@ const FinanceAPTresuriDashboard: React.FC = () => {
         const jenisHit = jenisFilter
           ? r.jenis === (jenisFilter as ItemJenis)
           : true;
-        
+
         // Date range filtering
         let dateRangeHit = true;
         if (tanggalMulai || tanggalAkhir) {
           const itemDate = new Date(r.tanggalPembuatan);
-          
+
           if (tanggalMulai && tanggalAkhir) {
             const startDate = new Date(tanggalMulai);
             const endDate = new Date(tanggalAkhir);
@@ -105,7 +108,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
             dateRangeHit = itemDate <= endDate;
           }
         }
-        
+
         return textHit && jenisHit && dateRangeHit;
       }),
     [rows, filter, jenisFilter, tanggalMulai, tanggalAkhir]
@@ -120,13 +123,13 @@ const FinanceAPTresuriDashboard: React.FC = () => {
 
   const startAdd = () => {
     const today = new Date().toISOString().slice(0, 10);
-    setEditing({ 
-      id: 0, 
-      jenis: "jasa", 
-      noDokumen: "", 
+    setEditing({
+      id: 0,
+      jenis: "jasa",
+      noDokumen: "",
       noPO: "",
       vendor: "",
-      tanggalPembuatan: today
+      tanggalPembuatan: today,
     });
     setFormOpen(true);
   };
@@ -148,7 +151,6 @@ const FinanceAPTresuriDashboard: React.FC = () => {
     setFormOpen(false);
     setEditing(null);
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -212,7 +214,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Mulai
+                Tgl Pembuatan(Awal)
               </label>
               <input
                 type="date"
@@ -226,7 +228,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Akhir
+                Tgl Pembuatan(Akhir)
               </label>
               <input
                 type="date"
@@ -239,7 +241,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
               />
             </div>
           </div>
-          
+
           {/* Action Buttons Section */}
           <div className="flex justify-end items-center gap-3 pt-4 border-t border-gray-100">
             <button
@@ -315,12 +317,17 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                     <td className="px-4 py-2 text-sm">{row.noDokumen}</td>
                     <td className="px-4 py-2 text-sm">{row.noPO}</td>
                     <td className="px-4 py-2 text-sm">{row.vendor}</td>
-                    <td className="px-4 py-2 text-sm">{row.tanggalPembuatan}</td>
+                    <td className="px-4 py-2 text-sm">
+                      {row.tanggalPembuatan}
+                    </td>
                     <td className="px-4 py-2 text-sm">
                       {row.laporanHarian ? (
                         <button
                           onClick={() => {
-                            setSelectedLaporan({fileName: row.laporanHarian!, type: 'Laporan Harian'});
+                            setSelectedLaporan({
+                              fileName: row.laporanHarian!,
+                              type: "Laporan Harian",
+                            });
                             setViewLaporanModal(true);
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
@@ -353,7 +360,10 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       {row.laporanLainnya ? (
                         <button
                           onClick={() => {
-                            setSelectedLaporan({fileName: row.laporanLainnya!, type: 'Laporan Lainnya'});
+                            setSelectedLaporan({
+                              fileName: row.laporanLainnya!,
+                              type: "Laporan Lainnya",
+                            });
                             setViewLaporanModal(true);
                           }}
                           className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
@@ -835,7 +845,10 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                   </div>
                   <div className="text-xs text-gray-500">
                     <p>Ukuran file: 2.4 MB</p>
-                    <p>Terakhir dimodifikasi: {new Date().toLocaleDateString('id-ID')}</p>
+                    <p>
+                      Terakhir dimodifikasi:{" "}
+                      {new Date().toLocaleDateString("id-ID")}
+                    </p>
                   </div>
                 </div>
               </div>
