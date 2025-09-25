@@ -37,13 +37,14 @@ interface ProconSalesOrder {
   reportDemob: string; // Changed from dueDate
   reportDuration: string; // Changed from delaySubmitReport
   reportReceived: string;
+  dueDateReport?: string; // New field for Due Date Report
   dueDateFinance: string;
   delaySubmitToFinance: string;
   piAmount: string;
   keterangan: string;
   piNo: string;
+  poKontrakReceived: string;
   remarkProjectControl: string;
-  invoiceNo: string;
   invoiceAmount: string;
   invoiceAmountPpn: string;
   dueDatePayment: string;
@@ -106,11 +107,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "02-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "17-Jan-25",
+      dueDateReport: "03-Jan-25",
       dueDateFinance: "03-Jan-25",
       delaySubmitToFinance: "14",
       piAmount: "75",
       keterangan: "OVERDUE",
       piNo: "PI-2025-001",
+      poKontrakReceived: "28-Dec-24",
       remarkProjectControl:
         "Perlu koordinasi ulang dengan client terkait jadwal inspeksi",
       invoiceNo: "INV-2025-001",
@@ -149,11 +152,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "08-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "20-Jan-25",
+      dueDateReport: "09-Jan-25",
       dueDateFinance: "09-Jan-25",
       delaySubmitToFinance: "11",
       piAmount: "45",
       keterangan: "CRITICAL",
       piNo: "PI-2025-002",
+      poKontrakReceived: "02-Jan-25",
       remarkProjectControl: "Menunggu kelengkapan peralatan NDT dari supplier",
       invoiceNo: "",
       invoiceAmount: "",
@@ -192,11 +197,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "14-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "14-Jan-25",
+      dueDateReport: "15-Jan-25",
       dueDateFinance: "15-Jan-25",
       delaySubmitToFinance: "0",
       piAmount: "100",
       keterangan: "COMPLETED",
       piNo: "PI-2025-003",
+      poKontrakReceived: "08-Jan-25",
       remarkProjectControl: "Progres sesuai timeline, dokumentasi lengkap",
       invoiceNo: "INV-2025-003",
       invoiceAmount: "45,000,000",
@@ -234,11 +241,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "15-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "15-Jan-25",
+      dueDateReport: "16-Jan-25",
       dueDateFinance: "16-Jan-25",
       delaySubmitToFinance: "0",
       piAmount: "90",
       keterangan: "COMPLETED",
       piNo: "PI-2025-004",
+      poKontrakReceived: "10-Jan-25",
       remarkProjectControl: "Tim bekerja dengan baik, hasil inspeksi memuaskan",
       invoiceNo: "INV-2025-004",
       invoiceAmount: "18,000,000",
@@ -277,11 +286,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "22-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "25-Jan-25",
+      dueDateReport: "23-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "2",
       piAmount: "65",
       keterangan: "MINOR DELAY",
       piNo: "PI-2025-005",
+      poKontrakReceived: "13-Jan-25",
       remarkProjectControl:
         "Terdapat kendala cuaca offshore, estimasi delay 2 hari",
       invoiceNo: "INV-2025-005",
@@ -321,11 +332,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "22-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "23-Jan-25",
+      dueDateReport: "23-Jan-25",
       dueDateFinance: "23-Jan-25",
       delaySubmitToFinance: "0",
       piAmount: "30",
       keterangan: "IN PROGRESS",
       piNo: "PI-2025-006",
+      poKontrakReceived: "16-Jan-25",
       remarkProjectControl: "Pekerjaan berjalan lancar, koordinasi tim baik",
       invoiceNo: "",
       invoiceAmount: "",
@@ -364,11 +377,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
       reportDemob: "30-Jan-25",
       reportDuration: "1 DAY",
       reportReceived: "28-Jan-25",
+      dueDateReport: "31-Jan-25",
       dueDateFinance: "31-Jan-25",
       delaySubmitToFinance: "-3",
       piAmount: "95",
       keterangan: "EXCELLENT",
       piNo: "PI-2025-007",
+      poKontrakReceived: "18-Jan-25",
       remarkProjectControl:
         "Pekerjaan selesai lebih cepat dari jadwal, kualitas excellent",
       invoiceNo: "INV-2025-007",
@@ -412,7 +427,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
     const matchesNoSO = item.soNo
       .toLowerCase()
       .includes(searchNoSO.toLowerCase());
-    const matchesNomorKontrak = item.piNo
+    const matchesNomorKontrak = item.poKontrakReceived
       .toLowerCase()
       .includes(searchNomorKontrak.toLowerCase());
     const matchesClient = item.client
@@ -519,6 +534,40 @@ const ProconSalesOrderDashboard: React.FC = () => {
     }
   };
 
+  // Helper to compute due date from document date (dd-MMM-yy) + days
+  const computeReportDueDate = (
+    demobDate: string,
+    projectType: string
+  ): string => {
+    try {
+      if (!demobDate) return "";
+      const parts = demobDate.split("-");
+      if (parts.length !== 3) return "";
+      const day = parseInt(parts[0], 10);
+      const month = new Date(Date.parse(parts[1] + " 1, 2000")).getMonth(); // Parse month abbreviation
+      const year = 2000 + parseInt(parts[2], 10); // Assume 20xx
+      const d = new Date(year, month, day);
+      if (isNaN(d.getTime())) return "";
+
+      let daysToAdd = 0;
+      if (projectType === "On Call") {
+        daysToAdd = 2; // H+2 for On Call
+      } else if (projectType === "Tender") {
+        daysToAdd = 14; // H+14 for Tender
+      }
+      d.setDate(d.getDate() + daysToAdd);
+
+      const options: Intl.DateTimeFormatOptions = {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      };
+      return d.toLocaleDateString("en-GB", options);
+    } catch {
+      return "";
+    }
+  };
+
   // CRUD Functions
   const handleAdd = () => {
     const nextNo = salesOrders.length + 1;
@@ -553,8 +602,12 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "0",
       logDataPak: "PENDING",
       logMekanik: "PENDING",
+      poKontrakReceived: new Date().toISOString().split("T")[0],
+      dueDateReport: computeReportDueDate(
+        formData.demob || "",
+        formData.statusPekerjaan || ""
+      ),
     });
-    setIsAddModalOpen(true);
   };
 
   const handleEdit = (item: ProconSalesOrder) => {
@@ -587,6 +640,10 @@ const ProconSalesOrderDashboard: React.FC = () => {
         soNo: newSoNo,
         contractNo: formData.contractNo || newContractNo,
         piNo: `PI-2025-${String(newNo).padStart(3, "0")}`,
+        dueDateReport: computeReportDueDate(
+          formData.demob || "",
+          formData.statusPekerjaan || ""
+        ),
       };
 
       setSalesOrders((prev) => [newItem, ...prev]);
@@ -864,7 +921,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
                     rowSpan={2}
                   >
-                    PI NO
+                    PO/Kontrak Received
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]"
@@ -904,6 +961,12 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    DUE DATE REPORT
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
                     DUE DATE FINANCE
@@ -1043,7 +1106,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium`}
                       >
-                        {item.piNo}
+                        {item.poKontrakReceived}
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300 font-medium">
@@ -1053,7 +1116,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       {item.manPower}
                     </td>
                     <td className="px-2 py-2 text-center border border-gray-300">
-                      {item.piNo}
+                      {item.location}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
                       {item.mob}
@@ -1075,6 +1138,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
                       {item.reportReceived}
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
+                      {item.dueDateReport}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
                       {item.dueDateFinance}
@@ -1413,6 +1479,19 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PO/Kontrak Received
+                </label>
+                <input
+                  type="date"
+                  value={formData.poKontrakReceived || ""}
+                  onChange={(e) =>
+                    handleInputChange("poKontrakReceived", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div className="flex justify-end space-x-2 mt-6">
               <button
@@ -1541,6 +1620,33 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     handleInputChange("location", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PO/Kontrak Received
+                </label>
+                <input
+                  type="date"
+                  value={formData.poKontrakReceived || ""}
+                  onChange={(e) =>
+                    handleInputChange("poKontrakReceived", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Remarks Project Control
+                </label>
+                <textarea
+                  value={formData.remarkProjectControl || ""}
+                  onChange={(e) =>
+                    handleInputChange("remarkProjectControl", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Enter project control remarks..."
                 />
               </div>
             </div>
