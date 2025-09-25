@@ -39,6 +39,7 @@ interface PIEntry {
   nilaiKontrak?: number;
   absorbKontrak?: number;
   remainingKontrak?: number;
+  totalPI?: number; // New field for Total PI
 }
 
 // formatRupiah removed (no longer used)
@@ -130,6 +131,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       nilaiKontrak: 125000000,
       absorbKontrak: 65000000,
       remainingKontrak: 60000000,
+      totalPI: 150000000, // Dummy data for Total PI
     },
     {
       id: "2",
@@ -148,6 +150,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       nilaiKontrak: 98500000,
       absorbKontrak: 50000000,
       remainingKontrak: 48500000,
+      totalPI: 100000000, // Dummy data for Total PI
     },
   ]);
 
@@ -234,6 +237,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     attachmentFileSize: 0,
     noPI: "", // Initialize noPI
     newInputField: "", // Initialize newInputField
+    totalPI: 0, // Initialize totalPI
   });
 
   // New: Estimasi Nilai Kontrak field (tab content uses shared HPPDetailTabs)
@@ -253,7 +257,8 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       const [day, month, year] = r.documentDate.split("/").map(Number);
       const itemDate = new Date(year, month - 1, day);
 
-      const dateMatch = !fromDate || !toDate || (itemDate >= fromDate && itemDate <= toDate);
+      const dateMatch =
+        !fromDate || !toDate || (itemDate >= fromDate && itemDate <= toDate);
 
       return (
         dateMatch &&
@@ -287,6 +292,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       attachmentFileSize: 0,
       noPI: generatePINumber(), // Generate No. PI for new entries
       newInputField: "", // Initialize newInputField for new entries
+      totalPI: 0, // Initialize totalPI for new entries
     });
     setEditId(null);
     setIsAddOpen(true);
@@ -355,6 +361,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       attachmentFileSize: found.attachmentFileSize || 0,
       noPI: found.noPI || "", // Load noPI when editing
       newInputField: found.newInputField || "", // Load newInputField when editing
+      totalPI: found.totalPI || 0, // Load totalPI when editing
     });
     setEditId(id);
     setIsAddOpen(true);
@@ -632,6 +639,9 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                     Kode Bank
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">
+                    Total PI
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">
                     Lampiran
                   </th>
                   <th className="px-3 py-2 text-right font-semibold text-gray-900">
@@ -657,6 +667,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                       {row.contractOrPO}
                     </td>
                     <td className="px-3 py-2 text-gray-700">{row.bankCode}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.totalPI}</td>
                     <td className="px-3 py-2 text-gray-700">
                       {row.attachmentFileName ? (
                         <div className="flex items-center gap-1">
