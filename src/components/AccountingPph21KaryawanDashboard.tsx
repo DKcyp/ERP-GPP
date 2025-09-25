@@ -1,22 +1,44 @@
 import React, { useMemo, useState } from "react";
-import { Plus, Edit, Trash2, Search, Download, Clock, X, Save } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Download, Clock, X, Save, Upload } from "lucide-react";
 
 interface Pph21KaryawanItem {
   id: string;
-  nip: string;
-  nama: string;
-  jabatan: string;
+  periode: string; // YYYY-MM format untuk tampilan per bulan
   gajiBruto: number;
-  ptkp: number;
-  pkp: number;
+  dpp: number; // Dasar Pengenaan Pajak
+  persentase: number; // Persentase pajak (dalam desimal, misal 0.05 untuk 5%)
   pph21: number;
   keterangan?: string;
-  tanggal?: string; // yyyy-mm-dd (untuk filter bulan)
 }
 
 const seed: Pph21KaryawanItem[] = [
-  { id: "kry-001", nip: "EMP-001", nama: "Andi", jabatan: "Staff", gajiBruto: 8_000_000, ptkp: 4_500_000, pkp: 3_500_000, pph21: 175_000, keterangan: "Tetap", tanggal: "2025-09-10" },
-  { id: "kry-002", nip: "EMP-002", nama: "Budi", jabatan: "Supervisor", gajiBruto: 12_000_000, ptkp: 4_500_000, pkp: 7_500_000, pph21: 375_000, tanggal: "2025-09-15" },
+  { 
+    id: "kry-001", 
+    periode: "2024-09", 
+    gajiBruto: 8_000_000, 
+    dpp: 7_500_000, // DPP setelah dikurangi PTKP dan lainnya
+    persentase: 0.05, // 5%
+    pph21: 375_000, 
+    keterangan: "Karyawan Tetap" 
+  },
+  { 
+    id: "kry-002", 
+    periode: "2024-09", 
+    gajiBruto: 12_000_000, 
+    dpp: 11_000_000,
+    persentase: 0.05, // 5%
+    pph21: 550_000, 
+    keterangan: "Karyawan Tetap" 
+  },
+  { 
+    id: "kry-003", 
+    periode: "2024-10", 
+    gajiBruto: 15_000_000, 
+    dpp: 14_000_000,
+    persentase: 0.05, // 5%
+    pph21: 700_000, 
+    keterangan: "Karyawan Kontrak" 
+  },
 ];
 
 const AccountingPph21KaryawanDashboard: React.FC = () => {
@@ -30,22 +52,19 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
 
   const [form, setForm] = useState<Pph21KaryawanItem>({
     id: "",
-    nip: "",
-    nama: "",
-    jabatan: "",
+    periode: new Date().toISOString().slice(0,7), // YYYY-MM format
     gajiBruto: 0,
-    ptkp: 0,
-    pkp: 0,
+    dpp: 0,
+    persentase: 0.05, // Default 5%
     pph21: 0,
     keterangan: "",
-    tanggal: new Date().toISOString().slice(0,10),
   });
 
   const filtered = useMemo(() => {
     const qq = q.toLowerCase();
     return rows.filter(r => {
-      const matchesText = r.nip.toLowerCase().includes(qq) || r.nama.toLowerCase().includes(qq) || r.jabatan.toLowerCase().includes(qq);
-      const matchesMonth = month ? (r.tanggal ? r.tanggal.slice(0,7) === month : false) : true;
+      const matchesText = r.periode.toLowerCase().includes(qq) || (r.keterangan && r.keterangan.toLowerCase().includes(qq));
+      const matchesMonth = month ? r.periode === month : true;
       return matchesText && matchesMonth;
     });
   }, [rows, q, month]);
@@ -56,7 +75,15 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ id: crypto.randomUUID(), nip: "", nama: "", jabatan: "", gajiBruto: 0, ptkp: 0, pkp: 0, pph21: 0, keterangan: "", tanggal: new Date().toISOString().slice(0,10) });
+    setForm({ 
+      id: crypto.randomUUID(), 
+      periode: new Date().toISOString().slice(0,7), 
+      gajiBruto: 0, 
+      dpp: 0, 
+      persentase: 0.05, 
+      pph21: 0, 
+      keterangan: "" 
+    });
     setIsOpen(true);
   };
 
@@ -75,11 +102,11 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nip || !form.nama) {
-      alert("NIP dan Nama wajib diisi");
+    if (!form.periode) {
+      alert("Periode wajib diisi");
       return;
     }
-    if (form.gajiBruto < 0 || form.ptkp < 0 || form.pkp < 0 || form.pph21 < 0) {
+    if (form.gajiBruto < 0 || form.dpp < 0 || form.persentase < 0 || form.pph21 < 0) {
       alert("Nilai tidak boleh negatif");
       return;
     }
@@ -111,11 +138,12 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 flex items-center justify-between">
           <div className="space-x-2">
             <button onClick={openAdd} className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-blue-600 text-white hover:bg-blue-700"><Plus className="h-4 w-4 mr-1"/>Tambah</button>
+            <button className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-orange-500 text-white hover:bg-orange-600"><Upload className="h-4 w-4 mr-1"/>Import</button>
             <button className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-emerald-600 text-white hover:bg-emerald-700"><Download className="h-4 w-4 mr-1"/>Export</button>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Cari NIP / Nama / Jabatan" className="w-72 pl-8 pr-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+              <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Cari periode atau keterangan" className="w-72 pl-8 pr-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
             </div>
             <div className="flex items-center space-x-2 text-xs">
@@ -141,12 +169,10 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-3 py-2 text-left">No</th>
-                  <th className="px-3 py-2 text-left">NIP</th>
-                  <th className="px-3 py-2 text-left">Nama</th>
-                  <th className="px-3 py-2 text-left">Jabatan</th>
+                  <th className="px-3 py-2 text-left">Periode</th>
                   <th className="px-3 py-2 text-right">Gaji Bruto</th>
-                  <th className="px-3 py-2 text-right">PTKP</th>
-                  <th className="px-3 py-2 text-right">PKP</th>
+                  <th className="px-3 py-2 text-right">DPP</th>
+                  <th className="px-3 py-2 text-center">Persentase</th>
                   <th className="px-3 py-2 text-right">PPh 21</th>
                   <th className="px-3 py-2 text-left">Keterangan</th>
                   <th className="px-3 py-2 text-right">Aksi</th>
@@ -156,13 +182,15 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
                 {pageData.map((r, idx) => (
                   <tr key={r.id} className="hover:bg-gray-50">
                     <td className="px-3 py-2">{idx+1}</td>
-                    <td className="px-3 py-2 font-medium">{r.nip}</td>
-                    <td className="px-3 py-2">{r.nama}</td>
-                    <td className="px-3 py-2">{r.jabatan}</td>
+                    <td className="px-3 py-2 font-medium">{r.periode}</td>
                     <td className="px-3 py-2 text-right">Rp {r.gajiBruto.toLocaleString("id-ID")}</td>
-                    <td className="px-3 py-2 text-right">Rp {r.ptkp.toLocaleString("id-ID")}</td>
-                    <td className="px-3 py-2 text-right">Rp {r.pkp.toLocaleString("id-ID")}</td>
-                    <td className="px-3 py-2 text-right">Rp {r.pph21.toLocaleString("id-ID")}</td>
+                    <td className="px-3 py-2 text-right">Rp {r.dpp.toLocaleString("id-ID")}</td>
+                    <td className="px-3 py-2 text-center">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                        {(r.persentase * 100).toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-right font-medium">Rp {r.pph21.toLocaleString("id-ID")}</td>
                     <td className="px-3 py-2">{r.keterangan||'-'}</td>
                     <td className="px-3 py-2 text-right space-x-2">
                       <button onClick={()=>openEdit(r.id)} className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md hover:bg-gray-50"><Edit className="h-4 w-4"/></button>
@@ -172,16 +200,16 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
                 ))}
                 {pageData.length===0 && (
                   <tr>
-                    <td colSpan={10} className="px-3 py-8 text-center text-gray-500">Tidak ada data</td>
+                    <td colSpan={8} className="px-3 py-8 text-center text-gray-500">Tidak ada data</td>
                   </tr>
                 )}
               </tbody>
               <tfoot>
                 <tr className="bg-gray-50 font-semibold">
-                  <td className="px-3 py-2" colSpan={4}>Total</td>
+                  <td className="px-3 py-2" colSpan={2}>Total</td>
                   <td className="px-3 py-2 text-right">Rp {sum('gajiBruto').toLocaleString('id-ID')}</td>
-                  <td className="px-3 py-2 text-right">Rp {sum('ptkp').toLocaleString('id-ID')}</td>
-                  <td className="px-3 py-2 text-right">Rp {sum('pkp').toLocaleString('id-ID')}</td>
+                  <td className="px-3 py-2 text-right">Rp {sum('dpp').toLocaleString('id-ID')}</td>
+                  <td className="px-3 py-2 text-center">-</td>
                   <td className="px-3 py-2 text-right">Rp {sum('pph21').toLocaleString('id-ID')}</td>
                   <td className="px-3 py-2" colSpan={2}></td>
                 </tr>
@@ -204,32 +232,20 @@ const AccountingPph21KaryawanDashboard: React.FC = () => {
             <form onSubmit={onSubmit} className="p-5 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">NIP</label>
-                  <input value={form.nip} onChange={(e)=>setForm(f=>({...f, nip:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Nama</label>
-                  <input value={form.nama} onChange={(e)=>setForm(f=>({...f, nama:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal</label>
-                  <input type="date" value={form.tanggal} onChange={(e)=>setForm(f=>({...f, tanggal:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"/>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Jabatan</label>
-                  <input value={form.jabatan} onChange={(e)=>setForm(f=>({...f, jabatan:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"/>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Periode (YYYY-MM)</label>
+                  <input type="month" value={form.periode} onChange={(e)=>setForm(f=>({...f, periode:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Gaji Bruto</label>
                   <input type="number" min={0} value={form.gajiBruto} onChange={(e)=>setForm(f=>({...f, gajiBruto:Number(e.target.value||0)}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">PTKP</label>
-                  <input type="number" min={0} value={form.ptkp} onChange={(e)=>setForm(f=>({...f, ptkp:Number(e.target.value||0)}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">DPP (Dasar Pengenaan Pajak)</label>
+                  <input type="number" min={0} value={form.dpp} onChange={(e)=>setForm(f=>({...f, dpp:Number(e.target.value||0)}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">PKP</label>
-                  <input type="number" min={0} value={form.pkp} onChange={(e)=>setForm(f=>({...f, pkp:Number(e.target.value||0)}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Persentase (%)</label>
+                  <input type="number" min={0} max={100} step={0.1} value={form.persentase * 100} onChange={(e)=>setForm(f=>({...f, persentase:Number(e.target.value||0)/100}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">PPh 21</label>

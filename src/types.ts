@@ -136,6 +136,9 @@ export interface PPh23Data {
   namaPihak: string;
   npwp: string;
   tanggal: string; // ISO date
+  keteranganTransaksi: string; // Keterangan Transaksi
+  dpp: number; // Dasar Pengenaan Pajak
+  persentase: number; // Persentase pajak (dalam desimal, misal 0.02 untuk 2%)
   pph23: number;
 }
 
@@ -144,6 +147,8 @@ export interface PPh4Ayat2Data {
   namaPihak: string;
   npwp: string;
   tanggal: string; // ISO date
+  dpp: number; // Dasar Pengenaan Pajak
+  persentase: number; // Persentase pajak (dalam desimal, misal 0.02 untuk 2%)
   pph4Ayat2: number;
 }
 

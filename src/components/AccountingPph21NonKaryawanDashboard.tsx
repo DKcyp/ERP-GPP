@@ -1,17 +1,48 @@
 import React, { useMemo, useState } from "react";
-import { Plus, Edit, Trash2, Search, Download, Clock, X, Save } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Download, Clock, X, Save, Upload } from "lucide-react";
 
 interface Pph21NonKaryawanItem {
   id: string;
-  namaCV: string; // Nama CV
+  periode: string; // YYYY-MM format untuk tampilan per bulan
   vendor: string; // Vendor
   npwp?: string;  // NPWP
-  tanggal: string; // yyyy-mm-dd
+  nominalPph: number; // Nominal PPh
+  dpp: number; // Dasar Pengenaan Pajak
+  persentase: number; // Persentase pajak (dalam desimal, misal 0.02 untuk 2%)
+  keterangan?: string;
 }
 
 const seed: Pph21NonKaryawanItem[] = [
-  { id: "nk-001", namaCV: "CV Nusantara Abadi", vendor: "PT Sumber Makmur", npwp: "01.234.567.8-901.000", tanggal: "2025-09-05" },
-  { id: "nk-002", namaCV: "CV Citra Mandiri", vendor: "PT Elektronik Jaya", npwp: "", tanggal: "2025-09-12" },
+  { 
+    id: "nk-001", 
+    periode: "2024-09", 
+    vendor: "PT Sumber Makmur", 
+    npwp: "01.234.567.8-901.000", 
+    nominalPph: 500000,
+    dpp: 25000000, // DPP
+    persentase: 0.02, // 2%
+    keterangan: "Jasa Konsultansi"
+  },
+  { 
+    id: "nk-002", 
+    periode: "2024-09", 
+    vendor: "PT Elektronik Jaya", 
+    npwp: "02.345.678.9-012.000", 
+    nominalPph: 750000,
+    dpp: 37500000,
+    persentase: 0.02, // 2%
+    keterangan: "Jasa Teknik"
+  },
+  { 
+    id: "nk-003", 
+    periode: "2024-10", 
+    vendor: "CV Digital Solusi", 
+    npwp: "03.456.789.0-123.000", 
+    nominalPph: 1000000,
+    dpp: 50000000,
+    persentase: 0.02, // 2%
+    keterangan: "Jasa IT"
+  },
 ];
 
 const AccountingPph21NonKaryawanDashboard: React.FC = () => {
@@ -25,17 +56,20 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
 
   const [form, setForm] = useState<Pph21NonKaryawanItem>({
     id: "",
-    namaCV: "",
+    periode: new Date().toISOString().slice(0,7), // YYYY-MM format
     vendor: "",
     npwp: "",
-    tanggal: new Date().toISOString().slice(0,10),
+    nominalPph: 0,
+    dpp: 0,
+    persentase: 0.02, // Default 2%
+    keterangan: "",
   });
 
   const filtered = useMemo(() => {
     const qq = q.toLowerCase();
     return rows.filter(r => {
-      const matchesText = r.namaCV.toLowerCase().includes(qq) || r.vendor.toLowerCase().includes(qq) || (r.npwp||"").toLowerCase().includes(qq);
-      const matchesMonth = month ? r.tanggal.slice(0,7) === month : true;
+      const matchesText = r.vendor.toLowerCase().includes(qq) || (r.npwp||"").toLowerCase().includes(qq) || (r.keterangan||"").toLowerCase().includes(qq);
+      const matchesMonth = month ? r.periode === month : true;
       return matchesText && matchesMonth;
     });
   }, [rows, q, month]);
@@ -46,7 +80,16 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ id: crypto.randomUUID(), namaCV: "", vendor: "", npwp: "", tanggal: new Date().toISOString().slice(0,10) });
+    setForm({ 
+      id: crypto.randomUUID(), 
+      periode: new Date().toISOString().slice(0,7), 
+      vendor: "", 
+      npwp: "", 
+      nominalPph: 0,
+      dpp: 0,
+      persentase: 0.02,
+      keterangan: "" 
+    });
     setIsOpen(true);
   };
 
@@ -65,8 +108,12 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.namaCV || !form.vendor || !form.tanggal) {
-      alert("Nama CV, Vendor, dan Tanggal wajib diisi");
+    if (!form.periode || !form.vendor) {
+      alert("Periode dan Vendor wajib diisi");
+      return;
+    }
+    if (form.nominalPph < 0 || form.dpp < 0 || form.persentase < 0) {
+      alert("Nilai tidak boleh negatif");
       return;
     }
     setSaving(true);
@@ -96,11 +143,12 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 flex items-center justify-between">
           <div className="space-x-2">
             <button onClick={openAdd} className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-blue-600 text-white hover:bg-blue-700"><Plus className="h-4 w-4 mr-1"/>Tambah</button>
+            <button className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-orange-500 text-white hover:bg-orange-600"><Upload className="h-4 w-4 mr-1"/>Import</button>
             <button className="inline-flex items-center px-3 py-2 rounded-lg text-xs bg-emerald-600 text-white hover:bg-emerald-700"><Download className="h-4 w-4 mr-1"/>Export</button>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Cari Nama CV / Vendor / NPWP" className="w-72 pl-8 pr-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+              <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Cari vendor, NPWP, atau keterangan" className="w-72 pl-8 pr-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"/>
             </div>
             <div className="flex items-center space-x-2 text-xs">
@@ -126,10 +174,13 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="px-3 py-2 text-left">No</th>
-                  <th className="px-3 py-2 text-left">Nama CV</th>
+                  <th className="px-3 py-2 text-left">Periode</th>
                   <th className="px-3 py-2 text-left">Vendor</th>
                   <th className="px-3 py-2 text-left">NPWP</th>
-                  <th className="px-3 py-2 text-left">Tanggal</th>
+                  <th className="px-3 py-2 text-right">Nominal PPh</th>
+                  <th className="px-3 py-2 text-right">DPP</th>
+                  <th className="px-3 py-2 text-center">Persentase</th>
+                  <th className="px-3 py-2 text-left">Keterangan</th>
                   <th className="px-3 py-2 text-right">Aksi</th>
                 </tr>
               </thead>
@@ -137,10 +188,17 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
                 {pageData.map((r, idx) => (
                   <tr key={r.id} className="hover:bg-gray-50">
                     <td className="px-3 py-2">{idx+1}</td>
-                    <td className="px-3 py-2">{r.namaCV}</td>
+                    <td className="px-3 py-2 font-medium">{r.periode}</td>
                     <td className="px-3 py-2">{r.vendor}</td>
-                    <td className="px-3 py-2">{r.npwp||'-'}</td>
-                    <td className="px-3 py-2">{new Date(r.tanggal).toLocaleDateString("id-ID")}</td>
+                    <td className="px-3 py-2 font-mono">{r.npwp||'-'}</td>
+                    <td className="px-3 py-2 text-right font-medium">Rp {r.nominalPph.toLocaleString("id-ID")}</td>
+                    <td className="px-3 py-2 text-right">Rp {r.dpp.toLocaleString("id-ID")}</td>
+                    <td className="px-3 py-2 text-center">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                        {(r.persentase * 100).toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">{r.keterangan||'-'}</td>
                     <td className="px-3 py-2 text-right space-x-2">
                       <button onClick={()=>openEdit(r.id)} className="inline-flex items-center px-2 py-1 border border-gray-300 rounded-md hover:bg-gray-50"><Edit className="h-4 w-4"/></button>
                       <button onClick={()=>onDelete(r.id)} className="inline-flex items-center px-2 py-1 border border-rose-300 text-rose-600 rounded-md hover:bg-rose-50"><Trash2 className="h-4 w-4"/></button>
@@ -149,7 +207,7 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
                 ))}
                 {pageData.length===0 && (
                   <tr>
-                    <td colSpan={6} className="px-3 py-8 text-center text-gray-500">Tidak ada data</td>
+                    <td colSpan={9} className="px-3 py-8 text-center text-gray-500">Tidak ada data</td>
                   </tr>
                 )}
               </tbody>
@@ -172,8 +230,8 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
             <form onSubmit={onSubmit} className="p-5 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Nama CV</label>
-                  <input value={form.namaCV} onChange={(e)=>setForm(f=>({...f, namaCV:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Periode (YYYY-MM)</label>
+                  <input type="month" value={form.periode} onChange={(e)=>setForm(f=>({...f, periode:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Vendor</label>
@@ -184,8 +242,20 @@ const AccountingPph21NonKaryawanDashboard: React.FC = () => {
                   <input value={form.npwp} onChange={(e)=>setForm(f=>({...f, npwp:e.target.value}))} placeholder="01.234.567.8-901.000" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"/>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Tanggal</label>
-                  <input type="date" value={form.tanggal} onChange={(e)=>setForm(f=>({...f, tanggal:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Nominal PPh</label>
+                  <input type="number" min={0} value={form.nominalPph} onChange={(e)=>setForm(f=>({...f, nominalPph:Number(e.target.value||0)}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">DPP (Dasar Pengenaan Pajak)</label>
+                  <input type="number" min={0} value={form.dpp} onChange={(e)=>setForm(f=>({...f, dpp:Number(e.target.value||0)}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Persentase (%)</label>
+                  <input type="number" min={0} max={100} step={0.1} value={form.persentase * 100} onChange={(e)=>setForm(f=>({...f, persentase:Number(e.target.value||0)/100}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" required/>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Keterangan</label>
+                  <textarea rows={2} value={form.keterangan} onChange={(e)=>setForm(f=>({...f, keterangan:e.target.value}))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"/>
                 </div>
               </div>
               <div className="flex items-center justify-end space-x-2 pt-2">

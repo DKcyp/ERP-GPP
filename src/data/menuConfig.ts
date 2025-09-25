@@ -2036,11 +2036,11 @@ export const accountingMenu: MenuSection[] = [
   //   directPath: "/accounting/neraca",
   // },
   {
-    title: "Pajak",
+    title: "PPN",
     icon: "Scale", // Icon for general tax section
     subSections: [
       {
-        title: "Pajak", // Sub-section title, can be same as main section or more specific
+        title: "PPN", // Sub-section title, can be same as main section or more specific
         icon: "Scale", // Sub-section icon
         items: [
           {

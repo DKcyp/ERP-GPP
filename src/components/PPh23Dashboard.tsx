@@ -1,12 +1,40 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, FileDown, Clock } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, FileDown, Clock, Upload } from 'lucide-react';
 import { PPh23Data } from '../types';
 import EntryPPh23Modal from './EntryPPh23Modal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const dummyData: PPh23Data[] = [
-  { id: 1, namaPihak: 'PT Sumber Makmur', npwp: '01.234.567.8-091.000', tanggal: '2024-01-31', pph23: 2500000 },
-  { id: 2, namaPihak: 'CV Karya Jaya', npwp: '09.876.543.2-019.000', tanggal: '2024-02-29', pph23: 1750000 },
+  { 
+    id: 1, 
+    namaPihak: 'PT Sumber Makmur', 
+    npwp: '01.234.567.8-091.000', 
+    tanggal: '2024-01-31', 
+    keteranganTransaksi: 'Jasa Konsultansi Manajemen',
+    dpp: 125000000, // DPP
+    persentase: 0.02, // 2%
+    pph23: 2500000 
+  },
+  { 
+    id: 2, 
+    namaPihak: 'CV Karya Jaya', 
+    npwp: '09.876.543.2-019.000', 
+    tanggal: '2024-02-29', 
+    keteranganTransaksi: 'Jasa Teknik dan Konstruksi',
+    dpp: 87500000,
+    persentase: 0.02, // 2%
+    pph23: 1750000 
+  },
+  { 
+    id: 3, 
+    namaPihak: 'PT Digital Solusi', 
+    npwp: '12.345.678.9-123.000', 
+    tanggal: '2024-03-15', 
+    keteranganTransaksi: 'Jasa Pembuatan Software',
+    dpp: 100000000,
+    persentase: 0.02, // 2%
+    pph23: 2000000 
+  },
 ];
 
 const PPh23Dashboard: React.FC = () => {
@@ -20,7 +48,9 @@ const PPh23Dashboard: React.FC = () => {
   const [itemToDeleteId, setItemToDeleteId] = useState<number | null>(null);
 
   const filteredData = data.filter(item => {
-    const matchesSearch = item.namaPihak.toLowerCase().includes(searchTerm.toLowerCase()) || item.npwp.includes(searchTerm);
+    const matchesSearch = item.namaPihak.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          item.npwp.includes(searchTerm) ||
+                          item.keteranganTransaksi.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -69,7 +99,7 @@ const PPh23Dashboard: React.FC = () => {
           <div className="flex items-center space-x-2 w-full md:w-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input type="text" placeholder="Cari pihak atau NPWP..." className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <input type="text" placeholder="Cari pihak, NPWP, atau keterangan transaksi..." className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
             <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
               <Filter className="h-4 w-4" />
@@ -77,15 +107,19 @@ const PPh23Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="flex space-x-2">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200">
+              <Upload className="h-4 w-4" />
+              <span>Import</span>
+            </button>
+            <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200">
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
-            <button onClick={handleAddClick} className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            <button onClick={handleAddClick} className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
             </button>
@@ -100,6 +134,9 @@ const PPh23Dashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Pihak</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NPWP</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan Transaksi</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">DPP</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Persentase</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">PPh 23</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -108,9 +145,16 @@ const PPh23Dashboard: React.FC = () => {
                 {filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.namaPihak}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.npwp}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{item.npwp}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.tanggal}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">{formatCurrency(item.pph23)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title={item.keteranganTransaksi}>{item.keteranganTransaksi}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">{formatCurrency(item.dpp)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                        {(item.persentase * 100).toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 font-medium">{formatCurrency(item.pph23)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">
                         <button onClick={() => handleEditClick(item)} className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100">
@@ -125,7 +169,7 @@ const PPh23Dashboard: React.FC = () => {
                 ))}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data PPh 23 yang ditemukan.</td>
+                    <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data PPh 23 yang ditemukan.</td>
                   </tr>
                 )}
               </tbody>

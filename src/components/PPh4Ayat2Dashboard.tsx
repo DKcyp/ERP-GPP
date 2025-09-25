@@ -1,11 +1,37 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, Clock, DollarSign } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, FileText, FileSpreadsheet, Clock, DollarSign, Upload } from 'lucide-react';
 import { PPh4Ayat2Data } from '../types';
 import EntryPPh4Ayat2Modal from './EntryPPh4Ayat2Modal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const dummyData: PPh4Ayat2Data[] = [
-  { id: 1, namaPihak: 'PT Jaya Abadi', npwp: '12.345.678.9-001.000', tanggal: '2024-03-31', pph4Ayat2: 1250000 },
+  { 
+    id: 1, 
+    namaPihak: 'PT Jaya Abadi', 
+    npwp: '12.345.678.9-001.000', 
+    tanggal: '2024-03-31', 
+    dpp: 62500000, // DPP (Dasar Pengenaan Pajak)
+    persentase: 0.02, // 2%
+    pph4Ayat2: 1250000 
+  },
+  { 
+    id: 2, 
+    namaPihak: 'CV Maju Bersama', 
+    npwp: '23.456.789.0-012.000', 
+    tanggal: '2024-03-25', 
+    dpp: 75000000,
+    persentase: 0.02, // 2%
+    pph4Ayat2: 1500000 
+  },
+  { 
+    id: 3, 
+    namaPihak: 'PT Sukses Mandiri', 
+    npwp: '34.567.890.1-123.000', 
+    tanggal: '2024-03-20', 
+    dpp: 100000000,
+    persentase: 0.02, // 2%
+    pph4Ayat2: 2000000 
+  },
 ];
 
 const PPh4Ayat2Dashboard: React.FC = () => {
@@ -69,15 +95,19 @@ const PPh4Ayat2Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="flex space-x-2">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200">
+              <Upload className="h-4 w-4" />
+              <span>Import</span>
+            </button>
+            <button className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200">
               <FileText className="h-4 w-4" />
               <span>Export PDF</span>
             </button>
-            <button onClick={handleAddClick} className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            <button onClick={handleAddClick} className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
               <Plus className="h-4 w-4" />
               <span>Tambah</span>
             </button>
@@ -92,6 +122,8 @@ const PPh4Ayat2Dashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Pihak</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NPWP</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">DPP</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Persentase</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">PPh 4 Ayat 2</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -100,9 +132,15 @@ const PPh4Ayat2Dashboard: React.FC = () => {
                 {filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.namaPihak}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.npwp}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{item.npwp}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.tanggal}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">{formatCurrency(item.pph4Ayat2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">{formatCurrency(item.dpp)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                        {(item.persentase * 100).toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 font-medium">{formatCurrency(item.pph4Ayat2)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">
                         <button onClick={() => handleEditClick(item)} className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100">
@@ -117,7 +155,7 @@ const PPh4Ayat2Dashboard: React.FC = () => {
                 ))}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data PPh 4 Ayat 2 yang ditemukan.</td>
+                    <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data PPh 4 Ayat 2 yang ditemukan.</td>
                   </tr>
                 )}
               </tbody>

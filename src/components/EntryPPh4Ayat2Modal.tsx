@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { X, Save, User, Calendar, DollarSign, CreditCard } from 'lucide-react';
-
-export interface PPh4Ayat2Data {
-  id: number;
-  namaPihak: string;
-  npwp: string;
-  tanggal: string;
-  pph4Ayat2: number;
-}
+import { X, Save, User, Calendar, DollarSign, CreditCard, Percent } from 'lucide-react';
+import { PPh4Ayat2Data } from '../types';
 
 interface EntryPPh4Ayat2ModalProps {
   isOpen: boolean;
@@ -22,6 +15,8 @@ const EntryPPh4Ayat2Modal: React.FC<EntryPPh4Ayat2ModalProps> = ({ isOpen, onClo
     namaPihak: '',
     npwp: '',
     tanggal: '',
+    dpp: 0,
+    persentase: 0.02, // Default 2%
     pph4Ayat2: 0,
   };
 
@@ -42,10 +37,21 @@ const EntryPPh4Ayat2Modal: React.FC<EntryPPh4Ayat2ModalProps> = ({ isOpen, onClo
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'pph4Ayat2' ? parseFloat(value) || 0 : value,
-    }));
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: ['dpp', 'persentase', 'pph4Ayat2'].includes(name) ? parseFloat(value) || 0 : value,
+      };
+      
+      // Auto-calculate PPh4Ayat2 when DPP or persentase changes
+      if (name === 'dpp' || name === 'persentase') {
+        const dpp = name === 'dpp' ? parseFloat(value) || 0 : newData.dpp;
+        const persentase = name === 'persentase' ? parseFloat(value) || 0 : newData.persentase;
+        newData.pph4Ayat2 = dpp * persentase;
+      }
+      
+      return newData;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -95,12 +101,62 @@ const EntryPPh4Ayat2Modal: React.FC<EntryPPh4Ayat2ModalProps> = ({ isOpen, onClo
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="dpp" className="block text-sm font-medium text-gray-700 mb-1">DPP (Dasar Pengenaan Pajak)</label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input 
+                  type="number" 
+                  id="dpp" 
+                  name="dpp" 
+                  value={formData.dpp} 
+                  onChange={handleChange} 
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                  placeholder="Masukkan DPP" 
+                  min={0} 
+                  required 
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="persentase" className="block text-sm font-medium text-gray-700 mb-1">Persentase (%)</label>
+              <div className="relative">
+                <Percent className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input 
+                  type="number" 
+                  id="persentase" 
+                  name="persentase" 
+                  value={formData.persentase * 100} 
+                  onChange={(e) => handleChange({...e, target: {...e.target, name: 'persentase', value: (parseFloat(e.target.value) / 100).toString()}})}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                  placeholder="2.0" 
+                  min={0} 
+                  max={100}
+                  step={0.1}
+                  required 
+                />
+              </div>
+            </div>
+          </div>
+
           <div>
-            <label htmlFor="pph4Ayat2" className="block text-sm font-medium text-gray-700 mb-1">Jumlah PPh 4 Ayat 2</label>
+            <label htmlFor="pph4Ayat2" className="block text-sm font-medium text-gray-700 mb-1">Jumlah PPh 4 Ayat 2 (Auto-calculated)</label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input type="number" id="pph4Ayat2" name="pph4Ayat2" value={formData.pph4Ayat2} onChange={handleChange} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan jumlah PPh 4 Ayat 2" min={0} required />
+              <input 
+                type="number" 
+                id="pph4Ayat2" 
+                name="pph4Ayat2" 
+                value={formData.pph4Ayat2} 
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" 
+                placeholder="Otomatis dihitung dari DPP x Persentase" 
+                min={0} 
+                readOnly 
+              />
             </div>
+            <p className="text-xs text-gray-500 mt-1">Nilai ini dihitung otomatis dari DPP × Persentase</p>
           </div>
 
           <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50 -mx-6 -mb-6 mt-6">
