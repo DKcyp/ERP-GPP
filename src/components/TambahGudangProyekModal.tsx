@@ -38,6 +38,16 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
               type="text"
               id="namaGudang"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Masukkan nama gudang"
+            />
+          </div>
+          <div>
+            <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+            <input
+              type="text"
+              id="serialNumber"
+              className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Contoh: GDG-JKT-001"
             />
           </div>
           <div>
@@ -46,6 +56,7 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
               type="text"
               id="lokasiGudang"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Masukkan lokasi gudang"
             />
           </div>
           <div>
@@ -54,6 +65,7 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
               type="text"
               id="pic"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Masukkan nama PIC"
             />
           </div>
           <div>
@@ -62,6 +74,7 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
               type="text"
               id="kontakPic"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Contoh: 08123456789"
             />
           </div>
           <div>
@@ -70,6 +83,7 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
               type="text"
               id="soTurunan"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Masukkan SO turunan"
             />
           </div>
           <div className="col-span-full">
