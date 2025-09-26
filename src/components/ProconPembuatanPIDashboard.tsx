@@ -42,7 +42,12 @@ interface PIEntry {
   totalPI?: number; // New field for Total PI
 }
 
-// formatRupiah removed (no longer used)
+// Helper function to format currency
+const formatRupiah = (value: number): string => {
+  if (!value) return '';
+  return `Rp ${value.toLocaleString('id-ID')}`;
+};
+
 
 // Helper: compute due date from document date (dd/MM/yyyy) + days
 const computeDueDate = (documentDate: string, days: number): string => {
@@ -243,6 +248,9 @@ const ProconPembuatanPIDashboard: React.FC = () => {
 
   // New: Estimasi Nilai Kontrak field (tab content uses shared HPPDetailTabs)
   const [estimasiNilaiKontrak, setEstimasiNilaiKontrak] = useState<number>(0);
+  
+  // State for formatted Total PI display
+  const [totalPIDisplay, setTotalPIDisplay] = useState<string>('');
 
   // Print-related state and component have been removed as per new requirements.
 
@@ -295,6 +303,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       newInputField: "", // Initialize newInputField for new entries
       totalPI: 0, // Initialize totalPI for new entries
     });
+    setTotalPIDisplay(''); // Reset display format
     setEditId(null);
     setIsAddOpen(true);
   };
@@ -364,6 +373,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       newInputField: found.newInputField || "", // Load newInputField when editing
       totalPI: found.totalPI || 0, // Load totalPI when editing
     });
+    setTotalPIDisplay(found.totalPI ? formatRupiah(found.totalPI) : ''); // Set display format
     setEditId(id);
     setIsAddOpen(true);
   };
@@ -375,7 +385,8 @@ const ProconPembuatanPIDashboard: React.FC = () => {
   const handlePrint = () => {
     const link = document.createElement("a");
     // Download from Google Drive link
-    link.href = "https://drive.google.com/uc?export=download&id=1rqaQQJIXnM7vozNxFz_-R5M13H3LTvjo";
+    link.href =
+      "https://drive.google.com/uc?export=download&id=1rqaQQJIXnM7vozNxFz_-R5M13H3LTvjo";
     link.setAttribute("download", "Proforma-Invoice.pdf"); // Sets the downloaded file name
     document.body.appendChild(link);
     link.click();
@@ -668,7 +679,9 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                       {row.contractOrPO}
                     </td>
                     <td className="px-3 py-2 text-gray-700">{row.bankCode}</td>
-                    <td className="px-3 py-2 text-gray-700">{row.totalPI}</td>
+                    <td className="px-3 py-2 text-gray-900 font-bold text-right">
+                      {row.totalPI ? `Rp ${row.totalPI.toLocaleString('id-ID')}` : '-'}
+                    </td>
                     <td className="px-3 py-2 text-gray-700">
                       {row.attachmentFileName ? (
                         <div className="flex items-center gap-1">
@@ -920,20 +933,34 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
               </div>
-              {/* New Input Field */}
+              {/* Total PI */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  New Field
+                  Total PI
                 </label>
                 <input
                   type="text"
-                  value={form.newInputField}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      newInputField: e.target.value,
-                    }))
-                  }
+                  value={totalPIDisplay}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    // Allow only numbers and format as currency
+                    const numericValue = inputValue.replace(/[^\d]/g, '');
+                    if (numericValue) {
+                      const number = parseInt(numericValue);
+                      setTotalPIDisplay(formatRupiah(number));
+                      setForm((prev) => ({
+                        ...prev,
+                        totalPI: number,
+                      }));
+                    } else {
+                      setTotalPIDisplay('');
+                      setForm((prev) => ({
+                        ...prev,
+                        totalPI: 0,
+                      }));
+                    }
+                  }}
+                  placeholder="Masukkan nominal Total PI (contoh: Rp 150.000.000)"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
               </div>

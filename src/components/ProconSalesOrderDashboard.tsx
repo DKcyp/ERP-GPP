@@ -48,6 +48,7 @@ interface ProconSalesOrder {
   piNo: string;
   poKontrakReceived: string;
   remarkProjectControl: string;
+  invoiceNo: string;
   invoiceAmount: string;
   invoiceAmountPpn: string;
   dueDatePayment: string;
@@ -116,7 +117,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDatePI: "03-Jan-25",
       delaySubmitPI: "14",
       submitToFinance: "14",
-      piAmount: "75",
+      piAmount: "15",
       keterangan: "OVERDUE",
       piNo: "PI-2025-001",
       poKontrakReceived: "28-Dec-24",
@@ -164,7 +165,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDatePI: "09-Jan-25",
       delaySubmitPI: "11",
       submitToFinance: "11",
-      piAmount: "45",
+      piAmount: "22",
       keterangan: "CRITICAL",
       piNo: "PI-2025-002",
       poKontrakReceived: "02-Jan-25",
@@ -212,7 +213,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDatePI: "15-Jan-25",
       delaySubmitPI: "0",
       submitToFinance: "0",
-      piAmount: "100",
+      piAmount: "45",
       keterangan: "COMPLETED",
       piNo: "PI-2025-003",
       poKontrakReceived: "08-Jan-25",
@@ -259,7 +260,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDatePI: "16-Jan-25",
       delaySubmitPI: "0",
       submitToFinance: "0",
-      piAmount: "90",
+      piAmount: "18",
       keterangan: "COMPLETED",
       piNo: "PI-2025-004",
       poKontrakReceived: "10-Jan-25",
@@ -307,7 +308,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDatePI: "23-Jan-25",
       delaySubmitPI: "2",
       submitToFinance: "2",
-      piAmount: "65",
+      piAmount: "75",
       keterangan: "MINOR DELAY",
       piNo: "PI-2025-005",
       poKontrakReceived: "13-Jan-25",
@@ -356,7 +357,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       dueDatePI: "23-Jan-25",
       delaySubmitPI: "0",
       submitToFinance: "0",
-      piAmount: "30",
+      piAmount: "12",
       keterangan: "IN PROGRESS",
       piNo: "PI-2025-006",
       poKontrakReceived: "16-Jan-25",
@@ -1040,70 +1041,10 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     PI AMOUNT
                   </th>
                   <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    KETERANGAN
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[150px]"
-                    rowSpan={2}
-                  >
-                    REMARK PROJECT CONTROL
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    INVOICE NO
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
-                    rowSpan={2}
-                  >
-                    INVOICE AMOUNT
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
-                    rowSpan={2}
-                  >
-                    INVOICE AMOUNT PPN 11%
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    DUE DATE PAYMENT
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[80px]"
-                    rowSpan={2}
-                  >
-                    PAID DATE
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    DELAY PAYMENT
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
-                    rowSpan={2}
-                  >
-                    REMARK FINANCE
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
-                    STATUS
-                  </th>
-                  <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]"
                     rowSpan={2}
                   >
-                    L/R
+                    LIR
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
@@ -1169,18 +1110,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
                     rowSpan={2}
                   >
-                    STATUS
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]"
-                    rowSpan={2}
-                  >
-                    L/R
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
-                    rowSpan={2}
-                  >
                     ACTIONS
                   </th>
                 </tr>
@@ -1207,7 +1136,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {currentData.map((item, index) => (
+                {currentData.map((item) => (
                   <tr key={item.id}>
                     <td className="px-2 py-3 border border-gray-300 text-center">
                       <span className="font-bold text-gray-900 text-xs">
@@ -1305,8 +1234,24 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
                       {item.submitToFinance}
                     </td>
-                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-center">
-                      {item.piAmount}%
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.piAmount && `Rp ${item.piAmount},000,000`}
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span
+                        className={`font-bold px-2 py-1 rounded-full ${
+                          item.lir === "YES"
+                            ? "text-green-600 bg-green-100"
+                            : item.lir === "NO"
+                            ? "text-red-600 bg-red-100"
+                            : "text-yellow-600 bg-yellow-100"
+                        }`}
+                      >
+                        {item.lir}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3 text-blue-600 text-xs border border-gray-300 font-medium text-center">
+                      {item.piNo}
                     </td>
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
@@ -1350,28 +1295,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">
                       {item.remarkFinance}
-                    </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(
-                          item.status
-                        )}`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span
-                        className={`font-bold px-2 py-1 rounded-full ${
-                          item.lir === "YES"
-                            ? "text-green-600 bg-green-100"
-                            : item.lir === "NO"
-                            ? "text-red-600 bg-red-100"
-                            : "text-yellow-600 bg-yellow-100"
-                        }`}
-                      >
-                        {item.lir}
-                      </span>
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <div className="flex items-center justify-center space-x-1">
