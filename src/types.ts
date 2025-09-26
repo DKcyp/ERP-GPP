@@ -420,6 +420,7 @@ export interface PenerimaanBarangManualData {
   noDokumen: string;
   namaBarang: string;
   kodeBarang: string;
+  serialNumber: string;
   qty: number;
   satuan: string;
   kondisiBarang: "Baik" | "Rusak" | "Expired";
@@ -435,6 +436,7 @@ export interface PenerimaanBarangManualFormData {
   noDokumen: string;
   namaBarang: string;
   kodeBarang: string;
+  serialNumber: string;
   qty: string; // keep as string for input
   satuan: string;
   kondisiBarang: "Baik" | "Rusak" | "Expired";

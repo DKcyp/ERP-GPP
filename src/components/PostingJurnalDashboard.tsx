@@ -34,7 +34,7 @@ const PostingJurnalDashboard: React.FC = () => {
   const [dummyData, setDummyData] = useState<JurnalEntry[]>([
     {
       id: "JRN001",
-      noJurnal: "KM-2024-07-001",
+      noJurnal: "", // Pending - No. Jurnal belum ada
       tanggal: "2024-07-01",
       user: "accounting",
       keterangan: "Penerimaan Pembayaran Proyek Alpha",
@@ -56,7 +56,7 @@ const PostingJurnalDashboard: React.FC = () => {
     },
     {
       id: "JRN002",
-      noJurnal: "BK-2024-06-005",
+      noJurnal: "BK-2024-06-005", // Posted - No. Jurnal sudah ada
       tanggal: "2024-06-30",
       user: "accounting",
       keterangan: "Pembayaran Gaji Karyawan Juni",
@@ -78,7 +78,7 @@ const PostingJurnalDashboard: React.FC = () => {
     },
     {
       id: "JRN003",
-      noJurnal: "KK-2024-06-010",
+      noJurnal: "", // Pending - No. Jurnal belum ada
       tanggal: "2024-06-29",
       user: "accounting",
       keterangan: "Pembelian Perlengkapan Kantor",
@@ -100,7 +100,7 @@ const PostingJurnalDashboard: React.FC = () => {
     },
     {
       id: "JRN004",
-      noJurnal: "BM-2024-06-003",
+      noJurnal: "", // Pending - No. Jurnal belum ada
       tanggal: "2024-06-28",
       user: "accounting",
       keterangan: "Transfer dari Klien Beta",
@@ -122,7 +122,7 @@ const PostingJurnalDashboard: React.FC = () => {
     },
     {
       id: "JRN005",
-      noJurnal: "KM-2024-07-002",
+      noJurnal: "", // Pending - No. Jurnal belum ada
       tanggal: "2024-07-02",
       user: "accounting",
       keterangan: "Penerimaan Uang Muka Proyek Gamma",
@@ -144,7 +144,7 @@ const PostingJurnalDashboard: React.FC = () => {
     },
     {
       id: "JRN006",
-      noJurnal: "BK-2024-07-001",
+      noJurnal: "", // Pending - No. Jurnal belum ada
       tanggal: "2024-07-03",
       user: "accounting",
       keterangan: "Pembayaran Tagihan Listrik",
@@ -212,6 +212,26 @@ const PostingJurnalDashboard: React.FC = () => {
     setIsPostingModalOpen(true); // Open the posting confirmation modal
   };
 
+  // Function to generate journal number based on transaction type and date
+  const generateJournalNumber = (entry: JurnalEntry) => {
+    const date = new Date(entry.tanggal);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    
+    // Determine prefix based on transaction type (simplified logic)
+    let prefix = "JU"; // Default prefix
+    if (entry.details.some(d => d.coa.includes("Kas"))) {
+      prefix = entry.details.some(d => d.debit > 0 && d.coa.includes("Kas")) ? "KM" : "KK";
+    } else if (entry.details.some(d => d.coa.includes("Bank"))) {
+      prefix = entry.details.some(d => d.debit > 0 && d.coa.includes("Bank")) ? "BM" : "BK";
+    }
+    
+    // Generate sequential number (simplified - in real app, this would be from database)
+    const sequence = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+    
+    return `${prefix}-${year}-${month}-${sequence}`;
+  };
+
   const handleConfirmPosting = () => {
     // Filter out already posted journals from the selection
     const jurnalsToPost = Array.from(selectedJurnals).filter((id) => {
@@ -225,11 +245,18 @@ const PostingJurnalDashboard: React.FC = () => {
       return;
     }
 
-    // Simulate posting logic
+    // Simulate posting logic with journal number generation
     setDummyData((prevData) =>
-      prevData.map((entry) =>
-        jurnalsToPost.includes(entry.id) ? { ...entry, isPosted: true } : entry
-      )
+      prevData.map((entry) => {
+        if (jurnalsToPost.includes(entry.id)) {
+          return { 
+            ...entry, 
+            isPosted: true,
+            noJurnal: generateJournalNumber(entry) // Generate journal number when posting
+          };
+        }
+        return entry;
+      })
     );
 
     alert(`Berhasil memposting jurnal dengan ID: ${jurnalsToPost.join(", ")}`);
@@ -258,11 +285,11 @@ const PostingJurnalDashboard: React.FC = () => {
       return;
     }
 
-    // Simulate unposting logic
+    // Simulate unposting logic - remove journal number when unposting
     setDummyData((prevData) =>
       prevData.map((entry) =>
         jurnalsToUnpost.includes(entry.id)
-          ? { ...entry, isPosted: false }
+          ? { ...entry, isPosted: false, noJurnal: "" } // Clear journal number when unposting
           : entry
       )
     );
@@ -288,9 +315,10 @@ const PostingJurnalDashboard: React.FC = () => {
 
   const filteredData = dummyData.filter((entry) => {
     const matchesSearch =
-      entry.noJurnal.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (entry.noJurnal && entry.noJurnal.toLowerCase().includes(searchQuery.toLowerCase())) ||
       entry.keterangan.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.user.toLowerCase().includes(searchQuery.toLowerCase());
+      entry.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      entry.id.toLowerCase().includes(searchQuery.toLowerCase()); // Allow search by ID for pending journals
     const entryDate = new Date(entry.tanggal);
     const matchesDate =
       (!startDate || entryDate >= startDate) &&
@@ -529,7 +557,13 @@ const PostingJurnalDashboard: React.FC = () => {
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {entry.noJurnal}
+                        {entry.isPosted && entry.noJurnal ? (
+                          <span className="text-blue-600 font-semibold">{entry.noJurnal}</span>
+                        ) : (
+                          <span className="text-gray-400 italic">
+                            {entry.isPosted ? "Generating..." : "Belum diposting"}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(entry.tanggal).toLocaleDateString("id-ID")}

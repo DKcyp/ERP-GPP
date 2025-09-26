@@ -18,9 +18,7 @@ interface BarangItem {
   id: number;
   kodeBarang: string;
   namaBarang: string;
-  stokTercatat: number | "";
   stokSebenarnya: number | "";
-  selisih: number | "";
   keterangan: string;
   serialNumber: string; // New field for Serial Number
 }
@@ -34,6 +32,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
   const [tanggalOpname, setTanggalOpname] = useState("");
   const [waktuOpname, setWaktuOpname] = useState("");
   const [gudang, setGudang] = useState("Gudang Proyek A");
+  const [namaPegawai, setNamaPegawai] = useState("Mulyono");
   const [keterangan, setKeterangan] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [barangItems, setBarangItems] = useState<BarangItem[]>([]);
@@ -63,9 +62,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
         id: nextItemId,
         kodeBarang: "",
         namaBarang: "",
-        stokTercatat: "",
         stokSebenarnya: "",
-        selisih: "",
         keterangan: "",
         serialNumber: "", // Initialize new field
       },
@@ -86,21 +83,6 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
       prevItems.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
-          if (field === "stokTercatat" || field === "stokSebenarnya") {
-            const tercatat =
-              typeof updatedItem.stokTercatat === "number"
-                ? updatedItem.stokTercatat
-                : parseFloat(String(updatedItem.stokTercatat));
-            const sebenarnya =
-              typeof updatedItem.stokSebenarnya === "number"
-                ? updatedItem.stokSebenarnya
-                : parseFloat(String(updatedItem.stokSebenarnya));
-            if (!isNaN(tercatat) && !isNaN(sebenarnya)) {
-              updatedItem.selisih = sebenarnya - tercatat;
-            } else {
-              updatedItem.selisih = "";
-            }
-          }
           // Dummy logic for namaBarang based on kodeBarang
           if (field === "kodeBarang") {
             updatedItem.namaBarang =
@@ -130,6 +112,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
       tanggalOpname,
       waktuOpname,
       gudang,
+      namaPegawai,
       keterangan,
       file,
       barangItems,
@@ -251,6 +234,22 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 <option>Gudang Proyek C</option>
               </select>
             </div>
+            <div>
+              <label
+                htmlFor="namaPegawai"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Nama Pegawai
+              </label>
+              <input
+                type="text"
+                id="namaPegawai"
+                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={namaPegawai}
+                onChange={(e) => setNamaPegawai(e.target.value)}
+                placeholder="Masukkan nama pegawai"
+              />
+            </div>
             <div className="col-span-1 md:col-span-1">
               <label
                 htmlFor="keterangan"
@@ -315,13 +314,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                       Serial Number
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stok Tercatat
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Stok Sebenarnya
-                    </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Selisih
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Keterangan
@@ -377,20 +370,6 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                        <input
-                          type="number"
-                          className="border border-gray-300 rounded-lg px-2 py-1 w-full"
-                          value={item.stokTercatat}
-                          onChange={(e) =>
-                            handleBarangChange(
-                              item.id,
-                              "stokTercatat",
-                              parseFloat(e.target.value) || ""
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex items-center space-x-1">
                           <input
                             type="number"
@@ -409,14 +388,6 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                             <option>Kg</option>
                           </select>
                         </div>
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                        <input
-                          type="text"
-                          className="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-50 cursor-not-allowed"
-                          value={item.selisih}
-                          readOnly
-                        />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         <input

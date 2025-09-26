@@ -12,13 +12,13 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
   const [penerimaanData, setPenerimaanData] = useState<PenerimaanBarangManualData[]>([
     {
       id: '1', no: 1, tanggalPenerimaan: '2025-01-15', noDokumen: 'DOK-2025-001',
-      namaBarang: 'Semen Portland', kodeBarang: 'SMN-001', qty: 50, satuan: 'Sak',
+      namaBarang: 'Semen Portland', kodeBarang: 'SMN-001', serialNumber: 'SN-SMN-001-2025', qty: 50, satuan: 'Sak',
       kondisiBarang: 'Expired', alasanManual: 'Barang expired tapi masih layak pakai',
       statusPersetujuan: 'Pending'
     },
     {
       id: '2', no: 2, tanggalPenerimaan: '2025-01-16', noDokumen: 'DOK-2025-002',
-      namaBarang: 'Cat Tembok', kodeBarang: 'CAT-002', qty: 20, satuan: 'Kaleng',
+      namaBarang: 'Cat Tembok', kodeBarang: 'CAT-002', serialNumber: 'BATCH-CAT-002-240115', qty: 20, satuan: 'Kaleng',
       kondisiBarang: 'Expired', tanggalExpired: '2025-01-12',
       alasanManual: 'Cat expired namun kualitas masih baik setelah dicek',
       keterangan: 'Sudah ditest dan warna masih bagus',
@@ -56,6 +56,7 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
       noDokumen: formData.noDokumen,
       namaBarang: formData.namaBarang,
       kodeBarang: formData.kodeBarang,
+      serialNumber: formData.serialNumber,
       qty: parseInt(formData.qty),
       satuan: formData.satuan,
       kondisiBarang: formData.kondisiBarang,
@@ -112,6 +113,7 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Dokumen</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barang</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Serial Number/Batch</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
@@ -125,6 +127,11 @@ const PenerimaanBarangManualDashboard: React.FC = () => {
                   <td className="px-6 py-4 text-sm">
                     <div className="font-medium">{item.namaBarang}</div>
                     <div className="text-gray-500">{item.kodeBarang}</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    <span className="font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">
+                      {item.serialNumber}
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-sm">{item.qty} {item.satuan}</td>
                   <td className="px-6 py-4">

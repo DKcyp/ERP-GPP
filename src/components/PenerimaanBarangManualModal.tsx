@@ -10,7 +10,7 @@ interface Props {
 
 const PenerimaanBarangManualModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState<PenerimaanBarangManualFormData>({
-    noDokumen: '', namaBarang: '', kodeBarang: '', qty: '', satuan: '',
+    noDokumen: '', namaBarang: '', kodeBarang: '', serialNumber: '', qty: '', satuan: '',
     kondisiBarang: 'Expired', tanggalExpired: '', alasanManual: '', keterangan: ''
   });
 
@@ -47,7 +47,7 @@ const PenerimaanBarangManualModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
     e.preventDefault();
     onSubmit(formData);
     setFormData({
-      noDokumen: '', namaBarang: '', kodeBarang: '', qty: '', satuan: '',
+      noDokumen: '', namaBarang: '', kodeBarang: '', serialNumber: '', qty: '', satuan: '',
       kondisiBarang: 'Expired', tanggalExpired: '', alasanManual: '', keterangan: ''
     });
   };
@@ -92,6 +92,14 @@ const PenerimaanBarangManualModal: React.FC<Props> = ({ isOpen, onClose, onSubmi
               <input type="text" name="namaBarang" value={formData.namaBarang} readOnly
                 className="w-full px-3 py-2 border rounded-lg bg-gray-50 text-gray-700" 
                 placeholder="Akan terisi otomatis saat memilih kode barang" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Serial Number/Batch Number *</label>
+              <input type="text" name="serialNumber" value={formData.serialNumber} onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono" 
+                placeholder="Contoh: SN-SMN-001-2025 atau BATCH-CAT-002-240115" required />
+              <p className="text-xs text-gray-500 mt-1">Masukkan serial number atau batch number barang</p>
             </div>
 
             <div className="grid grid-cols-3 gap-4">

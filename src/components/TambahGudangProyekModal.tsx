@@ -22,41 +22,39 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="noSd" className="block text-sm font-medium text-gray-700 mb-1">No SO</label>
-            <select
-              id="noSd"
-              className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-            >
-              <option>SO0012</option>
-              <option>SO0013</option>
-              <option>SO0014</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="namaGudang" className="block text-sm font-medium text-gray-700 mb-1">Nama Gudang</label>
+            <label htmlFor="namaGudang" className="block text-sm font-medium text-gray-700 mb-1">
+              Nama Gudang <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               id="namaGudang"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Masukkan nama gudang"
+              required
             />
           </div>
           <div>
-            <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+            <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              Serial Number <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               id="serialNumber"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Contoh: GDG-JKT-001"
+              required
             />
           </div>
           <div>
-            <label htmlFor="lokasiGudang" className="block text-sm font-medium text-gray-700 mb-1">Lokasi Gudang</label>
+            <label htmlFor="lokasiGudang" className="block text-sm font-medium text-gray-700 mb-1">
+              Lokasi Gudang <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               id="lokasiGudang"
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Masukkan lokasi gudang"
+              required
             />
           </div>
           <div>
@@ -77,17 +75,10 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
               placeholder="Contoh: 08123456789"
             />
           </div>
-          <div>
-            <label htmlFor="soTurunan" className="block text-sm font-medium text-gray-700 mb-1">SO Turunan</label>
-            <input
-              type="text"
-              id="soTurunan"
-              className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              placeholder="Masukkan SO turunan"
-            />
-          </div>
           <div className="col-span-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status Gudang</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Status Gudang <span className="text-red-500">*</span>
+            </label>
             <div className="flex items-center space-x-4">
               <label className="inline-flex items-center">
                 <input
@@ -96,6 +87,7 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
                   value="Aktif"
                   className="form-radio h-4 w-4 text-blue-600 transition-colors duration-200"
                   defaultChecked
+                  required
                 />
                 <span className="ml-2 text-gray-700">Aktif</span>
               </label>
@@ -105,17 +97,22 @@ const TambahGudangProyekModal: React.FC<TambahGudangProyekModalProps> = ({ isOpe
                   name="statusGudang"
                   value="Non Aktif"
                   className="form-radio h-4 w-4 text-blue-600 transition-colors duration-200"
+                  required
                 />
                 <span className="ml-2 text-gray-700">Non Aktif</span>
               </label>
             </div>
           </div>
           <div className="col-span-full">
-            <label htmlFor="catatan" className="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+            <label htmlFor="catatan" className="block text-sm font-medium text-gray-700 mb-1">
+              Catatan <span className="text-red-500">*</span>
+            </label>
             <textarea
               id="catatan"
               rows={3}
               className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Masukkan catatan gudang"
+              required
             ></textarea>
           </div>
         </form>
