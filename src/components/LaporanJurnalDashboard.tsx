@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Clock, Search, Download, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Clock, Search, Download, ChevronDown, ChevronUp } from "lucide-react";
 
 interface JurnalDetail {
   coa: string;
@@ -25,87 +25,147 @@ const LaporanJurnalDashboard: React.FC = () => {
 
   const dummyData: JurnalEntry[] = [
     {
-      id: 'JRN001',
-      noJurnal: 'KM-2024-07-001',
-      tanggal: '2024-07-01',
-      user: 'accounting',
-      keterangan: 'Penerimaan Pembayaran Proyek Alpha',
+      id: "JRN001",
+      noJurnal: "KM-2024-07-001",
+      tanggal: "2024-07-01",
+      user: "accounting",
+      keterangan: "Penerimaan Pembayaran Proyek Alpha",
       details: [
-        { coa: '1101 - Kas Besar', keterangan: 'Penerimaan kas', debit: 25000000, kredit: 0 },
-        { coa: '4101 - Pendapatan Penjualan', keterangan: 'Pendapatan proyek', debit: 0, kredit: 25000000 },
+        {
+          coa: "1101 - Kas Besar",
+          keterangan: "Penerimaan kas",
+          debit: 25000000,
+          kredit: 0,
+        },
+        {
+          coa: "4101 - Pendapatan Penjualan",
+          keterangan: "Pendapatan proyek",
+          debit: 0,
+          kredit: 25000000,
+        },
       ],
       isPosted: true, // Assume all in Laporan Jurnal are posted
     },
     {
-      id: 'JRN002',
-      noJurnal: 'BK-2024-06-005',
-      tanggal: '2024-06-30',
-      user: 'accounting',
-      keterangan: 'Pembayaran Gaji Karyawan Juni',
+      id: "JRN002",
+      noJurnal: "JRL-2025-09-0001",
+      tanggal: "2024-06-30",
+      user: "accounting",
+      keterangan: "Pembayaran Gaji Karyawan Juni",
       details: [
-        { coa: '5101 - Beban Gaji', keterangan: 'Beban gaji', debit: 15000000, kredit: 0 },
-        { coa: '1110 - Bank BCA', keterangan: 'Pembayaran via bank', debit: 0, kredit: 15000000 },
+        {
+          coa: "5101 - Beban Gaji",
+          keterangan: "Beban gaji",
+          debit: 15000000,
+          kredit: 0,
+        },
+        {
+          coa: "1110 - Bank BCA",
+          keterangan: "Pembayaran via bank",
+          debit: 0,
+          kredit: 15000000,
+        },
       ],
       isPosted: true,
     },
     {
-      id: 'JRN003',
-      noJurnal: 'KK-2024-06-010',
-      tanggal: '2024-06-29',
-      user: 'accounting',
-      keterangan: 'Pembelian Perlengkapan Kantor',
+      id: "JRN003",
+      noJurnal: "KK-2024-06-010",
+      tanggal: "2024-06-29",
+      user: "accounting",
+      keterangan: "Pembelian Perlengkapan Kantor",
       details: [
-        { coa: '1305 - Perlengkapan Kantor', keterangan: 'Pembelian ATK', debit: 1200000, kredit: 0 },
-        { coa: '1102 - Kas Kecil', keterangan: 'Pembayaran tunai', debit: 0, kredit: 1200000 },
+        {
+          coa: "1305 - Perlengkapan Kantor",
+          keterangan: "Pembelian ATK",
+          debit: 1200000,
+          kredit: 0,
+        },
+        {
+          coa: "1102 - Kas Kecil",
+          keterangan: "Pembayaran tunai",
+          debit: 0,
+          kredit: 1200000,
+        },
       ],
       isPosted: true,
     },
     {
-      id: 'JRN004',
-      noJurnal: 'BM-2024-06-003',
-      tanggal: '2024-06-28',
-      user: 'accounting',
-      keterangan: 'Transfer dari Klien Beta',
+      id: "JRN004",
+      noJurnal: "BM-2024-06-003",
+      tanggal: "2024-06-28",
+      user: "accounting",
+      keterangan: "Transfer dari Klien Beta",
       details: [
-        { coa: '1111 - Bank Mandiri', keterangan: 'Penerimaan transfer', debit: 50000000, kredit: 0 },
-        { coa: '1201 - Piutang Usaha', keterangan: 'Pelunasan piutang', debit: 0, kredit: 50000000 },
+        {
+          coa: "1111 - Bank Mandiri",
+          keterangan: "Penerimaan transfer",
+          debit: 50000000,
+          kredit: 0,
+        },
+        {
+          coa: "1201 - Piutang Usaha",
+          keterangan: "Pelunasan piutang",
+          debit: 0,
+          kredit: 50000000,
+        },
       ],
       isPosted: true,
     },
     {
-      id: 'JRN005',
-      noJurnal: 'KM-2024-07-002',
-      tanggal: '2024-07-02',
-      user: 'accounting',
-      keterangan: 'Penerimaan Uang Muka Proyek Gamma',
+      id: "JRN005",
+      noJurnal: "KM-2024-07-002",
+      tanggal: "2024-07-02",
+      user: "accounting",
+      keterangan: "Penerimaan Uang Muka Proyek Gamma",
       details: [
-        { coa: '1101 - Kas Besar', keterangan: 'Uang muka', debit: 10000000, kredit: 0 },
-        { coa: '2105 - Pendapatan Diterima Dimuka', keterangan: 'Uang muka proyek', debit: 0, kredit: 10000000 },
+        {
+          coa: "1101 - Kas Besar",
+          keterangan: "Uang muka",
+          debit: 10000000,
+          kredit: 0,
+        },
+        {
+          coa: "2105 - Pendapatan Diterima Dimuka",
+          keterangan: "Uang muka proyek",
+          debit: 0,
+          kredit: 10000000,
+        },
       ],
       isPosted: true,
     },
     {
-      id: 'JRN006',
-      noJurnal: 'BK-2024-07-001',
-      tanggal: '2024-07-03',
-      user: 'accounting',
-      keterangan: 'Pembayaran Tagihan Listrik',
+      id: "JRN006",
+      noJurnal: "BK-2024-07-001",
+      tanggal: "2024-07-03",
+      user: "accounting",
+      keterangan: "Pembayaran Tagihan Listrik",
       details: [
-        { coa: '6101 - Beban Listrik', keterangan: 'Tagihan PLN', debit: 800000, kredit: 0 },
-        { coa: '1110 - Bank BCA', keterangan: 'Pembayaran via bank', debit: 0, kredit: 800000 },
+        {
+          coa: "6101 - Beban Listrik",
+          keterangan: "Tagihan PLN",
+          debit: 800000,
+          kredit: 0,
+        },
+        {
+          coa: "1110 - Bank BCA",
+          keterangan: "Pembayaran via bank",
+          debit: 0,
+          kredit: 800000,
+        },
       ],
       isPosted: true,
     },
   ];
 
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [showEntries, setShowEntries] = useState('10');
+  const [showEntries, setShowEntries] = useState("10");
 
   const toggleExpand = (id: string) => {
-    setExpandedRows(prev => {
+    setExpandedRows((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -117,7 +177,9 @@ const LaporanJurnalDashboard: React.FC = () => {
   };
 
   const handleSearch = () => {
-    alert(`Searching for: ${searchQuery}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`);
+    alert(
+      `Searching for: ${searchQuery}, Start Date: ${startDate?.toLocaleDateString()}, End Date: ${endDate?.toLocaleDateString()}`
+    );
     // Implement actual search logic here
   };
 
@@ -126,12 +188,15 @@ const LaporanJurnalDashboard: React.FC = () => {
     // Implement export logic here
   };
 
-  const filteredData = dummyData.filter(entry => {
-    const matchesSearch = entry.noJurnal.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          entry.keterangan.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          entry.user.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredData = dummyData.filter((entry) => {
+    const matchesSearch =
+      entry.noJurnal.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      entry.keterangan.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      entry.user.toLowerCase().includes(searchQuery.toLowerCase());
     const entryDate = new Date(entry.tanggal);
-    const matchesDate = (!startDate || entryDate >= startDate) && (!endDate || entryDate <= endDate);
+    const matchesDate =
+      (!startDate || entryDate >= startDate) &&
+      (!endDate || entryDate <= endDate);
     return matchesSearch && matchesDate;
   });
 
@@ -146,14 +211,18 @@ const LaporanJurnalDashboard: React.FC = () => {
                 LAPORAN JURNAL
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Accounting</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Accounting
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Laporan Jurnal</span>
+                <span className="text-blue-600 font-medium">
+                  Laporan Jurnal
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {today.toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -164,7 +233,12 @@ const LaporanJurnalDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
-              <label htmlFor="searchQuery" className="block text-sm font-medium text-gray-700 mb-2">Cari Jurnal</label>
+              <label
+                htmlFor="searchQuery"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Cari Jurnal
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -179,7 +253,12 @@ const LaporanJurnalDashboard: React.FC = () => {
             </div>
 
             <div className="lg:col-span-2">
-              <label htmlFor="periode" className="block text-sm font-medium text-gray-700 mb-2">Periode Jurnal</label>
+              <label
+                htmlFor="periode"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Periode Jurnal
+              </label>
               <div className="flex space-x-4">
                 <div className="relative flex-1">
                   <DatePicker
@@ -240,19 +319,19 @@ const LaporanJurnalDashboard: React.FC = () => {
           </div>
           <div className="flex space-x-3">
             <button
-              onClick={() => handleExport('Excel')}
+              onClick={() => handleExport("Excel")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> Excel
             </button>
             <button
-              onClick={() => handleExport('CSV')}
+              onClick={() => handleExport("CSV")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> CSV
             </button>
             <button
-              onClick={() => handleExport('PDF')}
+              onClick={() => handleExport("PDF")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> PDF
@@ -266,22 +345,40 @@ const LaporanJurnalDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     No. Jurnal
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tanggal
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     User
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Keterangan
                   </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Status
                   </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Detail
                   </th>
                 </tr>
@@ -294,7 +391,7 @@ const LaporanJurnalDashboard: React.FC = () => {
                         {entry.noJurnal}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(entry.tanggal).toLocaleDateString('id-ID')}
+                        {new Date(entry.tanggal).toLocaleDateString("id-ID")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {entry.user}
@@ -303,10 +400,14 @@ const LaporanJurnalDashboard: React.FC = () => {
                         {entry.keterangan}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          entry.isPosted ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {entry.isPosted ? 'Posted' : 'Pending'}
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            entry.isPosted
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {entry.isPosted ? "Posted" : "Pending"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
@@ -314,7 +415,11 @@ const LaporanJurnalDashboard: React.FC = () => {
                           onClick={() => toggleExpand(entry.id)}
                           className="text-blue-600 hover:text-blue-900"
                         >
-                          {expandedRows.has(entry.id) ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                          {expandedRows.has(entry.id) ? (
+                            <ChevronUp className="h-5 w-5" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5" />
+                          )}
                         </button>
                       </td>
                     </tr>
@@ -322,36 +427,69 @@ const LaporanJurnalDashboard: React.FC = () => {
                       <tr>
                         <td colSpan={6} className="p-4 bg-gray-50">
                           <div className="ml-8 border-l-2 border-blue-200 pl-4">
-                            <h5 className="text-md font-semibold text-gray-800 mb-2">Detail Jurnal:</h5>
+                            <h5 className="text-md font-semibold text-gray-800 mb-2">
+                              Detail Jurnal:
+                            </h5>
                             <table className="min-w-full divide-y divide-gray-200">
                               <thead className="bg-gray-100">
                                 <tr>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">COA</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">Keterangan</th>
-                                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">Debit</th>
-                                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">Kredit</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">
+                                    COA
+                                  </th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase">
+                                    Keterangan
+                                  </th>
+                                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">
+                                    Debit
+                                  </th>
+                                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-600 uppercase">
+                                    Kredit
+                                  </th>
                                 </tr>
                               </thead>
                               <tbody className="bg-white divide-y divide-gray-200">
                                 {entry.details.map((detail, idx) => (
                                   <tr key={idx}>
-                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{detail.coa}</td>
-                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{detail.keterangan}</td>
-                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-right">
-                                      {detail.debit > 0 ? `Rp ${detail.debit.toLocaleString('id-ID')}` : '-'}
+                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                                      {detail.coa}
+                                    </td>
+                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                      {detail.keterangan}
                                     </td>
                                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-right">
-                                      {detail.kredit > 0 ? `Rp ${detail.kredit.toLocaleString('id-ID')}` : '-'}
+                                      {detail.debit > 0
+                                        ? `Rp ${detail.debit.toLocaleString(
+                                            "id-ID"
+                                          )}`
+                                        : "-"}
+                                    </td>
+                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 text-right">
+                                      {detail.kredit > 0
+                                        ? `Rp ${detail.kredit.toLocaleString(
+                                            "id-ID"
+                                          )}`
+                                        : "-"}
                                     </td>
                                   </tr>
                                 ))}
                                 <tr className="font-bold bg-gray-50">
-                                  <td colSpan={2} className="px-4 py-2 text-right text-sm text-gray-900">Total</td>
-                                  <td className="px-4 py-2 text-right text-sm text-gray-900">
-                                    Rp {entry.details.reduce((sum, d) => sum + d.debit, 0).toLocaleString('id-ID')}
+                                  <td
+                                    colSpan={2}
+                                    className="px-4 py-2 text-right text-sm text-gray-900"
+                                  >
+                                    Total
                                   </td>
                                   <td className="px-4 py-2 text-right text-sm text-gray-900">
-                                    Rp {entry.details.reduce((sum, d) => sum + d.kredit, 0).toLocaleString('id-ID')}
+                                    Rp{" "}
+                                    {entry.details
+                                      .reduce((sum, d) => sum + d.debit, 0)
+                                      .toLocaleString("id-ID")}
+                                  </td>
+                                  <td className="px-4 py-2 text-right text-sm text-gray-900">
+                                    Rp{" "}
+                                    {entry.details
+                                      .reduce((sum, d) => sum + d.kredit, 0)
+                                      .toLocaleString("id-ID")}
                                   </td>
                                 </tr>
                               </tbody>

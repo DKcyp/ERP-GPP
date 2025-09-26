@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Clock, PlusCircle, Edit, Trash2, FileSpreadsheet, FileDown, Search } from "lucide-react";
+import { Clock, PlusCircle, Edit, Trash2, FileSpreadsheet, FileDown, Search, Upload, X } from "lucide-react";
 
 type PembayaranRow = {
   id: number;
@@ -12,6 +12,7 @@ type PembayaranRow = {
   ppn: number;
   total: number;
   noBuktiBayar: string;
+  buktiTransfer?: File | null; // File bukti transfer
 };
 
 const FinancePembayaranHutangDashboard: React.FC = () => {
@@ -58,12 +59,41 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
       dpp: 0, 
       ppn: 0, 
       total: 0, 
-      noBuktiBayar: generateNoBuktiBayar()
+      noBuktiBayar: generateNoBuktiBayar(),
+      buktiTransfer: null
     }); 
     setFormOpen(true); 
   };
   const startEdit = (row: PembayaranRow) => { setEditing(row); setFormOpen(true); };
   const remove = (id: number) => setRows(prev => prev.filter(r => r.id !== id));
+  
+  // Handle file upload
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && editing) {
+      // Validate file type (image or PDF)
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Format file tidak didukung. Gunakan JPG, PNG, atau PDF.');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Ukuran file terlalu besar. Maksimal 5MB.');
+        return;
+      }
+      
+      setEditing({ ...editing, buktiTransfer: file });
+    }
+  };
+  
+  // Remove uploaded file
+  const removeFile = () => {
+    if (editing) {
+      setEditing({ ...editing, buktiTransfer: null });
+    }
+  };
   const onSave = (data: PembayaranRow) => {
     data.total = (Number(data.dpp)||0) + (Number(data.ppn)||0);
     if (data.id && rows.some(r => r.id === data.id)) setRows(prev => prev.map(r => r.id === data.id ? data : r));
@@ -210,6 +240,64 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-gray-700 mb-1">No Bukti Bayar</label>
                   <input value={editing.noBuktiBayar} readOnly className="w-full border rounded px-2 py-1.5 text-sm bg-gray-100" />
+                </div>
+                
+                {/* Upload Bukti Transfer */}
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Upload Bukti Transfer
+                    <span className="text-gray-500 text-xs ml-1">(JPG, PNG, PDF - Max 5MB)</span>
+                  </label>
+                  
+                  {!editing.buktiTransfer ? (
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
+                      <input
+                        type="file"
+                        id="bukti-transfer"
+                        accept="image/jpeg,image/jpg,image/png,application/pdf"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="bukti-transfer"
+                        className="cursor-pointer flex flex-col items-center space-y-2"
+                      >
+                        <Upload className="h-8 w-8 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          Klik untuk upload bukti transfer
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          atau drag & drop file di sini
+                        </span>
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="border border-gray-300 rounded-lg p-3 bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="h-8 w-8 bg-blue-100 rounded flex items-center justify-center">
+                            <Upload className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {editing.buktiTransfer.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {(editing.buktiTransfer.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={removeFile}
+                          className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                          title="Hapus file"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

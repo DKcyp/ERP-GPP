@@ -123,13 +123,25 @@ const BukuBesarDashboard: React.FC = () => {
   // Handle jurnal click navigation
   const handleJurnalClick = (noJurnal: string) => {
     try {
-      // Navigate to Posting Jurnal with noJurnal parameter
-      window.location.hash = `/accounting/posting-jurnal?noJurnal=${encodeURIComponent(noJurnal)}`;
+      // Store the selected journal number in sessionStorage for PostingJurnalDashboard to read
+      sessionStorage.setItem('selectedJurnalNumber', noJurnal);
+      
+      // Navigate to Posting Jurnal page
+      const baseUrl = window.location.origin + window.location.pathname;
+      const newUrl = `${baseUrl}#/accounting/posting-jurnal`;
+      
+      // Update URL and trigger navigation
+      window.location.href = newUrl;
+      
       console.log('Navigating to Posting Jurnal with noJurnal:', noJurnal);
+      
+      // Show user feedback
+      alert(`Navigasi ke Posting Jurnal dengan No. Jurnal: ${noJurnal}`);
+      
     } catch (error) {
       console.error('Navigation error:', error);
-      // Fallback navigation
-      window.location.href = window.location.origin + window.location.pathname + `#/accounting/posting-jurnal?noJurnal=${encodeURIComponent(noJurnal)}`;
+      // Fallback: Simple alert with journal number
+      alert(`No. Jurnal: ${noJurnal}\nSilakan navigasi manual ke menu Posting Jurnal.`);
     }
   };
 

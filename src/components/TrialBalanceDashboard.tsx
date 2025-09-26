@@ -9,10 +9,12 @@ interface TBEntry {
   akun: string; // kode akun
   namaAkun: string;
   mu: string;
+  saldoAwal: number; // Saldo Awal (Rp.)
   debitMu: number;
   kreditMu: number;
   debit: number; // Debet (Rp.)
   kredit: number; // Kredit (Rp.)
+  saldoAkhir: number; // Saldo Akhir (Rp.)
   keterangan: string;
 }
 
@@ -29,10 +31,12 @@ const TrialBalanceDashboard: React.FC = () => {
       akun: "1101",
       namaAkun: "Kas",
       mu: "IDR",
+      saldoAwal: 10000000, // Saldo awal Kas
       debitMu: 15000,
       kreditMu: 0,
       debit: 15000000,
       kredit: 0,
+      saldoAkhir: 25000000, // Saldo akhir = saldo awal + debit - kredit
       keterangan: "Kas perusahaan",
     },
     {
@@ -44,10 +48,12 @@ const TrialBalanceDashboard: React.FC = () => {
       akun: "2101",
       namaAkun: "Hutang Usaha",
       mu: "IDR",
+      saldoAwal: 2000000, // Saldo awal Hutang
       debitMu: 0,
       kreditMu: 4500,
       debit: 0,
       kredit: 4500000,
+      saldoAkhir: 6500000, // Saldo akhir = saldo awal - debit + kredit
       keterangan: "Hutang kepada supplier",
     },
   ]);
@@ -82,8 +88,10 @@ const TrialBalanceDashboard: React.FC = () => {
   const pageSize = Number(showEntries);
   const pageData = filteredData.slice(0, pageSize);
 
+  const totalSaldoAwal = filteredData.reduce((s, d) => s + d.saldoAwal, 0);
   const totalDebit = filteredData.reduce((s, d) => s + d.debit, 0);
   const totalKredit = filteredData.reduce((s, d) => s + d.kredit, 0);
+  const totalSaldoAkhir = filteredData.reduce((s, d) => s + d.saldoAkhir, 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -203,6 +211,9 @@ const TrialBalanceDashboard: React.FC = () => {
                     MU
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Saldo Awal (Rp.)
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Debet (MU)
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -213,6 +224,9 @@ const TrialBalanceDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Kredit (Rp.)
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Saldo Akhir (Rp.)
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Periode
@@ -234,6 +248,9 @@ const TrialBalanceDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {entry.mu}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                      Rp {entry.saldoAwal.toLocaleString("id-ID")}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                       {entry.debitMu.toLocaleString("id-ID")}
                     </td>
@@ -246,6 +263,9 @@ const TrialBalanceDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                       Rp {entry.kredit.toLocaleString("id-ID")}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                      Rp {entry.saldoAkhir.toLocaleString("id-ID")}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {entry.periode.split("-").reverse().join("/")}
                     </td>
@@ -254,8 +274,14 @@ const TrialBalanceDashboard: React.FC = () => {
               </tbody>
               <tfoot>
                 <tr className="bg-gray-50 font-semibold">
-                  <td className="px-6 py-3 text-sm text-gray-900" colSpan={5}>
+                  <td className="px-6 py-3 text-sm text-gray-900" colSpan={3}>
                     Total
+                  </td>
+                  <td className="px-6 py-3 text-sm text-right text-gray-900">
+                    Rp {totalSaldoAwal.toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-3 text-sm text-right text-gray-900" colSpan={2}>
+                    -
                   </td>
                   <td className="px-6 py-3 text-sm text-right text-gray-900">
                     Rp {totalDebit.toLocaleString("id-ID")}
@@ -263,7 +289,10 @@ const TrialBalanceDashboard: React.FC = () => {
                   <td className="px-6 py-3 text-sm text-right text-gray-900">
                     Rp {totalKredit.toLocaleString("id-ID")}
                   </td>
-                  <td colSpan={2}></td>
+                  <td className="px-6 py-3 text-sm text-right text-gray-900">
+                    Rp {totalSaldoAkhir.toLocaleString("id-ID")}
+                  </td>
+                  <td></td>
                 </tr>
               </tfoot>
             </table>
