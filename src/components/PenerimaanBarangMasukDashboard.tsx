@@ -14,6 +14,8 @@ interface RowData {
   jumlahItem: number;
   serialNumber: string;
   keterangan: string;
+  noRFI: string;
+  statusQHSE: 'Pending' | 'Approved' | 'Rejected' | 'Under Review';
 }
 
 // Data master PO-Supplier untuk auto-select
@@ -25,15 +27,25 @@ const masterPoSupplier = [
   { noPo: 'PO005', namaSupplier: 'Supplier E' },
 ];
 
+// Fungsi untuk generate No. RFI otomatis
+const generateRFINumber = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `RFI-${year}${month}${day}-${random}`;
+};
+
 const PenerimaanBarangMasukDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<Mode>('create');
-  const [selectedHeader, setSelectedHeader] = useState<{ noInvoice?: string; noPo?: string; namaSupplier?: string; tanggalPenerimaan?: string; catatan?: string } | undefined>(undefined);
+  const [selectedHeader, setSelectedHeader] = useState<{ noInvoice?: string; noPo?: string; namaSupplier?: string; tanggalPenerimaan?: string; catatan?: string; noRFI?: string } | undefined>(undefined);
   const [items, setItems] = useState<RowData[]>([
-    { no: 1, noInvoice: 'INV-001', noPo: 'PO001', namaSupplier: 'Supplier A', tanggalPenerimaan: '2025-03-10', jumlahItem: 5, serialNumber: 'SN001-005', keterangan: 'Barang dalam kondisi baik' },
-    { no: 2, noInvoice: 'INV-002', noPo: 'PO002', namaSupplier: 'Supplier B', tanggalPenerimaan: '2025-03-09', jumlahItem: 8, serialNumber: 'SN002-008', keterangan: 'Perlu inspeksi lebih lanjut' },
-    { no: 3, noInvoice: 'INV-003', noPo: 'PO003', namaSupplier: 'Supplier C', tanggalPenerimaan: '2025-03-08', jumlahItem: 3, serialNumber: 'SN003-003', keterangan: 'Sesuai spesifikasi' },
-    { no: 4, noInvoice: 'INV-004', noPo: 'PO004', namaSupplier: 'Supplier D', tanggalPenerimaan: '2025-03-07', jumlahItem: 10, serialNumber: 'SN004-010', keterangan: 'Menunggu approval QC' },
+    { no: 1, noInvoice: 'INV-001', noPo: 'PO001', namaSupplier: 'Supplier A', tanggalPenerimaan: '2025-03-10', jumlahItem: 5, serialNumber: 'SN001-005', keterangan: 'Barang dalam kondisi baik', noRFI: 'RFI-20250310-001', statusQHSE: 'Approved' },
+    { no: 2, noInvoice: 'INV-002', noPo: 'PO002', namaSupplier: 'Supplier B', tanggalPenerimaan: '2025-03-09', jumlahItem: 8, serialNumber: 'SN002-008', keterangan: 'Perlu inspeksi lebih lanjut', noRFI: 'RFI-20250309-002', statusQHSE: 'Under Review' },
+    { no: 3, noInvoice: 'INV-003', noPo: 'PO003', namaSupplier: 'Supplier C', tanggalPenerimaan: '2025-03-08', jumlahItem: 3, serialNumber: 'SN003-003', keterangan: 'Sesuai spesifikasi', noRFI: 'RFI-20250308-003', statusQHSE: 'Pending' },
+    { no: 4, noInvoice: 'INV-004', noPo: 'PO004', namaSupplier: 'Supplier D', tanggalPenerimaan: '2025-03-07', jumlahItem: 10, serialNumber: 'SN004-010', keterangan: 'Menunggu approval QC', noRFI: 'RFI-20250307-004', statusQHSE: 'Rejected' },
   ]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<RowData | null>(null);
@@ -203,10 +215,12 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No Invoice</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No PO</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No RFI</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Nama Supplier</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Tanggal Penerimaan</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Jumlah Item Barang</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Status QHSE</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -217,10 +231,21 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.no}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.noInvoice}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.noPo}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs font-medium text-blue-600">{item.noRFI}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.namaSupplier}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.tanggalPenerimaan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.jumlahItem}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.serialNumber}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item.statusQHSE === 'Approved' ? 'bg-green-100 text-green-800' :
+                        item.statusQHSE === 'Rejected' ? 'bg-red-100 text-red-800' :
+                        item.statusQHSE === 'Under Review' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {item.statusQHSE}
+                      </span>
+                    </td>
                     <td className="px-3 py-2 text-xs text-gray-900 max-w-xs truncate" title={item.keterangan}>{item.keterangan}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
                       <div className="flex items-center space-x-1.5">
@@ -233,6 +258,7 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                               noPo: item.noPo,
                               namaSupplier: item.namaSupplier,
                               tanggalPenerimaan: item.tanggalPenerimaan,
+                              noRFI: item.noRFI,
                             });
                             setIsModalOpen(true);
                           }}
@@ -248,6 +274,7 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                               noPo: item.noPo,
                               namaSupplier: item.namaSupplier,
                               tanggalPenerimaan: item.tanggalPenerimaan,
+                              noRFI: item.noRFI,
                             });
                             setIsModalOpen(true);
                           }}

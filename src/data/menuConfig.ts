@@ -1484,6 +1484,11 @@ export const gudangMenu: MenuSection[] = [
         icon: "AlertTriangle",
         path: "/gudang/barang-rusak/dashboard",
       },
+      {
+        title: "Barang Dibuang",
+        icon: "Trash",
+        path: "/gudang/pengembalian-barang/dibuang",
+      },
     ],
   },
   {
@@ -1536,11 +1541,6 @@ export const gudangMenu: MenuSection[] = [
         title: "Barang Karantina",
         icon: "Shield",
         path: "/gudang/pengembalian-barang/karantina",
-      },
-      {
-        title: "Barang Dibuang",
-        icon: "Trash",
-        path: "/gudang/pengembalian-barang/dibuang",
       },
     ],
   },

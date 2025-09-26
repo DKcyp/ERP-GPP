@@ -1,20 +1,64 @@
-import React from 'react';
-import { Clock, Search, FileText, FileBarChart, FileSpreadsheet, Wrench, Trash2, CalendarDays } from 'lucide-react';
+import React from "react";
+import {
+  Clock,
+  Search,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  Wrench,
+  Trash2,
+  CalendarDays,
+} from "lucide-react";
 
 const BarangKarantinaDashboard: React.FC = () => {
   const barangKarantinaItems = [
-    { no: 1, kodeBarang: 'BRG001', namaBarang: 'Excavator', kategori: 'Alat Berat', satuan: 'Unit', jumlah: 1, kondisi: 'Rusak', sumber: 'Pengembalian Barang', tanggalMasukKarantina: '10-03-2025' },
-    { no: 2, kodeBarang: 'BRG002', namaBarang: 'Generator', kategori: 'Alat', satuan: 'Unit', jumlah: 1, kondisi: 'Rusak Parah', sumber: 'Timesheet Barang', tanggalMasukKarantina: '9-03-2025' },
+    {
+      no: 1,
+      kodeBarang: "BRG001",
+      namaBarang: "Excavator",
+      kategori: "Alat Berat",
+      satuan: "Unit",
+      jumlah: 1,
+      kondisi: "Rusak",
+      sumber: "Pengembalian Barang",
+      tanggalMasukKarantina: "10-03-2025",
+      baStatus: "Approved",
+    },
+    {
+      no: 2,
+      kodeBarang: "BRG002",
+      namaBarang: "Generator",
+      kategori: "Alat",
+      satuan: "Unit",
+      jumlah: 1,
+      kondisi: "Rusak Parah",
+      sumber: "Timesheet Barang",
+      tanggalMasukKarantina: "9-03-2025",
+      baStatus: "Pending",
+    },
   ];
 
   const getKondisiClasses = (kondisi: string) => {
     switch (kondisi) {
-      case 'Rusak':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Rusak Parah':
-        return 'bg-red-100 text-red-800';
+      case "Rusak":
+        return "bg-yellow-100 text-yellow-800";
+      case "Rusak Parah":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getBaStatusClasses = (status: string) => {
+    switch (status) {
+      case "Approved":
+        return "bg-green-100 text-green-800";
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "Rejected":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -28,16 +72,22 @@ const BarangKarantinaDashboard: React.FC = () => {
                 BARANG KARANTINA
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Pengembalian Barang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Pengembalian Barang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Barang Karantina</span>
+                <span className="text-blue-600 font-medium">
+                  Barang Karantina
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -47,7 +97,12 @@ const BarangKarantinaDashboard: React.FC = () => {
           {/* Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="relative">
-              <label htmlFor="kodeBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Kode Barang</label>
+              <label
+                htmlFor="kodeBarang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Kode Barang
+              </label>
               <input
                 type="text"
                 id="kodeBarang"
@@ -57,7 +112,12 @@ const BarangKarantinaDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div className="relative">
-              <label htmlFor="namaBarang" className="block text-sm font-medium text-gray-700 mb-1">Cari Nama Barang</label>
+              <label
+                htmlFor="namaBarang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Cari Nama Barang
+              </label>
               <input
                 type="text"
                 id="namaBarang"
@@ -67,7 +127,12 @@ const BarangKarantinaDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
             <div>
-              <label htmlFor="kondisiBarang" className="block text-sm font-medium text-gray-700 mb-1">Pilih Kondisi Barang</label>
+              <label
+                htmlFor="kondisiBarang"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Pilih Kondisi Barang
+              </label>
               <select
                 id="kondisiBarang"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -82,7 +147,12 @@ const BarangKarantinaDashboard: React.FC = () => {
           {/* Periode and Search Button */}
           <div className="flex items-end space-x-4 mb-6">
             <div className="relative flex-1">
-              <label htmlFor="periodeStart" className="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+              <label
+                htmlFor="periodeStart"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Periode
+              </label>
               <div className="flex items-center space-x-2">
                 <div className="relative w-1/2">
                   <input
@@ -150,34 +220,89 @@ const BarangKarantinaDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Barang</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kondisi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sumber</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Masuk Karantina</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kode Barang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Barang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kategori
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kondisi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Sumber
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tanggal Masuk Karantina
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    BA Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {barangKarantinaItems.map((item) => (
-                  <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kodeBarang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaBarang}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.kategori}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.satuan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.jumlah}</td>
+                  <tr
+                    key={item.no}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.kodeBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.namaBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.kategori}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.satuan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.jumlah}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getKondisiClasses(item.kondisi)}`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getKondisiClasses(
+                          item.kondisi
+                        )}`}
+                      >
                         {item.kondisi}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.sumber}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalMasukKarantina}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.sumber}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.tanggalMasukKarantina}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getBaStatusClasses(
+                          item.baStatus
+                        )}`}
+                      >
+                        {item.baStatus}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button className="p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-xs shadow-md">
@@ -197,7 +322,8 @@ const BarangKarantinaDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {barangKarantinaItems.length} of {barangKarantinaItems.length} entries
+              Showing 1 to {barangKarantinaItems.length} of{" "}
+              {barangKarantinaItems.length} entries
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">

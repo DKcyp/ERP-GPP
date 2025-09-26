@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   FileText,
   Eye,
+  Settings,
 } from "lucide-react";
 
 interface POItem {
@@ -111,6 +112,11 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  
+  // State untuk modal proses nilai sisa asset
+  const [isProsesOpen, setIsProsesOpen] = useState(false);
+  const [prosesItem, setProsesItem] = useState<AktivasiAssetItem | null>(null);
+  const [nilaiSisaBaru, setNilaiSisaBaru] = useState<number>(0);
 
   const [form, setForm] = useState<
     Omit<AktivasiAssetItem, "totalDepresiasi" | "penyusutan" | "sisaUmur" | "sisaPenyusutan">
@@ -180,6 +186,37 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
   const onDelete = (id: string) => {
     if (!confirm("Hapus aktivasi asset ini?")) return;
     setRows((prev) => prev.filter((x) => x.id !== id));
+  };
+
+  const openProses = (id: string) => {
+    const r = rows.find((x) => x.id === id);
+    if (!r) return;
+    setProsesItem(r);
+    setNilaiSisaBaru(r.sisaPenyusutan);
+    setIsProsesOpen(true);
+  };
+
+  const handleProses = async () => {
+    if (!prosesItem) return;
+    
+    setSaving(true);
+    await new Promise((r) => setTimeout(r, 250));
+
+    // Update nilai sisa penyusutan dan recalculate related fields
+    const updatedItem: AktivasiAssetItem = {
+      ...prosesItem,
+      sisaPenyusutan: nilaiSisaBaru,
+      totalDepresiasi: prosesItem.harga - nilaiSisaBaru,
+      // Recalculate sisa umur berdasarkan nilai sisa baru
+      sisaUmur: prosesItem.penyusutan > 0 ? Math.ceil(nilaiSisaBaru / prosesItem.penyusutan) : 0,
+    };
+
+    setRows((prev) => prev.map((x) => (x.id === prosesItem.id ? updatedItem : x)));
+    
+    setSaving(false);
+    setIsProsesOpen(false);
+    setProsesItem(null);
+    setNilaiSisaBaru(0);
   };
 
   const onChangePO = (no: string) => {
@@ -354,18 +391,28 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                     <button
                       onClick={() => openDetail(r.id)}
                       className="inline-flex items-center p-1 border border-transparent rounded-md hover:bg-gray-100 text-gray-600"
+                      title="Lihat Detail"
                     >
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => openEdit(r.id)}
                       className="inline-flex items-center p-1 border border-transparent rounded-md hover:bg-gray-100 text-gray-600"
+                      title="Edit"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
+                      onClick={() => openProses(r.id)}
+                      className="inline-flex items-center p-1 border border-transparent rounded-md hover:bg-blue-100 text-blue-600"
+                      title="Proses Nilai Sisa Asset"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </button>
+                    <button
                       onClick={() => onDelete(r.id)}
                       className="inline-flex items-center p-1 border border-transparent rounded-md hover:bg-rose-100 text-rose-600"
+                      title="Hapus"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -461,6 +508,106 @@ const AccountingAssetAktivasiDashboard: React.FC = () => {
                 className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isProsesOpen && prosesItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={(e) =>
+            e.target === e.currentTarget && setIsProsesOpen(false)
+          }
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h2 className="text-lg font-semibold">Proses Nilai Sisa Asset</h2>
+              <button
+                onClick={() => setIsProsesOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Barang:</span>
+                  <span className="font-medium">{prosesItem.namaBarang}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">No PO:</span>
+                  <span className="font-medium">{prosesItem.noPO}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Harga Asset:</span>
+                  <span className="font-medium">Rp {prosesItem.harga.toLocaleString("id-ID")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Nilai Sisa Saat Ini:</span>
+                  <span className="font-medium">Rp {prosesItem.sisaPenyusutan.toLocaleString("id-ID")}</span>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nilai Sisa Asset Baru
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={prosesItem.harga}
+                  value={nilaiSisaBaru}
+                  onChange={(e) => setNilaiSisaBaru(Number(e.target.value || 0))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  placeholder="Masukkan nilai sisa baru"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Maksimal: Rp {prosesItem.harga.toLocaleString("id-ID")}
+                </p>
+              </div>
+
+              <div className="bg-blue-50 rounded-lg p-3 text-sm">
+                <div className="font-medium text-blue-900 mb-1">Preview Perubahan:</div>
+                <div className="space-y-1 text-blue-800">
+                  <div className="flex justify-between">
+                    <span>Total Depresiasi Baru:</span>
+                    <span>Rp {(prosesItem.harga - nilaiSisaBaru).toLocaleString("id-ID")}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Sisa Umur Baru:</span>
+                    <span>{prosesItem.penyusutan > 0 ? Math.ceil(nilaiSisaBaru / prosesItem.penyusutan) : 0} bulan</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-end space-x-2 p-5 border-t border-gray-200 bg-gray-50">
+              <button
+                type="button"
+                onClick={() => setIsProsesOpen(false)}
+                className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleProses}
+                disabled={saving || nilaiSisaBaru < 0 || nilaiSisaBaru > prosesItem.harga}
+                className="inline-flex items-center px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                {saving ? (
+                  <>
+                    <Save className="h-4 w-4 mr-2 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Proses
+                  </>
+                )}
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle } from 'lucide-react';
+import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle, Check, X } from 'lucide-react';
 
 type Status = 'Pending' | 'Approved' | 'Rejected';
 
@@ -164,6 +164,18 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
     setSaved(prev => [record, ...prev]);
     resetForm();
     setIsModalOpen(false);
+  };
+
+  const handleApprove = (id: string) => {
+    setSaved(prev => prev.map(request => 
+      request.id === id ? { ...request, status: 'Approved' as Status } : request
+    ));
+  };
+
+  const handleReject = (id: string) => {
+    setSaved(prev => prev.map(request => 
+      request.id === id ? { ...request, status: 'Rejected' as Status } : request
+    ));
   };
 
   const filteredRequests = saved.filter(request => {
@@ -369,6 +381,26 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                         <button className="text-blue-600 hover:text-blue-900 transition-colors" title="Lihat Detail">
                           <Eye className="h-5 w-5" />
                         </button>
+                        {request.status === 'Pending' && (
+                          <>
+                            <button 
+                              onClick={() => handleApprove(request.id)}
+                              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors text-xs font-medium"
+                              title="Approve"
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              Approve
+                            </button>
+                            <button 
+                              onClick={() => handleReject(request.id)}
+                              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors text-xs font-medium"
+                              title="Reject"
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Reject
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

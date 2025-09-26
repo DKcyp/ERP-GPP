@@ -9,6 +9,7 @@ interface HeaderData {
   namaSupplier?: string;
   tanggalPenerimaan?: string; // yyyy-mm-dd
   catatan?: string;
+  noRFI?: string;
 }
 
 interface ItemData {
@@ -41,6 +42,16 @@ const masterPoSupplier = [
   { noPo: 'PO005', namaSupplier: 'Supplier E' },
 ];
 
+// Fungsi untuk generate No. RFI otomatis
+const generateRFINumber = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `RFI-${year}${month}${day}-${random}`;
+};
+
 const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
   isOpen,
   onClose,
@@ -48,12 +59,17 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
   headerData,
   itemsData,
 }) => {
-  const [headerForm, setHeaderForm] = useState<HeaderData>(headerData ?? {
-    noInvoice: "",
-    noPo: "",
-    namaSupplier: "",
-    tanggalPenerimaan: new Date().toISOString().split("T")[0],
-    catatan: "",
+  const [headerForm, setHeaderForm] = useState<HeaderData>(() => {
+    const defaultData = {
+      noInvoice: "",
+      noPo: "",
+      namaSupplier: "",
+      tanggalPenerimaan: new Date().toISOString().split("T")[0],
+      catatan: "",
+      noRFI: mode === "create" ? generateRFINumber() : "",
+    };
+    
+    return headerData ? { ...defaultData, ...headerData } : defaultData;
   });
 
   const [items, setItems] = useState<ItemData[]>(itemsData ?? [
@@ -145,7 +161,7 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
         </div>
         <div className="p-5 space-y-5">
           {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label
                 htmlFor="noInvoice"
@@ -161,6 +177,22 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                 }`}
                 defaultValue={headerData?.noInvoice ?? "INV-60"}
                 readOnly={isReadOnly}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="noRFI"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                No RFI
+              </label>
+              <input
+                type="text"
+                id="noRFI"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full bg-gray-50 text-xs font-medium text-blue-600"
+                value={headerForm.noRFI}
+                placeholder="Auto Generated"
+                readOnly
               />
             </div>
             <div>
@@ -235,7 +267,7 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
               ></textarea>
             </div>
             {/* Upload Dokumen */}
-            <div className="md:col-span-3">
+            <div className="md:col-span-4">
               <label
                 htmlFor="dokumenPenerimaan"
                 className="block text-xs font-medium text-gray-700 mb-1"
