@@ -361,7 +361,7 @@ const NomorReportDashboard: React.FC = () => {
                     Tanggal MOB
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nomor Kontrak
+                    Nomor Report
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tanggal Demob
@@ -372,7 +372,9 @@ const NomorReportDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Lokasi Kerja
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Keterangan
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
@@ -388,7 +390,9 @@ const NomorReportDashboard: React.FC = () => {
                       {row.namaProject}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {row.tanggalPermintaan ? formatDate(row.tanggalPermintaan) : "-"}
+                      {row.tanggalPermintaan
+                        ? formatDate(row.tanggalPermintaan)
+                        : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {row.nomorReport}
@@ -397,13 +401,18 @@ const NomorReportDashboard: React.FC = () => {
                       {row.tanggalDemob ? formatDate(row.tanggalDemob) : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {typeof row.qtyBekerja === 'number' ? row.qtyBekerja : '-'}
+                      {typeof row.qtyBekerja === "number"
+                        ? row.qtyBekerja
+                        : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {row.lokasiKerja}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 max-w-xs truncate" title={row.keterangan || ''}>
-                      {row.keterangan || '-'}
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 max-w-xs truncate"
+                      title={row.keterangan || ""}
+                    >
+                      {row.keterangan || "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                       <div className="inline-flex items-center space-x-2">

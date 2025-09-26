@@ -559,16 +559,16 @@ const ProsesProduksiDashboard: React.FC = () => {
                     DEMOB
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Tgl Penerimaan Report Teknisi
+                    Tgl Terima Report Teknisi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Tgl Approval Teknisi
+                    Tgl Final Report
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Tgl Approval BAST
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
-                    Tgl Penerimaan Final Report
+                    Tgl Submit ke PC
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Nilai Produksi
@@ -612,12 +612,14 @@ const ProsesProduksiDashboard: React.FC = () => {
                       {item.tglPenerimaanReportTeknisi}
                     </td>
                     <td className="px-3 py-2 text-gray-600">
-                      {item.tanggalApprovalTeknisi || "-"}
+                      {item.tglPenerimaanFinalReport}
                     </td>
                     <td className="px-3 py-2 text-gray-600">
                       {item.tanggalApprovalBAST || "-"}
                     </td>
-                    <td className="px-3 py-2 text-gray-600">{item.tglPenerimaanFinalReport}</td>
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.tanggalFinalApproval || "-"}
+                    </td>
                     <td className="px-3 py-2 text-gray-900 font-medium">
                       {item.nilaiProduksi}
                     </td>
