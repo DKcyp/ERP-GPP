@@ -132,10 +132,10 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
               {/* Dropdown Menu */}
               {activeDropdown === section.title && !section.directPath && (section.items?.length > 0 || section.subSections?.length > 0) && (
                 <div className={`absolute top-full left-0 mt-2 bg-surface shadow-2xl border border-border rounded-2xl z-50 animate-in fade-in-0 slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
-                  section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
+                  section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' || section.title === 'Accounting' || section.title === 'Tax' ? 'w-80 grid grid-cols-1 gap-1' : 'w-64'
                 }`}>
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
-                  <div className={(section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR') ? 'py-1.5 max-h-96 overflow-y-auto' : 'py-2'}>
+                  <div className={(section.title === 'General' || section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' || section.title === 'Accounting' || section.title === 'Tax') ? 'py-1.5 max-h-96 overflow-y-auto' : 'py-2'}>
                     {section.subSections && section.subSections.length > 0 ? (
                       // New layout for General menu with sub-sections
                       <div className="space-y-1">
@@ -170,7 +170,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                           </div>
                         ))}
                       </div>
-                    ) : (section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR') ? (
+                    ) : (section.title === 'Approval' || section.title === 'Voucher' || section.title === 'Pengembalian Barang' || section.title === 'Stock Opname' || section.title === 'AP' || section.title === 'AR' || section.title === 'Accounting' || section.title === 'Tax') ? (
                       // Special layout for Finance Approval and Voucher menus
                       <div className="space-y-1">
                         {section.items?.map((item: MenuItem) => (
@@ -272,7 +272,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
           {/* Mobile Dropdown */}
           {activeDropdown && !menuSections.find(s => s.title === activeDropdown)?.directPath && (menuSections.find(s => s.title === activeDropdown)?.items?.length > 0 || menuSections.find(s => s.title === activeDropdown)?.subSections?.length > 0) && (
             <div className={`mt-2.5 bg-surface rounded-2xl shadow-2xl border border-border animate-in slide-in-from-top-2 duration-300 ease-out overflow-hidden ${
-              activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR' ? 'max-h-96 overflow-y-auto' : ''
+              activeDropdown === 'General' || activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR' || activeDropdown === 'Accounting' || activeDropdown === 'Tax' ? 'max-h-96 overflow-y-auto' : ''
             }`}>
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"></div>
               <div className="py-1.5">
@@ -310,7 +310,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
                       </div>
                     ))}
                   </div>
-                ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR') ? (
+                ) : (activeDropdown === 'Approval' || activeDropdown === 'Voucher' || activeDropdown === 'Pengembalian Barang' || activeDropdown === 'Stock Opname' || activeDropdown === 'AP' || activeDropdown === 'AR' || activeDropdown === 'Accounting' || activeDropdown === 'Tax') ? (
                   // Special mobile layout for Finance Approval, Voucher, Gudang Pengembalian Barang and Stock Opname menus
                   <div className="space-y-3">
                     {menuSections.find(s => s.title === activeDropdown)?.items?.map((item: MenuItem) => (

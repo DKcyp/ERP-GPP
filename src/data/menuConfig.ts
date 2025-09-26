@@ -1884,28 +1884,41 @@ export const accountingMenu: MenuSection[] = [
     directPath: "/accounting/dashboard",
   },
   {
-    title: "Barang",
-    icon: "Boxes",
-    items: [
-      { title: "Master Barang", icon: "List", path: "/gudang/barang/master" },
-      {
-        title: "Kategori Barang",
-        icon: "Tag",
-        path: "/gudang/barang/kategori",
-      },
-      { title: "Satuan Barang", icon: "Grid", path: "/gudang/barang/satuan" },
-    ],
-  },
-  {
-    title: "Master COA",
-    icon: "BookText",
-    items: [],
-    directPath: "/accounting/master-coa",
-  },
-  {
-    title: "Jurnal",
-    icon: "ClipboardList",
+    title: "Accounting",
+    icon: "Scale", // Icon for general accounting section
     subSections: [
+      {
+        title: "Barang",
+        icon: "Boxes",
+        items: [
+          {
+            title: "Master Barang",
+            icon: "List",
+            path: "/gudang/barang/master",
+          },
+          {
+            title: "Kategori Barang",
+            icon: "Tag",
+            path: "/gudang/barang/kategori",
+          },
+          {
+            title: "Satuan Barang",
+            icon: "Grid",
+            path: "/gudang/barang/satuan",
+          },
+        ],
+      },
+      {
+        title: "Master COA",
+        icon: "BookText",
+        items: [
+          {
+            title: "Master COA",
+            icon: "BookText",
+            path: "/accounting/master-coa",
+          },
+        ],
+      },
       {
         title: "Jurnal",
         icon: "ClipboardList",
@@ -1927,126 +1940,78 @@ export const accountingMenu: MenuSection[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    title: "Asset",
-    icon: "Boxes",
-    items: [
-      // { title: "Asset", icon: "Package", path: "/accounting/asset" },
       {
-        title: "Master Kategori Asset",
-        icon: "Tags",
-        path: "/accounting/asset/master-kategori",
+        title: "Asset",
+        icon: "Boxes",
+        items: [
+          {
+            title: "Master Kategori Asset",
+            icon: "Tags",
+            path: "/accounting/asset/master-kategori",
+          },
+          {
+            title: "Aktivasi Asset",
+            icon: "CheckCircle",
+            path: "/accounting/asset/aktivasi",
+          },
+        ],
       },
       {
-        title: "Aktivasi Asset",
-        icon: "CheckCircle",
-        path: "/accounting/asset/aktivasi",
-      },
-    ],
-  },
-  {
-    title: "Report",
-    icon: "ClipboardList",
-    items: [
-      {
-        title: "Buku Besar",
-        icon: "BookOpen",
-        path: "/accounting/buku-besar",
-      },
-      {
-        title: "Trial Balance",
+        title: "Report",
         icon: "ClipboardList",
-        path: "/accounting/trial-balance",
+        items: [
+          {
+            title: "Buku Besar",
+            icon: "BookOpen",
+            path: "/accounting/buku-besar",
+          },
+          {
+            title: "Trial Balance",
+            icon: "ClipboardList",
+            path: "/accounting/trial-balance",
+          },
+          {
+            title: "Laba Rugi",
+            icon: "TrendingUp",
+            path: "/accounting/laba-rugi",
+          },
+          {
+            title: "Neraca",
+            icon: "Scale",
+            path: "/accounting/neraca",
+          },
+        ],
       },
       {
-        title: "Laba Rugi",
-        icon: "TrendingUp", // Icon for profit/loss
-        path: "/accounting/laba-rugi",
+        title: "Tutup Buku",
+        icon: "BookX",
+        items: [
+          {
+            title: "Tutup Buku",
+            icon: "BookX",
+            path: "/accounting/tutup-buku",
+          },
+        ],
       },
       {
-        title: "Neraca",
-        icon: "Scale", // Icon for balance sheet
-        path: "/accounting/neraca",
-      },
-    ],
-  },
-  {
-    title: "Tutup Buku",
-    icon: "BookX", // Icon for closing books
-    items: [],
-    directPath: "/accounting/tutup-buku",
-  },
-  {
-    title: "Stock Opname",
-    icon: "ClipboardCheck",
-    items: [
-      {
-        title: "Verifikasi Stock Opname",
-        icon: "CheckCircle",
-        path: "/gudang/stock-opname/verifikasi",
+        title: "Stock Opname",
+        icon: "ClipboardCheck",
+        items: [
+          {
+            title: "Verifikasi Stock Opname",
+            icon: "CheckCircle",
+            path: "/gudang/stock-opname/verifikasi",
+          },
+          {
+            title: "Laporan Semua Stock",
+            icon: "FileText",
+            path: "/gudang/stock-opname/laporan",
+          },
+        ],
       },
       {
-        title: "Laporan Semua Stock",
-        icon: "FileText",
-        path: "/gudang/stock-opname/laporan",
-      },
-    ],
-  },
-  // {
-  //   title: "Kas",
-  //   icon: "Wallet",
-  //   subSections: [
-  //     {
-  //       title: "Kas",
-  //       icon: "Wallet",
-  //       items: [
-  //         { title: "Kas Masuk", icon: "Wallet", path: "/accounting/kas-masuk" },
-  //         {
-  //           title: "Kas Keluar",
-  //           icon: "CreditCard",
-  //           path: "/accounting/kas-keluar",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   title: "Bank",
-  //   icon: "Banknote",
-  //   subSections: [
-  //     {
-  //       title: "Bank",
-  //       icon: "Banknote",
-  //       items: [
-  //         {
-  //           title: "Bank Masuk",
-  //           icon: "Banknote",
-  //           path: "/accounting/bank-masuk",
-  //         },
-  //         {
-  //           title: "Bank Keluar",
-  //           icon: "Landmark",
-  //           path: "/accounting/bank-keluar",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   title: "Neraca",
-  //   icon: "Scale", // Icon for balance sheet
-  //   items: [],
-  //   directPath: "/accounting/neraca",
-  // },
-  {
-    title: "PPN",
-    icon: "Scale", // Icon for general tax section
-    subSections: [
-      {
-        title: "PPN", // Sub-section title, can be same as main section or more specific
-        icon: "Scale", // Sub-section icon
+        title: "PPN",
+        icon: "Scale",
         items: [
           {
             title: "Pajak Masukan",
@@ -2075,55 +2040,44 @@ export const accountingMenu: MenuSection[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    title: "Rekonsiliasi",
-    icon: "RefreshCw", // Example icon, choose as appropriate
-    items: [
       {
-        title: "Reconcilliation Match",
-        icon: "CheckSquare", // Example icon
-        path: "/accounting/reconcilliation/match",
-      },
-      {
-        title: "Reconcilliation Unmatch",
-        icon: "XSquare", // Example icon
-        path: "/accounting/reconcilliation/unmatch",
-      },
-    ],
-  },
-  {
-    title: "PPH UNIFIKASI",
-    icon: "Layers",
-
-    subSections: [
-      {
-        title: "PPH 21",
-        icon: "FileText",
+        title: "Rekonsiliasi",
+        icon: "RefreshCw",
         items: [
-          { title: "Karyawan", icon: "User", path: "/tax/pph-21/karyawan" },
           {
-            title: "Non Karyawan",
-            icon: "Users",
-            path: "/tax/pph-21/non-karyawan",
+            title: "Reconcilliation Match",
+            icon: "CheckSquare",
+            path: "/accounting/reconcilliation/match",
+          },
+          {
+            title: "Reconcilliation Unmatch",
+            icon: "XSquare",
+            path: "/accounting/reconcilliation/unmatch",
           },
         ],
       },
+    ],
+  },
+  {
+    title: "Tax",
+    icon: "Scale", // Icon for tax section
+    subSections: [
       {
-        title: "PPH 23",
-        icon: "FileText",
-        items: [{ title: "PPh 23", icon: "FileText", path: "/tax/pph-23" }],
-      },
-      {
-        title: "PPH 22",
-        icon: "FileText",
-        items: [{ title: "PPh 22", icon: "FileText", path: "/tax/pph-22" }],
-      },
-      {
-        title: "PPH 4 Ayat 2",
-        icon: "FileText",
+        title: "PPH UNIFIKASI",
+        icon: "Layers",
         items: [
+          {
+            title: "PPH 21 - Karyawan",
+            icon: "User",
+            path: "/tax/pph-21/karyawan",
+          },
+          {
+            title: "PPH 21 - Non Karyawan",
+            icon: "Users",
+            path: "/tax/pph-21/non-karyawan",
+          },
+          { title: "PPh 23", icon: "FileText", path: "/tax/pph-23" },
+          { title: "PPh 22", icon: "FileText", path: "/tax/pph-22" },
           {
             title: "PPh 4 Ayat 2",
             icon: "FileText",
@@ -2131,38 +2085,38 @@ export const accountingMenu: MenuSection[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    title: "PPH BADAN",
-    icon: "Briefcase",
-    items: [
-      { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
-      { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
-    ],
-  },
-  {
-    title: "Tagihan Pajak Lainya",
-    icon: "Receipt",
-    items: [
-      { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
-      { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
-      { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
-    ],
-  },
-  {
-    title: "Voucher Lainya",
-    icon: "Ticket",
-    items: [
       {
-        title: "Voucher",
-        icon: "FileText",
-        path: "/tax/voucher-lainya/voucher",
+        title: "PPH BADAN",
+        icon: "Briefcase",
+        items: [
+          { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
+          { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
+        ],
       },
       {
-        title: "Monitoring Voucher",
-        icon: "FileText",
-        path: "/tax/voucher-lainya/monitoring",
+        title: "Tagihan Pajak Lainya",
+        icon: "Receipt",
+        items: [
+          { title: "SKPKB", icon: "FileText", path: "/tax/tagihan/skpkb" },
+          { title: "SP2DK", icon: "FileText", path: "/tax/tagihan/sp2dk" },
+          { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
+        ],
+      },
+      {
+        title: "Voucher Lainya",
+        icon: "Ticket",
+        items: [
+          {
+            title: "Voucher",
+            icon: "FileText",
+            path: "/tax/voucher-lainya/voucher",
+          },
+          {
+            title: "Monitoring Voucher",
+            icon: "FileText",
+            path: "/tax/voucher-lainya/monitoring",
+          },
+        ],
       },
     ],
   },
