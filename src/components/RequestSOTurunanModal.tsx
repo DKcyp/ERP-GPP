@@ -446,7 +446,7 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                           Kualifikasi
                         </th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
-                          Gaji
+                          Rate Personil
                         </th>
                       </tr>
                     </thead>
