@@ -69,12 +69,9 @@ const JurnalRasioKeuanganDashboard: React.FC = () => {
   ];
 
   const formatNumber = (num: number) => {
-    if (num >= 1000000000) {
-      return (num / 1000000000).toFixed(1) + 'B';
-    } else if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
+    // Format sebagai mata uang Rupiah untuk angka besar
+    if (num >= 1000000) {
+      return `Rp ${num.toLocaleString('id-ID')}`;
     }
     return num.toString();
   };
@@ -186,22 +183,22 @@ const JurnalRasioKeuanganDashboard: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
+                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
                       {item.januari >= 1000000 ? formatNumber(item.januari) : item.januari}
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
+                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
                       {item.februari >= 1000000 ? formatNumber(item.februari) : item.februari}
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
+                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
                       {item.maret >= 1000000 ? formatNumber(item.maret) : item.maret}
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
+                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
                       {item.april >= 1000000 ? formatNumber(item.april) : item.april}
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
+                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
                       {item.mei >= 1000000 ? formatNumber(item.mei) : item.mei}
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900">
+                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 whitespace-nowrap">
                       {item.juni >= 1000000 ? formatNumber(item.juni) : item.juni}
                     </td>
                   </tr>
@@ -211,46 +208,6 @@ const JurnalRasioKeuanganDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Likuiditas</h3>
-                <p className="text-sm text-gray-600 mt-1">Current Ratio</p>
-              </div>
-              <div className="text-3xl font-bold text-green-600">1.0</div>
-            </div>
-            <div className="mt-4">
-              <div className="text-xs text-gray-500">Status: Baik</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Solvabilitas</h3>
-                <p className="text-sm text-gray-600 mt-1">Debt Ratio</p>
-              </div>
-              <div className="text-3xl font-bold text-blue-600">0.0</div>
-            </div>
-            <div className="mt-4">
-              <div className="text-xs text-gray-500">Status: Sangat Aman</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Modal Kerja</h3>
-                <p className="text-sm text-gray-600 mt-1">Working Capital</p>
-              </div>
-              <div className="text-3xl font-bold text-purple-600">6.8B</div>
-            </div>
-            <div className="mt-4">
-              <div className="text-xs text-gray-500">Status: Sangat Baik</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
