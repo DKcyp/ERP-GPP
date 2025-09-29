@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Eye, FileDown, Plus, Search, Trash2, Wrench, X, Calendar, User, FileText, Download } from 'lucide-react';
+import { Eye, FileDown, Search, Trash2, Wrench, X, Calendar, User, FileText, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
 
 // Mock Data for Damaged Goods
 const damagedGoodsData = [
@@ -65,6 +66,7 @@ const BarangRusakDashboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('Semua');
   const [isBAModalOpen, setIsBAModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [baForm, setBAForm] = useState({
     nomorBA: '',
@@ -94,13 +96,27 @@ const BarangRusakDashboardPage: React.FC = () => {
     setIsBAModalOpen(true);
   };
 
-  // Handle generate BA
+  // Handle buka modal detail
+  const handleOpenDetailModal = (item: any) => {
+    setSelectedItem(item);
+    setIsDetailModalOpen(true);
+  };
+
+  // Handle generate BA dengan download
   const handleGenerateBA = () => {
-    // Logic untuk generate BA document
-    console.log('Generate BA:', {
-      item: selectedItem,
-      baData: baForm
-    });
+    // Generate BA document content
+    const baContent = generateBADocument(selectedItem, baForm);
+    
+    // Create and download file
+    const blob = new Blob([baContent], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `BA_${baForm.nomorBA}_${selectedItem.itemName.replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
     
     // Reset form dan tutup modal
     setIsBAModalOpen(false);
@@ -114,7 +130,66 @@ const BarangRusakDashboardPage: React.FC = () => {
       estimasiBiaya: ''
     });
     
-    alert('Berita Acara berhasil digenerate!');
+    alert('Berita Acara berhasil digenerate dan didownload!');
+  };
+
+  // Generate BA document content
+  const generateBADocument = (item: any, baData: any) => {
+    const currentDate = new Date().toLocaleDateString('id-ID', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    return `
+=================================================================
+                    BERITA ACARA BARANG RUSAK
+=================================================================
+
+Nomor BA        : ${baData.nomorBA}
+Tanggal         : ${currentDate}
+Penanggung Jawab: ${baData.penanggungJawab}
+
+-----------------------------------------------------------------
+                    INFORMASI BARANG RUSAK
+-----------------------------------------------------------------
+
+ID Laporan      : ${item.id}
+Nama Barang     : ${item.itemName}
+Kode Barang     : ${item.itemCode}
+Jumlah Rusak    : ${item.quantity} unit
+Tanggal Lapor   : ${item.reportDate}
+Status Kerusakan: ${item.status}
+Penyebab        : ${item.cause}
+Pelapor         : ${item.reporter}
+
+-----------------------------------------------------------------
+                    TINDAK LANJUT
+-----------------------------------------------------------------
+
+Tindak Lanjut   : ${baData.tindakLanjut}
+Estimasi Biaya  : Rp ${parseInt(baData.estimasiBiaya || '0').toLocaleString('id-ID')}
+
+Keterangan:
+${baData.keterangan || 'Tidak ada keterangan tambahan'}
+
+-----------------------------------------------------------------
+
+Dibuat pada: ${new Date().toLocaleString('id-ID')}
+
+
+Tanda Tangan:
+
+
+_____________________        _____________________
+   Penanggung Jawab              Kepala Gudang
+
+
+=================================================================
+                    PT. NAMA PERUSAHAAN
+=================================================================
+    `;
   };
 
   const filteredData = damagedGoodsData.filter(
@@ -152,10 +227,6 @@ const BarangRusakDashboardPage: React.FC = () => {
           <button className="flex items-center bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm border border-gray-300 hover:bg-gray-100 transition-colors">
             <FileDown className="w-4 h-4 mr-2" />
             Export
-          </button>
-          <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-            <Plus className="w-4 h-4 mr-2" />
-            Lapor Barang Rusak
           </button>
         </div>
       </div>
@@ -233,7 +304,11 @@ const BarangRusakDashboardPage: React.FC = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex space-x-2">
-                      <button className="text-blue-500 hover:text-blue-700">
+                      <button 
+                        className="text-blue-500 hover:text-blue-700"
+                        onClick={() => handleOpenDetailModal(item)}
+                        title="Lihat Detail"
+                      >
                         <Eye size={20} />
                       </button>
                       <button 
@@ -255,6 +330,91 @@ const BarangRusakDashboardPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Modal Detail Barang Rusak */}
+      {isDetailModalOpen && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <div className="flex items-center space-x-3">
+                <Eye className="h-6 w-6 text-blue-600" />
+                <h2 className="text-2xl font-bold text-gray-900">Detail Barang Rusak</h2>
+              </div>
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Info Barang */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">Informasi Barang</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 mb-1">ID Laporan</label>
+                    <p className="text-sm text-blue-900 font-medium">{selectedItem.id}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Nama Barang</label>
+                    <p className="text-sm text-blue-900 font-medium">{selectedItem.itemName}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Kode Barang</label>
+                    <p className="text-sm text-blue-900 font-medium">{selectedItem.itemCode}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Jumlah Rusak</label>
+                    <p className="text-sm text-blue-900 font-medium">{selectedItem.quantity} unit</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Tanggal Lapor</label>
+                    <p className="text-sm text-blue-900 font-medium">{selectedItem.reportDate}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Pelapor</label>
+                    <p className="text-sm text-blue-900 font-medium">{selectedItem.reporter}</p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Status Kerusakan</label>
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedItem.status)}`}>
+                      {selectedItem.status}
+                    </span>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-blue-700 mb-1">Penyebab Kerusakan</label>
+                    <p className="text-sm text-blue-900 bg-white p-3 rounded-lg border">{selectedItem.cause}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-6 py-2 bg-gray-300 text-gray-800 rounded-xl hover:bg-gray-400 transition-colors duration-200 text-sm shadow-md"
+              >
+                Tutup
+              </button>
+              <button
+                onClick={() => {
+                  setIsDetailModalOpen(false);
+                  handleOpenBAModal(selectedItem);
+                }}
+                className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200 text-sm shadow-md"
+              >
+                <Wrench className="h-4 w-4" />
+                <span>Generate BA</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Generate Berita Acara */}
       {isBAModalOpen && selectedItem && (
