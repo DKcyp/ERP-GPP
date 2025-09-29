@@ -45,7 +45,7 @@ const NeracaDashboard: React.FC = () => {
 
   // Function untuk mendapatkan indentasi berdasarkan level
   const getIndentation = (level: number) => {
-    return ".".repeat(level); // Titik sebagai simbol level
+    return ".".repeat(level * 4); // Titik untuk membuat jarak lebih menjorok
   };
 
   const asetRows: BalanceRow[] = [
