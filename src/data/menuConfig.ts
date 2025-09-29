@@ -2009,6 +2009,19 @@ export const accountingMenu: MenuSection[] = [
           },
         ],
       },
+    ],
+  },
+  {
+    title: "Tax",
+    icon: "Scale", // Icon for tax section
+    subSections: [
+      {
+        title: "Tax Dashboard",
+        icon: "LayoutDashboard",
+        items: [
+          { title: "Dashboard", icon: "BarChart3", path: "/tax/dashboard" },
+        ],
+      },
       {
         title: "PPN",
         icon: "Scale",
@@ -2056,12 +2069,6 @@ export const accountingMenu: MenuSection[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    title: "Tax",
-    icon: "Scale", // Icon for tax section
-    subSections: [
       {
         title: "PPH UNIFIKASI",
         icon: "Layers",
@@ -2089,8 +2096,8 @@ export const accountingMenu: MenuSection[] = [
         title: "PPH BADAN",
         icon: "Briefcase",
         items: [
-          { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
           { title: "PPh 25", icon: "FileText", path: "/tax/pph-25" },
+          { title: "PPh 29", icon: "FileText", path: "/tax/pph-29" },
         ],
       },
       {
@@ -2102,22 +2109,22 @@ export const accountingMenu: MenuSection[] = [
           { title: "STP", icon: "FileText", path: "/tax/tagihan/stp" },
         ],
       },
-      {
-        title: "Voucher Lainya",
-        icon: "Ticket",
-        items: [
-          {
-            title: "Voucher",
-            icon: "FileText",
-            path: "/tax/voucher-lainya/voucher",
-          },
-          {
-            title: "Monitoring Voucher",
-            icon: "FileText",
-            path: "/tax/voucher-lainya/monitoring",
-          },
-        ],
-      },
+      // {
+      //   title: "Voucher Lainya",
+      //   icon: "Ticket",
+      //   items: [
+      //     {
+      //       title: "Voucher",
+      //       icon: "FileText",
+      //       path: "/tax/voucher-lainya/voucher",
+      //     },
+      //     {
+      //       title: "Monitoring Voucher",
+      //       icon: "FileText",
+      //       path: "/tax/voucher-lainya/monitoring",
+      //     },
+      //   ],
+      // },
     ],
   },
   createGeneralMenu("gudang"),

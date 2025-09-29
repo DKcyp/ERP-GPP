@@ -283,6 +283,7 @@ import STPDashboard from "./STPDashboard";
 import FinancePajakRekonsiliasiMasukanDashboard from "./FinancePajakRekonsiliasiMasukanDashboard";
 import FinancePajakRekonsiliasiKeluaranDashboard from "./FinancePajakRekonsiliasiKeluaranDashboard";
 import FinancePajakProsesHutangDashboard from "./FinancePajakProsesHutangDashboard";
+import TaxDashboard from './TaxDashboard';
 
 // Procon Dashboards
 import ProconMainDashboard from "./ProconMainDashboard";
@@ -2139,7 +2140,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     // Tax Routes
     if (currentPage === "/tax/dashboard") {
-      return <TaxMainDashboard />;
+      return <TaxDashboard />;
     }
     // NEW Tax General Ticket Routes
     if (currentPage === "/tax/general/ticket/pengajuan") {
