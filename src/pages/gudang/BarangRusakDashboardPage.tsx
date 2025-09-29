@@ -102,21 +102,10 @@ const BarangRusakDashboardPage: React.FC = () => {
     setIsDetailModalOpen(true);
   };
 
-  // Handle generate BA dengan download
+  // Handle generate BA dengan download PDF
   const handleGenerateBA = () => {
-    // Generate BA document content
-    const baContent = generateBADocument(selectedItem, baForm);
-    
-    // Create and download file
-    const blob = new Blob([baContent], { type: 'text/plain;charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `BA_${baForm.nomorBA}_${selectedItem.itemName.replace(/\s+/g, '_')}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    // Generate PDF document
+    generateBAPDF(selectedItem, baForm);
     
     // Reset form dan tutup modal
     setIsBAModalOpen(false);
@@ -129,12 +118,11 @@ const BarangRusakDashboardPage: React.FC = () => {
       keterangan: '',
       estimasiBiaya: ''
     });
-    
-    alert('Berita Acara berhasil digenerate dan didownload!');
   };
 
-  // Generate BA document content
-  const generateBADocument = (item: any, baData: any) => {
+  // Generate BA PDF document
+  const generateBAPDF = (item: any, baData: any) => {
+    const doc = new jsPDF();
     const currentDate = new Date().toLocaleDateString('id-ID', {
       weekday: 'long',
       year: 'numeric',
@@ -142,54 +130,82 @@ const BarangRusakDashboardPage: React.FC = () => {
       day: 'numeric'
     });
 
-    return `
-=================================================================
-                    BERITA ACARA BARANG RUSAK
-=================================================================
-
-Nomor BA        : ${baData.nomorBA}
-Tanggal         : ${currentDate}
-Penanggung Jawab: ${baData.penanggungJawab}
-
------------------------------------------------------------------
-                    INFORMASI BARANG RUSAK
------------------------------------------------------------------
-
-ID Laporan      : ${item.id}
-Nama Barang     : ${item.itemName}
-Kode Barang     : ${item.itemCode}
-Jumlah Rusak    : ${item.quantity} unit
-Tanggal Lapor   : ${item.reportDate}
-Status Kerusakan: ${item.status}
-Penyebab        : ${item.cause}
-Pelapor         : ${item.reporter}
-
------------------------------------------------------------------
-                    TINDAK LANJUT
------------------------------------------------------------------
-
-Tindak Lanjut   : ${baData.tindakLanjut}
-Estimasi Biaya  : Rp ${parseInt(baData.estimasiBiaya || '0').toLocaleString('id-ID')}
-
-Keterangan:
-${baData.keterangan || 'Tidak ada keterangan tambahan'}
-
------------------------------------------------------------------
-
-Dibuat pada: ${new Date().toLocaleString('id-ID')}
-
-
-Tanda Tangan:
-
-
-_____________________        _____________________
-   Penanggung Jawab              Kepala Gudang
-
-
-=================================================================
-                    PT. NAMA PERUSAHAAN
-=================================================================
-    `;
+    // Set font
+    doc.setFont('helvetica');
+    
+    // Header
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('BERITA ACARA BARANG RUSAK', 105, 20, { align: 'center' });
+    
+    // Line separator
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+    
+    // Document info
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nomor BA: ${baData.nomorBA}`, 20, 35);
+    doc.text(`Tanggal: ${currentDate}`, 20, 42);
+    doc.text(`Penanggung Jawab: ${baData.penanggungJawab}`, 20, 49);
+    
+    // Section: Informasi Barang Rusak
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMASI BARANG RUSAK', 20, 65);
+    doc.line(20, 68, 190, 68);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`ID Laporan: ${item.id}`, 20, 78);
+    doc.text(`Nama Barang: ${item.itemName}`, 20, 85);
+    doc.text(`Kode Barang: ${item.itemCode}`, 20, 92);
+    doc.text(`Jumlah Rusak: ${item.quantity} unit`, 20, 99);
+    doc.text(`Tanggal Lapor: ${item.reportDate}`, 20, 106);
+    doc.text(`Status Kerusakan: ${item.status}`, 20, 113);
+    doc.text(`Penyebab: ${item.cause}`, 20, 120);
+    doc.text(`Pelapor: ${item.reporter}`, 20, 127);
+    
+    // Section: Tindak Lanjut
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TINDAK LANJUT', 20, 145);
+    doc.line(20, 148, 190, 148);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Tindak Lanjut: ${baData.tindakLanjut}`, 20, 158);
+    doc.text(`Estimasi Biaya: Rp ${parseInt(baData.estimasiBiaya || '0').toLocaleString('id-ID')}`, 20, 165);
+    
+    // Keterangan
+    doc.text('Keterangan:', 20, 175);
+    const keterangan = baData.keterangan || 'Tidak ada keterangan tambahan';
+    const splitKeterangan = doc.splitTextToSize(keterangan, 170);
+    doc.text(splitKeterangan, 20, 182);
+    
+    // Signature section
+    const signatureY = 220;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tanda Tangan:', 20, signatureY);
+    
+    // Signature boxes
+    doc.setFont('helvetica', 'normal');
+    doc.text('Penanggung Jawab', 40, signatureY + 30);
+    doc.text('Kepala Gudang', 130, signatureY + 30);
+    
+    // Signature lines
+    doc.line(30, signatureY + 25, 80, signatureY + 25);
+    doc.line(120, signatureY + 25, 170, signatureY + 25);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.text(`Dibuat pada: ${new Date().toLocaleString('id-ID')}`, 20, 280);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PT. NAMA PERUSAHAAN', 105, 285, { align: 'center' });
+    
+    // Save PDF
+    const fileName = `BA_${baData.nomorBA}_${item.itemName.replace(/\s+/g, '_')}.pdf`;
+    doc.save(fileName);
   };
 
   const filteredData = damagedGoodsData.filter(
