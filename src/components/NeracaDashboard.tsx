@@ -343,12 +343,12 @@ const NeracaDashboard: React.FC = () => {
                   <tr key={key} className="hover:bg-gray-50">
                     <td
                       className={`px-4 py-2 border-r border-gray-200 ${
-                        left?.isBold ? "font-semibold" : "text-gray-800"
+                        left?.isBold ? "font-semibold" : ""
                       } ${left?.isTotal ? "bg-yellow-100 uppercase" : ""} ${
                         left?.level === 0 ? "text-gray-900 font-medium" :
                         left?.level === 1 ? "text-blue-700" : 
                         left?.level === 2 ? "text-green-700" : 
-                        left?.level === 3 ? "text-purple-700" : ""
+                        left?.level === 3 ? "text-purple-700" : "text-gray-800"
                       }`}
                     >
                       {left ? (
@@ -377,12 +377,12 @@ const NeracaDashboard: React.FC = () => {
                     </td>
                     <td
                       className={`px-4 py-2 border-l border-gray-300 ${
-                        right?.isBold ? "font-semibold" : "text-gray-800"
+                        right?.isBold ? "font-semibold" : ""
                       } ${right?.isTotal ? "bg-yellow-100 uppercase" : ""} ${
                         right?.level === 0 ? "text-gray-900 font-medium" :
                         right?.level === 1 ? "text-blue-700" : 
                         right?.level === 2 ? "text-green-700" : 
-                        right?.level === 3 ? "text-purple-700" : ""
+                        right?.level === 3 ? "text-purple-700" : "text-gray-800"
                       }`}
                     >
                       {right ? (

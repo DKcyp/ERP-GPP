@@ -56,7 +56,8 @@ interface ProconSalesOrder {
   delayPayment: string;
   remarkFinance: string;
   status: string;
-  lir: string;
+  lirAmount: string; // Changed from lir to lirAmount for nominal uang
+  paymentStatus: string; // New field for Paid/Unpaid status
   yearSheet: string;
   statusPekerjaan: string;
   statusAR: string;
@@ -131,7 +132,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "25",
       remarkFinance: "OVERDUE PAYMENT",
       status: "OVERDUE",
-      lir: "NO",
+      lirAmount: "0",
+      paymentStatus: "Unpaid",
       yearSheet: "2025",
       statusPekerjaan: "OVERDUE",
       statusAR: "OVERDUE",
@@ -178,7 +180,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "0",
       remarkFinance: "NOT INVOICED",
       status: "CRITICAL",
-      lir: "NO",
+      lirAmount: "0",
+      paymentStatus: "Unpaid",
       yearSheet: "2025",
       statusPekerjaan: "CRITICAL",
       statusAR: "NOT STARTED",
@@ -226,7 +229,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "0",
       remarkFinance: "PAID ON TIME",
       status: "COMPLETED",
-      lir: "YES",
+      lirAmount: "22.000.000",
+      paymentStatus: "Paid",
       yearSheet: "2025",
       statusPekerjaan: "SELESAI",
       statusAR: "LUNAS",
@@ -273,7 +277,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "0",
       remarkFinance: "PAID",
       status: "COMPLETED",
-      lir: "YES",
+      lirAmount: "22.000.000",
+      paymentStatus: "Paid",
       yearSheet: "2025",
       statusPekerjaan: "SELESAI",
       statusAR: "LUNAS",
@@ -419,7 +424,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "-6",
       remarkFinance: "EARLY PAYMENT",
       status: "EXCELLENT",
-      lir: "YES",
+      lirAmount: "22.000.000",
+      paymentStatus: "Paid",
       yearSheet: "2025",
       statusPekerjaan: "EXCELLENT",
       statusAR: "LUNAS",
@@ -609,7 +615,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       statusPekerjaan: "PROGRESS",
       statusAR: "NOT STARTED",
       statusAP: "NOT STARTED",
-      lir: "NO",
+      lirAmount: "0",
+      paymentStatus: "Unpaid",
       reportMob: new Date().toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
@@ -1041,12 +1048,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     PI AMOUNT
                   </th>
                   <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[60px]"
-                    rowSpan={2}
-                  >
-                    LIR
-                  </th>
-                  <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
@@ -1105,6 +1106,18 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     rowSpan={2}
                   >
                     REMARK FINANCE
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    L/R AMOUNT
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
+                    rowSpan={2}
+                  >
+                    STATUS
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
@@ -1237,19 +1250,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
                       {item.piAmount && `Rp ${item.piAmount},000,000`}
                     </td>
-                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
-                      <span
-                        className={`font-bold px-2 py-1 rounded-full ${
-                          item.lir === "YES"
-                            ? "text-green-600 bg-green-100"
-                            : item.lir === "NO"
-                            ? "text-red-600 bg-red-100"
-                            : "text-yellow-600 bg-yellow-100"
-                        }`}
-                      >
-                        {item.lir}
-                      </span>
-                    </td>
                     <td className="px-2 py-3 text-blue-600 text-xs border border-gray-300 font-medium text-center">
                       {item.piNo}
                     </td>
@@ -1295,6 +1295,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     </td>
                     <td className="px-2 py-3 text-gray-700 text-xs border border-gray-300">
                       {item.remarkFinance}
+                    </td>
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.lirAmount && `Rp ${item.lirAmount}`}
+                    </td>
+                    <td className="px-2 py-3 text-xs border border-gray-300 text-center">
+                      <span
+                        className={`font-bold px-2 py-1 rounded-full ${
+                          item.paymentStatus === "Paid"
+                            ? "text-green-600 bg-green-100"
+                            : "text-red-600 bg-red-100"
+                        }`}
+                      >
+                        {item.paymentStatus}
+                      </span>
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <div className="flex items-center justify-center space-x-1">
