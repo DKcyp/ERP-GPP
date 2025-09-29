@@ -13,7 +13,7 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 interface ReportRecord {
   personil: string; // Nama Personil (dari pegawai pertama)
   tanggalPermintaan: string; // Tanggal MOB (ISO)
-  nomorReport: string; // Nomor Kontrak
+  nomorReport: string; // Nomor Report
   noSO: string; // SO Turunan
   namaProject: string; // Jenis Pekerjaan
   lokasiKerja: string; // Lokasi Kerja
@@ -195,7 +195,7 @@ const NomorReportDashboard: React.FC = () => {
       keterangan,
     };
     if (!payload.noSO || !payload.nomorReport) {
-      alert("SO Induk dan Nomor Kontrak wajib diisi");
+      alert("SO Induk dan Nomor Report wajib diisi");
       return;
     }
     if (
@@ -504,16 +504,16 @@ const NomorReportDashboard: React.FC = () => {
                     />
                   </div>
 
-                  {/* Nomor Kontrak */}
+                  {/* Nomor Report */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nomor Kontrak <span className="text-red-500">*</span>
+                      Nomor Report <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={nomorKontrak}
                       onChange={(e) => setNomorKontrak(e.target.value)}
-                      placeholder="Masukkan nomor kontrak"
+                      placeholder="Masukkan Nomor Report"
                       className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
