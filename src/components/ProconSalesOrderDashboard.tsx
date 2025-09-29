@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import {
   Search,
   FileSpreadsheet,
@@ -133,7 +133,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remarkFinance: "OVERDUE PAYMENT",
       status: "OVERDUE",
       lirAmount: "0",
-      paymentStatus: "Unpaid",
+      paymentStatus: "Pending",
       yearSheet: "2025",
       statusPekerjaan: "OVERDUE",
       statusAR: "OVERDUE",
@@ -375,7 +375,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "0",
       remarkFinance: "AWAITING COMPLETION",
       status: "IN PROGRESS",
-      lir: "PARTIAL",
+      lirAmount: "0",
+      paymentStatus: "Pending",
       yearSheet: "2025",
       statusPekerjaan: "PROGRESS",
       statusAR: "NOT STARTED",
@@ -424,13 +425,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "-6",
       remarkFinance: "EARLY PAYMENT",
       status: "EXCELLENT",
-      lirAmount: "22.000.000",
-      paymentStatus: "Paid",
-      yearSheet: "2025",
-      statusPekerjaan: "EXCELLENT",
-      statusAR: "LUNAS",
-      statusAP: "PAID",
-      remark: "OUTSTANDING PERFORMANCE - AHEAD OF SCHEDULE",
       logDataPak: "EXCELLENT",
       logMekanik: "EXCELLENT",
     },
@@ -740,7 +734,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
                   Procon
                 </span>
-                <span className="mx-2">›</span>
+                <span className="mx-2">â€º</span>
                 <span className="text-blue-600 font-semibold">Sales Order</span>
               </nav>
             </div>
@@ -1111,7 +1105,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
-                    L/R AMOUNT
+                    L/R
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
@@ -1304,6 +1298,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
                         className={`font-bold px-2 py-1 rounded-full ${
                           item.paymentStatus === "Paid"
                             ? "text-green-600 bg-green-100"
+                            : item.paymentStatus === "Pending"
+                            ? "text-yellow-600 bg-yellow-100"
                             : "text-red-600 bg-red-100"
                         }`}
                       >
