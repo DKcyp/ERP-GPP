@@ -12,14 +12,14 @@ interface MutasiData {
 
 interface JurnalData {
   id: number;
-  tanggal: string;
-  noJurnal: string;
-  deskripsi: string;
-  keterangan: string;
-  noRef: string;
-  debit: number;
-  credit: number;
-  cabang: string;
+  npwpPembeli: string;
+  namaPembeli: string;
+  kodeTransaksi: string;
+  nomorFakturPajak: string;
+  tanggalFakturPajak: string;
+  hargaJualDpp: number;
+  dppNilaiLain: number;
+  ppn: number;
 }
 
 const initialMutasiData: MutasiData[] = [
@@ -60,7 +60,28 @@ const initialMutasiData: MutasiData[] = [
 ];
 
 const initialJurnalData: JurnalData[] = [
-  // No initial data based on the image
+  {
+    id: 1,
+    npwpPembeli: "73822123123123123",
+    namaPembeli: "PT. JAYA ABADI SELALU",
+    kodeTransaksi: "01",
+    nomorFakturPajak: "010.001-23.0000001",
+    tanggalFakturPajak: "01/09/2025",
+    hargaJualDpp: 1000000,
+    dppNilaiLain: 0,
+    ppn: 110000,
+  },
+  {
+    id: 2,
+    npwpPembeli: "73822123123123123",
+    namaPembeli: "PT. JAYA ABADI SELALU",
+    kodeTransaksi: "01",
+    nomorFakturPajak: "010.001-23.0000002",
+    tanggalFakturPajak: "02/09/2025",
+    hargaJualDpp: 2000000,
+    dppNilaiLain: 0,
+    ppn: 220000,
+  },
 ];
 
 const ReconcilliationUnmatchDashboard: React.FC = () => {
@@ -76,16 +97,17 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
   const [filterJurnal, setFilterJurnal] = useState({
     periodeStart: "01/09/2025",
     periodeEnd: "03/09/2025",
-    cabang: "- All Cabang -",
+    npwpPembeli: "- All NPWP -", // Changed from cabang
     nominal: "",
-    noJurnal: "",
-    deskripsi: "",
-    keterangan: "",
+    nomorFakturPajak: "", // Changed from noJurnal
+    namaPembeli: "", // Changed from deskripsi
+    kodeTransaksi: "", // Changed from keterangan
   });
 
   const [mutasiData, setMutasiData] = useState<MutasiData[]>(initialMutasiData);
   const [jurnalData, setJurnalData] = useState<JurnalData[]>(initialJurnalData);
   const [selectedMutasi, setSelectedMutasi] = useState<MutasiData[]>([]);
+  const [selectedJurnal, setSelectedJurnal] = useState<JurnalData[]>([]);
 
   const handleSearchMutasi = () => {
     console.log("Searching Mutasi with:", filterMutasi);
@@ -99,6 +121,12 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
 
   const handleMutasiCheckboxChange = (item: MutasiData, isChecked: boolean) => {
     setSelectedMutasi((prev) =>
+      isChecked ? [...prev, item] : prev.filter((i) => i.id !== item.id)
+    );
+  };
+
+  const handleJurnalCheckboxChange = (item: JurnalData, isChecked: boolean) => {
+    setSelectedJurnal((prev) =>
       isChecked ? [...prev, item] : prev.filter((i) => i.id !== item.id)
     );
   };
@@ -128,7 +156,7 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
           {/* Filter Data Daftar Mutasi */}
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Filter Data Daftar Mutasi
+              Filter Data Daftar Pajak Keluaran
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -291,7 +319,7 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
           {/* Filter Data Daftar Jurnal */}
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Filter Data Daftar Jurnal
+              Filter Data Daftar Pajak Keluaran Coretax
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -345,21 +373,24 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
               </div>
               <div>
                 <label
-                  htmlFor="cabangJurnal"
+                  htmlFor="npwpPembeliJurnal"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Cabang
+                  NPWP Pembeli
                 </label>
                 <select
-                  id="cabangJurnal"
-                  value={filterJurnal.cabang}
+                  id="npwpPembeliJurnal"
+                  value={filterJurnal.npwpPembeli}
                   onChange={(e) =>
-                    setFilterJurnal({ ...filterJurnal, cabang: e.target.value })
+                    setFilterJurnal({
+                      ...filterJurnal,
+                      npwpPembeli: e.target.value,
+                    })
                   }
                   className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">- All Cabang -</option>
-                  {/* Add more cabang options here */}
+                  <option value="">- All NPWP -</option>
+                  {/* Add more NPWP options here */}
                 </select>
               </div>
               <div>
@@ -385,65 +416,65 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
               </div>
               <div>
                 <label
-                  htmlFor="noJurnal"
+                  htmlFor="nomorFakturPajakJurnal"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  No Jurnal
+                  No Faktur Pajak
                 </label>
                 <input
                   type="text"
-                  id="noJurnal"
-                  value={filterJurnal.noJurnal}
+                  id="nomorFakturPajakJurnal"
+                  value={filterJurnal.nomorFakturPajak}
                   onChange={(e) =>
                     setFilterJurnal({
                       ...filterJurnal,
-                      noJurnal: e.target.value,
+                      nomorFakturPajak: e.target.value,
                     })
                   }
                   className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="No Jurnal"
+                  placeholder="No Faktur Pajak"
                 />
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <label
-                  htmlFor="deskripsiJurnal"
+                  htmlFor="namaPembeliJurnal"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Deskripsi
+                  Nama Pembeli
                 </label>
                 <input
                   type="text"
-                  id="deskripsiJurnal"
-                  value={filterJurnal.deskripsi}
+                  id="namaPembeliJurnal"
+                  value={filterJurnal.namaPembeli}
                   onChange={(e) =>
                     setFilterJurnal({
                       ...filterJurnal,
-                      deskripsi: e.target.value,
+                      namaPembeli: e.target.value,
                     })
                   }
                   className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Deskripsi"
+                  placeholder="Nama Pembeli"
                 />
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <label
-                  htmlFor="keteranganJurnal"
+                  htmlFor="kodeTransaksiJurnal"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Keterangan
+                  Kode Transaksi
                 </label>
                 <input
                   type="text"
-                  id="keteranganJurnal"
-                  value={filterJurnal.keterangan}
+                  id="kodeTransaksiJurnal"
+                  value={filterJurnal.kodeTransaksi}
                   onChange={(e) =>
                     setFilterJurnal({
                       ...filterJurnal,
-                      keterangan: e.target.value,
+                      kodeTransaksi: e.target.value,
                     })
                   }
                   className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Keterangan"
+                  placeholder="Kode Transaksi"
                 />
               </div>
               <div className="md:col-span-2 flex justify-end">
@@ -460,10 +491,10 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
 
         {/* Data Tables Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Daftar Mutasi */}
+          {/* Pajak Keluaran */}
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Daftar Mutasi
+              Daftar Pajak Keluaran
             </h2>
             <div className="flex justify-between items-center mb-4">
               <div>
@@ -598,7 +629,7 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
           {/* Daftar Jurnal */}
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Daftar Jurnal
+              Pajak Keluaran Coretax
             </h2>
             <div className="flex justify-between items-center mb-4">
               <div>
@@ -641,28 +672,28 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
                       <input type="checkbox" className="rounded" />
                     </th>
                     <th scope="col" className="px-3 py-3">
-                      Tanggal
+                      NPWP Pembeli/Identitas Lainnya
                     </th>
                     <th scope="col" className="px-3 py-3">
-                      No Jurnal
+                      Nama Pembeli
                     </th>
                     <th scope="col" className="px-3 py-3">
-                      Deskripsi
+                      Kode Transaksi
                     </th>
                     <th scope="col" className="px-3 py-3">
-                      Keterangan
+                      Nomor Faktur Pajak
                     </th>
                     <th scope="col" className="px-3 py-3">
-                      No Ref
+                      Tanggal Faktur Pajak
                     </th>
                     <th scope="col" className="px-3 py-3 text-right">
-                      Debit
+                      Harga Jual/Penggantian/DPP
                     </th>
                     <th scope="col" className="px-3 py-3 text-right">
-                      Credit
+                      DPP Nilai Lain/DPP
                     </th>
-                    <th scope="col" className="px-3 py-3">
-                      Cabang
+                    <th scope="col" className="px-3 py-3 text-right">
+                      PPN
                     </th>
                   </tr>
                 </thead>
@@ -683,26 +714,28 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
                           <input
                             type="checkbox"
                             className="rounded"
-                            checked={selectedMutasi.some(
+                            checked={selectedJurnal.some(
                               (sItem) => sItem.id === item.id
                             )}
                             onChange={(e) =>
-                              handleMutasiCheckboxChange(item, e.target.checked)
+                              handleJurnalCheckboxChange(item, e.target.checked)
                             }
                           />
                         </td>
-                        <td className="px-3 py-4">{item.tanggal}</td>
-                        <td className="px-3 py-4">{item.noJurnal}</td>
-                        <td className="px-3 py-4">{item.deskripsi}</td>
-                        <td className="px-3 py-4">{item.keterangan}</td>
-                        <td className="px-3 py-4">{item.noRef}</td>
+                        <td className="px-3 py-4">{item.npwpPembeli}</td>
+                        <td className="px-3 py-4">{item.namaPembeli}</td>
+                        <td className="px-3 py-4">{item.kodeTransaksi}</td>
+                        <td className="px-3 py-4">{item.nomorFakturPajak}</td>
+                        <td className="px-3 py-4">{item.tanggalFakturPajak}</td>
                         <td className="px-3 py-4 text-right">
-                          {formatCurrency(item.debit)}
+                          {formatCurrency(item.hargaJualDpp)}
                         </td>
                         <td className="px-3 py-4 text-right">
-                          {formatCurrency(item.credit)}
+                          {formatCurrency(item.dppNilaiLain)}
                         </td>
-                        <td className="px-3 py-4">{item.cabang}</td>
+                        <td className="px-3 py-4 text-right">
+                          {formatCurrency(item.ppn)}
+                        </td>
                       </tr>
                     ))
                   )}
