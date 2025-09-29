@@ -602,9 +602,14 @@ const ReconcilliationMatchDashboard: React.FC = () => {
 
           {/* Pajak Masukan Coretax */}
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Pajak Masukan Coretax
-            </h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Pajak Masukan Coretax
+              </h2>
+              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors shadow-sm">
+                Import
+              </button>
+            </div>
             <div className="flex justify-between items-center mb-4">
               <div>
                 <label

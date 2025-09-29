@@ -628,8 +628,11 @@ const ReconcilliationUnmatchDashboard: React.FC = () => {
 
           {/* Daftar Jurnal */}
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex justify-between items-center">
               Pajak Keluaran Coretax
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                Import
+              </button>
             </h2>
             <div className="flex justify-between items-center mb-4">
               <div>
