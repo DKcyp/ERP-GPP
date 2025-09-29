@@ -42,7 +42,14 @@ const NeracaDashboard: React.FC = () => {
 
   const asetRows: BalanceRow[] = [
     { label: "Kas", july: 174895077, august: 174895077 },
+    { label: "  Kas Besar", july: 150000000, august: 150000000 },
+    { label: "  Kas Kecil", july: 24895077, august: 24895077 },
     { label: "Bank", july: 910444129, august: 910444129 },
+    { label: "  BNI - REK 5520140008", july: 250000000, august: 250000000 },
+    { label: "  BRI - REK 0026-01-001159-30-3", july: 180000000, august: 180000000 },
+    { label: "  BANK MANDIRI (GIRO) - REK 140-00-1417676-3", july: 320000000, august: 320000000 },
+    { label: "  BANK MANDIRI - REK 140-00-1400-666-6222", july: 160444129, august: 160444129 },
+    { label: "  MANDIRI ESCROW 178000401315", july: 0, august: 0 },
     { label: "Piutang Usaha", july: 5785285132, august: 5785285132 },
     { label: "Piutang Direksi", july: 0, august: 0 },
     { label: "Piutang Karyawan", july: 179164968, august: 179164968 },

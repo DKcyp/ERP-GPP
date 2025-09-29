@@ -1938,6 +1938,11 @@ export const accountingMenu: MenuSection[] = [
             icon: "FileText",
             path: "/accounting/laporan-jurnal",
           },
+          {
+            title: "Jurnal Rasio",
+            icon: "Calculator",
+            path: "/accounting/jurnal-rasio",
+          },
         ],
       },
       {

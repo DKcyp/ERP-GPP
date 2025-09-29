@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle, Check, X } from 'lucide-react';
+import { Search, ChevronDown, Eye, Clock, Save, PlusCircle, MinusCircle, Check, X } from 'lucide-react';
 
 type Status = 'Pending' | 'Approved' | 'Rejected';
 
@@ -315,12 +315,13 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Action Bar (Filters + Tambah) */}
-        <div className="flex justify-between items-center">
+        {/* Filter Section */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">Filter</h3>
           <div className="flex space-x-4">
-            <div className="relative">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input type="text" placeholder="Cari permintaan..." className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <input type="text" placeholder="Cari permintaan..." className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 w-full" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
             <div className="relative">
               <select className="appearance-none bg-white border border-gray-300 rounded-xl shadow-sm py-2 pl-3 pr-10 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
@@ -332,15 +333,12 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
           </div>
-          <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 text-white px-5 py-2 rounded-xl shadow-md hover:bg-blue-700 transition-colors duration-200 flex items-center space-x-2">
-            <Plus className="h-5 w-5" />
-            <span>Buat Permintaan Baru</span>
-          </button>
         </div>
 
         {/* Requests Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Permintaan</th>
@@ -349,12 +347,8 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Asal</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gudang Tujuan</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aksi
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -376,28 +370,26 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
                         {request.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 transition-colors" title="Lihat Detail">
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <div className="flex justify-center space-x-2">
+                        <button className="text-blue-600 hover:text-blue-900 transition-colors p-1 rounded-full hover:bg-blue-100" title="Lihat Detail">
                           <Eye className="h-5 w-5" />
                         </button>
                         {request.status === 'Pending' && (
                           <>
                             <button 
                               onClick={() => handleApprove(request.id)}
-                              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors text-xs font-medium"
+                              className="text-green-600 hover:text-green-900 transition-colors p-1 rounded-full hover:bg-green-100"
                               title="Approve"
                             >
-                              <Check className="h-4 w-4 mr-1" />
-                              Approve
+                              <Check className="h-5 w-5" />
                             </button>
                             <button 
                               onClick={() => handleReject(request.id)}
-                              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors text-xs font-medium"
+                              className="text-red-600 hover:text-red-900 transition-colors p-1 rounded-full hover:bg-red-100"
                               title="Reject"
                             >
-                              <X className="h-4 w-4 mr-1" />
-                              Reject
+                              <X className="h-5 w-5" />
                             </button>
                           </>
                         )}
@@ -414,6 +406,7 @@ const PermintaanBarangGudangDashboard: React.FC = () => {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

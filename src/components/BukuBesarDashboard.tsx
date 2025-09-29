@@ -135,13 +135,8 @@ const BukuBesarDashboard: React.FC = () => {
       
       console.log('Navigating to Posting Jurnal with noJurnal:', noJurnal);
       
-      // Show user feedback
-      alert(`Navigasi ke Posting Jurnal dengan No. Jurnal: ${noJurnal}`);
-      
     } catch (error) {
       console.error('Navigation error:', error);
-      // Fallback: Simple alert with journal number
-      alert(`No. Jurnal: ${noJurnal}\nSilakan navigasi manual ke menu Posting Jurnal.`);
     }
   };
 

@@ -183,11 +183,11 @@ const PostingJurnalDashboard: React.FC = () => {
       // Clear the sessionStorage after using it
       sessionStorage.removeItem("selectedJurnalNumber");
       // Show notification
-      setTimeout(() => {
-        alert(
-          `Filter otomatis diterapkan untuk No. Jurnal: ${selectedJurnalNumber}`
-        );
-      }, 500);
+      // setTimeout(() => {
+      //   alert(
+      //     `Filter otomatis diterapkan untuk No. Jurnal: ${selectedJurnalNumber}`
+      //   );
+      // }, 500);
     }
   }, []);
 

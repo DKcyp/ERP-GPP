@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, FileDown, Plus, Search, Trash2, Wrench } from 'lucide-react';
+import { Eye, FileDown, Plus, Search, Trash2, Wrench, X, Calendar, User, FileText, Download } from 'lucide-react';
 
 // Mock Data for Damaged Goods
 const damagedGoodsData = [
@@ -64,6 +64,58 @@ const getStatusColor = (status: string) => {
 const BarangRusakDashboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('Semua');
+  const [isBAModalOpen, setIsBAModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [baForm, setBAForm] = useState({
+    nomorBA: '',
+    tanggalBA: new Date().toISOString().split('T')[0],
+    penanggungJawab: '',
+    tindakLanjut: '',
+    keterangan: '',
+    estimasiBiaya: ''
+  });
+
+  // Generate nomor BA otomatis
+  const generateNomorBA = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const sequence = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+    return `BA-BR-${year}${month}-${sequence}`;
+  };
+
+  // Handle buka modal BA
+  const handleOpenBAModal = (item: any) => {
+    setSelectedItem(item);
+    setBAForm({
+      ...baForm,
+      nomorBA: generateNomorBA()
+    });
+    setIsBAModalOpen(true);
+  };
+
+  // Handle generate BA
+  const handleGenerateBA = () => {
+    // Logic untuk generate BA document
+    console.log('Generate BA:', {
+      item: selectedItem,
+      baData: baForm
+    });
+    
+    // Reset form dan tutup modal
+    setIsBAModalOpen(false);
+    setSelectedItem(null);
+    setBAForm({
+      nomorBA: '',
+      tanggalBA: new Date().toISOString().split('T')[0],
+      penanggungJawab: '',
+      tindakLanjut: '',
+      keterangan: '',
+      estimasiBiaya: ''
+    });
+    
+    alert('Berita Acara berhasil digenerate!');
+  };
 
   const filteredData = damagedGoodsData.filter(
     (item) =>
@@ -184,8 +236,13 @@ const BarangRusakDashboardPage: React.FC = () => {
                       <button className="text-blue-500 hover:text-blue-700">
                         <Eye size={20} />
                       </button>
-                      <button className="text-green-500 hover:text-green-700">
-                        <Wrench size={20} />
+                      <button 
+                        className="inline-flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 hover:bg-green-200 transition-colors rounded-lg text-xs font-medium"
+                        onClick={() => handleOpenBAModal(item)}
+                        title="Generate Berita Acara"
+                      >
+                        <Wrench size={16} />
+                        <span>Generate BA</span>
                       </button>
                       <button className="text-red-500 hover:text-red-700">
                         <Trash2 size={20} />
@@ -198,6 +255,156 @@ const BarangRusakDashboardPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Modal Generate Berita Acara */}
+      {isBAModalOpen && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <div className="flex items-center space-x-3">
+                <FileText className="h-6 w-6 text-blue-600" />
+                <h2 className="text-2xl font-bold text-gray-900">Generate Berita Acara Barang Rusak</h2>
+              </div>
+              <button
+                onClick={() => setIsBAModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Info Barang Rusak */}
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <h3 className="text-lg font-semibold text-red-800 mb-3">Informasi Barang Rusak</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-red-700 mb-1">ID Laporan</label>
+                    <p className="text-sm text-red-900 font-medium">{selectedItem.id}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-red-700 mb-1">Nama Barang</label>
+                    <p className="text-sm text-red-900 font-medium">{selectedItem.itemName}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-red-700 mb-1">Kode Barang</label>
+                    <p className="text-sm text-red-900 font-medium">{selectedItem.itemCode}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-red-700 mb-1">Jumlah Rusak</label>
+                    <p className="text-sm text-red-900 font-medium">{selectedItem.quantity} unit</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-red-700 mb-1">Status Kerusakan</label>
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedItem.status)}`}>
+                      {selectedItem.status}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-red-700 mb-1">Penyebab Kerusakan</label>
+                    <p className="text-sm text-red-900">{selectedItem.cause}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form BA */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <FileText className="inline h-4 w-4 mr-1" />
+                    Nomor Berita Acara
+                  </label>
+                  <input
+                    type="text"
+                    value={baForm.nomorBA}
+                    onChange={(e) => setBAForm({...baForm, nomorBA: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="inline h-4 w-4 mr-1" />
+                    Tanggal BA
+                  </label>
+                  <input
+                    type="date"
+                    value={baForm.tanggalBA}
+                    onChange={(e) => setBAForm({...baForm, tanggalBA: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <User className="inline h-4 w-4 mr-1" />
+                    Penanggung Jawab
+                  </label>
+                  <input
+                    type="text"
+                    value={baForm.penanggungJawab}
+                    onChange={(e) => setBAForm({...baForm, penanggungJawab: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nama penanggung jawab"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tindak Lanjut</label>
+                  <select
+                    value={baForm.tindakLanjut}
+                    onChange={(e) => setBAForm({...baForm, tindakLanjut: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">-- Pilih Tindak Lanjut --</option>
+                    <option value="Perbaikan">Perbaikan</option>
+                    <option value="Penggantian">Penggantian</option>
+                    <option value="Pemusnahan">Pemusnahan</option>
+                    <option value="Penjualan">Penjualan</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Biaya (Rp)</label>
+                  <input
+                    type="number"
+                    value={baForm.estimasiBiaya}
+                    onChange={(e) => setBAForm({...baForm, estimasiBiaya: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Keterangan Tambahan</label>
+                  <textarea
+                    value={baForm.keterangan}
+                    onChange={(e) => setBAForm({...baForm, keterangan: e.target.value})}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Keterangan tambahan mengenai kerusakan dan tindak lanjut..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
+              <button
+                onClick={() => setIsBAModalOpen(false)}
+                className="px-6 py-2 bg-gray-300 text-gray-800 rounded-xl hover:bg-gray-400 transition-colors duration-200 text-sm shadow-md"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleGenerateBA}
+                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-sm shadow-md"
+              >
+                <Download className="h-4 w-4" />
+                <span>Generate BA</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

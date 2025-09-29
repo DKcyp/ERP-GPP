@@ -17,8 +17,8 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
     { kode: "BRG002", nama: "Semen Portland", satuan: "Sak", jumlah: 2 },
   ];
 
-  const pbgOptions = ["PBG-2024-001", "PBG-2024-002", "PBG-2024-003"];
-  const [selectedPBG, setSelectedPBG] = React.useState(pbgOptions[0]);
+  const pbgOptions = ["", "PBG-2024-001", "PBG-2024-002", "PBG-2024-003"];
+  const [selectedPBG, setSelectedPBG] = React.useState("");
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex justify-center items-center p-4 z-50">
@@ -48,7 +48,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
                 type="text"
                 id="noMutasi"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50"
-                defaultValue="MT-202536"
+                placeholder="Auto Generated"
                 readOnly
               />
             </div>
@@ -65,7 +65,8 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
                 value={selectedPBG}
                 onChange={(e) => setSelectedPBG(e.target.value)}
               >
-                {pbgOptions.map((pbg) => (
+                <option value="">-- Pilih No. PBG --</option>
+                {pbgOptions.slice(1).map((pbg) => (
                   <option key={pbg} value={pbg}>
                     {pbg}
                   </option>
@@ -83,7 +84,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
                 type="text"
                 id="noSO"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="SO-2024-001"
+                placeholder="Masukkan No. SO"
               />
             </div>
             <div>
@@ -97,6 +98,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
                 id="gudangAsal"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               >
+                <option value="">-- Pilih Gudang Asal --</option>
                 <option>Gudang Pusat</option>
                 <option>Gudang Proyek A</option>
                 <option>Gudang Proyek B</option>
@@ -113,6 +115,7 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
                 id="gudangTujuan"
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               >
+                <option value="">-- Pilih Gudang Tujuan --</option>
                 <option>Gudang Pusat</option>
                 <option>Gudang Proyek A</option>
                 <option>Gudang Proyek B</option>
@@ -129,7 +132,6 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
                 type="date"
                 id="tanggalMutasi"
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                defaultValue={new Date().toISOString().split("T")[0]}
               />
               <CalendarDays className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
@@ -170,83 +172,88 @@ const EntryMutasiBarangModal: React.FC<EntryMutasiBarangModalProps> = ({
             </div>
           </div>
 
-          {/* Barang Table */}
-          <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Kode barang
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama Barang
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Satuan Barang
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Jumlah Mutasi
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Serial Number
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Keterangan
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Hapus
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {modalBarangItems.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {item.kode}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {item.nama}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {item.satuan}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      <input
-                        type="number"
-                        defaultValue={item.jumlah}
-                        className="w-20 border border-gray-300 rounded-md px-2 py-1 text-sm"
-                      />
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      <input
-                        type="text"
-                        placeholder="SN-001"
-                        className="w-32 border border-gray-300 rounded-md px-2 py-1 text-sm"
-                      />
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      <input
-                        type="text"
-                        placeholder="Keterangan"
-                        className="w-40 border border-gray-300 rounded-md px-2 py-1 text-sm"
-                      />
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                      <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm shadow-md">
-            <Plus className="h-4 w-4" />
-          </button>
+          {/* Barang Table - Only show when PBG is selected */}
+          {selectedPBG && (
+            <>
+              <div className="overflow-x-auto bg-white rounded-xl border border-gray-200 shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Kode barang
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Nama Barang
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Satuan Barang
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Jumlah Mutasi
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Serial Number
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Keterangan
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Hapus
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {modalBarangItems.map((item, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {item.kode}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {item.nama}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {item.satuan}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          <input
+                            type="number"
+                            defaultValue={item.jumlah}
+                            className="w-20 border border-gray-300 rounded-md px-2 py-1 text-sm"
+                          />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          <input
+                            type="text"
+                            placeholder="SN-001"
+                            className="w-32 border border-gray-300 rounded-md px-2 py-1 text-sm"
+                          />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          <input
+                            type="text"
+                            placeholder="Keterangan"
+                            className="w-40 border border-gray-300 rounded-md px-2 py-1 text-sm"
+                          />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                          <button className="text-red-600 hover:text-red-900 transition-colors duration-200 p-1 rounded-full hover:bg-red-100">
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm shadow-md">
+                <Plus className="h-4 w-4" />
+                <span>Tambah Barang</span>
+              </button>
+            </>
+          )}
         </div>
         <div className="flex justify-end p-6 border-t border-gray-200 space-x-3">
           <button
