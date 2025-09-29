@@ -119,7 +119,7 @@ import CollectionDashboardCashIn from "./CollectionDashboardCashIn";
 import FinanceTandaTerimaDokumeniDashboard from "./FinanceTandaTerimaDokumeniDashboard";
 import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumenPembelianDashboard";
 import JurnalManualDashboard from "./JurnalManualDashboard";
-import JurnalRasioDashboard from "./JurnalRasioDashboard";
+import JurnalRasioKeuanganDashboard from "./JurnalRasioKeuanganDashboard";
 import AssetDashboard from "./AssetDashboard";
 import TrialBalanceDashboard from "./TrialBalanceDashboard";
 import AccountingAssetMasterKategoriDashboard from "./AccountingAssetMasterKategoriDashboard";
@@ -2124,7 +2124,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
       return <LaporanJurnalDashboard />;
     }
     if (currentPage === "/accounting/jurnal-rasio") {
-      return <JurnalRasioDashboard />;
+      return <JurnalRasioKeuanganDashboard />;
     }
     if (currentPage === "/accounting/tutup-buku") {
       return <TutupBukuDashboard />;
