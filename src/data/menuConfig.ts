@@ -2063,7 +2063,7 @@ export const accountingMenu: MenuSection[] = [
         icon: "RefreshCw",
         items: [
           {
-            title: "Reconcilliation Match",
+            title: "Rekonsiliasi Pajak Masukan",
             icon: "CheckSquare",
             path: "/accounting/reconcilliation/match",
           },
