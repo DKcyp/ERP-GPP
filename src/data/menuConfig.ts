@@ -2068,7 +2068,7 @@ export const accountingMenu: MenuSection[] = [
             path: "/accounting/reconcilliation/match",
           },
           {
-            title: "Reconcilliation Unmatch",
+            title: "Rekonsiliasi Pajak Keluaran",
             icon: "XSquare",
             path: "/accounting/reconcilliation/unmatch",
           },
