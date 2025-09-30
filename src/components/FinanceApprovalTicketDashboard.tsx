@@ -20,7 +20,16 @@ interface TicketRow {
   noTicket: string;
   divisi: string;
   pemohon: string;
-  kategori: "IT Support" | "Maintenance" | "General Request" | "Finance" | "HR";
+  kategori: (
+    | "Hotel"
+    | "Travel"
+    | "Pesawat"
+    | "IT Support"
+    | "Maintenance"
+    | "General Request"
+    | "Finance"
+    | "HR"
+  )[];
   prioritas: "Low" | "Medium" | "High" | "Urgent";
   judul: string;
   deskripsi: string;
@@ -30,18 +39,18 @@ interface TicketRow {
   catatan?: string;
   attachmentFileName?: string;
   attachmentFileSize?: number;
-  
+
   // Form Header Info
   noDokumen?: string;
   noRevisi?: string;
   tanggalRevisi?: string;
   tanggalBerlaku?: string;
   halaman?: string;
-  
+
   // Basic Info
   dept?: string;
   soTurunan?: string;
-  
+
   // Ticket Booking - Keberangkatan
   tanggalBerangkat?: string;
   tujuanBerangkat?: string;
@@ -49,7 +58,7 @@ interface TicketRow {
   maskapaiBerangkat?: string;
   hargaBerangkat?: number;
   jenisTicketBerangkat?: string;
-  
+
   // Ticket Booking - Kepulangan
   tanggalPulang?: string;
   tujuanPulang?: string;
@@ -57,10 +66,26 @@ interface TicketRow {
   maskapaipulang?: string;
   hargaPulang?: number;
   jenisTicketPulang?: string;
-  
+
+  // Travel Booking - Keberangkatan
+  tanggalBerangkatTravel?: string;
+  tujuanBerangkatTravel?: string;
+  jamBerangkatTravel?: string;
+  namaTravelBerangkat?: string;
+  hargaBerangkatTravel?: number;
+  jenisTicketBerangkatTravel?: string;
+
+  // Travel Booking - Kepulangan
+  tanggalPulangTravel?: string;
+  tujuanPulangTravel?: string;
+  jamPulangTravel?: string;
+  namaTravelPulang?: string;
+  hargaPulangTravel?: number;
+  jenisTicketPulangTravel?: string;
+
   // Passenger List
   passengers?: PassengerData[];
-  
+
   // Hotel Booking
   tanggalCheckIn?: string;
   tanggalCheckOut?: string;
@@ -68,10 +93,10 @@ interface TicketRow {
   namaHotel?: string;
   jumlahHari?: number;
   hargaTotalHotel?: number;
-  
+
   // Billing Section
-  ditagihkanKe?: 'Client' | 'Perusahaan' | '';
-  
+  ditagihkanKe?: "Client" | "Perusahaan" | "";
+
   // Approval Section
   managerTerkait?: string;
   managerFinance?: string;
@@ -88,13 +113,16 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
 
   const [searchNo, setSearchNo] = useState("");
   const [searchPemohon, setSearchPemohon] = useState("");
-  const [filterKategori, setFilterKategori] = useState("");
+  const [filterKategori, setFilterKategori] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterPrioritas, setFilterPrioritas] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
   const kategoriOptions = [
+    "Hotel",
+    "Travel",
+    "Pesawat",
     "IT Support",
     "Maintenance",
     "General Request",
@@ -110,7 +138,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-001",
       divisi: "IT",
       pemohon: "Andi Pratama",
-      kategori: "General Request",
+      kategori: ["General Request"],
       prioritas: "High",
       judul: "Pemesanan Tiket Dinas ke Jakarta",
       deskripsi: "Perjalanan dinas untuk meeting dengan client di Jakarta",
@@ -141,7 +169,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       namaHotel: "Hotel Santika",
       jumlahHari: 2,
       hargaTotalHotel: 800000,
-      ditagihkanKe: "Client"
+      ditagihkanKe: "Client",
     },
     {
       id: 2,
@@ -149,7 +177,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-002",
       divisi: "GA",
       pemohon: "Siti Nurhaliza",
-      kategori: "General Request",
+      kategori: ["General Request"],
       prioritas: "Medium",
       judul: "Perjalanan Dinas ke Bali",
       deskripsi: "Kunjungan ke cabang Bali untuk audit operasional",
@@ -175,14 +203,17 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       maskapaipulang: "Batik Air",
       hargaPulang: 1800000,
       jenisTicketPulang: "Ekonomi",
-      passengers: [{ no: 1, nama: "Siti Nurhaliza" }, { no: 2, nama: "Ahmad Fauzi" }],
+      passengers: [
+        { no: 1, nama: "Siti Nurhaliza" },
+        { no: 2, nama: "Ahmad Fauzi" },
+      ],
       tanggalCheckIn: "2025-10-05",
       tanggalCheckOut: "2025-10-08",
       lokasiHotel: "Denpasar",
       namaHotel: "Grand Inna Bali Beach",
       jumlahHari: 3,
       hargaTotalHotel: 1500000,
-      ditagihkanKe: "Perusahaan"
+      ditagihkanKe: "Perusahaan",
     },
     {
       id: 3,
@@ -190,10 +221,11 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-003",
       divisi: "Finance",
       pemohon: "Rudi Hermawan",
-      kategori: "Finance",
+      kategori: ["Finance"],
       prioritas: "Urgent",
       judul: "Meeting Budget Q4 di Bandung",
-      deskripsi: "Pertemuan dengan tim finance regional untuk pembahasan budget Q4",
+      deskripsi:
+        "Pertemuan dengan tim finance regional untuk pembahasan budget Q4",
       status: "Approved",
       tanggalApproval: "2025-09-22",
       approver: "Finance Manager",
@@ -224,7 +256,61 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       namaHotel: "Hotel Savoy Homann",
       jumlahHari: 1,
       hargaTotalHotel: 500000,
-      ditagihkanKe: "Client"
+      ditagihkanKe: "Client",
+    },
+    {
+      id: 4,
+      tanggal: "2025-09-23",
+      noTicket: "TKT-2025-09-004",
+      divisi: "Marketing",
+      pemohon: "Budi Santoso",
+      kategori: ["Hotel", "Pesawat", "Travel"],
+      prioritas: "Medium",
+      judul: "Perjalanan Bisnis ke Singapore",
+      deskripsi: "Mengikuti pameran dagang di Singapore",
+      status: "Submitted",
+      noDokumen: "GBP-HG-FM-24",
+      noRevisi: "01",
+      tanggalRevisi: "2025-09-23",
+      tanggalBerlaku: "2025-09-23",
+      halaman: "1 dari 1",
+      dept: "Marketing",
+      soTurunan: "SO00123.004",
+      tanggalBerangkat: "2025-11-01",
+      tujuanBerangkat: "Singapore",
+      jamBerangkat: "09:00",
+      maskapaiBerangkat: "Singapore Airlines",
+      hargaBerangkat: 3000000,
+      jenisTicketBerangkat: "Bisnis",
+      tanggalPulang: "2025-11-05",
+      tujuanPulang: "Surabaya",
+      jamPulang: "18:00",
+      maskapaipulang: "Garuda Indonesia",
+      hargaPulang: 2500000,
+      jenisTicketPulang: "Bisnis",
+      tanggalBerangkatTravel: "2025-11-01",
+      tujuanBerangkatTravel: "Singapore",
+      jamBerangkatTravel: "09:00",
+      namaTravelBerangkat: "Traveloka",
+      hargaBerangkatTravel: 1000000,
+      jenisTicketBerangkatTravel: "Ekonomi",
+      tanggalPulangTravel: "2025-11-05",
+      tujuanPulangTravel: "Surabaya",
+      jamPulangTravel: "18:00",
+      namaTravelPulang: "Tiket.com",
+      hargaPulangTravel: 800000,
+      jenisTicketPulangTravel: "Ekonomi",
+      passengers: [
+        { no: 1, nama: "Budi Santoso" },
+        { no: 2, nama: "Dewi Anggraini" },
+      ],
+      tanggalCheckIn: "2025-11-01",
+      tanggalCheckOut: "2025-11-05",
+      lokasiHotel: "Singapore",
+      namaHotel: "Marina Bay Sands",
+      jumlahHari: 4,
+      hargaTotalHotel: 5000000,
+      ditagihkanKe: "Perusahaan",
     },
   ]);
 
@@ -276,7 +362,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
     if (ticket.attachmentFileName && ticket.attachmentFileSize) {
       setAttachmentFile(
         new File([], ticket.attachmentFileName, {
-          size: ticket.attachmentFileSize,
+          // size: ticket.attachmentFileSize, // Removed as 'size' is a read-only property and not a valid option
         })
       );
     } else {
@@ -284,7 +370,6 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
     }
     setIsDetailOpen(true);
   };
-
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -294,7 +379,9 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       const okPemohon = searchPemohon
         ? r.pemohon.toLowerCase().includes(searchPemohon.toLowerCase())
         : true;
-      const okKategori = filterKategori ? r.kategori === filterKategori : true;
+      const okKategori =
+        filterKategori.length === 0 ||
+        r.kategori.some((k) => filterKategori.includes(k));
       const okStatus = filterStatus ? r.status === filterStatus : true;
       const okPrioritas = filterPrioritas
         ? r.prioritas === filterPrioritas
@@ -467,11 +554,18 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                 Kategori
               </label>
               <select
+                multiple
                 value={filterKategori}
-                onChange={(e) => setFilterKategori(e.target.value)}
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none"
+                onChange={(e) =>
+                  setFilterKategori(
+                    Array.from(
+                      e.target.selectedOptions,
+                      (option) => option.value
+                    )
+                  )
+                }
+                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm"
               >
-                <option value="">Semua Kategori</option>
                 {kategoriOptions.map((k) => (
                   <option key={k} value={k}>
                     {k}
@@ -553,25 +647,28 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Tanggal
+                    No
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    No Ticket
+                    SO
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Nama Project
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Divisi
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Pemohon
+                    Tujuan
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Kategori
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                    Prioritas
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                    Nominal
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Judul
+                    Keterangan
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Status
@@ -582,56 +679,78 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filtered.map((row) => (
-                  <tr key={row.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(row.tanggal).toLocaleDateString("id-ID")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                      {row.noTicket}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {row.divisi}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {row.pemohon}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {row.kategori}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(
-                          row.prioritas
+                {filtered.map((row, index) => {
+                  const nominal =
+                    (row.hargaBerangkat || 0) +
+                    (row.hargaPulang || 0) +
+                    (row.hargaBerangkatTravel || 0) +
+                    (row.hargaPulangTravel || 0) +
+                    (row.hargaTotalHotel || 0);
+                  const tujuan =
+                    (row.tujuanBerangkat && row.tujuanPulang
+                      ? `Dari: ${row.tujuanBerangkat} - Ke: ${row.tujuanPulang}`
+                      : row.tujuanBerangkat) ||
+                    (row.tujuanBerangkatTravel && row.tujuanPulangTravel
+                      ? `Dari: ${row.tujuanBerangkatTravel} - Ke: ${row.tujuanPulangTravel}`
+                      : row.tujuanBerangkatTravel) ||
+                    row.lokasiHotel ||
+                    "-";
+                  const keterangan = row.deskripsi || "-";
+
+                  return (
+                    <tr key={row.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                        {row.soTurunan || "-"}
+                      </td>
+                      <td
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
+                        title={row.judul}
+                      >
+                        {row.judul}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {row.divisi}
+                      </td>
+                      <td
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
+                        title={tujuan}
+                      >
+                        {tujuan}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {row.kategori.join(", ")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">{`Rp ${nominal.toLocaleString(
+                        "id-ID"
+                      )}`}</td>
+                      <td
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
+                        title={keterangan}
+                      >
+                        {keterangan}
+                      </td>
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${getStatusColor(
+                          row.status
                         )}`}
                       >
-                        {row.prioritas}
-                      </span>
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
-                      title={row.judul}
-                    >
-                      {row.judul}
-                    </td>
-                    <td
-                      className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${getStatusColor(
-                        row.status
-                      )}`}
-                    >
-                      {row.status}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button
-                        onClick={() => handleViewDetail(row)}
-                        className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50"
-                        title="View Detail"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {row.status}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <button
+                          onClick={() => handleViewDetail(row)}
+                          className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50"
+                          title="View Detail"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -657,120 +776,381 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
               <div className="p-6 space-y-6">
                 {/* Header Information */}
                 <div className="bg-blue-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-blue-900 mb-4">Informasi Dokumen</h4>
+                  <h4 className="text-lg font-semibold text-blue-900 mb-4">
+                    Informasi Dokumen
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">No Dokumen</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.noDokumen || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        No Dokumen
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.noDokumen || "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">No Revisi</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.noRevisi || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        No Revisi
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.noRevisi || "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Halaman</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.halaman || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Halaman
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.halaman || "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Revisi</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.tanggalRevisi ? new Date(selectedTicket.tanggalRevisi).toLocaleDateString('id-ID') : '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal Revisi
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.tanggalRevisi
+                          ? new Date(
+                              selectedTicket.tanggalRevisi
+                            ).toLocaleDateString("id-ID")
+                          : "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.tanggalBerlaku ? new Date(selectedTicket.tanggalBerlaku).toLocaleDateString('id-ID') : '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal Berlaku
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.tanggalBerlaku
+                          ? new Date(
+                              selectedTicket.tanggalBerlaku
+                            ).toLocaleDateString("id-ID")
+                          : "-"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Basic Information */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Pemohon</h4>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                    Informasi Pemohon
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">No Ticket</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.noTicket}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        No Ticket
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.noTicket}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                      <p className="text-sm text-gray-900">{new Date(selectedTicket.tanggal).toLocaleDateString('id-ID')}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {new Date(selectedTicket.tanggal).toLocaleDateString(
+                          "id-ID"
+                        )}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pemohon</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.pemohon}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Nama Pemohon
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.pemohon}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Dept</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.dept || selectedTicket.divisi}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Dept
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.dept || selectedTicket.divisi}
+                      </p>
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">SO Turunan</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.soTurunan || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        SO Turunan
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.soTurunan || "-"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Flight Booking Information */}
                 <div className="bg-green-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-green-900 mb-4">Pemesanan Tiket Pesawat</h4>
-                  
+                  <h4 className="text-lg font-semibold text-green-900 mb-4">
+                    Pemesanan Tiket Pesawat
+                  </h4>
+
                   {/* Keberangkatan */}
                   <div className="mb-4">
-                    <h5 className="text-md font-medium text-green-800 mb-3">Keberangkatan</h5>
+                    <h5 className="text-md font-medium text-green-800 mb-3">
+                      Keberangkatan
+                    </h5>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.tanggalBerangkat ? new Date(selectedTicket.tanggalBerangkat).toLocaleDateString('id-ID') : '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tanggal
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tanggalBerangkat
+                            ? new Date(
+                                selectedTicket.tanggalBerangkat
+                              ).toLocaleDateString("id-ID")
+                            : "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.tujuanBerangkat || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tujuan
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tujuanBerangkat || "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Jam</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.jamBerangkat || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jam
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jamBerangkat || "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Maskapai</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.maskapaiBerangkat || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Maskapai
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.maskapaiBerangkat || "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Harga</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.hargaBerangkat ? `Rp ${selectedTicket.hargaBerangkat.toLocaleString('id-ID')}` : '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Harga
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.hargaBerangkat
+                            ? `Rp ${selectedTicket.hargaBerangkat.toLocaleString(
+                                "id-ID"
+                              )}`
+                            : "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Tiket</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.jenisTicketBerangkat || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jenis Tiket
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jenisTicketBerangkat || "-"}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Kepulangan */}
                   <div>
-                    <h5 className="text-md font-medium text-green-800 mb-3">Kepulangan</h5>
+                    <h5 className="text-md font-medium text-green-800 mb-3">
+                      Kepulangan
+                    </h5>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.tanggalPulang ? new Date(selectedTicket.tanggalPulang).toLocaleDateString('id-ID') : '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tanggal
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tanggalPulang
+                            ? new Date(
+                                selectedTicket.tanggalPulang
+                              ).toLocaleDateString("id-ID")
+                            : "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.tujuanPulang || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tujuan
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tujuanPulang || "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Jam</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.jamPulang || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jam
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jamPulang || "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Maskapai</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.maskapaipulang || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Maskapai
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.maskapaipulang || "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Harga</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.hargaPulang ? `Rp ${selectedTicket.hargaPulang.toLocaleString('id-ID')}` : '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Harga
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.hargaPulang
+                            ? `Rp ${selectedTicket.hargaPulang.toLocaleString(
+                                "id-ID"
+                              )}`
+                            : "-"}
+                        </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Tiket</label>
-                        <p className="text-sm text-gray-900">{selectedTicket.jenisTicketPulang || '-'}</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jenis Tiket
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jenisTicketPulang || "-"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Travel Booking Information */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-blue-900 mb-4">
+                    Pemesanan Tiket Travel
+                  </h4>
+
+                  {/* Keberangkatan Travel */}
+                  <div className="mb-4">
+                    <h5 className="text-md font-medium text-blue-800 mb-3">
+                      Keberangkatan
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tanggal
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tanggalBerangkatTravel
+                            ? new Date(
+                                selectedTicket.tanggalBerangkatTravel
+                              ).toLocaleDateString("id-ID")
+                            : "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tujuan
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tujuanBerangkatTravel || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jam
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jamBerangkatTravel || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Nama Travel
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.namaTravelBerangkat || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Harga
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.hargaBerangkatTravel
+                            ? `Rp ${selectedTicket.hargaBerangkatTravel.toLocaleString(
+                                "id-ID"
+                              )}`
+                            : "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jenis Tiket
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jenisTicketBerangkatTravel || "-"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kepulangan Travel */}
+                  <div>
+                    <h5 className="text-md font-medium text-blue-800 mb-3">
+                      Kepulangan
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tanggal
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tanggalPulangTravel
+                            ? new Date(
+                                selectedTicket.tanggalPulangTravel
+                              ).toLocaleDateString("id-ID")
+                            : "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Tujuan
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.tujuanPulangTravel || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jam
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jamPulangTravel || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Nama Travel
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.namaTravelPulang || "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Harga
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.hargaPulangTravel
+                            ? `Rp ${selectedTicket.hargaPulangTravel.toLocaleString(
+                                "id-ID"
+                              )}`
+                            : "-"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Jenis Tiket
+                        </label>
+                        <p className="text-sm text-gray-900">
+                          {selectedTicket.jenisTicketPulangTravel || "-"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -778,76 +1158,142 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
 
                 {/* Passenger List */}
                 <div className="bg-yellow-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-yellow-900 mb-4">Daftar Penumpang</h4>
+                  <h4 className="text-lg font-semibold text-yellow-900 mb-4">
+                    Daftar Penumpang
+                  </h4>
                   <div className="space-y-2">
-                    {(selectedTicket.passengers || []).map((passenger, index) => (
-                      <div key={index} className="flex items-center space-x-3">
-                        <div className="w-12">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">No</label>
-                          <p className="text-sm text-gray-900">{passenger.no}</p>
+                    {(selectedTicket.passengers || []).map(
+                      (passenger, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-3"
+                        >
+                          <div className="w-12">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              No
+                            </label>
+                            <p className="text-sm text-gray-900">
+                              {passenger.no}
+                            </p>
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Nama Penumpang
+                            </label>
+                            <p className="text-sm text-gray-900">
+                              {passenger.nama}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Penumpang</label>
-                          <p className="text-sm text-gray-900">{passenger.nama}</p>
-                        </div>
-                      </div>
-                    ))}
-                    {(!selectedTicket.passengers || selectedTicket.passengers.length === 0) && (
-                      <p className="text-sm text-gray-500 italic">Tidak ada data penumpang</p>
+                      )
+                    )}
+                    {(!selectedTicket.passengers ||
+                      selectedTicket.passengers.length === 0) && (
+                      <p className="text-sm text-gray-500 italic">
+                        Tidak ada data penumpang
+                      </p>
                     )}
                   </div>
                 </div>
 
                 {/* Billing Section */}
                 <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4">
+                    Ditagihkan Ke
+                  </h4>
                   <div>
-                    <p className="text-sm text-gray-900">{selectedTicket.ditagihkanKe || '-'}</p>
+                    <p className="text-sm text-gray-900">
+                      {selectedTicket.ditagihkanKe || "-"}
+                    </p>
                   </div>
                 </div>
 
                 {/* Hotel Booking */}
                 <div className="bg-purple-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-purple-900 mb-4">Pemesanan Hotel</h4>
+                  <h4 className="text-lg font-semibold text-purple-900 mb-4">
+                    Pemesanan Hotel
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Check In</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.tanggalCheckIn ? new Date(selectedTicket.tanggalCheckIn).toLocaleDateString('id-ID') : '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal Check In
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.tanggalCheckIn
+                          ? new Date(
+                              selectedTicket.tanggalCheckIn
+                            ).toLocaleDateString("id-ID")
+                          : "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Check Out</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.tanggalCheckOut ? new Date(selectedTicket.tanggalCheckOut).toLocaleDateString('id-ID') : '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tanggal Check Out
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.tanggalCheckOut
+                          ? new Date(
+                              selectedTicket.tanggalCheckOut
+                            ).toLocaleDateString("id-ID")
+                          : "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah Hari</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.jumlahHari || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Jumlah Hari
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.jumlahHari || "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.lokasiHotel || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Lokasi
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.lokasiHotel || "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nama Hotel</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.namaHotel || '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Nama Hotel
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.namaHotel || "-"}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Harga Total</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.hargaTotalHotel ? `Rp ${selectedTicket.hargaTotalHotel.toLocaleString('id-ID')}` : '-'}</p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Harga Total
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedTicket.hargaTotalHotel
+                          ? `Rp ${selectedTicket.hargaTotalHotel.toLocaleString(
+                              "id-ID"
+                            )}`
+                          : "-"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Billing Section - After Hotel */}
                 <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4">
+                    Ditagihkan Ke
+                  </h4>
                   <div>
-                    <p className="text-sm text-gray-900">{selectedTicket.ditagihkanKe || '-'}</p>
+                    <p className="text-sm text-gray-900">
+                      {selectedTicket.ditagihkanKe || "-"}
+                    </p>
                   </div>
                 </div>
-                
+
                 {/* Approval Notes Section */}
                 <div className="bg-red-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-red-900 mb-4">Catatan Approval</h4>
+                  <h4 className="text-lg font-semibold text-red-900 mb-4">
+                    Catatan Approval
+                  </h4>
                   <textarea
                     value={approvalNote}
                     onChange={(e) => setApprovalNote(e.target.value)}
