@@ -84,7 +84,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
-  const kategoriOptions = ['IT Support', 'Maintenance', 'General Request', 'Finance', 'HR'];
+  const kategoriOptions = ['Hotel', 'Travel', 'Pesawat', 'IT Support', 'Maintenance', 'General Request', 'Finance', 'HR'];
   const prioritasOptions = ['Low', 'Medium', 'High', 'Urgent'];
   const divisiOptions = ['Marketing','HRD','GA','Procurement','Project Control','Operasional','QHSE','Finance','Accounting','Tax','Gudang'];
 
@@ -663,47 +663,52 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Ticket</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SO</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Project</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Divisi</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pemohon</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tujuan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Prioritas</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Judul</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Nominal</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filtered.map(row => (
-                  <tr key={row.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{row.noTicket}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.divisi}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.pemohon}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.kategori}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(row.prioritas)}`}>
-                        {row.prioritas}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate" title={row.judul}>{row.judul}</td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${getStatusColor(row.status)}`}>{row.status}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button onClick={() => handleEdit(row)} className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50" title="Edit">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => generatePDF(row)} className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50" title="Print PDF">
-                          <Printer className="h-4 w-4" />
-                        </button>
-                        <button onClick={() => handleDelete(row)} className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50" title="Hapus">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((row, index) => {
+                  const nominal = (row.hargaBerangkat || 0) + (row.hargaPulang || 0) + (row.hargaTotalHotel || 0);
+                  const tujuan = row.tujuanBerangkat && row.tujuanPulang 
+                                 ? `Dari: ${row.tujuanBerangkat} - Ke: ${row.tujuanPulang}`
+                                 : row.tujuanBerangkat || row.lokasiHotel || '-';
+
+                  return (
+                    <tr key={row.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{row.soTurunan || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate" title={row.judul}>{row.judul}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.divisi}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate" title={tujuan}>{tujuan}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.kategori}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">{`Rp ${nominal.toLocaleString('id-ID')}`}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate" title={row.deskripsi}>{row.deskripsi}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${getStatusColor(row.status)}`}>{row.status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div className="flex items-center justify-center space-x-2">
+                          <button onClick={() => handleEdit(row)} className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50" title="Edit">
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => generatePDF(row)} className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50" title="Print PDF">
+                            <Printer className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => handleDelete(row)} className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50" title="Hapus">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })} 
               </tbody>
             </table>
           </div>
