@@ -9,6 +9,11 @@ import {
   Search,
 } from "lucide-react";
 
+interface PassengerData {
+  no: number;
+  nama: string;
+}
+
 interface TicketRow {
   id: number;
   tanggal: string;
@@ -25,6 +30,52 @@ interface TicketRow {
   catatan?: string;
   attachmentFileName?: string;
   attachmentFileSize?: number;
+  
+  // Form Header Info
+  noDokumen?: string;
+  noRevisi?: string;
+  tanggalRevisi?: string;
+  tanggalBerlaku?: string;
+  halaman?: string;
+  
+  // Basic Info
+  dept?: string;
+  soTurunan?: string;
+  
+  // Ticket Booking - Keberangkatan
+  tanggalBerangkat?: string;
+  tujuanBerangkat?: string;
+  jamBerangkat?: string;
+  maskapaiBerangkat?: string;
+  hargaBerangkat?: number;
+  jenisTicketBerangkat?: string;
+  
+  // Ticket Booking - Kepulangan
+  tanggalPulang?: string;
+  tujuanPulang?: string;
+  jamPulang?: string;
+  maskapaipulang?: string;
+  hargaPulang?: number;
+  jenisTicketPulang?: string;
+  
+  // Passenger List
+  passengers?: PassengerData[];
+  
+  // Hotel Booking
+  tanggalCheckIn?: string;
+  tanggalCheckOut?: string;
+  lokasiHotel?: string;
+  namaHotel?: string;
+  jumlahHari?: number;
+  hargaTotalHotel?: number;
+  
+  // Billing Section
+  ditagihkanKe?: 'Client' | 'Perusahaan' | '';
+  
+  // Approval Section
+  managerTerkait?: string;
+  managerFinance?: string;
+  direkturOPS?: string;
 }
 
 const FinanceApprovalTicketDashboard: React.FC = () => {
@@ -59,12 +110,38 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-001",
       divisi: "IT",
       pemohon: "Andi Pratama",
-      kategori: "IT Support",
+      kategori: "General Request",
       prioritas: "High",
-      judul: "Laptop tidak bisa connect ke WiFi",
-      deskripsi:
-        "Laptop saya tidak bisa terhubung ke jaringan WiFi kantor sejak pagi ini. Sudah dicoba restart berkali-kali tetapi masih tidak bisa.",
+      judul: "Pemesanan Tiket Dinas ke Jakarta",
+      deskripsi: "Perjalanan dinas untuk meeting dengan client di Jakarta",
       status: "Submitted",
+      noDokumen: "GBP-HG-FM-23",
+      noRevisi: "01",
+      tanggalRevisi: "2025-09-20",
+      tanggalBerlaku: "2025-09-20",
+      halaman: "1 dari 1",
+      dept: "IT",
+      soTurunan: "SO00123.001",
+      tanggalBerangkat: "2025-10-01",
+      tujuanBerangkat: "Jakarta",
+      jamBerangkat: "08:00",
+      maskapaiBerangkat: "Garuda Indonesia",
+      hargaBerangkat: 1500000,
+      jenisTicketBerangkat: "Ekonomi",
+      tanggalPulang: "2025-10-03",
+      tujuanPulang: "Surabaya",
+      jamPulang: "16:00",
+      maskapaipulang: "Lion Air",
+      hargaPulang: 1200000,
+      jenisTicketPulang: "Ekonomi",
+      passengers: [{ no: 1, nama: "Andi Pratama" }],
+      tanggalCheckIn: "2025-10-01",
+      tanggalCheckOut: "2025-10-03",
+      lokasiHotel: "Jakarta",
+      namaHotel: "Hotel Santika",
+      jumlahHari: 2,
+      hargaTotalHotel: 800000,
+      ditagihkanKe: "Client"
     },
     {
       id: 2,
@@ -72,14 +149,40 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-002",
       divisi: "GA",
       pemohon: "Siti Nurhaliza",
-      kategori: "Maintenance",
+      kategori: "General Request",
       prioritas: "Medium",
-      judul: "AC ruang meeting tidak dingin",
-      deskripsi:
-        "AC di ruang meeting lantai 2 tidak mengeluarkan udara dingin. Perlu diperbaiki segera karena akan ada meeting penting.",
+      judul: "Perjalanan Dinas ke Bali",
+      deskripsi: "Kunjungan ke cabang Bali untuk audit operasional",
       status: "Submitted",
-      attachmentFileName: "laporan_kerusakan_ac.pdf",
-      attachmentFileSize: 250000, // In bytes, e.g., 250 KB
+      attachmentFileName: "proposal_perjalanan_bali.pdf",
+      attachmentFileSize: 350000,
+      noDokumen: "GBP-HG-FM-23",
+      noRevisi: "01",
+      tanggalRevisi: "2025-09-21",
+      tanggalBerlaku: "2025-09-21",
+      halaman: "1 dari 1",
+      dept: "GA",
+      soTurunan: "SO00123.002",
+      tanggalBerangkat: "2025-10-05",
+      tujuanBerangkat: "Bali",
+      jamBerangkat: "09:30",
+      maskapaiBerangkat: "Citilink",
+      hargaBerangkat: 2000000,
+      jenisTicketBerangkat: "Ekonomi",
+      tanggalPulang: "2025-10-08",
+      tujuanPulang: "Surabaya",
+      jamPulang: "18:00",
+      maskapaipulang: "Batik Air",
+      hargaPulang: 1800000,
+      jenisTicketPulang: "Ekonomi",
+      passengers: [{ no: 1, nama: "Siti Nurhaliza" }, { no: 2, nama: "Ahmad Fauzi" }],
+      tanggalCheckIn: "2025-10-05",
+      tanggalCheckOut: "2025-10-08",
+      lokasiHotel: "Denpasar",
+      namaHotel: "Grand Inna Bali Beach",
+      jumlahHari: 3,
+      hargaTotalHotel: 1500000,
+      ditagihkanKe: "Perusahaan"
     },
     {
       id: 3,
@@ -89,13 +192,39 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       pemohon: "Rudi Hermawan",
       kategori: "Finance",
       prioritas: "Urgent",
-      judul: "Request approval budget Q4",
-      deskripsi:
-        "Membutuhkan persetujuan budget untuk quarter 4 tahun ini sesuai dengan planning yang telah dibuat.",
+      judul: "Meeting Budget Q4 di Bandung",
+      deskripsi: "Pertemuan dengan tim finance regional untuk pembahasan budget Q4",
       status: "Approved",
       tanggalApproval: "2025-09-22",
       approver: "Finance Manager",
       catatan: "Budget approved sesuai dengan proposal yang diajukan",
+      noDokumen: "GBP-HG-FM-23",
+      noRevisi: "01",
+      tanggalRevisi: "2025-09-22",
+      tanggalBerlaku: "2025-09-22",
+      halaman: "1 dari 1",
+      dept: "Finance",
+      soTurunan: "SO00123.003",
+      tanggalBerangkat: "2025-09-25",
+      tujuanBerangkat: "Bandung",
+      jamBerangkat: "07:00",
+      maskapaiBerangkat: "Sriwijaya Air",
+      hargaBerangkat: 800000,
+      jenisTicketBerangkat: "Ekonomi",
+      tanggalPulang: "2025-09-26",
+      tujuanPulang: "Surabaya",
+      jamPulang: "19:00",
+      maskapaipulang: "Garuda Indonesia",
+      hargaPulang: 900000,
+      jenisTicketPulang: "Ekonomi",
+      passengers: [{ no: 1, nama: "Rudi Hermawan" }],
+      tanggalCheckIn: "2025-09-25",
+      tanggalCheckOut: "2025-09-26",
+      lokasiHotel: "Bandung",
+      namaHotel: "Hotel Savoy Homann",
+      jumlahHari: 1,
+      hargaTotalHotel: 500000,
+      ditagihkanKe: "Client"
     },
   ]);
 
@@ -543,81 +672,223 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
               </button>
             </div>
             <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
-              <div className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Tanggal
-                    </label>
-                    <p className="text-sm text-gray-900">
-                      {new Date(selectedTicket.tanggal).toLocaleDateString(
-                        "id-ID"
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      No Ticket
-                    </label>
-                    <p className="text-sm text-gray-900">
-                      {selectedTicket.noTicket}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Divisi
-                    </label>
-                    <p className="text-sm text-gray-900">
-                      {selectedTicket.divisi}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Pemohon
-                    </label>
-                    <p className="text-sm text-gray-900">
-                      {selectedTicket.pemohon}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Kategori
-                    </label>
-                    <p className="text-sm text-gray-900">
-                      {selectedTicket.kategori}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Prioritas
-                    </label>
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(
-                        selectedTicket.prioritas
-                      )}`}
-                    >
-                      {selectedTicket.prioritas}
-                    </span>
+              <div className="p-6 space-y-6">
+                {/* Header Information */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-blue-900 mb-4">Informasi Dokumen</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">No Dokumen</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.noDokumen || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">No Revisi</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.noRevisi || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Halaman</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.halaman || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Revisi</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.tanggalRevisi ? new Date(selectedTicket.tanggalRevisi).toLocaleDateString('id-ID') : '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Berlaku</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.tanggalBerlaku ? new Date(selectedTicket.tanggalBerlaku).toLocaleDateString('id-ID') : '-'}</p>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Judul
-                  </label>
-                  <p className="text-sm text-gray-900">
-                    {selectedTicket.judul}
-                  </p>
+
+                {/* Basic Information */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Pemohon</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">No Ticket</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.noTicket}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                      <p className="text-sm text-gray-900">{new Date(selectedTicket.tanggal).toLocaleDateString('id-ID')}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pemohon</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.pemohon}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Dept</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.dept || selectedTicket.divisi}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">SO Turunan</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.soTurunan || '-'}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Deskripsi
-                  </label>
-                  <p className="text-sm text-gray-900">
-                    {selectedTicket.deskripsi}
-                  </p>
+
+                {/* Flight Booking Information */}
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-green-900 mb-4">Pemesanan Tiket Pesawat</h4>
+                  
+                  {/* Keberangkatan */}
+                  <div className="mb-4">
+                    <h5 className="text-md font-medium text-green-800 mb-3">Keberangkatan</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.tanggalBerangkat ? new Date(selectedTicket.tanggalBerangkat).toLocaleDateString('id-ID') : '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.tujuanBerangkat || '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Jam</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.jamBerangkat || '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Maskapai</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.maskapaiBerangkat || '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Harga</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.hargaBerangkat ? `Rp ${selectedTicket.hargaBerangkat.toLocaleString('id-ID')}` : '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Tiket</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.jenisTicketBerangkat || '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kepulangan */}
+                  <div>
+                    <h5 className="text-md font-medium text-green-800 mb-3">Kepulangan</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.tanggalPulang ? new Date(selectedTicket.tanggalPulang).toLocaleDateString('id-ID') : '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.tujuanPulang || '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Jam</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.jamPulang || '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Maskapai</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.maskapaipulang || '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Harga</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.hargaPulang ? `Rp ${selectedTicket.hargaPulang.toLocaleString('id-ID')}` : '-'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Tiket</label>
+                        <p className="text-sm text-gray-900">{selectedTicket.jenisTicketPulang || '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Passenger List */}
+                <div className="bg-yellow-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-yellow-900 mb-4">Daftar Penumpang</h4>
+                  <div className="space-y-2">
+                    {(selectedTicket.passengers || []).map((passenger, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <div className="w-12">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">No</label>
+                          <p className="text-sm text-gray-900">{passenger.no}</p>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Penumpang</label>
+                          <p className="text-sm text-gray-900">{passenger.nama}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {(!selectedTicket.passengers || selectedTicket.passengers.length === 0) && (
+                      <p className="text-sm text-gray-500 italic">Tidak ada data penumpang</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Billing Section */}
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
+                  <div>
+                    <p className="text-sm text-gray-900">{selectedTicket.ditagihkanKe || '-'}</p>
+                  </div>
+                </div>
+
+                {/* Hotel Booking */}
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-purple-900 mb-4">Pemesanan Hotel</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Check In</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.tanggalCheckIn ? new Date(selectedTicket.tanggalCheckIn).toLocaleDateString('id-ID') : '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Check Out</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.tanggalCheckOut ? new Date(selectedTicket.tanggalCheckOut).toLocaleDateString('id-ID') : '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah Hari</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.jumlahHari || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.lokasiHotel || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Nama Hotel</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.namaHotel || '-'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Harga Total</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.hargaTotalHotel ? `Rp ${selectedTicket.hargaTotalHotel.toLocaleString('id-ID')}` : '-'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Billing Section - After Hotel */}
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
+                  <div>
+                    <p className="text-sm text-gray-900">{selectedTicket.ditagihkanKe || '-'}</p>
+                  </div>
+                </div>
+
+                {/* Legacy Information */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Tambahan</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                      <p className="text-sm text-gray-900">{selectedTicket.kategori}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Prioritas</label>
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(selectedTicket.prioritas)}`}>
+                        {selectedTicket.prioritas}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Judul</label>
+                    <p className="text-sm text-gray-900">{selectedTicket.judul}</p>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                    <p className="text-sm text-gray-900">{selectedTicket.deskripsi}</p>
+                  </div>
                 </div>
                 {/* Upload Dokumen Section */}
-                <div className="mt-4">
+                <div className="bg-indigo-50 rounded-lg p-4">
                   <label
                     htmlFor="attachment-upload"
                     className="block text-sm font-medium text-gray-700 mb-2"
@@ -672,10 +943,10 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Catatan Approval
-                  </label>
+                
+                {/* Approval Notes Section */}
+                <div className="bg-red-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-red-900 mb-4">Catatan Approval</h4>
                   <textarea
                     value={approvalNote}
                     onChange={(e) => setApprovalNote(e.target.value)}

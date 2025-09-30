@@ -67,7 +67,10 @@ const BarangRusakDashboardPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('Semua');
   const [isBAModalOpen, setIsBAModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [damagedGoods, setDamagedGoods] = useState(damagedGoodsData);
   const [baForm, setBAForm] = useState({
     nomorBA: '',
     tanggalBA: new Date().toISOString().split('T')[0],
@@ -100,6 +103,27 @@ const BarangRusakDashboardPage: React.FC = () => {
   const handleOpenDetailModal = (item: any) => {
     setSelectedItem(item);
     setIsDetailModalOpen(true);
+  };
+
+  // Handle buka modal delete
+  const handleOpenDeleteModal = (item: any) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Handle konfirmasi delete
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      setDamagedGoods(prevItems => prevItems.filter(item => item.id !== itemToDelete.id));
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
+    }
+  };
+
+  // Handle batal delete
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setItemToDelete(null);
   };
 
   // Handle generate BA dengan download PDF
@@ -208,7 +232,7 @@ const BarangRusakDashboardPage: React.FC = () => {
     doc.save(fileName);
   };
 
-  const filteredData = damagedGoodsData.filter(
+  const filteredData = damagedGoods.filter(
     (item) =>
       (item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.itemCode.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -216,20 +240,20 @@ const BarangRusakDashboardPage: React.FC = () => {
   );
 
   const summaryCards = [
-    { title: 'Total Laporan', value: damagedGoodsData.length, color: 'text-blue-500' },
+    { title: 'Total Laporan', value: damagedGoods.length, color: 'text-blue-500' },
     {
       title: 'Rusak Berat',
-      value: damagedGoodsData.filter((i) => i.status === 'Rusak Berat').length,
+      value: damagedGoods.filter((i) => i.status === 'Rusak Berat').length,
       color: 'text-red-500',
     },
     {
       title: 'Rusak Ringan',
-      value: damagedGoodsData.filter((i) => i.status === 'Rusak Ringan').length,
+      value: damagedGoods.filter((i) => i.status === 'Rusak Ringan').length,
       color: 'text-yellow-500',
     },
     {
       title: 'Menunggu Perbaikan',
-      value: damagedGoodsData.filter((i) => i.status === 'Menunggu Perbaikan').length,
+      value: damagedGoods.filter((i) => i.status === 'Menunggu Perbaikan').length,
       color: 'text-blue-500',
     },
   ];
@@ -335,7 +359,11 @@ const BarangRusakDashboardPage: React.FC = () => {
                         <Wrench size={16} />
                         <span>Generate BA</span>
                       </button>
-                      <button className="text-red-500 hover:text-red-700">
+                      <button 
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => handleOpenDeleteModal(item)}
+                        title="Hapus Laporan"
+                      >
                         <Trash2 size={20} />
                       </button>
                     </div>
@@ -346,6 +374,82 @@ const BarangRusakDashboardPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Modal Konfirmasi Delete */}
+      {isDeleteModalOpen && itemToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <div className="flex items-center space-x-3">
+                <Trash2 className="h-6 w-6 text-red-600" />
+                <h2 className="text-xl font-bold text-gray-900">Konfirmasi Hapus</h2>
+              </div>
+              <button
+                onClick={handleCancelDelete}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="text-center">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                  <Trash2 className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Hapus Laporan Barang Rusak
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Apakah Anda yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+                
+                {/* Item Details */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">ID Laporan:</span>
+                      <span className="text-sm text-gray-900">{itemToDelete.id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">Nama Barang:</span>
+                      <span className="text-sm text-gray-900">{itemToDelete.itemName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">Kode Barang:</span>
+                      <span className="text-sm text-gray-900">{itemToDelete.itemCode}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">Status:</span>
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(itemToDelete.status)}`}>
+                        {itemToDelete.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
+              <button
+                onClick={handleCancelDelete}
+                className="px-6 py-2 bg-gray-300 text-gray-800 rounded-xl hover:bg-gray-400 transition-colors duration-200 text-sm shadow-md"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200 text-sm shadow-md"
+              >
+                Hapus Laporan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Detail Barang Rusak */}
       {isDetailModalOpen && selectedItem && (

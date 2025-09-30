@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Eye } from 'lucide-react';
+import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Plus, Minus } from 'lucide-react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+
+interface PassengerData {
+  no: number;
+  nama: string;
+}
 
 interface TicketRow {
   id: number;
@@ -13,6 +18,52 @@ interface TicketRow {
   judul: string;
   deskripsi: string;
   status: 'Draft' | 'Submitted' | 'In Progress' | 'Approved' | 'Rejected' | 'Completed';
+  
+  // Form Header Info
+  noDokumen?: string;
+  noRevisi?: string;
+  tanggalRevisi?: string;
+  tanggalBerlaku?: string;
+  halaman?: string;
+  
+  // Basic Info
+  dept?: string;
+  soTurunan?: string;
+  
+  // Ticket Booking - Keberangkatan
+  tanggalBerangkat?: string;
+  tujuanBerangkat?: string;
+  jamBerangkat?: string;
+  maskapaiBerangkat?: string;
+  hargaBerangkat?: number;
+  jenisTicketBerangkat?: string;
+  
+  // Ticket Booking - Kepulangan
+  tanggalPulang?: string;
+  tujuanPulang?: string;
+  jamPulang?: string;
+  maskapaipulang?: string;
+  hargaPulang?: number;
+  jenisTicketPulang?: string;
+  
+  // Passenger List
+  passengers?: PassengerData[];
+  
+  // Hotel Booking
+  tanggalCheckIn?: string;
+  tanggalCheckOut?: string;
+  lokasiHotel?: string;
+  namaHotel?: string;
+  jumlahHari?: number;
+  hargaTotalHotel?: number;
+  
+  // Billing Section
+  ditagihkanKe?: 'Client' | 'Perusahaan' | '';
+  
+  // Approval Section
+  managerTerkait?: string;
+  managerFinance?: string;
+  direkturOPS?: string;
 }
 
 const GeneralPengajuanTicketDashboard: React.FC = () => {
@@ -47,6 +98,52 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
     judul: '',
     deskripsi: '',
     status: 'Draft',
+    
+    // Form Header Info
+    noDokumen: 'GBP-HG-FM-23',
+    noRevisi: '01',
+    tanggalRevisi: today.toISOString().split('T')[0],
+    tanggalBerlaku: today.toISOString().split('T')[0],
+    halaman: '1 dari 1',
+    
+    // Basic Info
+    dept: '',
+    soTurunan: '',
+    
+    // Ticket Booking - Keberangkatan
+    tanggalBerangkat: '',
+    tujuanBerangkat: '',
+    jamBerangkat: '',
+    maskapaiBerangkat: '',
+    hargaBerangkat: 0,
+    jenisTicketBerangkat: 'Ekonomi',
+    
+    // Ticket Booking - Kepulangan
+    tanggalPulang: '',
+    tujuanPulang: '',
+    jamPulang: '',
+    maskapaipulang: '',
+    hargaPulang: 0,
+    jenisTicketPulang: 'Ekonomi',
+    
+    // Passenger List
+    passengers: [{ no: 1, nama: '' }],
+    
+    // Hotel Booking
+    tanggalCheckIn: '',
+    tanggalCheckOut: '',
+    lokasiHotel: '',
+    namaHotel: '',
+    jumlahHari: 0,
+    hargaTotalHotel: 0,
+    
+    // Billing Section
+    ditagihkanKe: '',
+    
+    // Approval Section
+    managerTerkait: '',
+    managerFinance: '',
+    direkturOPS: '',
   });
 
   const [rows, setRows] = useState<TicketRow[]>([
@@ -58,9 +155,31 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       pemohon: 'Andi Pratama', 
       kategori: 'IT Support', 
       prioritas: 'High', 
-      judul: 'Laptop tidak bisa connect ke WiFi', 
-      deskripsi: 'Laptop saya tidak bisa terhubung ke jaringan WiFi kantor sejak pagi ini',
-      status: 'Submitted' 
+      judul: 'Pemesanan Tiket Dinas ke Jakarta', 
+      deskripsi: 'Perjalanan dinas untuk meeting dengan client di Jakarta',
+      status: 'Submitted',
+      dept: 'IT',
+      soTurunan: 'SO00123.001',
+      tanggalBerangkat: '2025-10-01',
+      tujuanBerangkat: 'Jakarta',
+      jamBerangkat: '08:00',
+      maskapaiBerangkat: 'Garuda Indonesia',
+      hargaBerangkat: 1500000,
+      jenisTicketBerangkat: 'Ekonomi',
+      tanggalPulang: '2025-10-03',
+      tujuanPulang: 'Surabaya',
+      jamPulang: '16:00',
+      maskapaipulang: 'Lion Air',
+      hargaPulang: 1200000,
+      jenisTicketPulang: 'Ekonomi',
+      passengers: [{ no: 1, nama: 'Andi Pratama' }],
+      tanggalCheckIn: '2025-10-01',
+      tanggalCheckOut: '2025-10-03',
+      lokasiHotel: 'Jakarta',
+      namaHotel: 'Hotel Santika',
+      jumlahHari: 2,
+      hargaTotalHotel: 800000,
+      ditagihkanKe: 'Client'
     },
     { 
       id: 2, 
@@ -68,11 +187,33 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       noTicket: 'TKT-2025-09-002', 
       divisi: 'GA', 
       pemohon: 'Siti Nurhaliza', 
-      kategori: 'Maintenance', 
+      kategori: 'General Request', 
       prioritas: 'Medium', 
-      judul: 'AC ruang meeting tidak dingin', 
-      deskripsi: 'AC di ruang meeting lantai 2 tidak mengeluarkan udara dingin',
-      status: 'In Progress' 
+      judul: 'Perjalanan Dinas ke Bali', 
+      deskripsi: 'Kunjungan ke cabang Bali untuk audit operasional',
+      status: 'In Progress',
+      dept: 'GA',
+      soTurunan: 'SO00123.002',
+      tanggalBerangkat: '2025-10-05',
+      tujuanBerangkat: 'Bali',
+      jamBerangkat: '09:30',
+      maskapaiBerangkat: 'Citilink',
+      hargaBerangkat: 2000000,
+      jenisTicketBerangkat: 'Ekonomi',
+      tanggalPulang: '2025-10-08',
+      tujuanPulang: 'Surabaya',
+      jamPulang: '18:00',
+      maskapaipulang: 'Batik Air',
+      hargaPulang: 1800000,
+      jenisTicketPulang: 'Ekonomi',
+      passengers: [{ no: 1, nama: 'Siti Nurhaliza' }, { no: 2, nama: 'Ahmad Fauzi' }],
+      tanggalCheckIn: '2025-10-05',
+      tanggalCheckOut: '2025-10-08',
+      lokasiHotel: 'Denpasar',
+      namaHotel: 'Grand Inna Bali Beach',
+      jumlahHari: 3,
+      hargaTotalHotel: 1500000,
+      ditagihkanKe: 'Perusahaan'
     },
     { 
       id: 3, 
@@ -82,9 +223,31 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       pemohon: 'Rudi Hermawan', 
       kategori: 'Finance', 
       prioritas: 'Urgent', 
-      judul: 'Request approval budget Q4', 
-      deskripsi: 'Membutuhkan persetujuan budget untuk quarter 4 tahun ini',
-      status: 'Approved' 
+      judul: 'Meeting Budget Q4 di Bandung', 
+      deskripsi: 'Pertemuan dengan tim finance regional untuk pembahasan budget Q4',
+      status: 'Approved',
+      dept: 'Finance',
+      soTurunan: 'SO00123.003',
+      tanggalBerangkat: '2025-09-25',
+      tujuanBerangkat: 'Bandung',
+      jamBerangkat: '07:00',
+      maskapaiBerangkat: 'Sriwijaya Air',
+      hargaBerangkat: 800000,
+      jenisTicketBerangkat: 'Ekonomi',
+      tanggalPulang: '2025-09-26',
+      tujuanPulang: 'Surabaya',
+      jamPulang: '19:00',
+      maskapaipulang: 'Garuda Indonesia',
+      hargaPulang: 900000,
+      jenisTicketPulang: 'Ekonomi',
+      passengers: [{ no: 1, nama: 'Rudi Hermawan' }],
+      tanggalCheckIn: '2025-09-25',
+      tanggalCheckOut: '2025-09-26',
+      lokasiHotel: 'Bandung',
+      namaHotel: 'Hotel Savoy Homann',
+      jumlahHari: 1,
+      hargaTotalHotel: 500000,
+      ditagihkanKe: 'Client'
     },
   ]);
 
@@ -101,6 +264,52 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       judul: '',
       deskripsi: '',
       status: 'Draft',
+      
+      // Form Header Info
+      noDokumen: 'GBP-HG-FM-23',
+      noRevisi: '01',
+      tanggalRevisi: today.toISOString().split('T')[0],
+      tanggalBerlaku: today.toISOString().split('T')[0],
+      halaman: '1 dari 1',
+      
+      // Basic Info
+      dept: '',
+      soTurunan: '',
+      
+      // Ticket Booking - Keberangkatan
+      tanggalBerangkat: '',
+      tujuanBerangkat: '',
+      jamBerangkat: '',
+      maskapaiBerangkat: '',
+      hargaBerangkat: 0,
+      jenisTicketBerangkat: 'Ekonomi',
+      
+      // Ticket Booking - Kepulangan
+      tanggalPulang: '',
+      tujuanPulang: '',
+      jamPulang: '',
+      maskapaipulang: '',
+      hargaPulang: 0,
+      jenisTicketPulang: 'Ekonomi',
+      
+      // Passenger List
+      passengers: [{ no: 1, nama: '' }],
+      
+      // Hotel Booking
+      tanggalCheckIn: '',
+      tanggalCheckOut: '',
+      lokasiHotel: '',
+      namaHotel: '',
+      jumlahHari: 0,
+      hargaTotalHotel: 0,
+      
+      // Billing Section
+      ditagihkanKe: '',
+      
+      // Approval Section
+      managerTerkait: '',
+      managerFinance: '',
+      direkturOPS: '',
     });
     setIsModalOpen(true);
   };
@@ -320,47 +529,332 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
               </button>
             </div>
             <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">No Ticket</label>
-                    <input type="text" value={formData.noTicket || ''} onChange={e => setFormData(prev => ({...prev, noTicket: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
-                    <input type="date" value={formData.tanggal || ''} onChange={e => setFormData(prev => ({...prev, tanggal: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
-                    <select value={formData.divisi || ''} onChange={e => setFormData(prev => ({...prev, divisi: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
-                      <option value="">Pilih Divisi</option>
-                      {divisiOptions.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Pemohon</label>
-                    <input type="text" value={formData.pemohon || ''} onChange={e => setFormData(prev => ({...prev, pemohon: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                    <select value={formData.kategori || ''} onChange={e => setFormData(prev => ({...prev, kategori: e.target.value as any}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
-                      {kategoriOptions.map(k => <option key={k} value={k}>{k}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Prioritas</label>
-                    <select value={formData.prioritas || ''} onChange={e => setFormData(prev => ({...prev, prioritas: e.target.value as any}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
-                      {prioritasOptions.map(p => <option key={p} value={p}>{p}</option>)}
-                    </select>
+              <div className="p-6 space-y-8">
+                {/* Header Information */}
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-blue-900 mb-4">Informasi Dokumen</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">No Dokumen</label>
+                      <input type="text" value={formData.noDokumen || ''} onChange={e => setFormData(prev => ({...prev, noDokumen: e.target.value}))} placeholder="GBP-HG-FM-23" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">No Revisi</label>
+                      <input type="text" value={formData.noRevisi || ''} onChange={e => setFormData(prev => ({...prev, noRevisi: e.target.value}))} placeholder="01" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Halaman</label>
+                      <input type="text" value={formData.halaman || ''} onChange={e => setFormData(prev => ({...prev, halaman: e.target.value}))} placeholder="1 dari 1" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Revisi</label>
+                      <input type="date" value={formData.tanggalRevisi || ''} onChange={e => setFormData(prev => ({...prev, tanggalRevisi: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Berlaku</label>
+                      <input type="date" value={formData.tanggalBerlaku || ''} onChange={e => setFormData(prev => ({...prev, tanggalBerlaku: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Judul</label>
-                  <input type="text" value={formData.judul || ''} onChange={e => setFormData(prev => ({...prev, judul: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+
+                {/* Basic Information */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Pemohon</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">No Ticket</label>
+                      <input type="text" value={formData.noTicket || ''} onChange={e => setFormData(prev => ({...prev, noTicket: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                      <input type="date" value={formData.tanggal || ''} onChange={e => setFormData(prev => ({...prev, tanggal: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Nama Pemohon</label>
+                      <input type="text" value={formData.pemohon || ''} onChange={e => setFormData(prev => ({...prev, pemohon: e.target.value}))} placeholder="Supardi" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Dept</label>
+                      <select value={formData.dept || ''} onChange={e => setFormData(prev => ({...prev, dept: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
+                        <option value="">Pilih Departemen</option>
+                        {divisiOptions.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">SO Turunan</label>
+                      <input type="text" value={formData.soTurunan || ''} onChange={e => setFormData(prev => ({...prev, soTurunan: e.target.value}))} placeholder="SO00123.342" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
-                  <textarea value={formData.deskripsi || ''} onChange={e => setFormData(prev => ({...prev, deskripsi: e.target.value}))} rows={4} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+
+                {/* Ticket Booking Section */}
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-green-900 mb-4">Pemesanan Tiket Pesawat</h4>
+                  
+                  {/* Keberangkatan */}
+                  <div className="mb-6">
+                    <h5 className="text-md font-medium text-green-800 mb-3">Keberangkatan</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                        <input type="date" value={formData.tanggalBerangkat || ''} onChange={e => setFormData(prev => ({...prev, tanggalBerangkat: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Tujuan</label>
+                        <input type="text" value={formData.tujuanBerangkat || ''} onChange={e => setFormData(prev => ({...prev, tujuanBerangkat: e.target.value}))} placeholder="Bali" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Jam</label>
+                        <input type="time" value={formData.jamBerangkat || ''} onChange={e => setFormData(prev => ({...prev, jamBerangkat: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Maskapai</label>
+                        <input type="text" value={formData.maskapaiBerangkat || ''} onChange={e => setFormData(prev => ({...prev, maskapaiBerangkat: e.target.value}))} placeholder="Lion Air" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Harga (Rp)</label>
+                        <input type="number" value={formData.hargaBerangkat || 0} onChange={e => setFormData(prev => ({...prev, hargaBerangkat: Number(e.target.value)}))} placeholder="6000000" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Tiket</label>
+                        <select value={formData.jenisTicketBerangkat || ''} onChange={e => setFormData(prev => ({...prev, jenisTicketBerangkat: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
+                          <option value="Ekonomi">Ekonomi</option>
+                          <option value="Bisnis">Bisnis</option>
+                          <option value="First Class">First Class</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kepulangan */}
+                  <div>
+                    <h5 className="text-md font-medium text-green-800 mb-3">Kepulangan</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                        <input type="date" value={formData.tanggalPulang || ''} onChange={e => setFormData(prev => ({...prev, tanggalPulang: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Tujuan</label>
+                        <input type="text" value={formData.tujuanPulang || ''} onChange={e => setFormData(prev => ({...prev, tujuanPulang: e.target.value}))} placeholder="Jakarta" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Jam</label>
+                        <input type="time" value={formData.jamPulang || ''} onChange={e => setFormData(prev => ({...prev, jamPulang: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Maskapai</label>
+                        <input type="text" value={formData.maskapaipulang || ''} onChange={e => setFormData(prev => ({...prev, maskapaipulang: e.target.value}))} placeholder="Garuda" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Harga (Rp)</label>
+                        <input type="number" value={formData.hargaPulang || 0} onChange={e => setFormData(prev => ({...prev, hargaPulang: Number(e.target.value)}))} placeholder="8000000" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Tiket</label>
+                        <select value={formData.jenisTicketPulang || ''} onChange={e => setFormData(prev => ({...prev, jenisTicketPulang: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
+                          <option value="Ekonomi">Ekonomi</option>
+                          <option value="Bisnis">Bisnis</option>
+                          <option value="First Class">First Class</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Passenger List */}
+                <div className="bg-yellow-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold text-yellow-900">Daftar Penumpang</h4>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        const newPassengers = [...(formData.passengers || [])];
+                        newPassengers.push({ no: newPassengers.length + 1, nama: '' });
+                        setFormData(prev => ({...prev, passengers: newPassengers}));
+                      }}
+                      className="inline-flex items-center px-3 py-1 text-sm bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                    >
+                      <Plus className="h-4 w-4 mr-1" /> Tambah Penumpang
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {(formData.passengers || []).map((passenger, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <div className="w-16">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">No</label>
+                          <input type="number" value={passenger.no} readOnly className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-100" />
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Penumpang</label>
+                          <input 
+                            type="text" 
+                            value={passenger.nama} 
+                            onChange={e => {
+                              const newPassengers = [...(formData.passengers || [])];
+                              newPassengers[index].nama = e.target.value;
+                              setFormData(prev => ({...prev, passengers: newPassengers}));
+                            }}
+                            placeholder="Masukkan nama penumpang"
+                            className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" 
+                          />
+                        </div>
+                        {(formData.passengers || []).length > 1 && (
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const newPassengers = (formData.passengers || []).filter((_, i) => i !== index);
+                              // Renumber passengers
+                              newPassengers.forEach((p, i) => p.no = i + 1);
+                              setFormData(prev => ({...prev, passengers: newPassengers}));
+                            }}
+                            className="mt-6 p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Billing Section - After Passenger List */}
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-4">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="ditagihkanKe" 
+                          value="Client" 
+                          checked={formData.ditagihkanKe === 'Client'}
+                          onChange={e => setFormData(prev => ({...prev, ditagihkanKe: e.target.value as 'Client' | 'Perusahaan'}))}
+                          className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Client</span>
+                      </label>
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="ditagihkanKe" 
+                          value="Perusahaan" 
+                          checked={formData.ditagihkanKe === 'Perusahaan'}
+                          onChange={e => setFormData(prev => ({...prev, ditagihkanKe: e.target.value as 'Client' | 'Perusahaan'}))}
+                          className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Perusahaan</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hotel Booking Section */}
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-purple-900 mb-4">Pemesanan Hotel</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Check In</label>
+                      <input type="date" value={formData.tanggalCheckIn || ''} onChange={e => setFormData(prev => ({...prev, tanggalCheckIn: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Check Out</label>
+                      <input type="date" value={formData.tanggalCheckOut || ''} onChange={e => setFormData(prev => ({...prev, tanggalCheckOut: e.target.value}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah Hari</label>
+                      <input type="number" value={formData.jumlahHari || 0} onChange={e => setFormData(prev => ({...prev, jumlahHari: Number(e.target.value)}))} placeholder="10" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Lokasi</label>
+                      <input type="text" value={formData.lokasiHotel || ''} onChange={e => setFormData(prev => ({...prev, lokasiHotel: e.target.value}))} placeholder="Bali" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Nama Hotel</label>
+                      <input type="text" value={formData.namaHotel || ''} onChange={e => setFormData(prev => ({...prev, namaHotel: e.target.value}))} placeholder="Hotel Citra" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Harga Total (Rp)</label>
+                      <input type="number" value={formData.hargaTotalHotel || 0} onChange={e => setFormData(prev => ({...prev, hargaTotalHotel: Number(e.target.value)}))} placeholder="15000000" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Billing Section */}
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-4">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="ditagihkanKe" 
+                          value="Client" 
+                          checked={formData.ditagihkanKe === 'Client'}
+                          onChange={e => setFormData(prev => ({...prev, ditagihkanKe: e.target.value as 'Client' | 'Perusahaan'}))}
+                          className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Client</span>
+                      </label>
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="ditagihkanKe" 
+                          value="Perusahaan" 
+                          checked={formData.ditagihkanKe === 'Perusahaan'}
+                          onChange={e => setFormData(prev => ({...prev, ditagihkanKe: e.target.value as 'Client' | 'Perusahaan'}))}
+                          className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Perusahaan</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Approval Section */}
+                <div className="bg-red-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-red-900 mb-4">Persetujuan</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Manager Terkait</label>
+                      <input type="text" value={formData.managerTerkait || ''} onChange={e => setFormData(prev => ({...prev, managerTerkait: e.target.value}))} placeholder="Nama Manager Terkait" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Manager Finance</label>
+                      <input type="text" value={formData.managerFinance || ''} onChange={e => setFormData(prev => ({...prev, managerFinance: e.target.value}))} placeholder="Nama Manager Finance" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Direktur OPS & MKT</label>
+                      <input type="text" value={formData.direkturOPS || ''} onChange={e => setFormData(prev => ({...prev, direkturOPS: e.target.value}))} placeholder="Nama Direktur OPS & MKT" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Legacy Fields for Compatibility */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Tambahan</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                      <select value={formData.kategori || ''} onChange={e => setFormData(prev => ({...prev, kategori: e.target.value as any}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
+                        {kategoriOptions.map(k => <option key={k} value={k}>{k}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Prioritas</label>
+                      <select value={formData.prioritas || ''} onChange={e => setFormData(prev => ({...prev, prioritas: e.target.value as any}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
+                        {prioritasOptions.map(p => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Judul</label>
+                    <input type="text" value={formData.judul || ''} onChange={e => setFormData(prev => ({...prev, judul: e.target.value}))} placeholder="Judul pengajuan" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                    <textarea value={formData.deskripsi || ''} onChange={e => setFormData(prev => ({...prev, deskripsi: e.target.value}))} rows={4} placeholder="Deskripsi detail pengajuan" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
+                  </div>
                 </div>
               </div>
             </div>
