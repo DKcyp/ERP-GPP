@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Plus, Minus } from 'lucide-react';
+import { Clock, PlusCircle, FileSpreadsheet, FileDown, Edit, Trash2, Search, Plus, Minus, Printer } from 'lucide-react';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface PassengerData {
@@ -359,6 +359,195 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
 
   const exportExcel = () => alert('Export Excel belum diimplementasikan');
   const exportPDF = () => alert('Export PDF belum diimplementasikan');
+  
+  const generatePDF = (ticket: TicketRow) => {
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Formulir Pemesanan Tiket/Hotel - ${ticket.noTicket}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .header-table td, .header-table th { border: 1px solid black; padding: 8px; text-align: center; }
+        .logo-cell { width: 100px; }
+        .title-cell { font-weight: bold; font-size: 16px; }
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .info-table td, .info-table th { border: 1px solid black; padding: 6px; }
+        .section-title { background-color: #f0f0f0; font-weight: bold; text-align: center; }
+        .label { font-weight: bold; width: 120px; }
+        .passenger-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .passenger-table td, .passenger-table th { border: 1px solid black; padding: 6px; text-align: center; }
+        .signature-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .signature-table td { border: 1px solid black; padding: 30px; text-align: center; height: 80px; }
+        .note { font-style: italic; text-align: center; margin: 10px 0; }
+      </style>
+    </head>
+    <body>
+      <!-- Header -->
+      <table class="header-table">
+        <tr>
+          <td rowspan="5" class="logo-cell">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(45deg, #FFD700, #FFA500); display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+              <span style="color: white; font-weight: bold; font-size: 14px;">GBP</span>
+            </div>
+          </td>
+          <td class="title-cell">FORMULIR</td>
+          <td class="label">No. Dokumen</td>
+          <td>${ticket.noDokumen || 'GBP-HG-FM-23'}</td>
+        </tr>
+        <tr>
+          <td rowspan="4" class="title-cell">PEMESANAN TIKET/HOTEL</td>
+          <td class="label">No. Revisi</td>
+          <td>${ticket.noRevisi || '01'}</td>
+        </tr>
+        <tr>
+          <td class="label">Tanggal Revisi</td>
+          <td>${ticket.tanggalRevisi ? new Date(ticket.tanggalRevisi).toLocaleDateString('id-ID') : '04 Juni 2021'}</td>
+        </tr>
+        <tr>
+          <td class="label">Tanggal Berlaku</td>
+          <td>${ticket.tanggalBerlaku ? new Date(ticket.tanggalBerlaku).toLocaleDateString('id-ID') : '04 Juni 2021'}</td>
+        </tr>
+        <tr>
+          <td class="label">Halaman</td>
+          <td>${ticket.halaman || '1 dari 1'}</td>
+        </tr>
+      </table>
+      
+      <!-- Basic Information -->
+      <table class="info-table">
+        <tr>
+          <td class="label">Nama Pemohon</td>
+          <td>${ticket.pemohon || 'Supardi'}</td>
+        </tr>
+        <tr>
+          <td class="label">Dept.</td>
+          <td>${ticket.dept || ticket.divisi || 'IT'}</td>
+        </tr>
+        <tr>
+          <td class="label">SO Turunan</td>
+          <td>${ticket.soTurunan || 'SO00123.342'}</td>
+        </tr>
+      </table>
+      
+      <!-- Flight Booking -->
+      <table class="info-table">
+        <tr>
+          <td colspan="4" class="section-title">PEMESANAN TIKET PESAWAT</td>
+        </tr>
+        <tr>
+          <td colspan="2" class="section-title">KEBERANGKATAN</td>
+          <td colspan="2" class="section-title">KEPULANGAN</td>
+        </tr>
+        <tr>
+          <td class="label">Tanggal</td>
+          <td>${ticket.tanggalBerangkat ? new Date(ticket.tanggalBerangkat).toLocaleDateString('id-ID') : '05-01-2025'}</td>
+          <td class="label">Tanggal</td>
+          <td>${ticket.tanggalPulang ? new Date(ticket.tanggalPulang).toLocaleDateString('id-ID') : '15-01-2025'}</td>
+        </tr>
+        <tr>
+          <td class="label">Tujuan</td>
+          <td>${ticket.tujuanBerangkat || 'Bali'}</td>
+          <td class="label">Tujuan</td>
+          <td>${ticket.tujuanPulang || 'Jakarta'}</td>
+        </tr>
+        <tr>
+          <td class="label">Jam</td>
+          <td>${ticket.jamBerangkat || '08.00'}</td>
+          <td class="label">Jam</td>
+          <td>${ticket.jamPulang || '16.00'}</td>
+        </tr>
+        <tr>
+          <td class="label">Maskapai *</td>
+          <td>${ticket.maskapaiBerangkat || 'Lion Air'}</td>
+          <td class="label">Maskapai *</td>
+          <td>${ticket.maskapaipulang || 'Batik'}</td>
+        </tr>
+        <tr>
+          <td class="label">Harga *</td>
+          <td>Rp. ${ticket.hargaBerangkat ? ticket.hargaBerangkat.toLocaleString('id-ID') : '6.000.000'}</td>
+          <td class="label">Harga *</td>
+          <td>Rp. ${ticket.hargaPulang ? ticket.hargaPulang.toLocaleString('id-ID') : '8.000.000'}</td>
+        </tr>
+        <tr>
+          <td class="label">Jenis Tiket *</td>
+          <td>${ticket.jenisTicketBerangkat || 'Ekonomi'}</td>
+          <td class="label">Jenis Tiket *</td>
+          <td>${ticket.jenisTicketPulang || 'Bisnis'}</td>
+        </tr>
+      </table>
+      
+      <!-- Passenger List -->
+      <table class="passenger-table">
+        <tr>
+          <td colspan="2" class="section-title">Keterangan</td>
+        </tr>
+        <tr>
+          <th>No</th>
+          <th>Nama Orang</th>
+        </tr>
+        ${(ticket.passengers || [{no: 1, nama: 'Ahmad Kasim'}, {no: 2, nama: 'Budi Santoso'}, {no: 3, nama: 'Citra Lestari'}, {no: 4, nama: 'Dewi Anggraini'}, {no: 5, nama: 'Eko Prasetyo'}]).map(passenger => 
+          `<tr><td>${passenger.no}</td><td>${passenger.nama}</td></tr>`
+        ).join('')}
+      </table>
+      <p class="note">ditagihkan ke ${ticket.ditagihkanKe === 'Client' ? 'client' : ticket.ditagihkanKe === 'Perusahaan' ? 'perusahaan' : 'client'}</p>
+      
+      <!-- Hotel Booking -->
+      <table class="info-table">
+        <tr>
+          <td colspan="4" class="section-title">PEMESANAN HOTEL</td>
+        </tr>
+        <tr>
+          <td class="label">Tanggal Check In</td>
+          <td>${ticket.tanggalCheckIn ? new Date(ticket.tanggalCheckIn).toLocaleDateString('id-ID') : '05-01-2025'}</td>
+          <td class="label">Nama Hotel</td>
+          <td>${ticket.namaHotel || 'Hotel Citra'}</td>
+        </tr>
+        <tr>
+          <td class="label">Tanggal Checkout</td>
+          <td>${ticket.tanggalCheckOut ? new Date(ticket.tanggalCheckOut).toLocaleDateString('id-ID') : '15-01-2025'}</td>
+          <td class="label">Jumlah Hari *</td>
+          <td>${ticket.jumlahHari || '10'}</td>
+        </tr>
+        <tr>
+          <td class="label">Lokasi *</td>
+          <td>${ticket.lokasiHotel || 'Bali'}</td>
+          <td class="label">Harga Total *</td>
+          <td>Rp. ${ticket.hargaTotalHotel ? ticket.hargaTotalHotel.toLocaleString('id-ID') : '15.000.000'}</td>
+        </tr>
+      </table>
+      <p class="note">ditagihkan ke ${ticket.ditagihkanKe === 'Client' ? 'client' : ticket.ditagihkanKe === 'Perusahaan' ? 'perusahaan' : 'client'}</p>
+      
+      <!-- Approval Section -->
+      <table class="signature-table">
+        <tr>
+          <td><strong>Pemohon</strong></td>
+          <td><strong>Manager Terkait</strong></td>
+          <td><strong>Manager Finance</strong></td>
+          <td><strong>Direktur OPS & MKT</strong></td>
+        </tr>
+      </table>
+      
+      <script>
+        window.onload = function() {
+          window.print();
+          window.onafterprint = function() {
+            window.close();
+          };
+        };
+      </script>
+    </body>
+    </html>
+    `;
+    
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -504,6 +693,9 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
                       <div className="flex items-center justify-center space-x-2">
                         <button onClick={() => handleEdit(row)} className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50" title="Edit">
                           <Edit className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => generatePDF(row)} className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50" title="Print PDF">
+                          <Printer className="h-4 w-4" />
                         </button>
                         <button onClick={() => handleDelete(row)} className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50" title="Hapus">
                           <Trash2 className="h-4 w-4" />
@@ -830,32 +1022,6 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Legacy Fields for Compatibility */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Tambahan</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                      <select value={formData.kategori || ''} onChange={e => setFormData(prev => ({...prev, kategori: e.target.value as any}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
-                        {kategoriOptions.map(k => <option key={k} value={k}>{k}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Prioritas</label>
-                      <select value={formData.prioritas || ''} onChange={e => setFormData(prev => ({...prev, prioritas: e.target.value as any}))} className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm appearance-none">
-                        {prioritasOptions.map(p => <option key={p} value={p}>{p}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Judul</label>
-                    <input type="text" value={formData.judul || ''} onChange={e => setFormData(prev => ({...prev, judul: e.target.value}))} placeholder="Judul pengajuan" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
-                    <textarea value={formData.deskripsi || ''} onChange={e => setFormData(prev => ({...prev, deskripsi: e.target.value}))} rows={4} placeholder="Deskripsi detail pengajuan" className="block w-full border border-gray-300 rounded-lg px-4 py-2 text-sm" />
-                  </div>
-                </div>
               </div>
             </div>
             <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50">

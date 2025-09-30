@@ -285,24 +285,6 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
     setIsDetailOpen(true);
   };
 
-  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      setAttachmentFile(file);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAttachmentFile(file);
-    }
-  };
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -860,87 +842,6 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                   <h4 className="text-lg font-semibold text-orange-900 mb-4">Ditagihkan Ke</h4>
                   <div>
                     <p className="text-sm text-gray-900">{selectedTicket.ditagihkanKe || '-'}</p>
-                  </div>
-                </div>
-
-                {/* Legacy Information */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Informasi Tambahan</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                      <p className="text-sm text-gray-900">{selectedTicket.kategori}</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Prioritas</label>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(selectedTicket.prioritas)}`}>
-                        {selectedTicket.prioritas}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Judul</label>
-                    <p className="text-sm text-gray-900">{selectedTicket.judul}</p>
-                  </div>
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                    <p className="text-sm text-gray-900">{selectedTicket.deskripsi}</p>
-                  </div>
-                </div>
-                {/* Upload Dokumen Section */}
-                <div className="bg-indigo-50 rounded-lg p-4">
-                  <label
-                    htmlFor="attachment-upload"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Dokumen Pendukung
-                  </label>
-                  <div
-                    className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
-                    onDrop={handleFileDrop}
-                    onDragOver={handleDragOver}
-                  >
-                    <div className="space-y-1 text-center">
-                      {attachmentFile ? (
-                        <div className="flex items-center justify-center space-x-2">
-                          <FileSpreadsheet className="h-5 w-5 text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            {attachmentFile.name} (
-                            {(attachmentFile.size / 1024).toFixed(2)} KB)
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setAttachmentFile(null)}
-                            className="ml-2 text-red-600 hover:text-red-800 text-sm font-medium"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <FileSpreadsheet className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="flex text-sm text-gray-600">
-                            <label
-                              htmlFor="file-upload"
-                              className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500"
-                            >
-                              <span>Upload a file</span>
-                              <input
-                                id="file-upload"
-                                name="file-upload"
-                                type="file"
-                                className="sr-only"
-                                onChange={handleFileChange}
-                              />
-                            </label>
-                            <p className="pl-1">or drag and drop</p>
-                          </div>
-                          <p className="text-xs text-gray-500">
-                            PNG, JPG, PDF up to 5MB
-                          </p>
-                        </>
-                      )}
-                    </div>
                   </div>
                 </div>
                 
