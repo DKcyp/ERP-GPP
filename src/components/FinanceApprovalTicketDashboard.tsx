@@ -20,16 +20,7 @@ interface TicketRow {
   noTicket: string;
   divisi: string;
   pemohon: string;
-  kategori: (
-    | "Hotel"
-    | "Travel"
-    | "Pesawat"
-    | "IT Support"
-    | "Maintenance"
-    | "General Request"
-    | "Finance"
-    | "HR"
-  )[];
+  kategori: ("Hotel" | "Travel" | "Pesawat")[];
   prioritas: "Low" | "Medium" | "High" | "Urgent";
   judul: string;
   deskripsi: string;
@@ -119,16 +110,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
-  const kategoriOptions = [
-    "Hotel",
-    "Travel",
-    "Pesawat",
-    "IT Support",
-    "Maintenance",
-    "General Request",
-    "Finance",
-    "HR",
-  ];
+  const kategoriOptions = ["Hotel", "Travel", "Pesawat"];
   const prioritasOptions = ["Low", "Medium", "High", "Urgent"];
 
   const [rows, setRows] = useState<TicketRow[]>([
@@ -138,7 +120,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-001",
       divisi: "IT",
       pemohon: "Andi Pratama",
-      kategori: ["General Request"],
+      kategori: ["Pesawat"],
       prioritas: "High",
       judul: "Pemesanan Tiket Dinas ke Jakarta",
       deskripsi: "Perjalanan dinas untuk meeting dengan client di Jakarta",
@@ -177,7 +159,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-002",
       divisi: "GA",
       pemohon: "Siti Nurhaliza",
-      kategori: ["General Request"],
+      kategori: ["Hotel"],
       prioritas: "Medium",
       judul: "Perjalanan Dinas ke Bali",
       deskripsi: "Kunjungan ke cabang Bali untuk audit operasional",
@@ -221,7 +203,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-003",
       divisi: "Finance",
       pemohon: "Rudi Hermawan",
-      kategori: ["Finance"],
+      kategori: ["Travel"],
       prioritas: "Urgent",
       judul: "Meeting Budget Q4 di Bandung",
       deskripsi:
