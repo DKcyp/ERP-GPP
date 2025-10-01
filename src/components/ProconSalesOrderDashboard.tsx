@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   FileSpreadsheet,
@@ -1009,7 +1009,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
-                    DUE DATE FINANCE
+                    DUE DATE PI
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    SUBMIT TO FINANCE
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
@@ -1021,19 +1027,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
-                    DUE DATE PI
-                  </th>
-                  <th
-                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
-                    rowSpan={2}
-                  >
                     DELAY SUBMIT PI
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
-                    SUBMIT TO FINANCE
+                    DUE DATE FINANCE
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
@@ -1207,7 +1207,10 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       {item.dueDateReport}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
-                      {item.dueDateFinance}
+                      {item.dueDatePI}
+                    </td>
+                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
+                      {item.submitToFinance}
                     </td>
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
@@ -1221,9 +1224,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       >
                         {item.delaySubmitToFinance}
                       </span>
-                    </td>
-                    <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
-                      {item.dueDatePI}
                     </td>
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
@@ -1239,7 +1239,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center whitespace-nowrap">
-                      {item.submitToFinance}
+                      {item.dueDateFinance}
                     </td>
                     <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
                       {item.piAmount && `Rp ${item.piAmount},000,000`}
