@@ -1,0 +1,550 @@
+import React, { useState, useMemo } from "react";
+import {
+  Search,
+  Eye,
+  Download,
+  Pencil,
+  Trash2,
+  PlusCircle,
+  ExternalLink,
+} from "lucide-react";
+import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
+
+interface POItem {
+  id: string;
+  so: string;
+  project: string;
+  pekerjaan: string;
+  noWbsWo: string;
+  pr: string;
+  ro: string;
+  po: string;
+  sap: string;
+  cro: string;
+  commencementStartDate: string;
+  commencementFinishDate: string;
+  absorv: string;
+  pengembalianNilaiKontrak: string;
+  reminder: string;
+}
+
+const initialData: POItem[] = [
+  {
+    id: "1",
+    so: "SO-001",
+    project: "Project A",
+    pekerjaan: "Pekerjaan 1",
+    noWbsWo: "WBS-001",
+    pr: "PR-001",
+    ro: "RO-001",
+    po: "PO-001",
+    sap: "SAP-001",
+    cro: "CRO-001",
+    commencementStartDate: "2023-01-01",
+    commencementFinishDate: "2023-03-31",
+    absorv: "80%",
+    pengembalianNilaiKontrak: "Rp 10.000.000",
+    reminder: "Due in 30 days",
+  },
+  {
+    id: "2",
+    so: "SO-002",
+    project: "Project B",
+    pekerjaan: "Pekerjaan 2",
+    noWbsWo: "WO-001",
+    pr: "PR-002",
+    ro: "RO-002",
+    po: "PO-002",
+    sap: "SAP-002",
+    cro: "CRO-002",
+    commencementStartDate: "2023-04-01",
+    commencementFinishDate: "2023-06-30",
+    absorv: "90%",
+    pengembalianNilaiKontrak: "Rp 5.000.000",
+    reminder: "Completed",
+  },
+];
+
+const MonitoringNilaiPOPage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData] = useState<POItem[]>(initialData);
+  const [showAddEditModal, setShowAddEditModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentPO, setCurrentPO] = useState<Partial<POItem>>({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
+
+  const filteredData = useMemo(() => {
+    return data.filter(
+      (item) =>
+        item.so.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.pekerjaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.po.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data, searchTerm]);
+
+  const handleAddPO = () => {
+    setIsEditing(false);
+    setCurrentPO({});
+    setShowAddEditModal(true);
+  };
+
+  const handleEditPO = (item: POItem) => {
+    setIsEditing(true);
+    setCurrentPO(item);
+    setShowAddEditModal(true);
+  };
+
+  const handleDeletePO = (item: POItem) => {
+    setPoToDelete(item);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (poToDelete) {
+      setData(data.filter((item) => item.id !== poToDelete.id));
+      setShowDeleteConfirm(false);
+      setPoToDelete(null);
+    }
+  };
+
+  const handleSavePO = () => {
+    if (
+      !currentPO.so ||
+      !currentPO.project ||
+      !currentPO.pekerjaan ||
+      !currentPO.po
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    if (isEditing) {
+      setData(
+        data.map((item) =>
+          item.id === currentPO.id ? (currentPO as POItem) : item
+        )
+      );
+    } else {
+      const newPO: POItem = {
+        id: Date.now().toString(),
+        so: currentPO.so,
+        project: currentPO.project,
+        pekerjaan: currentPO.pekerjaan,
+        noWbsWo: currentPO.noWbsWo || "",
+        pr: currentPO.pr || "",
+        ro: currentPO.ro || "",
+        po: currentPO.po,
+        sap: currentPO.sap || "",
+        cro: currentPO.cro || "",
+        commencementStartDate: currentPO.commencementStartDate || "",
+        commencementFinishDate: currentPO.commencementFinishDate || "",
+        absorv: currentPO.absorv || "",
+        pengembalianNilaiKontrak: currentPO.pengembalianNilaiKontrak || "",
+        reminder: currentPO.reminder || "",
+      };
+      setData([...data, newPO]);
+    }
+    setShowAddEditModal(false);
+  };
+
+  return (
+    <div className="p-6 max-w-full mx-auto">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        Monitoring Nilai PO
+      </h1>
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari PO..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleAddPO}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <PlusCircle className="h-4 w-4" />
+            Tambah PO
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SO
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Project
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Pekerjaan
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  No. WBS / WO
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  PR
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  RO
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  PO
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SAP
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  CRO
+                </th>
+                <th
+                  colSpan={2}
+                  className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Commencement Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Absorv
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Pengembalian Nilai Kontrak
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Reminder
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Aksi
+                </th>
+              </tr>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Start
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Finish
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredData.map((item) => (
+                <tr key={item.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {item.so}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.project}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.pekerjaan}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.noWbsWo}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.pr}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.ro}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.po}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.sap}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.cro}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.commencementStartDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.commencementFinishDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.absorv}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.pengembalianNilaiKontrak}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.reminder}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditPO(item)}
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePO(item)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Add/Edit Modal */}
+      {showAddEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">
+              {isEditing ? "Edit PO" : "Tambah PO Baru"}
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  SO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.so || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, so: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Project
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.project || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, project: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Pekerjaan
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.pekerjaan || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, pekerjaan: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  No. WBS / WO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.noWbsWo || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, noWbsWo: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  PR
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.pr || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, pr: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  RO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.ro || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, ro: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  PO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.po || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, po: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  SAP
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.sap || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, sap: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  CRO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.cro || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, cro: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Commencement Start Date
+                </label>
+                <input
+                  type="date"
+                  value={currentPO.commencementStartDate || ""}
+                  onChange={(e) =>
+                    setCurrentPO({
+                      ...currentPO,
+                      commencementStartDate: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Commencement Finish Date
+                </label>
+                <input
+                  type="date"
+                  value={currentPO.commencementFinishDate || ""}
+                  onChange={(e) =>
+                    setCurrentPO({
+                      ...currentPO,
+                      commencementFinishDate: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Absorv
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.absorv || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, absorv: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Pengembalian Nilai Kontrak
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.pengembalianNilaiKontrak || ""}
+                  onChange={(e) =>
+                    setCurrentPO({
+                      ...currentPO,
+                      pengembalianNilaiKontrak: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Reminder
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.reminder || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, reminder: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowAddEditModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSavePO}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                {isEditing ? "Simpan Perubahan" : "Tambah PO"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && poToDelete && (
+        <ConfirmDeleteModal
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={confirmDelete}
+          itemName={poToDelete.po}
+        />
+      )}
+    </div>
+  );
+};
+
+export default MonitoringNilaiPOPage;

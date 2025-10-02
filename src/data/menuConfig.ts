@@ -503,6 +503,11 @@ export const marketingMenu: MenuSection[] = [
         icon: "ClipboardCheck",
         path: "/marketing/monitoring/penilaian-tkdn",
       },
+      {
+        title: "Monitoring Nilai PO",
+        icon: "FileText",
+        path: "/marketing/monitoring/nilai-po",
+      },
     ],
   },
   {

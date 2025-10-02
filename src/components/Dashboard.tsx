@@ -390,6 +390,8 @@ import QHSEExpiredBarangApprovalDashboard from "./QHSEExpiredBarangApprovalDashb
 import QHSEExpiredBarangHasilApprovedDashboard from "./QHSEExpiredBarangHasilApprovedDashboard";
 import FinanceApprovePIDashboard from "./FinanceApprovePIDashboard";
 
+import MonitoringNilaiPOPage from "../pages/marketing/MonitoringNilaiPOPage";
+
 interface DashboardProps {
   currentPage: string;
 }
@@ -492,6 +494,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/marketing/monitoring/penilaian-tkdn") {
       return <MonitoringPenilaianTKDNDashboard />;
+    }
+    if (currentPage === "/marketing/monitoring/nilai-po") {
+      return <MonitoringNilaiPOPage />;
     }
 
     // Gudang Routes

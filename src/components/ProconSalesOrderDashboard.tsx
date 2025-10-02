@@ -1841,6 +1841,26 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={formData.status || ""}
+                  onChange={(e) => handleInputChange("status", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Status</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="IN PROGRESS">IN PROGRESS</option>
+                  <option value="PENDING">PENDING</option>
+                  <option value="INVOICED">INVOICED</option>
+                  <option value="OVERDUE">OVERDUE</option>
+                  <option value="CRITICAL">CRITICAL</option>
+                  <option value="WARNING">WARNING</option>
+                  <option value="EXCELLENT">EXCELLENT</option>
+                </select>
+              </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Remarks Project Control
