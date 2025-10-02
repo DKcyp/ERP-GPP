@@ -1,13 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Search,
-  Eye,
-  Download,
-  Pencil,
-  Trash2,
-  PlusCircle,
-  ExternalLink,
-} from "lucide-react";
+import { Search, Pencil, Trash2, PlusCircle } from "lucide-react";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 
 interface POItem {
@@ -15,11 +7,11 @@ interface POItem {
   so: string;
   project: string;
   pekerjaan: string;
-  noWbsWo: string;
+  noUbs: string; // New field for No. UBS
+  wo: string; // Renamed from noWbsWo
   pr: string;
   ro: string;
-  po: string;
-  sap: string;
+  poSap: string; // Combined PO and SAP
   cro: string;
   commencementStartDate: string;
   commencementFinishDate: string;
@@ -34,11 +26,11 @@ const initialData: POItem[] = [
     so: "SO-001",
     project: "Project A",
     pekerjaan: "Pekerjaan 1",
-    noWbsWo: "WBS-001",
+    noUbs: "UBS-001",
+    wo: "WO-001",
     pr: "PR-001",
     ro: "RO-001",
-    po: "PO-001",
-    sap: "SAP-001",
+    poSap: "PO-001 / SAP-001",
     cro: "CRO-001",
     commencementStartDate: "2023-01-01",
     commencementFinishDate: "2023-03-31",
@@ -51,17 +43,68 @@ const initialData: POItem[] = [
     so: "SO-002",
     project: "Project B",
     pekerjaan: "Pekerjaan 2",
-    noWbsWo: "WO-001",
+    noUbs: "UBS-002",
+    wo: "WO-002",
     pr: "PR-002",
     ro: "RO-002",
-    po: "PO-002",
-    sap: "SAP-002",
+    poSap: "PO-002 / SAP-002",
     cro: "CRO-002",
     commencementStartDate: "2023-04-01",
     commencementFinishDate: "2023-06-30",
     absorv: "90%",
     pengembalianNilaiKontrak: "Rp 5.000.000",
     reminder: "Completed",
+  },
+  {
+    id: "3",
+    so: "SO-003",
+    project: "Project C",
+    pekerjaan: "Pekerjaan 3",
+    noUbs: "UBS-003",
+    wo: "WO-003",
+    pr: "PR-003",
+    ro: "RO-003",
+    poSap: "PO-003 / SAP-003",
+    cro: "CRO-003",
+    commencementStartDate: "2023-07-01",
+    commencementFinishDate: "2023-09-30",
+    absorv: "75%",
+    pengembalianNilaiKontrak: "Rp 12.000.000",
+    reminder: "Due in 15 days",
+  },
+  {
+    id: "4",
+    so: "SO-004",
+    project: "Project D",
+    pekerjaan: "Pekerjaan 4",
+    noUbs: "UBS-004",
+    wo: "WO-004",
+    pr: "PR-004",
+    ro: "RO-004",
+    poSap: "PO-004 / SAP-004",
+    cro: "CRO-004",
+    commencementStartDate: "2023-10-01",
+    commencementFinishDate: "2023-12-31",
+    absorv: "95%",
+    pengembalianNilaiKontrak: "Rp 8.000.000",
+    reminder: "Upcoming",
+  },
+  {
+    id: "5",
+    so: "SO-005",
+    project: "Project E",
+    pekerjaan: "Pekerjaan 5",
+    noUbs: "UBS-005",
+    wo: "WO-005",
+    pr: "PR-005",
+    ro: "RO-005",
+    poSap: "PO-005 / SAP-005",
+    cro: "CRO-005",
+    commencementStartDate: "2024-01-01",
+    commencementFinishDate: "2024-03-31",
+    absorv: "88%",
+    pengembalianNilaiKontrak: "Rp 7.500.000",
+    reminder: "Due in 5 days",
   },
 ];
 
@@ -80,7 +123,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
         item.so.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.pekerjaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.po.toLowerCase().includes(searchTerm.toLowerCase())
+        item.poSap.toLowerCase().includes(searchTerm.toLowerCase()) // Updated filter for combined PO/SAP
     );
   }, [data, searchTerm]);
 
@@ -114,7 +157,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
       !currentPO.so ||
       !currentPO.project ||
       !currentPO.pekerjaan ||
-      !currentPO.po
+      !currentPO.poSap
     ) {
       alert("Please fill in all required fields.");
       return;
@@ -132,11 +175,11 @@ const MonitoringNilaiPOPage: React.FC = () => {
         so: currentPO.so,
         project: currentPO.project,
         pekerjaan: currentPO.pekerjaan,
-        noWbsWo: currentPO.noWbsWo || "",
+        noUbs: currentPO.noUbs || "",
+        wo: currentPO.wo || "",
         pr: currentPO.pr || "",
         ro: currentPO.ro || "",
-        po: currentPO.po,
-        sap: currentPO.sap || "",
+        poSap: currentPO.poSap,
         cro: currentPO.cro || "",
         commencementStartDate: currentPO.commencementStartDate || "",
         commencementFinishDate: currentPO.commencementFinishDate || "",
@@ -190,7 +233,10 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   Pekerjaan
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  No. WBS / WO
+                  No. UBS
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  WO
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   PR
@@ -199,10 +245,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   RO
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  PO
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  SAP
+                  PO / SAP
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CRO
@@ -261,7 +304,10 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.pekerjaan}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.noWbsWo}
+                    {item.noUbs}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.wo}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.pr}
@@ -270,10 +316,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.ro}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.po}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.sap}
+                    {item.poSap}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.cro}
@@ -365,13 +408,26 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  No. WBS / WO
+                  No. UBS
                 </label>
                 <input
                   type="text"
-                  value={currentPO.noWbsWo || ""}
+                  value={currentPO.noUbs || ""}
                   onChange={(e) =>
-                    setCurrentPO({ ...currentPO, noWbsWo: e.target.value })
+                    setCurrentPO({ ...currentPO, noUbs: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  WO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.wo || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, wo: e.target.value })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
@@ -404,26 +460,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  PO
+                  PO / SAP
                 </label>
                 <input
                   type="text"
-                  value={currentPO.po || ""}
+                  value={currentPO.poSap || ""}
                   onChange={(e) =>
-                    setCurrentPO({ ...currentPO, po: e.target.value })
-                  }
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  SAP
-                </label>
-                <input
-                  type="text"
-                  value={currentPO.sap || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, sap: e.target.value })
+                    setCurrentPO({ ...currentPO, poSap: e.target.value })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
@@ -540,7 +583,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
           isOpen={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={confirmDelete}
-          itemName={poToDelete.po}
+          itemName={poToDelete.poSap}
         />
       )}
     </div>

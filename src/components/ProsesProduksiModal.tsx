@@ -26,7 +26,6 @@ export interface ProsesProduksiFormData {
   // Optional file attachment (object URL, client-side only)
   fileUrl?: string;
   fileName?: string;
-  keterangan?: string; // New field for Keterangan
   // Optional metode pengerjaan rows (synced with local rows state)
   metodePengerjaan?: Array<{ jenisPekerjaan: string; jumlah: string }>;
 }
@@ -53,7 +52,6 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
     noReportTerakhir: "001-00/GBP/UT/I/2025",
     fileUrl: undefined,
     fileName: undefined,
-    keterangan: "", // Initialize new Keterangan field
   });
 
   const [errors, setErrors] = useState<Partial<ProsesProduksiFormData>>({});
@@ -399,7 +397,6 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
       noReportTerakhir: "001-00/GBP/UT/I/2025",
       fileUrl: undefined,
       fileName: undefined,
-      keterangan: "",
     });
     setMetodePengerjaanRows([{ jenisPekerjaan: "", jumlah: "" }]);
     setErrors({});
@@ -772,26 +769,6 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                     </button>
                   </div>
                 )}
-              </div>
-
-              {/* Keterangan */}
-              <div className="mt-4">
-                <label
-                  htmlFor="keterangan"
-                  className="block text-xs font-medium text-gray-700 mb-1.5"
-                >
-                  Keterangan
-                </label>
-                <textarea
-                  id="keterangan"
-                  value={formData.keterangan || ""}
-                  onChange={(e) =>
-                    handleInputChange("keterangan", e.target.value)
-                  }
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
-                  placeholder="Masukkan keterangan tambahan..."
-                ></textarea>
               </div>
             </div>
 

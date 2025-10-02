@@ -1851,14 +1851,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Status</option>
-                  <option value="COMPLETED">COMPLETED</option>
-                  <option value="IN PROGRESS">IN PROGRESS</option>
-                  <option value="PENDING">PENDING</option>
-                  <option value="INVOICED">INVOICED</option>
-                  <option value="OVERDUE">OVERDUE</option>
-                  <option value="CRITICAL">CRITICAL</option>
-                  <option value="WARNING">WARNING</option>
-                  <option value="EXCELLENT">EXCELLENT</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Unpaid">Unpaid</option>
+                  <option value="Pending">Pending</option>
                 </select>
               </div>
               <div className="col-span-2">
