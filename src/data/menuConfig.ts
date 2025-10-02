@@ -2311,6 +2311,11 @@ export const proconMenu: MenuSection[] = [
         icon: "ShoppingCart",
         path: "/procon/sales-order/dashboard",
       },
+      {
+        title: "TimeSheet",
+        icon: "Clock",
+        path: "/procon/timesheet/barang-pegawai",
+      },
     ],
   },
   createGeneralMenu("procon"),

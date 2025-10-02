@@ -21,6 +21,7 @@
     "react-modal": "^3.16.1",
     "react-quill": "^2.0.0",
     "react-router-dom": "^7.9.1",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.3.0"
   },

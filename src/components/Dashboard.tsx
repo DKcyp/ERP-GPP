@@ -371,20 +371,7 @@ import GeneralKendaraanPengajuanDriver from "./GeneralKendaraanPengajuanDriver";
 import GeneralKendaraanLogbookDriver from "./GeneralKendaraanLogbookDriver";
 import GeneralKendaraanApprovalDriver from "./GeneralKendaraanApprovalDriver";
 
-import {
-  Calendar,
-  Target,
-  Award,
-  Clock,
-  Menu,
-  Phone,
-  Megaphone,
-  FileText,
-  ArrowRight,
-  ArrowLeft,
-  File,
-  CheckCircle,
-} from "lucide-react";
+import { Calendar } from "lucide-react";
 import PembagianAPDRecordDashboard from "./PembagianAPDRecordDashboard";
 import PerundanganK3LDashboard from "./PerundanganK3LDashboard";
 import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDashboard";
@@ -1520,6 +1507,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/operational/timesheet/barang-pegawai") {
       return <TimesheetBarangPegawaiDashboard />;
+    }
+    if (currentPage === "/procon/timesheet/barang-pegawai") {
+      return <TimesheetBarangPegawaiDashboard role="procon" />;
     }
     if (currentPage === "/operational/training/dashboard") {
       return <TrainingDashboard />;

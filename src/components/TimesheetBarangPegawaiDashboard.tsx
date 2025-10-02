@@ -6,6 +6,8 @@ import {
   FileText,
   Plus,
   ArrowUp,
+  Check,
+  X,
 } from "lucide-react";
 import TimesheetBarangPegawaiModal, {
   TimesheetFormData,
@@ -110,7 +112,13 @@ const samplePegawaiData: PegawaiData[] = [
   },
 ];
 
-const TimesheetBarangPegawaiDashboard: React.FC = () => {
+interface TimesheetBarangPegawaiDashboardProps {
+  role?: string;
+}
+
+const TimesheetBarangPegawaiDashboard: React.FC<
+  TimesheetBarangPegawaiDashboardProps
+> = ({ role }) => {
   const [rows, setRows] = useState<RowData[]>(sampleRows);
   const [pegawaiData, setPegawaiData] =
     useState<PegawaiData[]>(samplePegawaiData);
@@ -122,18 +130,11 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [mobFrom, setMobFrom] = useState<string>("");
   const [mobTo, setMobTo] = useState<string>("");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<PegawaiData | null>(null);
+  const [actionType, setActionType] = useState<"approve" | "reject" | "">("");
   const [demobFrom, setDemobFrom] = useState<string>("");
   const [demobTo, setDemobTo] = useState<string>("");
-
-  const filtered = useMemo(() => {
-    const s = search.toLowerCase();
-    return rows.filter(
-      (r) =>
-        r.noSO.toLowerCase().includes(s) ||
-        r.noSOTurunan.toLowerCase().includes(s) ||
-        r.namaProyek.toLowerCase().includes(s)
-    );
-  }, [rows, search]);
 
   const parseDdMmYyyy = (s: string): number | null => {
     if (!s) return null;
@@ -302,6 +303,41 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
     setRows((prev) => [newRow, ...prev]);
   };
 
+  const handleApprove = (item: PegawaiData) => {
+    setSelectedItem(item);
+    setActionType("approve");
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleReject = (item: PegawaiData) => {
+    setSelectedItem(item);
+    setActionType("reject");
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmAction = () => {
+    if (selectedItem && actionType) {
+      setPegawaiData((prevData) =>
+        prevData.map((item) =>
+          item.id === selectedItem.id
+            ? {
+                ...item,
+                statusApproval:
+                  actionType === "approve" ? "Approved" : "Rejected",
+              }
+            : item
+        )
+      );
+      closeConfirmModal();
+    }
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setSelectedItem(null);
+    setActionType("");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
@@ -399,6 +435,27 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
 
           {/* Demob Range */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2 text-xs">
+            <div className="space-y-2">
+              <label className="block text-xs font-medium text-gray-700">
+                Periode DEMOB
+              </label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="date"
+                  value={demobFrom}
+                  onChange={(e) => setDemobFrom(e.target.value)}
+                  className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                />
+                <span className="text-gray-500">s.d</span>
+                <input
+                  type="date"
+                  value={demobTo}
+                  onChange={(e) => setDemobTo(e.target.value)}
+                  className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
+                />
+              </div>
+            </div>
+            <div className="hidden md:block" />
             <div className="hidden md:block" />
             <div className="hidden md:block" />
           </div>
@@ -504,6 +561,11 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Status Approval
                   </th>
+                  {role !== "procon" && (
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -577,6 +639,26 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
                         {item.statusApproval}
                       </span>
                     </td>
+                    {role !== "procon" && (
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {item.statusApproval === "Pending" && (
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleApprove(item)}
+                              className="flex items-center space-x-1 text-green-600 hover:text-green-800 transition-colors"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleReject(item)}
+                              className="flex items-center space-x-1 text-red-600 hover:text-red-800 transition-colors"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -590,6 +672,40 @@ const TimesheetBarangPegawaiDashboard: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
       />
+
+      {isConfirmModalOpen && selectedItem && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <h3 className="text-lg font-bold mb-4">
+              Confirm {actionType === "approve" ? "Approval" : "Rejection"}
+            </h3>
+            <p className="mb-6">
+              Are you sure you want to {actionType} timesheet for{" "}
+              <span className="font-semibold">{selectedItem.namaPegawai}</span>{" "}
+              (SO:
+              <span className="font-semibold">{selectedItem.noSO}</span>)?
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={confirmAction}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  actionType === "approve"
+                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    : "bg-red-600 hover:bg-red-700 text-white"
+                }`}
+              >
+                Yes, {actionType === "approve" ? "Approve" : "Reject"}
+              </button>
+              <button
+                onClick={closeConfirmModal}
+                className="px-4 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 text-gray-800"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

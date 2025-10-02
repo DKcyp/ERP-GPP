@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Search,
   FileSpreadsheet,
@@ -70,6 +72,7 @@ interface ProconSalesOrder {
 }
 
 const ProconSalesOrderDashboard: React.FC = () => {
+  const DEMOB_WARNING_THRESHOLD_DAYS = 7; // Define "approaching" as within 7 days
   const [searchNoSO, setSearchNoSO] = useState("");
   const [searchNomorKontrak, setSearchNomorKontrak] = useState("");
   const [searchClient, setSearchClient] = useState("");
@@ -78,7 +81,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
   const [dateTo, setDateTo] = useState("");
   const [jenisPekerjaanDropdownOpen, setJenisPekerjaanDropdownOpen] =
     useState(false);
-  const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [goToPageInput, setGoToPageInput] = useState<string>("");
@@ -455,19 +457,49 @@ const ProconSalesOrderDashboard: React.FC = () => {
   ]);
 
   useEffect(() => {
-    setTimeout(() => setAnimateRows(true), 100);
-  }, []);
+    const criticalMessages: string[] = [];
+    const warningMessages: string[] = [];
 
-  const getJenisPekerjaanColor = (jenis: string) => {
-    switch (jenis) {
-      case "On Call":
-        return "bg-cyan-100 text-cyan-800 border-cyan-200";
-      case "Tender":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+    salesOrders.forEach((item) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const demobDate = parseDemobDate(item.demob);
+
+      if (demobDate) {
+        const diffTime = demobDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 0) {
+          criticalMessages.push(
+            `Demob for SO ${item.soNo} is overdue or today!`
+          );
+        } else if (diffDays <= DEMOB_WARNING_THRESHOLD_DAYS) {
+          warningMessages.push(
+            `Demob for SO ${item.soNo} is approaching in ${diffDays} days!`
+          );
+        }
+      }
+    });
+
+    if (criticalMessages.length > 0) {
+      toast.error(
+        <div>
+          {criticalMessages.map((msg, index) => (
+            <p key={index}>{msg}</p>
+          ))}
+        </div>
+      );
+    } else if (warningMessages.length > 0) {
+      toast.warn(
+        <div>
+          {warningMessages.map((msg, index) => (
+            <p key={index}>{msg}</p>
+          ))}
+        </div>
+      );
     }
-  };
+  }, [salesOrders, DEMOB_WARNING_THRESHOLD_DAYS]);
 
   const jenisPekerjaanOptions = ["On Call", "Tender"];
 
@@ -534,6 +566,21 @@ const ProconSalesOrderDashboard: React.FC = () => {
 
   // Helper function to get row color based on status
   const getRowColor = (item: ProconSalesOrder) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    const demobDate = parseDemobDate(item.demob);
+
+    if (demobDate) {
+      const diffTime = demobDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // Red rows: demob is today or in the past, or within the warning threshold
+      if (diffDays <= DEMOB_WARNING_THRESHOLD_DAYS) {
+        return "bg-red-100";
+      }
+    }
+
     // Red rows - Critical/Overdue status
     if (
       item.status === "OVERDUE" ||
@@ -615,6 +662,31 @@ const ProconSalesOrderDashboard: React.FC = () => {
     } catch {
       return "";
     }
+  };
+
+  // Helper to parse demob date string (dd-MMM-yy) into a Date object
+  const parseDemobDate = (dateString: string): Date | null => {
+    if (!dateString) return null;
+    const parts = dateString.split("-");
+    if (parts.length !== 3) return null;
+    const day = parseInt(parts[0], 10);
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const month = monthNames.indexOf(parts[1]);
+    const year = 2000 + parseInt(parts[2], 10); // Assume 20xx
+    return new Date(year, month, day);
   };
 
   // CRUD Functions
@@ -935,6 +1007,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
 
           {/* Note: intentionally removed Add button and actions for Procon (read-only) */}
           <div className="flex justify-end space-x-2 mt-6">
+            <button
+              onClick={handleAdd}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add New Sales Order</span>
+            </button>
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-600/25 flex items-center space-x-2 text-xs">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
@@ -1182,7 +1261,12 @@ const ProconSalesOrderDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item) => (
-                  <tr key={item.id}>
+                  <tr
+                    key={item.id}
+                    className={`${getRowColor(
+                      item
+                    )} transition-all duration-300 ease-in-out`}
+                  >
                     <td className="px-2 py-3 border border-gray-300 text-center">
                       <span className="font-bold text-gray-900 text-xs">
                         {item.no}
@@ -1938,6 +2022,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };
