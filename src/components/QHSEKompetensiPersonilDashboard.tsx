@@ -1,6 +1,24 @@
-import React, { useMemo, useState } from 'react';
-import { GraduationCap, Search, PlusCircle, Download, Pencil, Trash2, AlertTriangle, Bell, Eye, CheckCircle, Clock, XCircle, User, Building, ExternalLink, ChevronRight, ArrowLeft } from 'lucide-react';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useMemo, useState } from "react";
+import {
+  GraduationCap,
+  Search,
+  PlusCircle,
+  Download,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+  Bell,
+  Eye,
+  CheckCircle,
+  Clock,
+  XCircle,
+  User,
+  Building,
+  ExternalLink,
+  ChevronRight,
+  ArrowLeft,
+} from "lucide-react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface TrainingDetail {
   id: string;
@@ -9,10 +27,11 @@ interface TrainingDetail {
   vendor: string;
   tanggalTerbit: string;
   tanggalExpired: string;
-  validitas: 'Valid' | 'Mendekati Expired' | 'Expired';
-  approval: 'Pending' | 'Approved' | 'Rejected';
-  status: 'Pengajuan' | 'Proses' | 'Selesai';
+  validitas: "Valid" | "Mendekati Expired" | "Expired";
+  approval: "Pending" | "Approved" | "Rejected";
+  status: "Pengajuan" | "Proses" | "Selesai";
   documentSertifikat?: string;
+  sertifikatPersonnel?: string; // New field
   daysUntilExpiry?: number;
   isExpiringSoon?: boolean;
 }
@@ -25,14 +44,14 @@ interface PersonnelData {
   totalTraining: number;
   validTraining: number;
   expiredTraining: number;
-  hrdSyncStatus: 'Synced' | 'Pending' | 'Failed';
+  hrdSyncStatus: "Synced" | "Pending" | "Failed";
   trainings: TrainingDetail[];
 }
 
 const QHSEKompetensiPersonilDashboard: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('');
-  const [filterValiditas, setFilterValiditas] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterValiditas, setFilterValiditas] = useState<string>("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddPersonnelModal, setShowAddPersonnelModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -41,212 +60,254 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
   const [viewingItem, setViewingItem] = useState<TrainingDetail | null>(null);
   const [deleteItem, setDeleteItem] = useState<TrainingDetail | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedPersonnel, setSelectedPersonnel] = useState<PersonnelData | null>(null);
+  const [selectedPersonnel, setSelectedPersonnel] =
+    useState<PersonnelData | null>(null);
   const [showDetailView, setShowDetailView] = useState(false);
   const [formData, setFormData] = useState<Partial<TrainingDetail>>({});
-  const [personnelFormData, setPersonnelFormData] = useState<Partial<PersonnelData>>({});
+  const [personnelFormData, setPersonnelFormData] = useState<
+    Partial<PersonnelData>
+  >({});
 
   // Sample personnel data with training details
   const [personnelData, setPersonnelData] = useState<PersonnelData[]>([
     {
-      id: '1',
-      namaPersonil: 'John Doe',
-      jabatan: 'Safety Officer',
-      divisi: 'QHSE',
+      id: "1",
+      namaPersonil: "John Doe",
+      jabatan: "Safety Officer",
+      divisi: "QHSE",
       totalTraining: 3,
       validTraining: 2,
       expiredTraining: 1,
-      hrdSyncStatus: 'Synced',
+      hrdSyncStatus: "Synced",
       trainings: [
         {
-          id: '1-1',
-          namaSertifikat: 'Basic Safety Training',
-          noSertifikat: 'BST-2024-001',
-          vendor: 'PT Safety Indonesia',
-          tanggalTerbit: '2024-01-15',
-          tanggalExpired: '2025-01-15',
-          validitas: 'Valid',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_basic_safety_john.pdf',
+          id: "1-1",
+          namaSertifikat: "Basic Safety Training",
+          noSertifikat: "BST-2024-001",
+          vendor: "PT Safety Indonesia",
+          tanggalTerbit: "2024-01-15",
+          tanggalExpired: "2025-01-15",
+          validitas: "Valid",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_basic_safety_john.pdf",
+          sertifikatPersonnel: "SP-001",
           daysUntilExpiry: 120,
-          isExpiringSoon: false
+          isExpiringSoon: false,
         },
         {
-          id: '1-2',
-          namaSertifikat: 'Fire Safety Certification',
-          noSertifikat: 'FSC-2024-002',
-          vendor: 'Fire Safety Institute',
-          tanggalTerbit: '2024-02-10',
-          tanggalExpired: '2025-02-10',
-          validitas: 'Valid',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_fire_safety_john.pdf',
+          id: "1-2",
+          namaSertifikat: "Fire Safety Certification",
+          noSertifikat: "FSC-2024-002",
+          vendor: "Fire Safety Institute",
+          tanggalTerbit: "2024-02-10",
+          tanggalExpired: "2025-02-10",
+          validitas: "Valid",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_fire_safety_john.pdf",
+          sertifikatPersonnel: "SP-002",
           daysUntilExpiry: 145,
-          isExpiringSoon: false
+          isExpiringSoon: false,
         },
         {
-          id: '1-3',
-          namaSertifikat: 'First Aid Training',
-          noSertifikat: 'FAT-2023-003',
-          vendor: 'Medical Training Center',
-          tanggalTerbit: '2023-06-10',
-          tanggalExpired: '2024-06-10',
-          validitas: 'Expired',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_first_aid_john.pdf',
+          id: "1-3",
+          namaSertifikat: "First Aid Training",
+          noSertifikat: "FAT-2023-003",
+          vendor: "Medical Training Center",
+          tanggalTerbit: "2023-06-10",
+          tanggalExpired: "2024-06-10",
+          validitas: "Expired",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_first_aid_john.pdf",
+          sertifikatPersonnel: "SP-003",
           daysUntilExpiry: -90,
-          isExpiringSoon: false
-        }
-      ]
+          isExpiringSoon: false,
+        },
+      ],
     },
     {
-      id: '2',
-      namaPersonil: 'Jane Smith',
-      jabatan: 'HSE Supervisor',
-      divisi: 'QHSE',
+      id: "2",
+      namaPersonil: "Jane Smith",
+      jabatan: "HSE Supervisor",
+      divisi: "QHSE",
       totalTraining: 2,
       validTraining: 1,
       expiredTraining: 0,
-      hrdSyncStatus: 'Synced',
+      hrdSyncStatus: "Synced",
       trainings: [
         {
-          id: '2-1',
-          namaSertifikat: 'Confined Space Entry',
-          noSertifikat: 'CSE-2024-004',
-          vendor: 'Industrial Safety Corp',
-          tanggalTerbit: '2024-02-28',
-          tanggalExpired: '2025-02-28',
-          validitas: 'Valid',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_confined_space_jane.pdf',
+          id: "2-1",
+          namaSertifikat: "Confined Space Entry",
+          noSertifikat: "CSE-2024-004",
+          vendor: "Industrial Safety Corp",
+          tanggalTerbit: "2024-02-28",
+          tanggalExpired: "2025-02-28",
+          validitas: "Valid",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_confined_space_jane.pdf",
           daysUntilExpiry: 160,
-          isExpiringSoon: false
+          isExpiringSoon: false,
         },
         {
-          id: '2-2',
-          namaSertifikat: 'Working at Height',
-          noSertifikat: 'WAH-2024-005',
-          vendor: 'Height Safety Training',
-          tanggalTerbit: '2024-03-15',
-          tanggalExpired: '2024-12-15',
-          validitas: 'Mendekati Expired',
-          approval: 'Pending',
-          status: 'Proses',
-          documentSertifikat: 'cert_height_jane.pdf',
+          id: "2-2",
+          namaSertifikat: "Working at Height",
+          noSertifikat: "WAH-2024-005",
+          vendor: "Height Safety Training",
+          tanggalTerbit: "2024-03-15",
+          tanggalExpired: "2024-12-15",
+          validitas: "Mendekati Expired",
+          approval: "Pending",
+          status: "Proses",
+          documentSertifikat: "cert_height_jane.pdf",
           daysUntilExpiry: 30,
-          isExpiringSoon: true
-        }
-      ]
+          isExpiringSoon: true,
+        },
+      ],
     },
     {
-      id: '3',
-      namaPersonil: 'Bob Johnson',
-      jabatan: 'Field Inspector',
-      divisi: 'Operations',
+      id: "3",
+      namaPersonil: "Bob Johnson",
+      jabatan: "Field Inspector",
+      divisi: "Operations",
       totalTraining: 1,
       validTraining: 0,
       expiredTraining: 1,
-      hrdSyncStatus: 'Pending',
+      hrdSyncStatus: "Pending",
       trainings: [
         {
-          id: '3-1',
-          namaSertifikat: 'NDT Level II',
-          noSertifikat: 'NDT-2023-006',
-          vendor: 'NDT Training Institute',
-          tanggalTerbit: '2023-05-20',
-          tanggalExpired: '2024-05-20',
-          validitas: 'Expired',
-          approval: 'Pending',
-          status: 'Pengajuan',
-          documentSertifikat: 'cert_ndt_bob.pdf',
+          id: "3-1",
+          namaSertifikat: "NDT Level II",
+          noSertifikat: "NDT-2023-006",
+          vendor: "NDT Training Institute",
+          tanggalTerbit: "2023-05-20",
+          tanggalExpired: "2024-05-20",
+          validitas: "Expired",
+          approval: "Pending",
+          status: "Pengajuan",
+          documentSertifikat: "cert_ndt_bob.pdf",
           daysUntilExpiry: -120,
-          isExpiringSoon: false
-        }
-      ]
+          isExpiringSoon: false,
+        },
+      ],
     },
     {
-      id: '4',
-      namaPersonil: 'Alice Brown',
-      jabatan: 'Safety Coordinator',
-      divisi: 'QHSE',
+      id: "4",
+      namaPersonil: "Alice Brown",
+      jabatan: "Safety Coordinator",
+      divisi: "QHSE",
       totalTraining: 4,
       validTraining: 3,
       expiredTraining: 0,
-      hrdSyncStatus: 'Failed',
+      hrdSyncStatus: "Failed",
       trainings: [
         {
-          id: '4-1',
-          namaSertifikat: 'IOSH Managing Safely',
-          noSertifikat: 'IOSH-2024-007',
-          vendor: 'IOSH Training Provider',
-          tanggalTerbit: '2024-01-10',
-          tanggalExpired: '2027-01-10',
-          validitas: 'Valid',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_iosh_alice.pdf',
+          id: "4-1",
+          namaSertifikat: "IOSH Managing Safely",
+          noSertifikat: "IOSH-2024-007",
+          vendor: "IOSH Training Provider",
+          tanggalTerbit: "2024-01-10",
+          tanggalExpired: "2027-01-10",
+          validitas: "Valid",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_iosh_alice.pdf",
           daysUntilExpiry: 1095,
-          isExpiringSoon: false
+          isExpiringSoon: false,
         },
         {
-          id: '4-2',
-          namaSertifikat: 'Risk Assessment',
-          noSertifikat: 'RA-2024-008',
-          vendor: 'Risk Management Institute',
-          tanggalTerbit: '2024-02-15',
-          tanggalExpired: '2025-02-15',
-          validitas: 'Valid',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_risk_alice.pdf',
+          id: "4-2",
+          namaSertifikat: "Risk Assessment",
+          noSertifikat: "RA-2024-008",
+          vendor: "Risk Management Institute",
+          tanggalTerbit: "2024-02-15",
+          tanggalExpired: "2025-02-15",
+          validitas: "Valid",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_risk_alice.pdf",
           daysUntilExpiry: 150,
-          isExpiringSoon: false
+          isExpiringSoon: false,
         },
         {
-          id: '4-3',
-          namaSertifikat: 'Emergency Response',
-          noSertifikat: 'ER-2024-009',
-          vendor: 'Emergency Training Center',
-          tanggalTerbit: '2024-03-01',
-          tanggalExpired: '2025-03-01',
-          validitas: 'Valid',
-          approval: 'Approved',
-          status: 'Selesai',
-          documentSertifikat: 'cert_emergency_alice.pdf',
+          id: "4-3",
+          namaSertifikat: "Emergency Response",
+          noSertifikat: "ER-2024-009",
+          vendor: "Emergency Training Center",
+          tanggalTerbit: "2024-03-01",
+          tanggalExpired: "2025-03-01",
+          validitas: "Valid",
+          approval: "Approved",
+          status: "Selesai",
+          documentSertifikat: "cert_emergency_alice.pdf",
           daysUntilExpiry: 165,
-          isExpiringSoon: false
+          isExpiringSoon: false,
         },
         {
-          id: '4-4',
-          namaSertifikat: 'Incident Investigation',
-          noSertifikat: 'II-2024-010',
-          vendor: 'Investigation Training Ltd',
-          tanggalTerbit: '2024-04-01',
-          tanggalExpired: '2024-11-01',
-          validitas: 'Mendekati Expired',
-          approval: 'Pending',
-          status: 'Proses',
-          documentSertifikat: 'cert_investigation_alice.pdf',
+          id: "4-4",
+          namaSertifikat: "Incident Investigation",
+          noSertifikat: "II-2024-010",
+          vendor: "Investigation Training Ltd",
+          tanggalTerbit: "2024-04-01",
+          tanggalExpired: "2024-11-01",
+          validitas: "Mendekati Expired",
+          approval: "Pending",
+          status: "Proses",
+          documentSertifikat: "cert_investigation_alice.pdf",
           daysUntilExpiry: 15,
-          isExpiringSoon: true
-        }
-      ]
-    }
+          isExpiringSoon: true,
+        },
+      ],
+    },
   ]);
 
   // Calculate statistics
   const stats = useMemo(() => {
     const totalPersonil = personnelData.length;
-    const validCertificates = personnelData.reduce((acc, personil) => acc + personil.trainings.filter(training => training.validitas === 'Valid').length, 0);
-    const mendekatiExpired = personnelData.reduce((acc, personil) => acc + personil.trainings.filter(training => training.validitas === 'Mendekati Expired').length, 0);
-    const expired = personnelData.reduce((acc, personil) => acc + personil.trainings.filter(training => training.validitas === 'Expired').length, 0);
-    const needsApproval = personnelData.reduce((acc, personil) => acc + personil.trainings.filter(training => training.approval === 'Pending').length, 0);
-    const hrdSyncPending = personnelData.filter(personil => personil.hrdSyncStatus === 'Pending' || personil.hrdSyncStatus === 'Failed').length;
-    const completed = personnelData.reduce((acc, personil) => acc + personil.trainings.filter(training => training.status === 'Selesai').length, 0);
+    const validCertificates = personnelData.reduce(
+      (acc, personil) =>
+        acc +
+        personil.trainings.filter((training) => training.validitas === "Valid")
+          .length,
+      0
+    );
+    const mendekatiExpired = personnelData.reduce(
+      (acc, personil) =>
+        acc +
+        personil.trainings.filter(
+          (training) => training.validitas === "Mendekati Expired"
+        ).length,
+      0
+    );
+    const expired = personnelData.reduce(
+      (acc, personil) =>
+        acc +
+        personil.trainings.filter(
+          (training) => training.validitas === "Expired"
+        ).length,
+      0
+    );
+    const needsApproval = personnelData.reduce(
+      (acc, personil) =>
+        acc +
+        personil.trainings.filter((training) => training.approval === "Pending")
+          .length,
+      0
+    );
+    const hrdSyncPending = personnelData.filter(
+      (personil) =>
+        personil.hrdSyncStatus === "Pending" ||
+        personil.hrdSyncStatus === "Failed"
+    ).length;
+    const completed = personnelData.reduce(
+      (acc, personil) =>
+        acc +
+        personil.trainings.filter((training) => training.status === "Selesai")
+          .length,
+      0
+    );
 
     return {
       totalPersonil,
@@ -255,64 +316,92 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
       expired,
       needsApproval,
       hrdSyncPending,
-      completed
+      completed,
     };
   }, [personnelData]);
 
   // Filter personnel data
   const filteredPersonnelData = useMemo(() => {
-    return personnelData.filter(personil => {
-      const matchesSearch = personil.namaPersonil.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           personil.jabatan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           personil.divisi.toLowerCase().includes(searchTerm.toLowerCase());
-      
+    return personnelData.filter((personil) => {
+      const matchesSearch =
+        personil.namaPersonil
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        personil.jabatan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        personil.divisi.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Filter by training status if specified
-      const matchesStatus = !filterStatus || personil.trainings.some(training => training.status === filterStatus);
-      
+      const matchesStatus =
+        !filterStatus ||
+        personil.trainings.some((training) => training.status === filterStatus);
+
       // Filter by training validitas if specified
-      const matchesValiditas = !filterValiditas || personil.trainings.some(training => training.validitas === filterValiditas);
+      const matchesValiditas =
+        !filterValiditas ||
+        personil.trainings.some(
+          (training) => training.validitas === filterValiditas
+        );
 
       return matchesSearch && matchesStatus && matchesValiditas;
     });
   }, [personnelData, searchTerm, filterStatus, filterValiditas]);
 
-  const getStatusBadge = (status: string, type: 'validitas' | 'approval' | 'proses' | 'sync') => {
+  const getStatusBadge = (
+    status: string,
+    type: "validitas" | "approval" | "proses" | "sync"
+  ) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    
-    if (type === 'validitas') {
+
+    if (type === "validitas") {
       switch (status) {
-        case 'Valid': return `${baseClasses} bg-green-100 text-green-800`;
-        case 'Mendekati Expired': return `${baseClasses} bg-yellow-100 text-yellow-800`;
-        case 'Expired': return `${baseClasses} bg-red-100 text-red-800`;
-        default: return `${baseClasses} bg-gray-100 text-gray-800`;
+        case "Valid":
+          return `${baseClasses} bg-green-100 text-green-800`;
+        case "Mendekati Expired":
+          return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        case "Expired":
+          return `${baseClasses} bg-red-100 text-red-800`;
+        default:
+          return `${baseClasses} bg-gray-100 text-gray-800`;
       }
-    } else if (type === 'approval') {
+    } else if (type === "approval") {
       switch (status) {
-        case 'Approved': return `${baseClasses} bg-green-100 text-green-800`;
-        case 'Pending': return `${baseClasses} bg-yellow-100 text-yellow-800`;
-        case 'Rejected': return `${baseClasses} bg-red-100 text-red-800`;
-        default: return `${baseClasses} bg-gray-100 text-gray-800`;
+        case "Approved":
+          return `${baseClasses} bg-green-100 text-green-800`;
+        case "Pending":
+          return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        case "Rejected":
+          return `${baseClasses} bg-red-100 text-red-800`;
+        default:
+          return `${baseClasses} bg-gray-100 text-gray-800`;
       }
-    } else if (type === 'sync') {
+    } else if (type === "sync") {
       switch (status) {
-        case 'Synced': return `${baseClasses} bg-green-100 text-green-800`;
-        case 'Pending': return `${baseClasses} bg-yellow-100 text-yellow-800`;
-        case 'Failed': return `${baseClasses} bg-red-100 text-red-800`;
-        default: return `${baseClasses} bg-gray-100 text-gray-800`;
+        case "Synced":
+          return `${baseClasses} bg-green-100 text-green-800`;
+        case "Pending":
+          return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        case "Failed":
+          return `${baseClasses} bg-red-100 text-red-800`;
+        default:
+          return `${baseClasses} bg-gray-100 text-gray-800`;
       }
     } else {
       switch (status) {
-        case 'Selesai': return `${baseClasses} bg-green-100 text-green-800`;
-        case 'Proses': return `${baseClasses} bg-blue-100 text-blue-800`;
-        case 'Pengajuan': return `${baseClasses} bg-yellow-100 text-yellow-800`;
-        default: return `${baseClasses} bg-gray-100 text-gray-800`;
+        case "Selesai":
+          return `${baseClasses} bg-green-100 text-green-800`;
+        case "Proses":
+          return `${baseClasses} bg-blue-100 text-blue-800`;
+        case "Pengajuan":
+          return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        default:
+          return `${baseClasses} bg-gray-100 text-gray-800`;
       }
     }
   };
 
   const getExpiryBadge = (daysUntilExpiry: number) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    
+
     if (daysUntilExpiry <= 0) {
       return `${baseClasses} bg-red-100 text-red-800`;
     } else if (daysUntilExpiry <= 30) {
@@ -326,7 +415,7 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
 
   const formatExpiryText = (daysUntilExpiry: number) => {
     if (daysUntilExpiry <= 0) {
-      return 'Expired';
+      return "Expired";
     } else if (daysUntilExpiry <= 30) {
       return `${daysUntilExpiry} hari lagi`;
     } else if (daysUntilExpiry <= 90) {
@@ -339,20 +428,24 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
   // CRUD Functions for Personnel
   const handleAddPersonnel = () => {
     setPersonnelFormData({
-      namaPersonil: '',
-      jabatan: '',
-      divisi: '',
+      namaPersonil: "",
+      jabatan: "",
+      divisi: "",
       totalTraining: 0,
       validTraining: 0,
       expiredTraining: 0,
-      hrdSyncStatus: 'Pending',
-      trainings: []
+      hrdSyncStatus: "Pending",
+      trainings: [],
     });
     setShowAddPersonnelModal(true);
   };
 
   const handleSavePersonnel = () => {
-    if (personnelFormData.namaPersonil && personnelFormData.jabatan && personnelFormData.divisi) {
+    if (
+      personnelFormData.namaPersonil &&
+      personnelFormData.jabatan &&
+      personnelFormData.divisi
+    ) {
       const newPersonnel: PersonnelData = {
         id: Date.now().toString(),
         namaPersonil: personnelFormData.namaPersonil,
@@ -361,11 +454,11 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
         totalTraining: 0,
         validTraining: 0,
         expiredTraining: 0,
-        hrdSyncStatus: personnelFormData.hrdSyncStatus || 'Pending',
-        trainings: []
+        hrdSyncStatus: personnelFormData.hrdSyncStatus || "Pending",
+        trainings: [],
       };
-      
-      setPersonnelData(prev => [...prev, newPersonnel]);
+
+      setPersonnelData((prev) => [...prev, newPersonnel]);
       setShowAddPersonnelModal(false);
       setPersonnelFormData({});
     }
@@ -374,19 +467,20 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
   // CRUD Functions for Training
   const handleAddTraining = () => {
     if (!selectedPersonnel) return;
-    
+
     setFormData({
-      namaSertifikat: '',
-      noSertifikat: '',
-      vendor: '',
-      tanggalTerbit: '',
-      tanggalExpired: '',
-      validitas: 'Valid',
-      approval: 'Pending',
-      status: 'Pengajuan',
-      documentSertifikat: '',
+      namaSertifikat: "",
+      noSertifikat: "",
+      vendor: "",
+      tanggalTerbit: "",
+      tanggalExpired: "",
+      validitas: "Valid",
+      approval: "Pending",
+      status: "Pengajuan",
+      documentSertifikat: "",
+      sertifikatPersonnel: "", // Initialize new field
       daysUntilExpiry: 0,
-      isExpiringSoon: false
+      isExpiringSoon: false,
     });
     setShowAddModal(true);
   };
@@ -412,10 +506,15 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
 
-    const daysUntilExpiry = formData.tanggalExpired ? calculateDaysUntilExpiry(formData.tanggalExpired) : 0;
-    const validitas: 'Valid' | 'Mendekati Expired' | 'Expired' = 
-      daysUntilExpiry <= 0 ? 'Expired' : 
-      daysUntilExpiry <= 30 ? 'Mendekati Expired' : 'Valid';
+    const daysUntilExpiry = formData.tanggalExpired
+      ? calculateDaysUntilExpiry(formData.tanggalExpired)
+      : 0;
+    const validitas: "Valid" | "Mendekati Expired" | "Expired" =
+      daysUntilExpiry <= 0
+        ? "Expired"
+        : daysUntilExpiry <= 30
+        ? "Mendekati Expired"
+        : "Valid";
 
     if (editingItem) {
       // Update existing training
@@ -424,19 +523,27 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
         ...formData,
         validitas,
         daysUntilExpiry,
-        isExpiringSoon: daysUntilExpiry <= 30 && daysUntilExpiry > 0
+        isExpiringSoon: daysUntilExpiry <= 30 && daysUntilExpiry > 0,
       } as TrainingDetail;
 
       const updatedPersonnel = {
         ...selectedPersonnel,
-        trainings: selectedPersonnel.trainings.map(t => t.id === editingItem.id ? updatedTraining : t)
+        trainings: selectedPersonnel.trainings.map((t) =>
+          t.id === editingItem.id ? updatedTraining : t
+        ),
       };
 
       // Recalculate personnel statistics
-      updatedPersonnel.validTraining = updatedPersonnel.trainings.filter(t => t.validitas === 'Valid').length;
-      updatedPersonnel.expiredTraining = updatedPersonnel.trainings.filter(t => t.validitas === 'Expired').length;
+      updatedPersonnel.validTraining = updatedPersonnel.trainings.filter(
+        (t) => t.validitas === "Valid"
+      ).length;
+      updatedPersonnel.expiredTraining = updatedPersonnel.trainings.filter(
+        (t) => t.validitas === "Expired"
+      ).length;
 
-      setPersonnelData(prev => prev.map(p => p.id === selectedPersonnel.id ? updatedPersonnel : p));
+      setPersonnelData((prev) =>
+        prev.map((p) => (p.id === selectedPersonnel.id ? updatedPersonnel : p))
+      );
       setSelectedPersonnel(updatedPersonnel);
       setShowEditModal(false);
     } else {
@@ -446,20 +553,26 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
         ...formData,
         validitas,
         daysUntilExpiry,
-        isExpiringSoon: daysUntilExpiry <= 30 && daysUntilExpiry > 0
+        isExpiringSoon: daysUntilExpiry <= 30 && daysUntilExpiry > 0,
       } as TrainingDetail;
 
       const updatedPersonnel = {
         ...selectedPersonnel,
         trainings: [...selectedPersonnel.trainings, newTraining],
-        totalTraining: selectedPersonnel.totalTraining + 1
+        totalTraining: selectedPersonnel.totalTraining + 1,
       };
 
       // Recalculate personnel statistics
-      updatedPersonnel.validTraining = updatedPersonnel.trainings.filter(t => t.validitas === 'Valid').length;
-      updatedPersonnel.expiredTraining = updatedPersonnel.trainings.filter(t => t.validitas === 'Expired').length;
+      updatedPersonnel.validTraining = updatedPersonnel.trainings.filter(
+        (t) => t.validitas === "Valid"
+      ).length;
+      updatedPersonnel.expiredTraining = updatedPersonnel.trainings.filter(
+        (t) => t.validitas === "Expired"
+      ).length;
 
-      setPersonnelData(prev => prev.map(p => p.id === selectedPersonnel.id ? updatedPersonnel : p));
+      setPersonnelData((prev) =>
+        prev.map((p) => (p.id === selectedPersonnel.id ? updatedPersonnel : p))
+      );
       setSelectedPersonnel(updatedPersonnel);
       setShowAddModal(false);
     }
@@ -468,12 +581,29 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
     setEditingItem(null);
   };
 
-  const handleInputChange = (field: keyof TrainingDetail, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (
+    field: keyof TrainingDetail,
+    value: string | File
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handlePersonnelInputChange = (field: keyof PersonnelData, value: string) => {
-    setPersonnelFormData(prev => ({ ...prev, [field]: value }));
+  const handleFileChange = (field: keyof TrainingDetail, file: File | null) => {
+    if (file) {
+      // Here you would typically upload the file to a server or storage
+      // and then save the URL/path to the formData.
+      // For this example, we'll just store the file name.
+      setFormData((prev) => ({ ...prev, [field]: file.name }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const handlePersonnelInputChange = (
+    field: keyof PersonnelData,
+    value: string
+  ) => {
+    setPersonnelFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -482,9 +612,14 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <GraduationCap className="h-8 w-8 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Kompetensi Personil</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Kompetensi Personil
+          </h1>
         </div>
-        <p className="text-gray-600">Monitoring dan manajemen kompetensi personil dengan integrasi HRD dan approval workflow</p>
+        <p className="text-gray-600">
+          Monitoring dan manajemen kompetensi personil dengan integrasi HRD dan
+          approval workflow
+        </p>
       </div>
 
       {/* Statistics Cards */}
@@ -492,18 +627,26 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Personil</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalPersonil}</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Personil
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.totalPersonil}
+              </p>
             </div>
             <User className="h-8 w-8 text-blue-500" />
           </div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Valid Certificates</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.validCertificates}</p>
+              <p className="text-sm font-medium text-gray-600">
+                Valid Certificates
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.validCertificates}
+              </p>
             </div>
             <CheckCircle className="h-8 w-8 text-green-500" />
           </div>
@@ -512,8 +655,12 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Mendekati Expired</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.mendekatiExpired}</p>
+              <p className="text-sm font-medium text-gray-600">
+                Mendekati Expired
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.mendekatiExpired}
+              </p>
             </div>
             <Clock className="h-8 w-8 text-yellow-500" />
           </div>
@@ -523,7 +670,9 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Expired</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.expired}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.expired}
+              </p>
             </div>
             <XCircle className="h-8 w-8 text-red-500" />
           </div>
@@ -533,7 +682,9 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Need Approval</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.needsApproval}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.needsApproval}
+              </p>
             </div>
             <AlertTriangle className="h-8 w-8 text-purple-500" />
           </div>
@@ -542,8 +693,12 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">HRD Sync Pending</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.hrdSyncPending}</p>
+              <p className="text-sm font-medium text-gray-600">
+                HRD Sync Pending
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.hrdSyncPending}
+              </p>
             </div>
             <ExternalLink className="h-8 w-8 text-orange-500" />
           </div>
@@ -553,7 +708,9 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.completed}
+              </p>
             </div>
             <CheckCircle className="h-8 w-8 text-teal-500" />
           </div>
@@ -590,11 +747,13 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                 Sync HRD
               </button>
               <button
-                onClick={!showDetailView ? handleAddPersonnel : handleAddTraining}
+                onClick={
+                  !showDetailView ? handleAddPersonnel : handleAddTraining
+                }
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
                 <PlusCircle className="h-4 w-4" />
-                {!showDetailView ? 'Tambah Personil' : 'Tambah Training'}
+                {!showDetailView ? "Tambah Personil" : "Tambah Training"}
               </button>
               <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
                 <Download className="h-4 w-4" />
@@ -609,7 +768,9 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
           <div className="p-4 border-b border-gray-200 bg-gray-50">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status Proses</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status Proses
+                </label>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
@@ -622,7 +783,9 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Validitas Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Validitas Sertifikat
+                </label>
                 <select
                   value={filterValiditas}
                   onChange={(e) => setFilterValiditas(e.target.value)}
@@ -637,8 +800,8 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
               <div className="flex items-end">
                 <button
                   onClick={() => {
-                    setFilterStatus('');
-                    setFilterValiditas('');
+                    setFilterStatus("");
+                    setFilterValiditas("");
                   }}
                   className="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
                 >
@@ -655,7 +818,10 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
             // Personnel List View
             <div className="space-y-4">
               {filteredPersonnelData.map((personil) => (
-                <div key={personil.id} className="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow">
+                <div
+                  key={personil.id}
+                  className="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow"
+                >
                   <div className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
@@ -663,13 +829,30 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                           <User className="h-10 w-10 text-blue-500 bg-blue-100 rounded-full p-2" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900">{personil.namaPersonil}</h3>
-                          <p className="text-sm text-gray-600">{personil.jabatan} - {personil.divisi}</p>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {personil.namaPersonil}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {personil.jabatan} - {personil.divisi}
+                          </p>
                           <div className="flex items-center space-x-4 mt-2">
-                            <span className="text-xs text-gray-500">Total Training: {personil.totalTraining}</span>
-                            <span className="text-xs text-green-600">Valid: {personil.validTraining}</span>
-                            <span className="text-xs text-red-600">Expired: {personil.expiredTraining}</span>
-                            <span className={getStatusBadge(personil.hrdSyncStatus, 'sync')}>{personil.hrdSyncStatus}</span>
+                            <span className="text-xs text-gray-500">
+                              Total Training: {personil.totalTraining}
+                            </span>
+                            <span className="text-xs text-green-600">
+                              Valid: {personil.validTraining}
+                            </span>
+                            <span className="text-xs text-red-600">
+                              Expired: {personil.expiredTraining}
+                            </span>
+                            <span
+                              className={getStatusBadge(
+                                personil.hrdSyncStatus,
+                                "sync"
+                              )}
+                            >
+                              {personil.hrdSyncStatus}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -712,11 +895,25 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                     <div className="flex items-center space-x-4">
                       <User className="h-12 w-12 text-blue-500 bg-blue-100 rounded-full p-3" />
                       <div>
-                        <h2 className="text-xl font-bold text-gray-900">{selectedPersonnel.namaPersonil}</h2>
-                        <p className="text-gray-600">{selectedPersonnel.jabatan} - {selectedPersonnel.divisi}</p>
+                        <h2 className="text-xl font-bold text-gray-900">
+                          {selectedPersonnel.namaPersonil}
+                        </h2>
+                        <p className="text-gray-600">
+                          {selectedPersonnel.jabatan} -{" "}
+                          {selectedPersonnel.divisi}
+                        </p>
                         <div className="flex items-center space-x-4 mt-2">
-                          <span className="text-sm text-gray-500">Total: {selectedPersonnel.totalTraining} Training</span>
-                          <span className={getStatusBadge(selectedPersonnel.hrdSyncStatus, 'sync')}>{selectedPersonnel.hrdSyncStatus}</span>
+                          <span className="text-sm text-gray-500">
+                            Total: {selectedPersonnel.totalTraining} Training
+                          </span>
+                          <span
+                            className={getStatusBadge(
+                              selectedPersonnel.hrdSyncStatus,
+                              "sync"
+                            )}
+                          >
+                            {selectedPersonnel.hrdSyncStatus}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -727,50 +924,115 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Sertifikat</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Sertifikat</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Terbit</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Expired</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validitas</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nama Sertifikat
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            No Sertifikat
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Sertifikat Personnel
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Vendor
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tgl Terbit
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tgl Expired
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Validitas
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Approval
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Aksi
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {selectedPersonnel.trainings.map((training) => (
                           <tr key={training.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{training.namaSertifikat}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {training.namaSertifikat}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{training.noSertifikat}</div>
+                              <div className="text-sm text-gray-900">
+                                {training.noSertifikat}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {training.sertifikatPersonnel}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-1">
                                 <Building className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-900">{training.vendor}</span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{training.tanggalTerbit}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{training.tanggalExpired}</div>
-                              <div className="flex items-center gap-1">
-                                <span className={getExpiryBadge(training.daysUntilExpiry || 0)}>
-                                  {formatExpiryText(training.daysUntilExpiry || 0)}
+                                <span className="text-sm text-gray-900">
+                                  {training.vendor}
                                 </span>
-                                {training.isExpiringSoon && <Bell className="h-4 w-4 text-orange-500" />}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {training.tanggalTerbit}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {training.tanggalExpired}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span
+                                  className={getExpiryBadge(
+                                    training.daysUntilExpiry || 0
+                                  )}
+                                >
+                                  {formatExpiryText(
+                                    training.daysUntilExpiry || 0
+                                  )}
+                                </span>
+                                {training.isExpiringSoon && (
+                                  <Bell className="h-4 w-4 text-orange-500" />
+                                )}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={getStatusBadge(training.validitas, 'validitas')}>{training.validitas}</span>
+                              <span
+                                className={getStatusBadge(
+                                  training.validitas,
+                                  "validitas"
+                                )}
+                              >
+                                {training.validitas}
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={getStatusBadge(training.approval, 'approval')}>{training.approval}</span>
+                              <span
+                                className={getStatusBadge(
+                                  training.approval,
+                                  "approval"
+                                )}
+                              >
+                                {training.approval}
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={getStatusBadge(training.status, 'proses')}>{training.status}</span>
+                              <span
+                                className={getStatusBadge(
+                                  training.status,
+                                  "proses"
+                                )}
+                              >
+                                {training.status}
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <div className="flex gap-1">
@@ -818,15 +1080,27 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
             if (selectedPersonnel && deleteItem) {
               const updatedPersonnel = {
                 ...selectedPersonnel,
-                trainings: selectedPersonnel.trainings.filter(t => t.id !== deleteItem.id),
-                totalTraining: selectedPersonnel.totalTraining - 1
+                trainings: selectedPersonnel.trainings.filter(
+                  (t) => t.id !== deleteItem.id
+                ),
+                totalTraining: selectedPersonnel.totalTraining - 1,
               };
-              
+
               // Recalculate statistics
-              updatedPersonnel.validTraining = updatedPersonnel.trainings.filter(t => t.validitas === 'Valid').length;
-              updatedPersonnel.expiredTraining = updatedPersonnel.trainings.filter(t => t.validitas === 'Expired').length;
-              
-              setPersonnelData(prev => prev.map(p => p.id === selectedPersonnel.id ? updatedPersonnel : p));
+              updatedPersonnel.validTraining =
+                updatedPersonnel.trainings.filter(
+                  (t) => t.validitas === "Valid"
+                ).length;
+              updatedPersonnel.expiredTraining =
+                updatedPersonnel.trainings.filter(
+                  (t) => t.validitas === "Expired"
+                ).length;
+
+              setPersonnelData((prev) =>
+                prev.map((p) =>
+                  p.id === selectedPersonnel.id ? updatedPersonnel : p
+                )
+              );
               setSelectedPersonnel(updatedPersonnel);
               setDeleteItem(null);
             }
@@ -842,40 +1116,56 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Tambah Personil Baru</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Personil</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Personil
+                </label>
                 <input
                   type="text"
-                  value={personnelFormData.namaPersonil || ''}
-                  onChange={(e) => handlePersonnelInputChange('namaPersonil', e.target.value)}
+                  value={personnelFormData.namaPersonil || ""}
+                  onChange={(e) =>
+                    handlePersonnelInputChange("namaPersonil", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nama personil"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jabatan
+                </label>
                 <input
                   type="text"
-                  value={personnelFormData.jabatan || ''}
-                  onChange={(e) => handlePersonnelInputChange('jabatan', e.target.value)}
+                  value={personnelFormData.jabatan || ""}
+                  onChange={(e) =>
+                    handlePersonnelInputChange("jabatan", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan jabatan"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Divisi</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Divisi
+                </label>
                 <input
                   type="text"
-                  value={personnelFormData.divisi || ''}
-                  onChange={(e) => handlePersonnelInputChange('divisi', e.target.value)}
+                  value={personnelFormData.divisi || ""}
+                  onChange={(e) =>
+                    handlePersonnelInputChange("divisi", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan divisi"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status HRD Sync</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status HRD Sync
+                </label>
                 <select
-                  value={personnelFormData.hrdSyncStatus || 'Pending'}
-                  onChange={(e) => handlePersonnelInputChange('hrdSyncStatus', e.target.value)}
+                  value={personnelFormData.hrdSyncStatus || "Pending"}
+                  onChange={(e) =>
+                    handlePersonnelInputChange("hrdSyncStatus", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Pending">Pending</option>
@@ -912,58 +1202,97 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Tambah Training Baru</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Sertifikat
+                </label>
                 <input
                   type="text"
-                  value={formData.namaSertifikat || ''}
-                  onChange={(e) => handleInputChange('namaSertifikat', e.target.value)}
+                  value={formData.namaSertifikat || ""}
+                  onChange={(e) =>
+                    handleInputChange("namaSertifikat", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nama sertifikat"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">No Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No Sertifikat
+                </label>
                 <input
                   type="text"
-                  value={formData.noSertifikat || ''}
-                  onChange={(e) => handleInputChange('noSertifikat', e.target.value)}
+                  value={formData.noSertifikat || ""}
+                  onChange={(e) =>
+                    handleInputChange("noSertifikat", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nomor sertifikat"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sertifikat Personnel
+                </label>
                 <input
                   type="text"
-                  value={formData.vendor || ''}
-                  onChange={(e) => handleInputChange('vendor', e.target.value)}
+                  value={formData.sertifikatPersonnel || ""}
+                  onChange={(e) =>
+                    handleInputChange("sertifikatPersonnel", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan nomor sertifikat personil"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
+                <input
+                  type="text"
+                  value={formData.vendor || ""}
+                  onChange={(e) => handleInputChange("vendor", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan vendor"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Terbit</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Terbit
+                </label>
                 <input
                   type="date"
-                  value={formData.tanggalTerbit || ''}
-                  onChange={(e) => handleInputChange('tanggalTerbit', e.target.value)}
+                  value={formData.tanggalTerbit || ""}
+                  onChange={(e) =>
+                    handleInputChange("tanggalTerbit", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Expired</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Expired
+                </label>
                 <input
                   type="date"
-                  value={formData.tanggalExpired || ''}
-                  onChange={(e) => handleInputChange('tanggalExpired', e.target.value)}
+                  value={formData.tanggalExpired || ""}
+                  onChange={(e) =>
+                    handleInputChange("tanggalExpired", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
                 <select
-                  value={formData.status || 'Pengajuan'}
-                  onChange={(e) => handleInputChange('status', e.target.value as 'Pengajuan' | 'Proses' | 'Selesai')}
+                  value={formData.status || "Pengajuan"}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "status",
+                      e.target.value as "Pengajuan" | "Proses" | "Selesai"
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Pengajuan">Pengajuan</option>
@@ -972,10 +1301,17 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Approval</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Approval
+                </label>
                 <select
-                  value={formData.approval || 'Pending'}
-                  onChange={(e) => handleInputChange('approval', e.target.value as 'Pending' | 'Approved' | 'Rejected')}
+                  value={formData.approval || "Pending"}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "approval",
+                      e.target.value as "Pending" | "Approved" | "Rejected"
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Pending">Pending</option>
@@ -984,13 +1320,18 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dokumen Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Dokumen Sertifikat
+                </label>
                 <input
-                  type="text"
-                  value={formData.documentSertifikat || ''}
-                  onChange={(e) => handleInputChange('documentSertifikat', e.target.value)}
+                  type="file"
+                  onChange={(e) =>
+                    handleFileChange(
+                      "documentSertifikat",
+                      e.target.files ? e.target.files[0] : null
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="URL atau path dokumen sertifikat"
                 />
               </div>
             </div>
@@ -1022,58 +1363,97 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Edit Training</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Sertifikat
+                </label>
                 <input
                   type="text"
-                  value={formData.namaSertifikat || ''}
-                  onChange={(e) => handleInputChange('namaSertifikat', e.target.value)}
+                  value={formData.namaSertifikat || ""}
+                  onChange={(e) =>
+                    handleInputChange("namaSertifikat", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nama sertifikat"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">No Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No Sertifikat
+                </label>
                 <input
                   type="text"
-                  value={formData.noSertifikat || ''}
-                  onChange={(e) => handleInputChange('noSertifikat', e.target.value)}
+                  value={formData.noSertifikat || ""}
+                  onChange={(e) =>
+                    handleInputChange("noSertifikat", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan nomor sertifikat"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sertifikat Personnel
+                </label>
                 <input
                   type="text"
-                  value={formData.vendor || ''}
-                  onChange={(e) => handleInputChange('vendor', e.target.value)}
+                  value={formData.sertifikatPersonnel || ""}
+                  onChange={(e) =>
+                    handleInputChange("sertifikatPersonnel", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan nomor sertifikat personil"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
+                <input
+                  type="text"
+                  value={formData.vendor || ""}
+                  onChange={(e) => handleInputChange("vendor", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan vendor"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Terbit</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Terbit
+                </label>
                 <input
                   type="date"
-                  value={formData.tanggalTerbit || ''}
-                  onChange={(e) => handleInputChange('tanggalTerbit', e.target.value)}
+                  value={formData.tanggalTerbit || ""}
+                  onChange={(e) =>
+                    handleInputChange("tanggalTerbit", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Expired</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Expired
+                </label>
                 <input
                   type="date"
-                  value={formData.tanggalExpired || ''}
-                  onChange={(e) => handleInputChange('tanggalExpired', e.target.value)}
+                  value={formData.tanggalExpired || ""}
+                  onChange={(e) =>
+                    handleInputChange("tanggalExpired", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
                 <select
-                  value={formData.status || 'Pengajuan'}
-                  onChange={(e) => handleInputChange('status', e.target.value as 'Pengajuan' | 'Proses' | 'Selesai')}
+                  value={formData.status || "Pengajuan"}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "status",
+                      e.target.value as "Pengajuan" | "Proses" | "Selesai"
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Pengajuan">Pengajuan</option>
@@ -1082,10 +1462,17 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Approval</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Approval
+                </label>
                 <select
-                  value={formData.approval || 'Pending'}
-                  onChange={(e) => handleInputChange('approval', e.target.value as 'Pending' | 'Approved' | 'Rejected')}
+                  value={formData.approval || "Pending"}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "approval",
+                      e.target.value as "Pending" | "Approved" | "Rejected"
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Pending">Pending</option>
@@ -1094,13 +1481,18 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dokumen Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Dokumen Sertifikat
+                </label>
                 <input
-                  type="text"
-                  value={formData.documentSertifikat || ''}
-                  onChange={(e) => handleInputChange('documentSertifikat', e.target.value)}
+                  type="file"
+                  onChange={(e) =>
+                    handleFileChange(
+                      "documentSertifikat",
+                      e.target.files ? e.target.files[0] : null
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="URL atau path dokumen sertifikat"
                 />
               </div>
             </div>
@@ -1133,64 +1525,104 @@ const QHSEKompetensiPersonilDashboard: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Detail Training</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Sertifikat
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
                   {viewingItem.namaSertifikat}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">No Sertifikat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No Sertifikat
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
                   {viewingItem.noSertifikat}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sertifikat Personnel
+                </label>
+                <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
+                  {viewingItem.sertifikatPersonnel}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
                   {viewingItem.vendor}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Terbit</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Terbit
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
                   {viewingItem.tanggalTerbit}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Expired</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Expired
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
                   {viewingItem.tanggalExpired}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Validitas</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Validitas
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
-                  <span className={getStatusBadge(viewingItem.validitas, 'validitas')}>
+                  <span
+                    className={getStatusBadge(
+                      viewingItem.validitas,
+                      "validitas"
+                    )}
+                  >
                     {viewingItem.validitas}
                   </span>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
-                  <span className={getStatusBadge(viewingItem.status, 'proses')}>
+                  <span
+                    className={getStatusBadge(viewingItem.status, "proses")}
+                  >
                     {viewingItem.status}
                   </span>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Approval</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Approval
+                </label>
                 <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
-                  <span className={getStatusBadge(viewingItem.approval, 'approval')}>
+                  <span
+                    className={getStatusBadge(viewingItem.approval, "approval")}
+                  >
                     {viewingItem.approval}
                   </span>
                 </div>
               </div>
               {viewingItem.documentSertifikat && (
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dokumen Sertifikat</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Dokumen Sertifikat
+                  </label>
                   <div className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
-                    <a href={viewingItem.documentSertifikat} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={viewingItem.documentSertifikat}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       {viewingItem.documentSertifikat}
                     </a>
                   </div>

@@ -247,20 +247,6 @@ const createGeneralMenu = (role: string): MenuSection => ({
           icon: "ClipboardList",
           path: "/pengadaan/tracking/monitoring",
         },
-        ...(role === "qhse"
-          ? [
-              {
-                title: "Daftar Induk Dokumen Internal",
-                icon: "FileText",
-                path: "/qhse/daftar-induk-dokumen-internal",
-              },
-              {
-                title: "Daftar Induk Dokumen Eksternal",
-                icon: "FileCheck",
-                path: "/qhse/daftar-induk-dokumen-eksternal",
-              },
-            ]
-          : []),
       ],
     },
     {
@@ -1872,6 +1858,22 @@ export const qhseMenu: MenuSection[] = [
     icon: "CheckCircle",
     items: [],
     directPath: "/qhse/approval-rfi/dashboard",
+  },
+  {
+    title: "ISO System",
+    icon: "ShieldCheck", // Using ShieldCheck icon for ISO System
+    items: [
+      {
+        title: "Daftar Induk Dokumen Internal",
+        icon: "FileText",
+        path: "/qhse/daftar-induk-dokumen-internal",
+      },
+      {
+        title: "Daftar Induk Dokumen Eksternal",
+        icon: "FileCheck",
+        path: "/qhse/daftar-induk-dokumen-eksternal",
+      },
+    ],
   },
   createGeneralMenu("qhse"),
 ];

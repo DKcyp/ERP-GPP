@@ -40,6 +40,9 @@ interface SimpleIndicator {
   name: string;
   description: string;
   value?: number; // Added to store numeric performance for indicators
+  bulan?: string;
+  tahun?: number;
+  document?: string;
 }
 
 interface KPIItem {
@@ -275,6 +278,9 @@ const QHSEPerformanceDashboard: React.FC = () => {
     name: string;
     description: string;
     value?: number;
+    bulan?: string;
+    tahun?: number;
+    document?: string;
   }>({ name: "", description: "", value: 0 });
   const [indicatorMode, setIndicatorMode] = useState<"add" | "edit">("add");
   const [selectedIndicatorId, setSelectedIndicatorId] = useState<string | null>(
@@ -303,7 +309,14 @@ const QHSEPerformanceDashboard: React.FC = () => {
     setIndicatorMode("add");
     setSelectedIndicatorId(null);
     setIndicatorContext(ctx);
-    setIndicatorForm({ name: "", description: "", value: 0 });
+    setIndicatorForm({
+      name: "",
+      description: "",
+      value: 0,
+      bulan: "",
+      tahun: new Date().getFullYear(),
+      document: "",
+    });
     setShowIndicatorModal(true);
   };
 
@@ -318,6 +331,9 @@ const QHSEPerformanceDashboard: React.FC = () => {
       name: item.name,
       description: item.description,
       value: item.value,
+      bulan: item.bulan,
+      tahun: item.tahun,
+      document: item.document,
     });
     setShowIndicatorModal(true);
   };
@@ -336,6 +352,9 @@ const QHSEPerformanceDashboard: React.FC = () => {
       name: indicatorForm.name.trim(),
       description: indicatorForm.description.trim(),
       value: indicatorForm.value,
+      bulan: indicatorForm.bulan,
+      tahun: indicatorForm.tahun,
+      document: indicatorForm.document,
     };
     if (!payload.name) return;
 
@@ -713,8 +732,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">
-                        {item.value}
+                        {item.value} {item.bulan} {item.tahun}
                       </span>
+                      {item.document && (
+                        <a
+                          href={`/documents/${item.document}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                        >
+                          <ExternalLink className="h-4 w-4" /> Lihat Dokumen
+                        </a>
+                      )}
                       {user?.role === "qhse" && (
                         <div className="flex gap-2">
                           <button
@@ -770,8 +799,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">
-                        {item.value}
+                        {item.value} {item.bulan} {item.tahun}
                       </span>
+                      {item.document && (
+                        <a
+                          href={`/documents/${item.document}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                        >
+                          <ExternalLink className="h-4 w-4" /> Lihat Dokumen
+                        </a>
+                      )}
                       {user?.role === "qhse" && (
                         <div className="flex gap-2">
                           <button
@@ -827,8 +866,18 @@ const QHSEPerformanceDashboard: React.FC = () => {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">
-                        {item.value}
+                        {item.value} {item.bulan} {item.tahun}
                       </span>
+                      {item.document && (
+                        <a
+                          href={`/documents/${item.document}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                        >
+                          <ExternalLink className="h-4 w-4" /> Lihat Dokumen
+                        </a>
+                      )}
                       {user?.role === "qhse" && (
                         <div className="flex gap-2">
                           <button
@@ -1257,6 +1306,49 @@ const QHSEPerformanceDashboard: React.FC = () => {
             </h2>
 
             <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Bulan
+                  </label>
+                  <select
+                    value={indicatorForm.bulan || ""}
+                    onChange={(e) =>
+                      setIndicatorForm((f) => ({ ...f, bulan: e.target.value }))
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="">Pilih Bulan</option>
+                    {BULAN_OPTIONS.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tahun
+                  </label>
+                  <select
+                    value={indicatorForm.tahun?.toString() || ""}
+                    onChange={(e) =>
+                      setIndicatorForm((f) => ({
+                        ...f,
+                        tahun: Number(e.target.value),
+                      }))
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="">Pilih Tahun</option>
+                    {TAHUN_OPTIONS.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nama Indikator
@@ -1305,6 +1397,26 @@ const QHSEPerformanceDashboard: React.FC = () => {
                   rows={3}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dokumen Pendukung (opsional)
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setIndicatorForm((f) => ({
+                      ...f,
+                      document: e.target.files?.[0]?.name || undefined,
+                    }))
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                {indicatorForm.document && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    File terpilih: {indicatorForm.document}
+                  </p>
+                )}
               </div>
             </div>
 
