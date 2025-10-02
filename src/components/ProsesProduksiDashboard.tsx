@@ -30,6 +30,7 @@ interface ProsesProduksiData {
   tanggalFinalApproval?: string;
   fileUrl?: string;
   fileName?: string;
+  keterangan?: string; // New field for Keterangan
 }
 
 const ProsesProduksiDashboard: React.FC = () => {
@@ -180,6 +181,7 @@ const ProsesProduksiDashboard: React.FC = () => {
         : undefined,
       fileUrl: formData.fileUrl,
       fileName: formData.fileName,
+      keterangan: formData.keterangan || "", // Include new Keterangan field
     };
 
     if (editItem) {
@@ -578,6 +580,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Status Report
                   </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    Keterangan
+                  </th>
                   <th className="px-3 py-2 text-center font-semibold text-gray-700">
                     Aksi
                   </th>
@@ -633,6 +638,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                       >
                         {item.statusReport}
                       </span>
+                    </td>
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.keterangan || "-"}
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-1.5">

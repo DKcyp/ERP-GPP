@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import SalesOrderModal, { SalesOrderFormData } from './SalesOrderModal';
-import SalesOrderDetailModal, { SalesOrderDetailData } from './SalesOrderDetailModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useState, useEffect } from "react";
+import SalesOrderModal, { SalesOrderFormData } from "./SalesOrderModal";
+import SalesOrderDetailModal, {
+  SalesOrderDetailData,
+} from "./SalesOrderDetailModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import {
   Search,
   Plus,
@@ -17,8 +19,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
-} from 'lucide-react';
+  ChevronsRight,
+} from "lucide-react";
 
 interface SalesOrder {
   id: string;
@@ -29,7 +31,7 @@ interface SalesOrder {
   namaProyek: string;
   sow: string;
   lokasi: string;
-  jenisPekerjaan: 'On Call' | 'Tender';
+  jenisPekerjaan: "On Call" | "Tender";
   tanggalMOB: string;
   tanggalDeMOB: string;
   tanggalDibuat: string;
@@ -44,106 +46,161 @@ interface SalesOrder {
 }
 
 const SalesOrderDashboard: React.FC = () => {
-  const [searchNoSO, setSearchNoSO] = useState('');
-  const [searchNomorKontrak, setSearchNomorKontrak] = useState('');
-  const [searchClient, setSearchClient] = useState('');
-  const [selectedJenisPekerjaan, setSelectedJenisPekerjaan] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [jenisPekerjaanDropdownOpen, setJenisPekerjaanDropdownOpen] = useState(false);
+  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchNomorKontrak, setSearchNomorKontrak] = useState("");
+  const [searchClient, setSearchClient] = useState("");
+  const [selectedJenisPekerjaan, setSelectedJenisPekerjaan] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [jenisPekerjaanDropdownOpen, setJenisPekerjaanDropdownOpen] =
+    useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [selectedDetail, setSelectedDetail] = useState<SalesOrderDetailData | null>(null);
+  const [selectedDetail, setSelectedDetail] =
+    useState<SalesOrderDetailData | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SalesOrder | null>(null);
-  const [goToPageInput, setGoToPageInput] = useState<string>('');
+  const [goToPageInput, setGoToPageInput] = useState<string>("");
 
   // Sample data matching the image
   const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([
     {
-      id: '1',
+      id: "1",
       no: 1,
-      noSO: 'SO001',
-      nomorKontrak: '001/02/P0810',
-      namaClient: 'Client A',
-      namaProyek: 'Project Alpha',
-      sow: 'Maintenance Server',
-      lokasi: 'Jakarta',
-      jenisPekerjaan: 'On Call',
-      tanggalMOB: '01-01-2025',
-      tanggalDeMOB: '31-01-2025',
-      tanggalDibuat: '01-01-2025',
-      estimasiSO: 'Rp 20.000.000',
+      noSO: "SO001",
+      nomorKontrak: "001/02/P0810",
+      namaClient: "Client A",
+      namaProyek: "Project Alpha",
+      sow: "Maintenance Server",
+      lokasi: "Jakarta",
+      jenisPekerjaan: "On Call",
+      tanggalMOB: "01-01-2025",
+      tanggalDeMOB: "31-01-2025",
+      tanggalDibuat: "01-01-2025",
+      estimasiSO: "Rp 20.000.000",
       tenagaKerja: [
-        { tenaga: 'Teknisi', tunjangan: 'Uang Makan', projectRate: '250000', hari: '5', margin: '10', hargaAkhir: '1375000' },
+        {
+          tenaga: "Teknisi",
+          tunjangan: "Uang Makan",
+          projectRate: "250000",
+          hari: "5",
+          margin: "10",
+          hargaAkhir: "1375000",
+        },
       ],
       jasa: [
-        { jasa: 'Maintenance', tunjangan: 'Transport', projectRate: '500000', hari: '2', margin: '15', hargaAkhir: '1150000' },
+        {
+          jasa: "Maintenance",
+          tunjangan: "Transport",
+          projectRate: "500000",
+          hari: "2",
+          margin: "15",
+          hargaAkhir: "1150000",
+        },
       ],
       alat: [
-        { alat: 'Forklift', jumlah: '1', hari: '2', satuan: 'unit', hargaSatuan: '1500000', margin: '5', hargaAkhir: '1575000' },
+        {
+          alat: "Forklift",
+          jumlah: "1",
+          hari: "2",
+          satuan: "unit",
+          hargaSatuan: "1500000",
+          margin: "5",
+          hargaAkhir: "1575000",
+        },
       ],
       barang: [
-        { namaBarang: 'Kabel NYA', jumlah: '100', hari: '1', satuan: 'meter', hargaSatuan: '5000', margin: '10', hargaAkhir: '550000' },
+        {
+          namaBarang: "Kabel NYA",
+          jumlah: "100",
+          hari: "1",
+          satuan: "meter",
+          hargaSatuan: "5000",
+          margin: "10",
+          hargaAkhir: "550000",
+        },
       ],
     },
     {
-      id: '2',
+      id: "2",
       no: 2,
-      noSO: 'SO032',
-      nomorKontrak: '001/03/P0811',
-      namaClient: 'Client B',
-      namaProyek: 'Project Beta',
-      sow: 'Software Development',
-      lokasi: 'Bandung',
-      jenisPekerjaan: 'Tender',
-      tanggalMOB: '03-01-2025',
-      tanggalDeMOB: '28-02-2025',
-      tanggalDibuat: '03-01-2025',
-      estimasiSO: 'Rp 15.500.000',
+      noSO: "SO032",
+      nomorKontrak: "001/03/P0811",
+      namaClient: "Client B",
+      namaProyek: "Project Beta",
+      sow: "Software Development",
+      lokasi: "Bandung",
+      jenisPekerjaan: "Tender",
+      tanggalMOB: "03-01-2025",
+      tanggalDeMOB: "28-02-2025",
+      tanggalDibuat: "03-01-2025",
+      estimasiSO: "Rp 15.500.000",
       jasa: [
-        { jasa: 'Instalasi', tunjangan: 'Uang Makan', projectRate: '750000', hari: '3', margin: '12', hargaAkhir: '2520000' },
+        {
+          jasa: "Instalasi",
+          tunjangan: "Uang Makan",
+          projectRate: "750000",
+          hari: "3",
+          margin: "12",
+          hargaAkhir: "2520000",
+        },
       ],
     },
     {
-      id: '3',
+      id: "3",
       no: 3,
-      noSO: 'SO023',
-      nomorKontrak: '001/04/P0810',
-      namaClient: 'Client C',
-      namaProyek: 'Project Gamma',
-      sow: 'Network Installation',
-      lokasi: 'Surabaya',
-      jenisPekerjaan: 'On Call',
-      tanggalMOB: '05-01-2025',
-      tanggalDeMOB: '30-03-2025',
-      tanggalDibuat: '05-01-2025',
-      estimasiSO: 'Rp 30.000.000',
+      noSO: "SO023",
+      nomorKontrak: "001/04/P0810",
+      namaClient: "Client C",
+      namaProyek: "Project Gamma",
+      sow: "Network Installation",
+      lokasi: "Surabaya",
+      jenisPekerjaan: "On Call",
+      tanggalMOB: "05-01-2025",
+      tanggalDeMOB: "30-03-2025",
+      tanggalDibuat: "05-01-2025",
+      estimasiSO: "Rp 30.000.000",
       alat: [
-        { alat: 'Crane', jumlah: '1', hari: '1', satuan: 'unit', hargaSatuan: '4000000', margin: '8', hargaAkhir: '4320000' },
+        {
+          alat: "Crane",
+          jumlah: "1",
+          hari: "1",
+          satuan: "unit",
+          hargaSatuan: "4000000",
+          margin: "8",
+          hargaAkhir: "4320000",
+        },
       ],
     },
     {
-      id: '4',
+      id: "4",
       no: 4,
-      noSO: 'SO012',
-      nomorKontrak: '002/02/P0819',
-      namaClient: 'Client D',
-      namaProyek: 'Project Delta',
-      sow: 'Data Center Setup',
-      lokasi: 'Yogyakarta',
-      jenisPekerjaan: 'Tender',
-      tanggalMOB: '07-01-2025',
-      tanggalDeMOB: '30-04-2025',
-      tanggalDibuat: '07-01-2025',
-      estimasiSO: 'Rp 22.800.000',
+      noSO: "SO012",
+      nomorKontrak: "002/02/P0819",
+      namaClient: "Client D",
+      namaProyek: "Project Delta",
+      sow: "Data Center Setup",
+      lokasi: "Yogyakarta",
+      jenisPekerjaan: "Tender",
+      tanggalMOB: "07-01-2025",
+      tanggalDeMOB: "30-04-2025",
+      tanggalDibuat: "07-01-2025",
+      estimasiSO: "Rp 22.800.000",
       barang: [
-        { namaBarang: 'Panel', jumlah: '3', hari: '1', satuan: 'unit', hargaSatuan: '500000', margin: '5', hargaAkhir: '1575000' },
+        {
+          namaBarang: "Panel",
+          jumlah: "3",
+          hari: "1",
+          satuan: "unit",
+          hargaSatuan: "500000",
+          margin: "5",
+          hargaAkhir: "1575000",
+        },
       ],
-    }
+    },
   ]);
 
   useEffect(() => {
@@ -164,11 +221,14 @@ const SalesOrderDashboard: React.FC = () => {
       jenisPekerjaan: formData.jenisPekerjaan,
       tanggalMOB: formData.tanggalMOB,
       tanggalDeMOB: formData.tanggalDeMOB,
-      tanggalDibuat: new Date(formData.tanggalDibuat).toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }),
+      tanggalDibuat: new Date(formData.tanggalDibuat).toLocaleDateString(
+        "id-ID",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }
+      ),
       estimasiSO: formData.estimasiSO,
       tenagaKerja: formData.tenagaKerja,
       jasa: formData.jasa,
@@ -177,7 +237,10 @@ const SalesOrderDashboard: React.FC = () => {
       mobDemob: formData.mobDemob,
       biayaLainLain: formData.biayaLainLain,
     };
-    setSalesOrders(prev => [newSalesOrder, ...prev.map(s => ({ ...s, no: s.no + 1 }))]);
+    setSalesOrders((prev) => [
+      newSalesOrder,
+      ...prev.map((s) => ({ ...s, no: s.no + 1 })),
+    ]);
   };
 
   const handleViewDetail = (item: SalesOrder) => {
@@ -211,36 +274,56 @@ const SalesOrderDashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setSalesOrders(prev => prev.filter(s => s.id !== itemToDelete.id));
+      setSalesOrders((prev) => prev.filter((s) => s.id !== itemToDelete.id));
       setItemToDelete(null);
     }
   };
 
   const getJenisPekerjaanColor = (jenis: string) => {
     switch (jenis) {
-      case 'On Call': return 'bg-cyan-100 text-cyan-800 border-cyan-200';
-      case 'Tender': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case "On Call":
+        return "bg-cyan-100 text-cyan-800 border-cyan-200";
+      case "Tender":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
-  const jenisPekerjaanOptions = ['On Call', 'Tender'];
+  const jenisPekerjaanOptions = ["On Call", "Tender"];
 
   // Filter data based on search criteria
-  const filteredData = salesOrders.filter(item => {
-    const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
-    const matchesNomorKontrak = item.nomorKontrak.toLowerCase().includes(searchNomorKontrak.toLowerCase());
-    const matchesClient = item.namaClient.toLowerCase().includes(searchClient.toLowerCase());
-    const matchesJenisPekerjaan = selectedJenisPekerjaan ? item.jenisPekerjaan === selectedJenisPekerjaan : true;
-    
+  const filteredData = salesOrders.filter((item) => {
+    const matchesNoSO = item.noSO
+      .toLowerCase()
+      .includes(searchNoSO.toLowerCase());
+    const matchesNomorKontrak = item.nomorKontrak
+      .toLowerCase()
+      .includes(searchNomorKontrak.toLowerCase());
+    const matchesClient = item.namaClient
+      .toLowerCase()
+      .includes(searchClient.toLowerCase());
+    const matchesJenisPekerjaan = selectedJenisPekerjaan
+      ? item.jenisPekerjaan === selectedJenisPekerjaan
+      : true;
+
     // Date filtering logic (if dates are provided)
-    const itemDate = new Date(item.tanggalDibuat.split('-').reverse().join('-')); // Assuming dd-mm-yyyy format
+    const itemDate = new Date(
+      item.tanggalDibuat.split("-").reverse().join("-")
+    ); // Assuming dd-mm-yyyy format
     const fromDate = dateFrom ? new Date(dateFrom) : null;
     const toDate = dateTo ? new Date(dateTo) : null;
 
-    const matchesDate = (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
+    const matchesDate =
+      (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
 
-    return matchesNoSO && matchesNomorKontrak && matchesClient && matchesJenisPekerjaan && matchesDate;
+    return (
+      matchesNoSO &&
+      matchesNomorKontrak &&
+      matchesClient &&
+      matchesJenisPekerjaan &&
+      matchesDate
+    );
   });
 
   // Pagination logic
@@ -283,14 +366,16 @@ const SalesOrderDashboard: React.FC = () => {
                 DAFTAR SALES ORDER
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Marketing</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Marketing
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-semibold">Sales Order</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -301,7 +386,7 @@ const SalesOrderDashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-transparent rounded-full -mr-16 -mt-16"></div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {/* Cari No SO */}
             <div className="space-y-2">
@@ -344,20 +429,30 @@ const SalesOrderDashboard: React.FC = () => {
               </label>
               <div className="relative">
                 <button
-                  onClick={() => setJenisPekerjaanDropdownOpen(!jenisPekerjaanDropdownOpen)}
+                  onClick={() =>
+                    setJenisPekerjaanDropdownOpen(!jenisPekerjaanDropdownOpen)
+                  }
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between bg-white text-xs"
                 >
-                  <span className={selectedJenisPekerjaan ? 'text-gray-900' : 'text-gray-500'}>
-                    {selectedJenisPekerjaan || 'Pilih jenis pekerjaan...'}
+                  <span
+                    className={
+                      selectedJenisPekerjaan ? "text-gray-900" : "text-gray-500"
+                    }
+                  >
+                    {selectedJenisPekerjaan || "Pilih jenis pekerjaan..."}
                   </span>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${jenisPekerjaanDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                      jenisPekerjaanDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-                
+
                 {jenisPekerjaanDropdownOpen && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
                     <button
                       onClick={() => {
-                        setSelectedJenisPekerjaan('');
+                        setSelectedJenisPekerjaan("");
                         setJenisPekerjaanDropdownOpen(false);
                       }}
                       className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors text-gray-500 text-xs"
@@ -373,9 +468,11 @@ const SalesOrderDashboard: React.FC = () => {
                         }}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors flex items-center space-x-2 text-xs"
                       >
-                        <span className={`w-3 h-3 rounded-full ${
-                          jenis === 'On Call' ? 'bg-cyan-500' : 'bg-red-500'
-                        }`}></span>
+                        <span
+                          className={`w-3 h-3 rounded-full ${
+                            jenis === "On Call" ? "bg-cyan-500" : "bg-red-500"
+                          }`}
+                        ></span>
                         <span>{jenis}</span>
                       </button>
                     ))}
@@ -436,7 +533,7 @@ const SalesOrderDashboard: React.FC = () => {
             {/* Search Button */}
             {/* Changed lg:col-span-2 to lg:col-span-1 to match input width */}
             <div className="lg:col-span-1 flex items-end">
-              <button 
+              <button
                 onClick={handleSearch}
                 className="w-full px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 flex items-center justify-center space-x-2 text-xs"
               >
@@ -445,10 +542,10 @@ const SalesOrderDashboard: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
           {/* Action Buttons below filter panel */}
           <div className="flex justify-end space-x-2 mt-6">
-            <button 
+            <button
               onClick={() => setIsModalOpen(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-600/25 flex items-center space-x-2 text-xs"
             >
@@ -474,52 +571,96 @@ const SalesOrderDashboard: React.FC = () => {
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">No</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nomor SO</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nomor Kontrak</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Client</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Nama Proyek</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">SOW</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Lokasi</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Jenis Pekerjaan</th>
-                  
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Tanggal Dibuat</th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">Estimasi SO</th>
-                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">Aksi</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    No
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Nomor SO
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Nomor Kontrak
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Nama Client
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Nama Proyek
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    SOW
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Lokasi
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Jenis Pekerjaan
+                  </th>
+
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Tanggal Dibuat
+                  </th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-900">
+                    Estimasi SO
+                  </th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-900">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={item.id}
                     className={`hover:bg-gray-50 transition-all duration-200 ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                    } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                    style={{ 
-                      animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                      animationFillMode: 'forwards'
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    } ${
+                      animateRows
+                        ? "animate-in fade-in slide-in-from-bottom-2"
+                        : "opacity-0"
+                    }`}
+                    style={{
+                      animationDelay: animateRows ? `${index * 100}ms` : "0ms",
+                      animationFillMode: "forwards",
                     }}
                   >
                     <td className="px-2 py-1">
-                      <span className="font-medium text-gray-900">{item.no}</span>
+                      <span className="font-medium text-gray-900">
+                        {item.no}
+                      </span>
                     </td>
-                    <td className="px-2 py-1 font-medium text-gray-900">{item.noSO}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.nomorKontrak}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.namaClient}</td>
-                    <td className="px-2 py-1 text-gray-600">{item.namaProyek}</td>
+                    <td className="px-2 py-1 font-medium text-gray-900">
+                      {item.noSO}
+                    </td>
+                    <td className="px-2 py-1 text-gray-600">
+                      {item.nomorKontrak}
+                    </td>
+                    <td className="px-2 py-1 text-gray-600">
+                      {item.namaClient}
+                    </td>
+                    <td className="px-2 py-1 text-gray-600">
+                      {item.namaProyek}
+                    </td>
                     <td className="px-2 py-1 text-gray-600">{item.sow}</td>
                     <td className="px-2 py-1 text-gray-600">{item.lokasi}</td>
                     <td className="px-2 py-1">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getJenisPekerjaanColor(item.jenisPekerjaan)}`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getJenisPekerjaanColor(
+                          item.jenisPekerjaan
+                        )}`}
+                      >
                         {item.jenisPekerjaan}
                       </span>
                     </td>
-                    
-                    <td className="px-2 py-1 text-gray-600">{item.tanggalDibuat}</td>
-                    <td className="px-2 py-1 text-gray-600 font-medium">{item.estimasiSO}</td>
+
+                    <td className="px-2 py-1 text-gray-600">
+                      {item.tanggalDibuat}
+                    </td>
+                    <td className="px-2 py-1 text-gray-600 font-medium">
+                      {item.estimasiSO}
+                    </td>
                     <td className="px-2 py-1">
                       <div className="flex items-center justify-center space-x-1">
-                        <button 
+                        <button
                           onClick={() => setIsModalOpen(true)}
                           className="p-1 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 hover:scale-110"
                           title="Edit"
@@ -533,7 +674,7 @@ const SalesOrderDashboard: React.FC = () => {
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleViewDetail(item)}
                           className="p-1 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 hover:scale-110"
                           title="View Details"
@@ -554,14 +695,18 @@ const SalesOrderDashboard: React.FC = () => {
               {/* Left: info and rows per page */}
               <div className="flex items-center flex-wrap gap-2 text-xs text-gray-700">
                 <span>
-                  Showing {filteredData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                  Showing {filteredData.length === 0 ? 0 : startIndex + 1} to{" "}
+                  {Math.min(endIndex, filteredData.length)} of{" "}
+                  {filteredData.length} entries
                 </span>
                 <span className="hidden sm:inline text-gray-300">|</span>
                 <label className="flex items-center gap-2">
                   <span className="text-gray-600">Rows per page:</span>
                   <select
                     value={itemsPerPage}
-                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                    onChange={(e) =>
+                      handleItemsPerPageChange(Number(e.target.value))
+                    }
                     className="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value={5}>5</option>
@@ -591,19 +736,21 @@ const SalesOrderDashboard: React.FC = () => {
                   <ChevronLeft className="h-4 w-4" />
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
-                      currentPage === page
-                        ? 'bg-blue-600 text-white shadow shadow-blue-600/20'
-                        : 'text-gray-700 hover:bg-white hover:text-blue-600'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow shadow-blue-600/20"
+                          : "text-gray-700 hover:bg-white hover:text-blue-600"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
@@ -632,7 +779,12 @@ const SalesOrderDashboard: React.FC = () => {
                   max={Math.max(1, totalPages)}
                   value={goToPageInput}
                   onChange={(e) => setGoToPageInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleGoToPage(); } }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleGoToPage();
+                    }
+                  }}
                   className="w-16 px-2 py-1 border border-gray-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
@@ -642,7 +794,9 @@ const SalesOrderDashboard: React.FC = () => {
                 >
                   Go
                 </button>
-                <span className="text-gray-500">/ {Math.max(1, totalPages)}</span>
+                <span className="text-gray-500">
+                  / {Math.max(1, totalPages)}
+                </span>
               </div>
             </div>
           </div>

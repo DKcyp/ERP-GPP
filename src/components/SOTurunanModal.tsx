@@ -29,6 +29,8 @@ export interface SOTurunanFormData {
   tanggalDemob: string;
   estimasiSO: string;
   keterangan: string;
+  statusSO?: "Open" | "Close";
+  statusDitagihkan?: "Sudah Ditagihkan" | "Belum Ditagihkan";
   jumlahQty?: string;
   pekerjaanRingkas?: Array<{
     jenisPekerjaan: string;
@@ -57,6 +59,8 @@ const SOTurunanModal: React.FC<SOTurunanModalProps> = ({
     tanggalDemob: "",
     estimasiSO: "",
     keterangan: "",
+    statusSO: "Open", // Default status
+    statusDitagihkan: "Belum Ditagihkan", // Default status
     jumlahQty: "",
     pekerjaanRingkas: [
       { jenisPekerjaan: "", hargaSatuan: "", jumlah: "", total: "" },

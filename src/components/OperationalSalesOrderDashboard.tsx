@@ -1,21 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { 
-  Search, 
-  Plus, 
-  FileSpreadsheet, 
-  FileText, 
-  File,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  ArrowUp
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { Search, FileSpreadsheet, FileText, File, ArrowUp } from "lucide-react";
 
 interface SalesOrderOperational {
   id: string;
@@ -30,91 +15,102 @@ interface SalesOrderOperational {
   planPenagihan: string;
   nilaiProduksi: string;
   actualPenagihan: string;
+  statusInvoice: string;
 }
 
 const OperationalSalesOrderDashboard: React.FC = () => {
-  const [searchNoSO, setSearchNoSO] = useState('');
-  const [searchSOTurunan, setSearchSOTurunan] = useState('');
-  const [searchNamaProyek, setSearchNamaProyek] = useState('');
-  const [selectedStatusInvoice, setSelectedStatusInvoice] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchSOTurunan, setSearchSOTurunan] = useState("");
+  const [searchNamaProyek, setSearchNamaProyek] = useState("");
+  const [selectedStatusInvoice, setSelectedStatusInvoice] =
+    useState<string>("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [animateRows, setAnimateRows] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<SalesOrderOperational | null>(null);
-  const [sortField, setSortField] = useState<keyof SalesOrderOperational | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [itemToDelete, setItemToDelete] =
+    useState<SalesOrderOperational | null>(null);
+  const [sortField, setSortField] = useState<
+    keyof SalesOrderOperational | null
+  >(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Sample data matching the image
-  const [salesOrderData, setSalesOrderData] = useState<SalesOrderOperational[]>([
-    {
-      id: '1',
-      no: 1,
-      noSO: 'SO001',
-      soTurunan: 'SO001.12',
-      namaProyek: 'Proyek PHE ONWJ',
-      mob: '24-12-2024',
-      demob: '24-01-2025',
-      nilaiKontrak: 'Rp 100.000.000',
-      hpp: 'Rp 50.000.000',
-      planPenagihan: 'Rp 70.000.000',
-      nilaiProduksi: 'Rp 75.000.000',
-      actualPenagihan: 'Rp 68.000.000'
-    },
-    {
-      id: '2',
-      no: 2,
-      noSO: 'SO002',
-      soTurunan: 'SO002.22',
-      namaProyek: 'Proyek OSES',
-      mob: '24-12-2024',
-      demob: '24-01-2025',
-      nilaiKontrak: 'Rp 90.000.000',
-      hpp: 'Rp 45.000.000',
-      planPenagihan: 'Rp 65.000.000',
-      nilaiProduksi: 'Rp 60.000.000',
-      actualPenagihan: 'Rp 50.000.000'
-    },
-    {
-      id: '3',
-      no: 3,
-      noSO: 'SO003',
-      soTurunan: 'SO003.124',
-      namaProyek: 'Proyek MEDCO',
-      mob: '01-01-2025',
-      demob: '20-01-2025',
-      nilaiKontrak: 'Rp 150.000.000',
-      hpp: 'Rp 80.000.000',
-      planPenagihan: 'Rp 120.000.000',
-      nilaiProduksi: 'Rp 130.000.000',
-      actualPenagihan: 'Rp 115.000.000'
-    },
-    {
-      id: '4',
-      no: 4,
-      noSO: 'SO004',
-      soTurunan: 'SO004.21',
-      namaProyek: 'Proyek A',
-      mob: '01-01-2025',
-      demob: '01-01-2025',
-      nilaiKontrak: 'Rp 120.000.000',
-      hpp: 'Rp 60.000.000',
-      planPenagihan: 'Rp 90.000.000',
-      nilaiProduksi: 'Rp 100.000.000',
-      actualPenagihan: 'Rp 85.000.000'
-    }
-  ]);
+  const [salesOrderData, setSalesOrderData] = useState<SalesOrderOperational[]>(
+    [
+      {
+        id: "1",
+        no: 1,
+        noSO: "SO001",
+        soTurunan: "SO001.12",
+        namaProyek: "Proyek PHE ONWJ",
+        mob: "24-12-2024",
+        demob: "24-01-2025",
+        nilaiKontrak: "Rp 100.000.000",
+        hpp: "Rp 50.000.000",
+        planPenagihan: "Rp 70.000.000",
+        nilaiProduksi: "Rp 75.000.000",
+        actualPenagihan: "Rp 68.000.000",
+        statusInvoice: "Paid",
+      },
+      {
+        id: "2",
+        no: 2,
+        noSO: "SO002",
+        soTurunan: "SO002.22",
+        namaProyek: "Proyek OSES",
+        mob: "24-12-2024",
+        demob: "24-01-2025",
+        nilaiKontrak: "Rp 90.000.000",
+        hpp: "Rp 45.000.000",
+        planPenagihan: "Rp 65.000.000",
+        nilaiProduksi: "Rp 60.000.000",
+        actualPenagihan: "Rp 50.000.000",
+        statusInvoice: "Pending",
+      },
+      {
+        id: "3",
+        no: 3,
+        noSO: "SO003",
+        soTurunan: "SO003.124",
+        namaProyek: "Proyek MEDCO",
+        mob: "01-01-2025",
+        demob: "20-01-2025",
+        nilaiKontrak: "Rp 150.000.000",
+        hpp: "Rp 80.000.000",
+        planPenagihan: "Rp 120.000.000",
+        nilaiProduksi: "Rp 130.000.000",
+        actualPenagihan: "Rp 115.000.000",
+        statusInvoice: "Open",
+      },
+      {
+        id: "4",
+        no: 4,
+        noSO: "SO004",
+        soTurunan: "SO004.21",
+        namaProyek: "Proyek A",
+        mob: "01-01-2025",
+        demob: "01-01-2025",
+        nilaiKontrak: "Rp 120.000.000",
+        hpp: "Rp 60.000.000",
+        planPenagihan: "Rp 90.000.000",
+        nilaiProduksi: "Rp 100.000.000",
+        actualPenagihan: "Rp 85.000.000",
+        statusInvoice: "Closed",
+      },
+    ]
+  );
 
   // Chart data for the bar chart
   const chartData = [
-    { label: 'Nilai Kontrak', value: 0.9, color: '#3B82F6' },
-    { label: 'HPP', value: 0.8, color: '#3B82F6' },
-    { label: 'Plan Penagihan', value: 0.7, color: '#3B82F6' },
-    { label: 'Nilai Produksi', value: 0.6, color: '#3B82F6' },
-    { label: 'Actual Penagihan', value: 0.5, color: '#3B82F6' },
-    { label: 'Margin', value: 0.4, color: '#3B82F6' }
+    { label: "Nilai Kontrak", value: 0.9, color: "#3B82F6" },
+    { label: "HPP", value: 0.8, color: "#3B82F6" },
+    { label: "Plan Penagihan", value: 0.7, color: "#3B82F6" },
+    { label: "Nilai Produksi", value: 0.6, color: "#3B82F6" },
+    { label: "Actual Penagihan", value: 0.5, color: "#3B82F6" },
+    { label: "Margin", value: 0.4, color: "#3B82F6" },
   ];
 
   useEffect(() => {
@@ -122,44 +118,53 @@ const OperationalSalesOrderDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleDeleteClick = (salesOrder: SalesOrderOperational) => {
-    setItemToDelete(salesOrder);
-    setDeleteModalOpen(true);
-  };
-
   const handleConfirmDelete = () => {
     if (itemToDelete) {
-      setSalesOrderData(prev => prev.filter(s => s.id !== itemToDelete.id));
+      setSalesOrderData((prev) => prev.filter((s) => s.id !== itemToDelete.id));
       setItemToDelete(null);
     }
   };
 
   const handleSort = (field: keyof SalesOrderOperational) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = salesOrderData.filter(item => {
-    const matchesNoSO = item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
-    const matchesSOTurunan = item.soTurunan.toLowerCase().includes(searchSOTurunan.toLowerCase());
-    const matchesNamaProyek = item.namaProyek.toLowerCase().includes(searchNamaProyek.toLowerCase());
-    
-    return matchesNoSO && matchesSOTurunan && matchesNamaProyek;
+  const filteredData = salesOrderData.filter((item) => {
+    const matchesNoSO = item.noSO
+      .toLowerCase()
+      .includes(searchNoSO.toLowerCase());
+    const matchesSOTurunan = item.soTurunan
+      .toLowerCase()
+      .includes(searchSOTurunan.toLowerCase());
+    const matchesNamaProyek = item.namaProyek
+      .toLowerCase()
+      .includes(searchNamaProyek.toLowerCase());
+
+    const matchesStatusInvoice = selectedStatusInvoice
+      ? item.statusInvoice === selectedStatusInvoice
+      : true;
+    return (
+      matchesNoSO &&
+      matchesSOTurunan &&
+      matchesNamaProyek &&
+      matchesStatusInvoice
+    );
   });
 
   // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    
+
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    if (sortDirection === 'asc') {
+
+    if (sortDirection === "asc") {
       return aValue > bValue ? 1 : -1;
     } else {
       return aValue < bValue ? 1 : -1;
@@ -185,7 +190,7 @@ const OperationalSalesOrderDashboard: React.FC = () => {
     if (!demob) return "-";
     const [dd, mm, yyyy] = demob.split("-").map((v) => parseInt(v, 10));
     if (!dd || !mm || !yyyy) return "-";
-    const demobDate = new Date(yyyy, (mm - 1), dd);
+    const demobDate = new Date(yyyy, mm - 1, dd);
     const today = new Date();
     // zero out time
     demobDate.setHours(0, 0, 0, 0);
@@ -211,39 +216,43 @@ const OperationalSalesOrderDashboard: React.FC = () => {
           {/* Left Column - Chart */}
           <div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Grafik Sales Order</h2>
-              
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                Grafik Sales Order
+              </h2>
+
               {/* Chart Container */}
               <div className="relative h-80">
                 <svg viewBox="0 0 400 300" className="w-full h-full">
                   {/* Y-axis labels */}
-                  {[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map((value, index) => (
-                    <g key={value}>
-                      <text
-                        x="25"
-                        y={280 - (value * 240)}
-                        textAnchor="end"
-                        className="text-xs fill-gray-500"
-                      >
-                        {value.toFixed(1)}
-                      </text>
-                      <line
-                        x1="30"
-                        y1={280 - (value * 240)}
-                        x2="380"
-                        y2={280 - (value * 240)}
-                        stroke="#E5E7EB"
-                        strokeWidth="1"
-                      />
-                    </g>
-                  ))}
+                  {[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map(
+                    (value) => (
+                      <g key={value}>
+                        <text
+                          x="25"
+                          y={280 - value * 240}
+                          textAnchor="end"
+                          className="text-xs fill-gray-500"
+                        >
+                          {value.toFixed(1)}
+                        </text>
+                        <line
+                          x1="30"
+                          y1={280 - value * 240}
+                          x2="380"
+                          y2={280 - value * 240}
+                          stroke="#E5E7EB"
+                          strokeWidth="1"
+                        />
+                      </g>
+                    )
+                  )}
 
                   {/* Chart bars */}
-                  {chartData.map((item, index) => {
+                  {chartData.map((item) => {
                     const barHeight = item.value * 240;
-                    const x = 50 + index * 50;
+                    const x = 50 + chartData.indexOf(item) * 50;
                     const y = 280 - barHeight;
-                    
+
                     return (
                       <g key={item.label}>
                         {/* Bar */}
@@ -256,7 +265,7 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                           rx="2"
                           className="hover:opacity-80 transition-opacity cursor-pointer"
                         />
-                        
+
                         {/* X-axis label */}
                         <text
                           x={x + 17.5}
@@ -274,7 +283,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                   {/* Legend */}
                   <g>
                     <rect x="50" y="20" width="12" height="12" fill="#3B82F6" />
-                    <text x="70" y="30" className="text-xs fill-gray-700">Data Belum 6 Bulan</text>
+                    <text x="70" y="30" className="text-xs fill-gray-700">
+                      Data Belum 6 Bulan
+                    </text>
                   </g>
                 </svg>
               </div>
@@ -290,7 +301,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                 <div className="bg-cyan-400 text-white p-4 rounded-md shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-semibold mb-1">Pencapaian On Call</h3>
+                      <h3 className="text-sm font-semibold mb-1">
+                        Pencapaian On Call
+                      </h3>
                       <p className="text-2xl font-bold">44%</p>
                     </div>
                   </div>
@@ -300,7 +313,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                 <div className="bg-indigo-600 text-white p-4 rounded-md shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-semibold mb-1">Nominal On Call</h3>
+                      <h3 className="text-sm font-semibold mb-1">
+                        Nominal On Call
+                      </h3>
                       <p className="text-lg font-bold">Rp. 200.000.000</p>
                     </div>
                   </div>
@@ -310,7 +325,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                 <div className="bg-green-600 text-white p-4 rounded-md shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-semibold mb-1">Pencapaian Tender</h3>
+                      <h3 className="text-sm font-semibold mb-1">
+                        Pencapaian Tender
+                      </h3>
                       <p className="text-2xl font-bold">60%</p>
                     </div>
                   </div>
@@ -320,7 +337,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                 <div className="bg-red-500 text-white p-4 rounded-md shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-semibold mb-1">Nominal Tender</h3>
+                      <h3 className="text-sm font-semibold mb-1">
+                        Nominal Tender
+                      </h3>
                       <p className="text-lg font-bold">Rp. 600.000.000</p>
                     </div>
                   </div>
@@ -375,7 +394,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
 
         {/* Daftar Sales Order Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Daftar Sales Order</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Daftar Sales Order
+          </h2>
 
           {/* Search and Filter Section */}
           <div className="space-y-4 mb-6">
@@ -470,7 +491,7 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 opacity-0">
                   Search
                 </label>
-                <button 
+                <button
                   onClick={handleSearch}
                   className="w-full h-10 px-4 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm flex items-center justify-center gap-2"
                 >
@@ -519,70 +540,130 @@ const OperationalSalesOrderDashboard: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th 
+                    <th
                       className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('no')}
+                      onClick={() => handleSort("no")}
                     >
                       <div className="flex items-center space-x-1">
                         <span>No SO</span>
-                        {sortField === 'no' && (
-                          <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                        {sortField === "no" && (
+                          <ArrowUp
+                            className={`h-3 w-3 transition-transform ${
+                              sortDirection === "desc" ? "rotate-180" : ""
+                            }`}
+                          />
                         )}
                       </div>
                     </th>
-                    <th 
+                    <th
                       className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('soTurunan')}
+                      onClick={() => handleSort("soTurunan")}
                     >
                       <div className="flex items-center space-x-1">
                         <span>SO Turunan</span>
-                        {sortField === 'soTurunan' && (
-                          <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                        {sortField === "soTurunan" && (
+                          <ArrowUp
+                            className={`h-3 w-3 transition-transform ${
+                              sortDirection === "desc" ? "rotate-180" : ""
+                            }`}
+                          />
                         )}
                       </div>
                     </th>
-                    <th 
+                    <th
                       className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                      onClick={() => handleSort('namaProyek')}
+                      onClick={() => handleSort("namaProyek")}
                     >
                       <div className="flex items-center space-x-1">
                         <span>Nama Proyek</span>
-                        {sortField === 'namaProyek' && (
-                          <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                        {sortField === "namaProyek" && (
+                          <ArrowUp
+                            className={`h-3 w-3 transition-transform ${
+                              sortDirection === "desc" ? "rotate-180" : ""
+                            }`}
+                          />
                         )}
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">MOB</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">DEMOB</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Kontrak</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">HPP</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nilai Produksi</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Actual Penagihan</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Delay Penagihan</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      MOB
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      DEMOB
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      Nilai Kontrak
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      HPP
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      Nilai Produksi
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      Actual Penagihan
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      Delay Penagihan
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                      Status Invoice
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {currentData.map((item, index) => (
-                    <tr 
+                  {currentData.map((item) => (
+                    <tr
                       key={item.id}
                       className={`hover:bg-gray-50 transition-colors ${
-                        index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                      } ${animateRows ? 'animate-in fade-in slide-in-from-bottom-2' : 'opacity-0'}`}
-                      style={{ 
-                        animationDelay: animateRows ? `${index * 100}ms` : '0ms',
-                        animationFillMode: 'forwards'
+                        currentData.indexOf(item) % 2 === 0
+                          ? "bg-white"
+                          : "bg-gray-25"
+                      } ${
+                        animateRows
+                          ? "animate-in fade-in slide-in-from-bottom-2"
+                          : "opacity-0"
+                      }`}
+                      style={{
+                        animationDelay: animateRows
+                          ? `${currentData.indexOf(item) * 100}ms`
+                          : "0ms",
+                        animationFillMode: "forwards",
                       }}
                     >
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noSO}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{item.soTurunan}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{item.namaProyek}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.mob}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.demob}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nilaiKontrak}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.hpp}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.nilaiProduksi}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.actualPenagihan}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{computeDelayPenagihan(item.demob)}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                        {item.noSO}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {item.soTurunan}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {item.namaProyek}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.mob}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.demob}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                        {item.nilaiKontrak}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.hpp}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.nilaiProduksi}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.actualPenagihan}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {computeDelayPenagihan(item.demob)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.statusInvoice}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -593,7 +674,9 @@ const OperationalSalesOrderDashboard: React.FC = () => {
             <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-700">
-                  Showing {startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                  Showing {startIndex + 1} to{" "}
+                  {Math.min(endIndex, filteredData.length)} of{" "}
+                  {filteredData.length} entries
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
@@ -603,7 +686,7 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                   >
                     Previous
                   </button>
-                  
+
                   <div className="flex items-center space-x-1">
                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                       let page;
@@ -616,15 +699,15 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                       } else {
                         page = currentPage - 2 + i;
                       }
-                      
+
                       return (
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
                           className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
                             currentPage === page
-                              ? 'bg-blue-600 text-white'
-                              : 'text-gray-700 hover:bg-gray-100'
+                              ? "bg-blue-600 text-white"
+                              : "text-gray-700 hover:bg-gray-100"
                           }`}
                         >
                           {page}
@@ -632,7 +715,7 @@ const OperationalSalesOrderDashboard: React.FC = () => {
                       );
                     })}
                   </div>
-                  
+
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}

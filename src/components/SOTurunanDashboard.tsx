@@ -17,7 +17,9 @@ interface SOTurunan {
   nilaiProduksi: string;
   actualPenagihan: string;
   delayPenagihan: string; // e.g., "229 Hari"
-  status: 'Menunggu Review' | 'Approve' | 'Reject';
+  status: "Menunggu Review" | "Approve" | "Reject";
+  statusSO: "Open" | "Close";
+  statusDitagihkan: "Sudah Ditagihkan" | "Belum Ditagihkan";
 }
 
 interface SOTurunanDashboardProps {
@@ -29,17 +31,13 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
   const [searchNamaProject, setSearchNamaProject] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [readOnlyModal, setReadOnlyModal] = useState(false);
   const [initialModalData, setInitialModalData] =
     useState<Partial<SOTurunanFormData> | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SOTurunan | null>(null);
-  const [sortField, setSortField] = useState<keyof SOTurunan | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Debug: log current role for this page
   useEffect(() => {
@@ -60,7 +58,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nilaiProduksi: "Rp 75.000.000",
       actualPenagihan: "Rp 68.000.000",
       delayPenagihan: "229 Hari",
-      status: 'Menunggu Review',
+      status: "Menunggu Review",
+      statusSO: "Open",
+      statusDitagihkan: "Belum Ditagihkan",
     },
     {
       id: "2",
@@ -75,7 +75,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nilaiProduksi: "Rp 60.000.000",
       actualPenagihan: "Rp 50.000.000",
       delayPenagihan: "229 Hari",
-      status: 'Approve',
+      status: "Approve",
+      statusSO: "Close",
+      statusDitagihkan: "Sudah Ditagihkan",
     },
     {
       id: "3",
@@ -90,7 +92,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nilaiProduksi: "Rp 130.000.000",
       actualPenagihan: "Rp 115.000.000",
       delayPenagihan: "233 Hari",
-      status: 'Reject',
+      status: "Reject",
+      statusSO: "Open",
+      statusDitagihkan: "Belum Ditagihkan",
     },
     {
       id: "4",
@@ -105,13 +109,14 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nilaiProduksi: "Rp 100.000.000",
       actualPenagihan: "Rp 85.000.000",
       delayPenagihan: "252 Hari",
-      status: 'Menunggu Review',
+      status: "Menunggu Review",
+      statusSO: "Close",
+      statusDitagihkan: "Sudah Ditagihkan",
     },
   ]);
 
   useEffect(() => {
-    // Trigger animation on component mount
-    setTimeout(() => setAnimateRows(true), 100);
+    // No animation trigger
   }, []);
 
   const handleAddSOTurunan = (formData: SOTurunanFormData) => {
@@ -121,14 +126,28 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       noSO: formData.soInduk,
       soTurunan: formData.soTurunan,
       namaProyek: formData.namaProyek || formData.namaClient || "",
-      mob: formData.tanggalMOB ? new Date(formData.tanggalMOB).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "",
-      demob: formData.tanggalDemob ? new Date(formData.tanggalDemob).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : "",
+      mob: formData.tanggalMOB
+        ? new Date(formData.tanggalMOB).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "",
+      demob: formData.tanggalDemob
+        ? new Date(formData.tanggalDemob).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "",
       nilaiKontrak: formData.estimasiSO || "Rp 0",
       hpp: "Rp 0",
       nilaiProduksi: "Rp 0",
       actualPenagihan: "Rp 0",
       delayPenagihan: "0 Hari",
-      status: 'Menunggu Review',
+      status: "Menunggu Review",
+      statusSO: formData.statusSO || "Open", // Include new Status SO field
+      statusDitagihkan: formData.statusDitagihkan || "Belum Ditagihkan", // Include new Status Ditagihkan field
     };
     setSOTurunanData((prev) => [
       newSOTurunan,
@@ -149,20 +168,44 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nomorKontrak: "",
       jenisPekerjaan: "",
       keterangan: "",
+      statusSO: item.statusSO,
+      statusDitagihkan: item.statusDitagihkan,
     });
     setIsModalOpen(true);
   };
 
-  const getStatusBadge = (status: SOTurunan['status']) => {
+  const getStatusBadge = (status: SOTurunan["status"]) => {
     switch (status) {
-      case 'Menunggu Review':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'Approve':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'Reject':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
+      case "Menunggu Review":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      case "Approve":
+        return "bg-emerald-100 text-emerald-800 border-emerald-200";
+      case "Reject":
+        return "bg-rose-100 text-rose-800 border-rose-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getStatusSOBadge = (status: SOTurunan["statusSO"]) => {
+    switch (status) {
+      case "Open":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Close":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getStatusDitagihkanBadge = (status: SOTurunan["statusDitagihkan"]) => {
+    switch (status) {
+      case "Sudah Ditagihkan":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "Belum Ditagihkan":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -175,15 +218,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
     if (itemToDelete) {
       setSOTurunanData((prev) => prev.filter((s) => s.id !== itemToDelete.id));
       setItemToDelete(null);
-    }
-  };
-
-  const handleSort = (field: keyof SOTurunan) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
     }
   };
 
@@ -200,23 +234,12 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
   });
 
   // Sort data
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortField) return 0;
-
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-
-    if (sortDirection === "asc") {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
-    }
-  });
+  const sortedData = [...filteredData]; // No sorting for now as handleSort is removed
 
   // Pagination logic
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(sortedData.length / 10); // itemsPerPage is now hardcoded to 10
+  const startIndex = (currentPage - 1) * 10;
+  const endIndex = startIndex + 10;
   const currentData = sortedData.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
@@ -255,19 +278,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nomorKontrak: "",
       jenisPekerjaan: "",
       keterangan: "",
+      statusSO: item.statusSO,
+      statusDitagihkan: item.statusDitagihkan,
     });
     setIsModalOpen(true);
-  };
-
-  const isReadOnly = role === "operational2";
-  const isApprover = role === "operational3";
-
-  const handleApprove = (item: SOTurunan) => {
-    console.log("Approved SO Turunan:", item);
-  };
-
-  const handleReject = (item: SOTurunan) => {
-    console.log("Rejected SO Turunan:", item);
   };
 
   return (
@@ -319,7 +333,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                   <input
                     type="text"
                     value={searchNoSO}
-                    onChange={(e) => { setSearchNoSO(e.target.value); handleSearch(); }}
+                    onChange={(e) => {
+                      setSearchNoSO(e.target.value);
+                      handleSearch();
+                    }}
                     className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="SO001"
                   />
@@ -335,7 +352,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                   <input
                     type="text"
                     value={searchNamaProject}
-                    onChange={(e) => { setSearchNamaProject(e.target.value); handleSearch(); }}
+                    onChange={(e) => {
+                      setSearchNamaProject(e.target.value);
+                      handleSearch();
+                    }}
                     className="w-full pl-2 pr-2 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs"
                     placeholder="PHE ONWJ"
                   />
@@ -405,36 +425,117 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
             <table className="w-full text-xs">
               <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 text-xs">
                 <tr>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">No SO</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">SO Turunan</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nama Proyek</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">MOB</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">DEMOB</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nilai Kontrak</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">HPP</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Nilai Produksi</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Actual Penagihan</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Delay Penagihan</th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">Status</th>
-                  <th className="px-2 py-2 text-center font-medium text-gray-700">Aksi</th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    No SO
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    SO Turunan
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Nama Proyek
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    MOB
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    DEMOB
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Nilai Kontrak
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    HPP
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Nilai Produksi
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Actual Penagihan
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Delay Penagihan
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Status SO
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Status Ditagihkan
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Status HPP
+                  </th>
+                  <th className="px-2 py-2 text-center font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentData.map((item, index) => (
-                  <tr key={item.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
-                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.noSO}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.soTurunan}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.namaProyek}</td>
-                    <td className="px-2 py-2 text-xs text-gray-600">{item.mob}</td>
-                    <td className="px-2 py-2 text-xs text-gray-600">{item.demob}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">{item.nilaiKontrak}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.hpp}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.nilaiProduksi}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.actualPenagihan}</td>
-                    <td className="px-2 py-2 text-xs text-gray-900">{item.delayPenagihan}</td>
-                    <td className="px-2 py-2 text-xs"><span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(item.status)}`}>{item.status}</span></td>
+                  <tr
+                    key={item.id}
+                    className={`hover:bg-gray-50 ${
+                      index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                    }`}
+                  >
+                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">
+                      {item.noSO}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.soTurunan}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.namaProyek}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-600">
+                      {item.mob}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-600">
+                      {item.demob}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900 font-medium">
+                      {item.nilaiKontrak}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.hpp}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.nilaiProduksi}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.actualPenagihan}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      {item.delayPenagihan}
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusSOBadge(
+                          item.statusSO
+                        )}`}
+                      >
+                        {item.statusSO}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusDitagihkanBadge(
+                          item.statusDitagihkan
+                        )}`}
+                      >
+                        {item.statusDitagihkan}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2 text-xs">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(
+                          item.status
+                        )}`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
                     <td className="px-2 py-2 text-center">
-                      {role === "operational" && item.status !== 'Approve' && (
+                      {role === "operational" && item.status !== "Approve" && (
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => openProcess(item)}
@@ -459,7 +560,12 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                         </button>
                       )}
                       {role !== "operational" && role !== "operational2" && (
-                        <button onClick={() => openProcess(item)} className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors">Proses</button>
+                        <button
+                          onClick={() => openProcess(item)}
+                          className="px-2 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition-colors"
+                        >
+                          Proses
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -471,7 +577,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {currentData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, filteredData.length)} of {filteredData.length} entries
+                Showing {currentData.length === 0 ? 0 : startIndex + 1} to{" "}
+                {Math.min(endIndex, filteredData.length)} of{" "}
+                {filteredData.length} entries
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -482,17 +590,21 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                   Previous
                 </button>
                 <div className="flex items-center space-x-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-                        currentPage === page ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
                 </div>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
