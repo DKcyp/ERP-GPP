@@ -2297,5 +2297,21 @@ export const proconMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "Operation",
+    icon: "Settings", // You can choose a more appropriate icon from lucide-react
+    items: [
+      {
+        title: "Produksi",
+        icon: "Factory", // You can choose a more appropriate icon from lucide-react
+        path: "/procon/operation/produksi",
+      },
+      {
+        title: "Sales Order",
+        icon: "ShoppingCart",
+        path: "/procon/sales-order/dashboard",
+      },
+    ],
+  },
   createGeneralMenu("procon"),
 ];

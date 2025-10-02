@@ -29,6 +29,8 @@ interface PIEntry {
   dueDays?: number; // Jumlah hari jatuh tempo dari tanggal dokumen
   contractOrPO: string; // nomor kontrak / PO
   bankCode: string; // Kode Bank
+  currency: string; // New field for currency (e.g., Rp, Ringgit, Dollar)
+  keterangan: string; // New empty column for notes
   newInputField?: string; // New field added after bankCode
   attachmentTugas?: File; // File attachment
   attachmentFileName?: string; // Store filename for display
@@ -44,10 +46,9 @@ interface PIEntry {
 
 // Helper function to format currency
 const formatRupiah = (value: number): string => {
-  if (!value) return '';
-  return `Rp ${value.toLocaleString('id-ID')}`;
+  if (!value) return "";
+  return `Rp ${value.toLocaleString("id-ID")}`;
 };
-
 
 // Helper: compute due date from document date (dd/MM/yyyy) + days
 const computeDueDate = (documentDate: string, days: number): string => {
@@ -110,6 +111,12 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     ],
     []
   );
+
+  const salesNames = useMemo(
+    () => ["Budi", "Sari", "Andi", "Citra", "Dewi"],
+    []
+  );
+
   // Filters
   const [qClient, setQClient] = useState("");
   const [qSOInduk, setQSOInduk] = useState("");
@@ -128,6 +135,8 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       salesName: "Budi",
       item: "Implementasi modul A",
       taxType: "PPN",
+      currency: "Rp", // Sample data
+      keterangan: "Contoh keterangan untuk PI 001", // Sample data
       dueDate: "15/03/2025",
       contractOrPO: "PO-001/ABC/2025",
       bankCode: "BCA-123",
@@ -147,6 +156,8 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       salesName: "Sari",
       item: "Integrasi API",
       taxType: "Non PPN",
+      currency: "$", // Sample data
+      keterangan: "", // Sample data
       dueDate: "25/02/2025",
       contractOrPO: "KTR-XYZ-2025-02",
       bankCode: "MANDIRI-456",
@@ -200,6 +211,8 @@ const ProconPembuatanPIDashboard: React.FC = () => {
             remainingKontrak: r.remainingKontrak,
             noPI: r.noPI ?? "", // Include noPI in mapping
             totalPI: r.totalPI ?? 0, // Include totalPI in mapping
+            currency: r.currency ?? "Rp", // Include currency in mapping
+            keterangan: r.keterangan ?? "", // Include keterangan in mapping
           }));
           setData(mapped);
         }
@@ -244,13 +257,15 @@ const ProconPembuatanPIDashboard: React.FC = () => {
     noPI: "", // Initialize noPI
     newInputField: "", // Initialize newInputField
     totalPI: 0, // Initialize totalPI
+    currency: "Rp", // Initialize currency
+    keterangan: "", // Initialize keterangan
   });
 
   // New: Estimasi Nilai Kontrak field (tab content uses shared HPPDetailTabs)
   const [estimasiNilaiKontrak, setEstimasiNilaiKontrak] = useState<number>(0);
-  
+
   // State for formatted Total PI display
-  const [totalPIDisplay, setTotalPIDisplay] = useState<string>('');
+  const [totalPIDisplay, setTotalPIDisplay] = useState<string>("");
 
   // Print-related state and component have been removed as per new requirements.
 
@@ -302,8 +317,10 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       noPI: generatePINumber(), // Generate No. PI for new entries
       newInputField: "", // Initialize newInputField for new entries
       totalPI: 0, // Initialize totalPI for new entries
+      currency: "Rp", // Initialize currency for new entries
+      keterangan: "", // Initialize keterangan for new entries
     });
-    setTotalPIDisplay(''); // Reset display format
+    setTotalPIDisplay(""); // Reset display format
     setEditId(null);
     setIsAddOpen(true);
   };
@@ -372,8 +389,10 @@ const ProconPembuatanPIDashboard: React.FC = () => {
       noPI: found.noPI || "", // Load noPI when editing
       newInputField: found.newInputField || "", // Load newInputField when editing
       totalPI: found.totalPI || 0, // Load totalPI when editing
+      currency: found.currency || "Rp", // Load currency when editing
+      keterangan: found.keterangan || "", // Load keterangan when editing
     });
-    setTotalPIDisplay(found.totalPI ? formatRupiah(found.totalPI) : ''); // Set display format
+    setTotalPIDisplay(found.totalPI ? formatRupiah(found.totalPI) : ""); // Set display format
     setEditId(id);
     setIsAddOpen(true);
   };
@@ -642,6 +661,12 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                     Pajak
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">
+                    Mata Uang
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">
+                    Keterangan
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-900">
                     Due Pembayaran
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-900">
@@ -674,13 +699,19 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                       {row.salesName}
                     </td>
                     <td className="px-3 py-2 text-gray-700">{row.taxType}</td>
+                    <td className="px-3 py-2 text-gray-700">{row.currency}</td>
+                    <td className="px-3 py-2 text-gray-700">
+                      {row.keterangan}
+                    </td>
                     <td className="px-3 py-2 text-gray-700">{row.dueDate}</td>
                     <td className="px-3 py-2 text-gray-700">
                       {row.contractOrPO}
                     </td>
                     <td className="px-3 py-2 text-gray-700">{row.bankCode}</td>
                     <td className="px-3 py-2 text-gray-900 font-bold text-right">
-                      {row.totalPI ? `Rp ${row.totalPI.toLocaleString('id-ID')}` : '-'}
+                      {row.totalPI
+                        ? `Rp ${row.totalPI.toLocaleString("id-ID")}`
+                        : "-"}
                     </td>
                     <td className="px-3 py-2 text-gray-700">
                       {row.attachmentFileName ? (
@@ -725,7 +756,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                 {filtered.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={11}
                       className="px-3 py-6 text-center text-gray-500"
                     >
                       Tidak ada data
@@ -850,14 +881,38 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Nama Sales
                 </label>
-                <input
-                  type="text"
+                <select
                   value={form.salesName}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, salesName: e.target.value }))
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                />
+                >
+                  <option value="">Pilih Nama Sales</option>
+                  {salesNames.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Mata Uang */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Mata Uang
+                </label>
+                <select
+                  value={form.currency}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, currency: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                >
+                  <option value="Rp">Rp</option>
+                  <option value="$">Dollar</option>
+                  <option value="RM">Ringgit</option>
+                  <option value="SGD">SGD</option>
+                </select>
               </div>
               {/* Pajak */}
               <div>
@@ -877,6 +932,21 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                   <option value="PPN">PPN</option>
                   <option value="Non PPN">Non PPN</option>
                 </select>
+              </div>
+              {/* Keterangan */}
+              <div className="col-span-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Keterangan
+                </label>
+                <textarea
+                  value={form.keterangan}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, keterangan: e.target.value }))
+                  }
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  placeholder="Tambahkan keterangan di sini..."
+                ></textarea>
               </div>
               {/* Due Pembayaran (hari) & Tanggal Jatuh Tempo */}
               <div>
@@ -944,7 +1014,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                   onChange={(e) => {
                     const inputValue = e.target.value;
                     // Allow only numbers and format as currency
-                    const numericValue = inputValue.replace(/[^\d]/g, '');
+                    const numericValue = inputValue.replace(/[^\d]/g, "");
                     if (numericValue) {
                       const number = parseInt(numericValue);
                       setTotalPIDisplay(formatRupiah(number));
@@ -953,7 +1023,7 @@ const ProconPembuatanPIDashboard: React.FC = () => {
                         totalPI: number,
                       }));
                     } else {
-                      setTotalPIDisplay('');
+                      setTotalPIDisplay("");
                       setForm((prev) => ({
                         ...prev,
                         totalPI: 0,

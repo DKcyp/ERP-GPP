@@ -65,6 +65,8 @@ interface ProconSalesOrder {
   remark: string;
   logDataPak: string;
   logMekanik: string;
+  tunjanganGaji?: string; // New field for tunjangan+gaji
+  prorateTeknisi?: string; // New field for prorate teknisi
 }
 
 const ProconSalesOrderDashboard: React.FC = () => {
@@ -141,6 +143,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "CRITICAL - IMMEDIATE ACTION REQUIRED",
       logDataPak: "DELAYED",
       logMekanik: "DELAYED",
+      tunjanganGaji: "5,000,000", // Sample data
+      prorateTeknisi: "1,000,000", // Sample data
     },
     {
       id: "2",
@@ -189,6 +193,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "URGENT - EQUIPMENT REQUIRED",
       logDataPak: "PENDING",
       logMekanik: "PENDING",
+      tunjanganGaji: "0", // Sample data
+      prorateTeknisi: "0", // Sample data
     },
     // White/Light rows - Normal/Completed status
     {
@@ -238,6 +244,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "EXCELLENT PERFORMANCE",
       logDataPak: "COMPLETE",
       logMekanik: "COMPLETE",
+      tunjanganGaji: "10,000,000", // Sample data
+      prorateTeknisi: "2,000,000", // Sample data
     },
     {
       id: "4",
@@ -286,6 +294,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "GOOD QUALITY WORK",
       logDataPak: "COMPLETE",
       logMekanik: "COMPLETE",
+      tunjanganGaji: "7,500,000", // Sample data
+      prorateTeknisi: "1,500,000", // Sample data
     },
     // Pink/Salmon rows - Warning/Attention status
     {
@@ -327,14 +337,17 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "5",
       remarkFinance: "PAYMENT PENDING",
       status: "WARNING",
-      lir: "PARTIAL",
+      lirAmount: "0", // Changed from "PARTIAL" to "0"
+      paymentStatus: "Pending", // Added missing field
       yearSheet: "2025",
-      statusPekerjaan: "WARNING",
+      statusPekerjaan: "WARNING", // Added missing field
       statusAR: "OUTSTANDING",
       statusAP: "PENDING",
       remark: "MINOR DELAYS - MONITORING REQUIRED",
       logDataPak: "PARTIAL",
       logMekanik: "PARTIAL",
+      tunjanganGaji: "6,000,000", // Sample data
+      prorateTeknisi: "1,200,000", // Sample data
     },
     // Blue rows - In Progress status
     {
@@ -384,6 +397,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "WORK IN PROGRESS - ON SCHEDULE",
       logDataPak: "PROGRESS",
       logMekanik: "PROGRESS",
+      tunjanganGaji: "4,000,000", // Sample data
+      prorateTeknisi: "800,000", // Sample data
     },
     // Green rows - Good/Excellent status
     {
@@ -425,8 +440,17 @@ const ProconSalesOrderDashboard: React.FC = () => {
       delayPayment: "-6",
       remarkFinance: "EARLY PAYMENT",
       status: "EXCELLENT",
+      lirAmount: "0", // Added missing field
+      paymentStatus: "Paid", // Added missing field
+      yearSheet: "2025", // Added missing field
+      statusPekerjaan: "SELESAI", // Added missing field
+      statusAR: "LUNAS", // Added missing field
+      statusAP: "PAID", // Added missing field
+      remark: "EXCELLENT PERFORMANCE", // Added missing field
       logDataPak: "EXCELLENT",
       logMekanik: "EXCELLENT",
+      tunjanganGaji: "12,000,000", // Sample data
+      prorateTeknisi: "2,400,000", // Sample data
     },
   ]);
 
@@ -644,6 +668,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
         month: "short",
         year: "2-digit",
       }),
+      tunjanganGaji: "0", // Initialize new field
+      prorateTeknisi: "0", // Initialize new field
     });
   };
 
@@ -1114,6 +1140,18 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     STATUS
                   </th>
                   <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    TUNJANGAN+GAJI
+                  </th>
+                  <th
+                    className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
+                    rowSpan={2}
+                  >
+                    PRORATE TEKNISI
+                  </th>
+                  <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
                     rowSpan={2}
                   >
@@ -1215,9 +1253,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
                         className={`font-bold ${
-                          parseInt(item.delaySubmitToFinance) > 0
+                          parseInt(item.delaySubmitToFinance || "0") > 0
                             ? "text-red-600 bg-red-100 px-2 py-1 rounded-full"
-                            : parseInt(item.delaySubmitToFinance) < 0
+                            : parseInt(item.delaySubmitToFinance || "0") < 0
                             ? "text-green-600 bg-green-100 px-2 py-1 rounded-full"
                             : "text-gray-600"
                         }`}
@@ -1228,9 +1266,9 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
                         className={`font-bold ${
-                          parseInt(item.delaySubmitPI) > 0
+                          parseInt(item.delaySubmitPI || "0") > 0
                             ? "text-red-600 bg-red-100 px-2 py-1 rounded-full"
-                            : parseInt(item.delaySubmitPI) < 0
+                            : parseInt(item.delaySubmitPI || "0") < 0
                             ? "text-green-600 bg-green-100 px-2 py-1 rounded-full"
                             : "text-gray-600"
                         }`}
@@ -1305,6 +1343,12 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       >
                         {item.paymentStatus}
                       </span>
+                    </td>
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.tunjanganGaji && `Rp ${item.tunjanganGaji}`}
+                    </td>
+                    <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
+                      {item.prorateTeknisi && `Rp ${item.prorateTeknisi}`}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <div className="flex items-center justify-center space-x-1">

@@ -1,613 +1,491 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { FileSpreadsheet, FileText, File, ArrowUp } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Factory, // Icon for Produksi
+} from "lucide-react";
 
-interface ProduksiData {
+interface ProduksiEntry {
   id: string;
-  no: number;
-  noSO: string;
-  noSOTurunan: string;
-  namaProyek: string;
-  mob: string;
-  demob: string;
-  tglPenerimaanReportTeknisi: string;
-  tglPenerimaanFinalReport: string;
-  nilaiProduksi: string;
-  statusReport: "Approved" | "Pending" | "Revisi";
+  tanggal: string;
+  namaProduk: string;
+  jumlah: number;
+  satuan: string;
+  status: "Planned" | "In Progress" | "Completed" | "Cancelled";
+  keterangan?: string;
 }
 
 const ProduksiDashboard: React.FC = () => {
-  const auth = useAuth() as any;
-  const user = auth?.user as { username: string; role: string } | undefined;
-  const [searchSO, setSearchSO] = useState("");
-  const [searchSOTurunan, setSearchSOTurunan] = useState("");
-  const [searchNamaProject, setSearchNamaProject] = useState("");
-  const [selectedStatusReport, setSelectedStatusReport] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [animateRows, setAnimateRows] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<ProduksiData | null>(null);
-  const [sortField, setSortField] = useState<keyof ProduksiData | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  // CRUD form state
-  const [showFormModal, setShowFormModal] = useState(false);
-  const [editingItem, setEditingItem] = useState<ProduksiData | null>(null);
-  const [form, setForm] = useState<Omit<ProduksiData, "id" | "no">>({
-    noSO: "",
-    noSOTurunan: "",
-    namaProyek: "",
-    mob: "",
-    demob: "",
-    tglPenerimaanReportTeknisi: "",
-    tglPenerimaanFinalReport: "",
-    nilaiProduksi: "",
-    statusReport: "Pending",
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<
+    ProduksiEntry["status"] | ""
+  >("");
+  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [currentEntry, setCurrentEntry] = useState<ProduksiEntry | null>(null);
+  const [formData, setFormData] = useState<Omit<ProduksiEntry, "id">>({
+    tanggal: "",
+    namaProduk: "",
+    jumlah: 0,
+    satuan: "",
+    status: "Planned",
+    keterangan: "",
   });
 
-  const handleAdd = () => {
-    setEditingItem(null);
-    setForm({
-      noSO: "",
-      noSOTurunan: "",
-      namaProyek: "",
-      mob: "",
-      demob: "",
-      tglPenerimaanReportTeknisi: "",
-      tglPenerimaanFinalReport: "",
-      nilaiProduksi: "",
-      statusReport: "Pending",
-    });
-    setShowFormModal(true);
-  };
-
-  const handleEditClick = (item: ProduksiData) => {
-    setEditingItem(item);
-    setForm({
-      noSO: item.noSO,
-      noSOTurunan: item.noSOTurunan,
-      namaProyek: item.namaProyek,
-      mob: item.mob,
-      demob: item.demob,
-      tglPenerimaanReportTeknisi: item.tglPenerimaanReportTeknisi,
-      tglPenerimaanFinalReport: item.tglPenerimaanFinalReport,
-      nilaiProduksi: item.nilaiProduksi,
-      statusReport: item.statusReport,
-    });
-    setShowFormModal(true);
-  };
-
-  const handleSave = () => {
-    // basic validation
-    if (!form.noSO || !form.noSOTurunan || !form.namaProyek) {
-      alert("Mohon lengkapi No SO, No SO Turunan, dan Nama Proyek.");
-      return;
-    }
-
-    if (editingItem) {
-      setProduksiData((prev) =>
-        prev.map((p) =>
-          p.id === editingItem.id
-            ? ({ ...editingItem, ...form } as ProduksiData)
-            : p
-        )
-      );
-    } else {
-      // generate new id and sequential number
-      const newId = `${Date.now()}`;
-      const maxNo = produksiData.reduce((acc, cur) => Math.max(acc, cur.no), 0);
-      const newItem: ProduksiData = {
-        id: newId,
-        no: maxNo + 1,
-        ...form,
-      };
-      setProduksiData((prev) => [newItem, ...prev]);
-    }
-    setShowFormModal(false);
-    setEditingItem(null);
-  };
-
-  // Sample data matching the first image
-  const [produksiData, setProduksiData] = useState<ProduksiData[]>([
+  const [data, setData] = useState<ProduksiEntry[]>([
     {
       id: "1",
-      no: 1,
-      noSO: "SO101",
-      noSOTurunan: "SO101.12",
-      namaProyek: "Proyek A",
-      mob: "01-02-2025",
-      demob: "20-02-2025",
-      tglPenerimaanReportTeknisi: "22-02-2025",
-      tglPenerimaanFinalReport: "25-02-2025",
-      nilaiProduksi: "Rp 80,000,000",
-      statusReport: "Approved",
+      tanggal: "2025-01-10",
+      namaProduk: "Produk A",
+      jumlah: 100,
+      satuan: "pcs",
+      status: "Completed",
+      keterangan: "Batch pertama selesai",
     },
     {
       id: "2",
-      no: 2,
-      noSO: "SO102",
-      noSOTurunan: "SO102.33",
-      namaProyek: "Proyek B",
-      mob: "05-02-2025",
-      demob: "25-02-2025",
-      tglPenerimaanReportTeknisi: "27-02-2025",
-      tglPenerimaanFinalReport: "-",
-      nilaiProduksi: "Rp 30,000,000",
-      statusReport: "Pending",
+      tanggal: "2025-01-15",
+      namaProduk: "Produk B",
+      jumlah: 250,
+      satuan: "kg",
+      status: "In Progress",
+      keterangan: "Sedang dalam proses",
     },
     {
       id: "3",
-      no: 3,
-      noSO: "SO103",
-      noSOTurunan: "SO103.12",
-      namaProyek: "Proyek C",
-      mob: "10-02-2025",
-      demob: "28-02-2025",
-      tglPenerimaanReportTeknisi: "02-03-2025",
-      tglPenerimaanFinalReport: "06-03-2025",
-      nilaiProduksi: "Rp 45,000,000",
-      statusReport: "Approved",
-    },
-    {
-      id: "4",
-      no: 4,
-      noSO: "SO104",
-      noSOTurunan: "SO104.87",
-      namaProyek: "Proyek D",
-      mob: "15-02-2025",
-      demob: "05-03-2025",
-      tglPenerimaanReportTeknisi: "07-03-2025",
-      tglPenerimaanFinalReport: "-",
-      nilaiProduksi: "Rp 10,000,000",
-      statusReport: "Revisi",
+      tanggal: "2025-01-20",
+      namaProduk: "Produk C",
+      jumlah: 50,
+      satuan: "unit",
+      status: "Planned",
+      keterangan: "Akan dimulai minggu depan",
     },
   ]);
 
-  const statusReportOptions = ["Approved", "Pending", "Revisi"];
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  useEffect(() => {
-    // Trigger animation on component mount
-    setTimeout(() => setAnimateRows(true), 100);
-  }, []);
+  const filteredData = useMemo(() => {
+    let filtered = data;
 
-  const handleDeleteClick = (produksi: ProduksiData) => {
-    setItemToDelete(produksi);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      setProduksiData((prev) => prev.filter((p) => p.id !== itemToDelete.id));
-      setItemToDelete(null);
-    }
-  };
-
-  const handleSort = (field: keyof ProduksiData) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Approved":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "Revisi":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-
-    // Filter data based on search criteria
-    const filteredData = produksiData.filter((item) => {
-      const matchesSO = item.noSO
-        .toLowerCase()
-        .includes(searchSO.toLowerCase());
-      const matchesSOTurunan = item.noSOTurunan
-        .toLowerCase()
-        .includes(searchSOTurunan.toLowerCase());
-      const matchesNamaProject = item.namaProyek
-        .toLowerCase()
-        .includes(searchNamaProject.toLowerCase());
-      const matchesStatus = selectedStatusReport
-        ? item.statusReport === selectedStatusReport
-        : true;
-
-      return (
-        matchesSO && matchesSOTurunan && matchesNamaProject && matchesStatus
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (entry) =>
+          entry.namaProduk.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.keterangan?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          entry.satuan.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    });
+    }
 
-    // Sort data
-    const sortedData = [...filteredData].sort((a, b) => {
-      if (!sortField) return 0;
+    if (filterStatus) {
+      filtered = filtered.filter((entry) => entry.status === filterStatus);
+    }
+    return filtered;
+  }, [data, searchTerm, filterStatus]);
 
-      const aValue = a[sortField];
-      const bValue = b[sortField];
-
-      if (sortDirection === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    // Pagination logic
-    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentTableData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentData = sortedData.slice(startIndex, endIndex);
+    return filteredData.slice(startIndex, endIndex);
+  }, [currentPage, itemsPerPage, filteredData]);
 
-    const handlePageChange = (page: number) => {
-      setCurrentPage(page);
-    };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
-    const handleSearch = () => {
-      setCurrentPage(1); // Reset to first page when searching
-    };
+  const handleItemsPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
 
-    return (
-      <div className="min-h-screen bg-gray-50">
-        {/* Header Section */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">
-              DAFTAR PRODUKSI
-            </h1>
+  const openAddModal = () => {
+    setCurrentEntry(null);
+    setFormData({
+      tanggal: new Date().toISOString().split("T")[0],
+      namaProduk: "",
+      jumlah: 0,
+      satuan: "",
+      status: "Planned",
+      keterangan: "",
+    });
+    setIsAddEditModalOpen(true);
+  };
 
-            {/* Search and Filter Section */}
-            <div className="space-y-4 mb-6">
-              {/* First Row - Search Inputs */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                {/* Search SO */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Cari SO
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={searchSO}
-                      onChange={(e) => setSearchSO(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                      placeholder="SO001"
-                    />
-                    <button
-                      onClick={handleSearch}
-                      className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors text-sm"
+  const openEditModal = (entry: ProduksiEntry) => {
+    setCurrentEntry(entry);
+    setFormData({ ...entry });
+    setIsAddEditModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsAddEditModalOpen(false);
+    setCurrentEntry(null);
+    setFormData({
+      tanggal: "",
+      namaProduk: "",
+      jumlah: 0,
+      satuan: "",
+      status: "Planned",
+      keterangan: "",
+    });
+  };
+
+  const handleFormChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "jumlah" ? (value === "" ? 0 : parseInt(value, 10)) : value,
+    }));
+  };
+
+  const handleSave = () => {
+    if (currentEntry) {
+      // Edit existing entry
+      setData((prev) =>
+        prev.map((entry) =>
+          entry.id === currentEntry.id ? { ...formData, id: entry.id } : entry
+        )
+      );
+    } else {
+      // Add new entry
+      setData((prev) => [
+        ...prev,
+        { ...formData, id: String(prev.length + 1) },
+      ]);
+    }
+    handleModalClose();
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this entry?")) {
+      setData((prev) => prev.filter((entry) => entry.id !== id));
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+          <Factory className="h-7 w-7 text-blue-600" />
+          Produksi Dashboard
+        </h1>
+
+        {/* Filters and Add Button */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <div className="relative w-full md:w-64">
+              <input
+                type="text"
+                placeholder="Search product, notes..."
+                className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            </div>
+
+            <select
+              className="w-full md:w-48 px-4 py-2 border rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+              value={filterStatus}
+              onChange={(e) =>
+                setFilterStatus(e.target.value as ProduksiEntry["status"] | "")
+              }
+            >
+              <option value="">All Status</option>
+              <option value="Planned">Planned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <button
+            className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm flex items-center gap-2 hover:bg-blue-700 transition-colors w-full md:w-auto justify-center"
+            onClick={openAddModal}
+          >
+            <Plus className="h-4 w-4" />
+            Tambah Produksi
+          </button>
+        </div>
+
+        {/* Produksi Table */}
+        <div className="overflow-x-auto bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nama Produk
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Jumlah
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Satuan
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Keterangan
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentTableData.map((entry) => (
+                <tr key={entry.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {entry.tanggal}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {entry.namaProduk}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {entry.jumlah}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {entry.satuan}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                        ${
+                          entry.status === "Completed"
+                            ? "bg-green-100 text-green-800"
+                            : entry.status === "In Progress"
+                            ? "bg-blue-100 text-blue-800"
+                            : entry.status === "Planned"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
                     >
-                      Search
-                    </button>
-                  </div>
-                </div>
-
-                {/* Search SO Turunan */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Cari SO Turunan
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={searchSOTurunan}
-                      onChange={(e) => setSearchSOTurunan(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                      placeholder="SO001.12"
-                    />
-                    <button
-                      onClick={handleSearch}
-                      className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors text-sm"
-                    >
-                      Search
-                    </button>
-                  </div>
-                </div>
-
-                {/* Search Nama Project */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Cari Nama Project
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={searchNamaProject}
-                      onChange={(e) => setSearchNamaProject(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                      placeholder="Proyek Medco"
-                    />
-                    <button
-                      onClick={handleSearch}
-                      className="px-3 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors text-sm"
-                    >
-                      Search
-                    </button>
-                  </div>
-                </div>
-
-                {/* Status Report Dropdown */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Pilih Status Report
-                  </label>
-                  <select
-                    value={selectedStatusReport}
-                    onChange={(e) => setSelectedStatusReport(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                  >
-                    <option value="">--Pilih Status Report--</option>
-                    {statusReportOptions.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Second Row - Date Range and Search Button */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                {/* Periode */}
-                <div className="space-y-2 lg:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Periode
-                  </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                      placeholder="03/03/2025"
-                    />
-                    <span className="text-sm text-gray-500">s.d</span>
-                    <input
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                      placeholder="03/03/2025"
-                    />
-                  </div>
-                </div>
-
-                {/* Search and Tambah Buttons (below Status Report) */}
-                <div className="flex items-end lg:col-start-4">
-                  <div className="w-full flex items-center gap-2 justify-end">
-                    <button
-                      onClick={handleSearch}
-                      className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md font-medium transition-colors text-sm"
-                    >
-                      Search
-                    </button>
-                    {user?.role === "operational" && (
+                      {entry.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {entry.keterangan || "-"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end items-center gap-2">
                       <button
-                        onClick={handleAdd}
-                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors text-sm"
+                        className="text-blue-600 hover:text-blue-900"
+                        onClick={() => openEditModal(entry)}
+                        title="Edit"
                       >
-                        Tambah
+                        <Edit className="h-4 w-4" />
                       </button>
-                    )}
-                  </div>
-                </div>
+                      <button
+                        className="text-red-600 hover:text-red-900"
+                        onClick={() => handleDelete(entry.id)}
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {currentTableData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    No data found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-6 flex justify-between items-center">
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <span>Rows per page:</span>
+            <select
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="border rounded-lg px-2 py-1 text-sm"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="p-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="p-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="px-3 py-1 bg-blue-600 text-white rounded-lg">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Add/Edit Modal */}
+      {isAddEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">
+                {currentEntry ? "Edit Produksi" : "Tambah Produksi"}
+              </h2>
+              <button
+                onClick={handleModalClose}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal
+                </label>
+                <input
+                  type="date"
+                  name="tanggal"
+                  value={formData.tanggal}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-2 border rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Produk
+                </label>
+                <input
+                  type="text"
+                  name="namaProduk"
+                  value={formData.namaProduk}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-2 border rounded-lg text-sm"
+                  placeholder="e.g., Kemeja, Celana"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jumlah
+                </label>
+                <input
+                  type="number"
+                  name="jumlah"
+                  value={formData.jumlah}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-2 border rounded-lg text-sm"
+                  min={0}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Satuan
+                </label>
+                <input
+                  type="text"
+                  name="satuan"
+                  value={formData.satuan}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-2 border rounded-lg text-sm"
+                  placeholder="e.g., pcs, kg, unit"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-2 border rounded-lg text-sm"
+                >
+                  <option value="Planned">Planned</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Keterangan
+                </label>
+                <textarea
+                  name="keterangan"
+                  value={formData.keterangan}
+                  onChange={handleFormChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border rounded-lg text-sm"
+                  placeholder="Tambahkan keterangan produksi..."
+                ></textarea>
               </div>
             </div>
 
-            {/* Export Buttons */}
-            <div className="flex justify-end space-x-2 mb-6">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-                <FileSpreadsheet className="h-4 w-4" />
-                <span>Export Excel</span>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={handleModalClose}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+              >
+                Batal
               </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-                <File className="h-4 w-4" />
-                <span>Export CSV</span>
-              </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
-                <FileText className="h-4 w-4" />
-                <span>Export PDF</span>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
+                Simpan
               </button>
             </div>
           </div>
         </div>
-
-        {/* Delete Confirmation Modal */}
-        <ConfirmDeleteModal
-          isOpen={deleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          onConfirm={handleConfirmDelete}
-          itemName={itemToDelete?.namaProyek}
-        />
-
-        {/* Add/Edit Form Modal */}
-        {showFormModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
-              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {editingItem ? "Edit Produksi" : "Tambah Produksi"}
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowFormModal(false);
-                    setEditingItem(null);
-                  }}
-                  className="px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 text-sm"
-                >
-                  Tutup
-                </button>
-              </div>
-              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    No SO
-                  </label>
-                  <input
-                    type="text"
-                    value={form.noSO}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, noSO: e.target.value }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="SO101"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    No SO Turunan
-                  </label>
-                  <input
-                    type="text"
-                    value={form.noSOTurunan}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, noSOTurunan: e.target.value }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="SO101.12"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nama Proyek
-                  </label>
-                  <input
-                    type="text"
-                    value={form.namaProyek}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, namaProyek: e.target.value }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="Masukkan nama proyek"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    MOB
-                  </label>
-                  <input
-                    type="text"
-                    value={form.mob}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, mob: e.target.value }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="dd-mm-yyyy"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    DEMOB
-                  </label>
-                  <input
-                    type="text"
-                    value={form.demob}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, demob: e.target.value }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="dd-mm-yyyy"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tgl Penerimaan Report Teknisi
-                  </label>
-                  <input
-                    type="text"
-                    value={form.tglPenerimaanReportTeknisi}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        tglPenerimaanReportTeknisi: e.target.value,
-                      }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="dd-mm-yyyy"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tgl Penerimaan Final Report
-                  </label>
-                  <input
-                    type="text"
-                    value={form.tglPenerimaanFinalReport}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        tglPenerimaanFinalReport: e.target.value,
-                      }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="dd-mm-yyyy atau '-'"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nilai Produksi
-                  </label>
-                  <input
-                    type="text"
-                    value={form.nilaiProduksi}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, nilaiProduksi: e.target.value }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                    placeholder="Rp 0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status Report
-                  </label>
-                  <select
-                    value={form.statusReport}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        statusReport: e.target
-                          .value as ProduksiData["statusReport"],
-                      }))
-                    }
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
-                  >
-                    <option value="Approved">Approved</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Revisi">Revisi</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
-                <button
-                  onClick={() => {
-                    setShowFormModal(false);
-                    setEditingItem(null);
-                  }}
-                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
-                >
-                  Batal
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-                >
-                  Simpan
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
+      )}
+    </div>
+  );
 };
 
 export default ProduksiDashboard;

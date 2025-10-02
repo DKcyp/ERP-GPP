@@ -56,7 +56,6 @@ import MasterVendorDashboard from "./MasterVendorDashboard";
 import SeleksiSupplierDashboard from "./SeleksiSupplierDashboard";
 import POBarangDashboard from "./POBarangDashboard";
 import POJasaDashboard from "./POJasaDashboard";
-import ProsesSeleksiSupplierDashboard from "./ProsesSeleksiSupplierDashboard";
 import PODashboard from "./PODashboard";
 import ListPRDashboard from "./ListPRDashboard";
 import DaftarPenerimaanBarangDashboard from "./DaftarPenerimaanBarangDashboard";
@@ -84,7 +83,6 @@ import FinanceLaporanPembayaranHutangDashboard from "./FinanceLaporanPembayaranH
 import ReimburseVoucherDashboard from "./ReimburseVoucherDashboard";
 import ARDashboard from "./ARDashboard";
 import ProsesPembayaranARDashboard from "./ProsesPembayaranARDashboard";
-import LaporanARDashboard from "./LaporanARDashboard";
 import FinancePembayaranGajiPage from "./FinancePembayaranGajiPage";
 import ReportKontrakDashboard from "./ReportKontrakDashboard";
 import InsentifMarketingDashboard from "./InsentifMarketingDashboard";
@@ -284,7 +282,7 @@ import STPDashboard from "./STPDashboard";
 import FinancePajakRekonsiliasiMasukanDashboard from "./FinancePajakRekonsiliasiMasukanDashboard";
 import FinancePajakRekonsiliasiKeluaranDashboard from "./FinancePajakRekonsiliasiKeluaranDashboard";
 import FinancePajakProsesHutangDashboard from "./FinancePajakProsesHutangDashboard";
-import TaxDashboard from './TaxDashboard';
+import TaxDashboard from "./TaxDashboard";
 
 // Procon Dashboards
 import ProconMainDashboard from "./ProconMainDashboard";
@@ -296,7 +294,6 @@ import ProconPembuatanPIDashboard from "./ProconPembuatanPIDashboard";
 import ProconHPPIndukDashboard from "./ProconHPPIndukDashboard";
 import LaporanLabaRugi from "./LaporanLabaRugi";
 import LaporanPerSO from "./LaporanPerSO";
-import ProconLRPDashboard from "./ProconLRPDashboard";
 import ProconLRPTunjanganTimesheetTeknisi from "./ProconLRPTunjanganTimesheetTeknisi";
 import ProconLRPGaji from "./ProconLRPGaji";
 import ProconLRPTimesheetBarang from "./ProconLRPTimesheetBarang";
@@ -307,7 +304,6 @@ import ProconPODashboard from "./ProconPODashboard";
 import ProconPOProses from "./ProconPOProses";
 import ProconPOApproval from "./ProconPOApproval";
 // NEW: Procon Approval Dashboards
-import ApprovalPoJasa from "../pages/procon/approval/ApprovalPoJasa";
 import ApprovalTimesheet from "../pages/procon/approval/ApprovalTimesheet";
 
 // GA Template
@@ -376,10 +372,6 @@ import GeneralKendaraanLogbookDriver from "./GeneralKendaraanLogbookDriver";
 import GeneralKendaraanApprovalDriver from "./GeneralKendaraanApprovalDriver";
 
 import {
-  BarChart3,
-  TrendingUp,
-  Users,
-  DollarSign,
   Calendar,
   Target,
   Award,
@@ -395,7 +387,6 @@ import {
 } from "lucide-react";
 import PembagianAPDRecordDashboard from "./PembagianAPDRecordDashboard";
 import PerundanganK3LDashboard from "./PerundanganK3LDashboard";
-import DaftarIndukDokumenEksternalDashboard from "./DaftarIndukDokumenEksternalDashboard";
 import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDashboard";
 import QHSEKPIDepartmentDashboard from "./QHSEKPIDepartmentDashboard";
 import QHSEKompetensiPerusahaanDashboard from "./QHSEKompetensiPerusahaanDashboard";
@@ -1139,6 +1130,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/procon/sales-order/dashboard") {
       return <ProconSalesOrderDashboard />;
     }
+    if (currentPage === "/procon/operation/produksi") {
+      return <ProduksiDashboard />;
+    }
     if (currentPage === "/procon/kontrak-expenditure") {
       return <ProconKontrakExpenditureDashboard />;
     }
@@ -1723,7 +1717,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     // Approve PI
     if (currentPage === "/finance/approve-pi") {
-      return <FinanceApprovePIDashboard/>
+      return <FinanceApprovePIDashboard />;
     }
 
     if (currentPage === "/finance/voucher-reimburse/approval-ptj-voucher") {
