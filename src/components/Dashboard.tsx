@@ -391,6 +391,7 @@ import QHSEExpiredBarangHasilApprovedDashboard from "./QHSEExpiredBarangHasilApp
 import FinanceApprovePIDashboard from "./FinanceApprovePIDashboard";
 
 import MonitoringNilaiPOPage from "../pages/marketing/MonitoringNilaiPOPage";
+import MasterAllowancePage from "../pages/hrd/MasterAllowancePage";
 
 interface DashboardProps {
   currentPage: string;
@@ -912,6 +913,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/allowance/perjalanan-dinas") {
       return <PerjalananDinasDashboard />;
+    }
+    if (currentPage === "/hrd/allowance/master") {
+      return <MasterAllowancePage />;
     }
     if (currentPage === "/hrd/pegawai/daftar") {
       return <DaftarPegawaiDashboard />;

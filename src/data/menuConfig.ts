@@ -854,6 +854,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Plane",
         path: "/hrd/allowance/perjalanan-dinas",
       },
+      {
+        title: "Master Allowance",
+        icon: "Database",
+        path: "/hrd/allowance/master",
+      },
     ],
   },
 
