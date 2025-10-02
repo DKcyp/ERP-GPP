@@ -459,10 +459,10 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     Status SO
                   </th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">
-                    Status Ditagihkan
+                    Status
                   </th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">
-                    Status HPP
+                    Status Ditagihkan
                   </th>
                   <th className="px-2 py-2 text-center font-medium text-gray-700">
                     Aksi
@@ -516,15 +516,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                         {item.statusSO}
                       </span>
                     </td>
-                    <td className="px-2 py-2 text-xs text-gray-900">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusDitagihkanBadge(
-                          item.statusDitagihkan
-                        )}`}
-                      >
-                        {item.statusDitagihkan}
-                      </span>
-                    </td>
                     <td className="px-2 py-2 text-xs">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(
@@ -532,6 +523,15 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                         )}`}
                       >
                         {item.status}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-900">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusDitagihkanBadge(
+                          item.statusDitagihkan
+                        )}`}
+                      >
+                        {item.statusDitagihkan}
                       </span>
                     </td>
                     <td className="px-2 py-2 text-center">
