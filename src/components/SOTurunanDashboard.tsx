@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import SOTurunanModal, { SOTurunanFormData } from "./SOTurunanModal";
 import RequestSOTurunanModal from "./RequestSOTurunanModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { Plus, FileSpreadsheet, FileText, File, Clock } from "lucide-react";
+import { Plus, FileSpreadsheet, FileText, File } from "lucide-react";
 
 interface SOTurunan {
   id: string;
@@ -18,7 +18,6 @@ interface SOTurunan {
   actualPenagihan: string;
   delayPenagihan: string; // e.g., "229 Hari"
   status: "Menunggu Review" | "Approve" | "Reject";
-  statusSO: "Open" | "Close";
   statusDitagihkan: "Sudah Ditagihkan" | "Belum Ditagihkan";
 }
 
@@ -59,7 +58,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       actualPenagihan: "Rp 68.000.000",
       delayPenagihan: "229 Hari",
       status: "Menunggu Review",
-      statusSO: "Open",
       statusDitagihkan: "Belum Ditagihkan",
     },
     {
@@ -76,7 +74,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       actualPenagihan: "Rp 50.000.000",
       delayPenagihan: "229 Hari",
       status: "Approve",
-      statusSO: "Close",
       statusDitagihkan: "Sudah Ditagihkan",
     },
     {
@@ -93,7 +90,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       actualPenagihan: "Rp 115.000.000",
       delayPenagihan: "233 Hari",
       status: "Reject",
-      statusSO: "Open",
       statusDitagihkan: "Belum Ditagihkan",
     },
     {
@@ -110,7 +106,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       actualPenagihan: "Rp 85.000.000",
       delayPenagihan: "252 Hari",
       status: "Menunggu Review",
-      statusSO: "Close",
       statusDitagihkan: "Sudah Ditagihkan",
     },
   ]);
@@ -146,7 +141,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       actualPenagihan: "Rp 0",
       delayPenagihan: "0 Hari",
       status: "Menunggu Review",
-      statusSO: formData.statusSO || "Open", // Include new Status SO field
       statusDitagihkan: formData.statusDitagihkan || "Belum Ditagihkan", // Include new Status Ditagihkan field
     };
     setSOTurunanData((prev) => [
@@ -168,7 +162,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nomorKontrak: "",
       jenisPekerjaan: "",
       keterangan: "",
-      statusSO: item.statusSO,
       statusDitagihkan: item.statusDitagihkan,
     });
     setIsModalOpen(true);
@@ -182,17 +175,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
         return "bg-emerald-100 text-emerald-800 border-emerald-200";
       case "Reject":
         return "bg-rose-100 text-rose-800 border-rose-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getStatusSOBadge = (status: SOTurunan["statusSO"]) => {
-    switch (status) {
-      case "Open":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "Close":
-        return "bg-gray-100 text-gray-800 border-gray-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -278,7 +260,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nomorKontrak: "",
       jenisPekerjaan: "",
       keterangan: "",
-      statusSO: item.statusSO,
       statusDitagihkan: item.statusDitagihkan,
     });
     setIsModalOpen(true);
@@ -307,7 +288,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
               <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
@@ -456,9 +436,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     Delay Penagihan
                   </th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">
-                    Status SO
-                  </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-700">
                     Status
                   </th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">
@@ -506,15 +483,6 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     </td>
                     <td className="px-2 py-2 text-xs text-gray-900">
                       {item.delayPenagihan}
-                    </td>
-                    <td className="px-2 py-2 text-xs text-gray-900">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusSOBadge(
-                          item.statusSO
-                        )}`}
-                      >
-                        {item.statusSO}
-                      </span>
                     </td>
                     <td className="px-2 py-2 text-xs">
                       <span
