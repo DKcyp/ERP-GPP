@@ -461,13 +461,15 @@ const ProsesProduksiDashboard: React.FC = () => {
 
           {/* Export Buttons + Tambah */}
           <div className="flex justify-end space-x-2 mb-4">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Tambah</span>
-            </button>
+            {user?.role !== "procon" && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah</span>
+              </button>
+            )}
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1">
               <FileSpreadsheet className="h-3.5 w-3.5" />
               <span>Export Excel</span>

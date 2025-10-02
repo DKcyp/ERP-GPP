@@ -1501,6 +1501,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     if (currentPage === "/operational/produksi/proses") {
       return <ProsesProduksiDashboard />;
     }
+    if (currentPage === "/procon/produksi/proses") {
+      return <ProsesProduksiDashboard role="procon" />;
+    }
     if (currentPage === "/operational/timesheet/dashboard") {
       return <TimesheetDashboard />;
     }

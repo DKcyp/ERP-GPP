@@ -38,6 +38,7 @@ interface PegawaiData {
   zona: string;
   nilaiTimesheet: string;
   statusApproval: string;
+  rejectReason?: string; // New field for rejection reason
 }
 
 const sampleRows: RowData[] = [
@@ -133,6 +134,7 @@ const TimesheetBarangPegawaiDashboard: React.FC<
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PegawaiData | null>(null);
   const [actionType, setActionType] = useState<"approve" | "reject" | "">("");
+  const [rejectReason, setRejectReason] = useState<string>(""); // New state for rejection reason
   const [demobFrom, setDemobFrom] = useState<string>("");
   const [demobTo, setDemobTo] = useState<string>("");
 
@@ -219,16 +221,14 @@ const TimesheetBarangPegawaiDashboard: React.FC<
         let aValue = a[sortField as keyof PegawaiData];
         let bValue = b[sortField as keyof PegawaiData];
 
-        // Handle string comparison
-        if (typeof aValue === "string" && typeof bValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
+        // Ensure both values are strings for comparison, handling null/undefined
+        const stringA = String(aValue ?? "").toLowerCase();
+        const stringB = String(bValue ?? "").toLowerCase();
 
-        if (aValue < bValue) {
+        if (stringA < stringB) {
           return sortDirection === "asc" ? -1 : 1;
         }
-        if (aValue > bValue) {
+        if (stringA > stringB) {
           return sortDirection === "asc" ? 1 : -1;
         }
         return 0;
@@ -312,6 +312,7 @@ const TimesheetBarangPegawaiDashboard: React.FC<
   const handleReject = (item: PegawaiData) => {
     setSelectedItem(item);
     setActionType("reject");
+    setRejectReason(""); // Clear previous reject reason
     setIsConfirmModalOpen(true);
   };
 
@@ -324,6 +325,8 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                 ...item,
                 statusApproval:
                   actionType === "approve" ? "Approved" : "Rejected",
+                rejectReason:
+                  actionType === "reject" ? rejectReason : undefined,
               }
             : item
         )
@@ -336,6 +339,7 @@ const TimesheetBarangPegawaiDashboard: React.FC<
     setIsConfirmModalOpen(false);
     setSelectedItem(null);
     setActionType("");
+    setRejectReason(""); // Clear reject reason on close
   };
 
   return (
@@ -685,6 +689,24 @@ const TimesheetBarangPegawaiDashboard: React.FC<
               (SO:
               <span className="font-semibold">{selectedItem.noSO}</span>)?
             </p>
+            {actionType === "reject" && (
+              <div className="mb-4">
+                <label
+                  htmlFor="rejectReason"
+                  className="block text-sm font-medium text-gray-700 text-left mb-1"
+                >
+                  Reason for Rejection:
+                </label>
+                <textarea
+                  id="rejectReason"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Enter reason for rejection..."
+                ></textarea>
+              </div>
+            )}
             <div className="flex justify-center space-x-4">
               <button
                 onClick={confirmAction}

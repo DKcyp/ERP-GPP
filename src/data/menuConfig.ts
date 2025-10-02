@@ -2311,12 +2311,12 @@ export const proconMenu: MenuSection[] = [
       {
         title: "Produksi",
         icon: "Factory", // You can choose a more appropriate icon from lucide-react
-        path: "/procon/operation/produksi",
+        path: "/procon/produksi/proses",
       },
       {
         title: "Sales Order",
         icon: "ShoppingCart",
-        path: "/procon/sales-order/dashboard",
+        path: "/operational2/sales-order/so-turunan",
       },
       {
         title: "TimeSheet",
