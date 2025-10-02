@@ -245,7 +245,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   RO
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  PO / SAP
+                  PO SAP
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CRO
@@ -460,7 +460,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  PO / SAP
+                  PO SAP
                 </label>
                 <input
                   type="text"
