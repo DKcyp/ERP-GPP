@@ -22,9 +22,28 @@ interface KPIItem {
   bobot: string; // percent string
   target: string;
   realisasi: string;
+  keterlambatan: string;
+  mengaji: string;
+  kajian: string;
+  healthyWeek: string;
   polaritas: 'Positive' | 'Negative' | '';
   finalScore: string; // computed/placeholder string like '25,00%'
+  performance: string; // computed performance percentage
 }
+
+// Function to calculate performance percentage
+const calculatePerformance = (item: KPIItem): string => {
+  // Convert string values to numbers for calculation
+  const finalScore = parseFloat(item.finalScore.replace('%', ''));
+  const keterlambatan = parseFloat(item.keterlambatan);
+  const mengaji = parseFloat(item.mengaji);
+  const kajian = parseFloat(item.kajian);
+  const healthyWeek = parseFloat(item.healthyWeek);
+  
+  // Calculate average (you can adjust this formula as needed)
+  const average = (finalScore + keterlambatan + mengaji + kajian + healthyWeek) / 5;
+  return `${average.toFixed(2)}%`;
+};
 
 const GeneralListKPIDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,10 +55,10 @@ const GeneralListKPIDashboard: React.FC = () => {
 
   const kpiData: KPIEntry[] = [
     { no: 1, namaPegawai: 'M. Luthfi Sujudi', posisiPegawai: 'Admin Report', atasanLangsung: 'Agung Asmara', posisiAtasan: 'Operation Manager', periode: 'Januari 2025', detail: [
-      { perspektif: 'FINANCIAL (Bobot = 20 %)', kra: 'MARKET & PRODUCT ON CALL & TENDER', variabelIndicator: 'Efisiensi Budget project', responsibility: 'Submit ketersediaan SO Medco ( H+2 Selesai Report Validation)', satuan: 'Hari', triwulan: '1', bobot: '25', target: '2', realisasi: '2', polaritas: 'Negative', finalScore: '25,00%' },
-      { perspektif: 'CUSTOMER (Bobot = 20 %)', kra: 'MONITORING SERVICE', variabelIndicator: 'Kepuasan Klien/ Customer', responsibility: 'Distribusi Proses Report dan BAP Tepat Waktu ( H+7 Selesai Demob)', satuan: 'Hari', triwulan: '1', bobot: '25', target: '7', realisasi: '9', polaritas: 'Negative', finalScore: '19,44%' },
-      { perspektif: 'INTERNAL BUSINESS PROCESS (Bobot = 50 %)', kra: 'MANAGEMENT & MONITORING DEVELOPMENT DEPT', variabelIndicator: 'Laporan Progress Mingguan', responsibility: 'Laporan progress mingguan ( Setiap hari )', satuan: 'Hari', triwulan: '1', bobot: '5', target: '7', realisasi: '10', polaritas: 'Negative', finalScore: '3,50%' },
-      { perspektif: 'INTERNAL BUSINESS PROCESS (Bobot = 50 %)', kra: 'MANAGEMENT & MONITORING DEVELOPMENT DEPT', variabelIndicator: 'Document arsip dan log monitoring setiap document project', responsibility: 'Membuat arsip data lampiran pendukung setiap project (Report, Timesheet, Summary SO, Rekap SO, Summary SO Minus, ( H+30 setelah selesai submit invoice , dll )', satuan: 'Hari', triwulan: '1', bobot: '10', target: '30', realisasi: '30', polaritas: 'Negative', finalScore: '10,00%' },
+      { perspektif: 'FINANCIAL (Bobot = 20 %)', kra: 'MARKET & PRODUCT ON CALL & TENDER', variabelIndicator: 'Efisiensi Budget project', responsibility: 'Submit ketersediaan SO Medco ( H+2 Selesai Report Validation)', satuan: 'Hari', triwulan: '1', bobot: '25', target: '2', realisasi: '2', keterlambatan: '85', mengaji: '90', kajian: '80', healthyWeek: '95', polaritas: 'Negative', finalScore: '25,00%', performance: '75,00%' },
+      { perspektif: 'CUSTOMER (Bobot = 20 %)', kra: 'MONITORING SERVICE', variabelIndicator: 'Kepuasan Klien/ Customer', responsibility: 'Distribusi Proses Report dan BAP Tepat Waktu ( H+7 Selesai Demob)', satuan: 'Hari', triwulan: '1', bobot: '25', target: '7', realisasi: '9', keterlambatan: '70', mengaji: '85', kajian: '75', healthyWeek: '80', polaritas: 'Negative', finalScore: '19,44%', performance: '65,89%' },
+      { perspektif: 'INTERNAL BUSINESS PROCESS (Bobot = 50 %)', kra: 'MANAGEMENT & MONITORING DEVELOPMENT DEPT', variabelIndicator: 'Laporan Progress Mingguan', responsibility: 'Laporan progress mingguan ( Setiap hari )', satuan: 'Hari', triwulan: '1', bobot: '5', target: '7', realisasi: '10', keterlambatan: '90', mengaji: '95', kajian: '88', healthyWeek: '92', polaritas: 'Negative', finalScore: '3,50%', performance: '73,70%' },
+      { perspektif: 'INTERNAL BUSINESS PROCESS (Bobot = 50 %)', kra: 'MANAGEMENT & MONITORING DEVELOPMENT DEPT', variabelIndicator: 'Document arsip dan log monitoring setiap document project', responsibility: 'Membuat arsip data lampiran pendukung setiap project (Report, Timesheet, Summary SO, Rekap SO, Summary SO Minus, ( H+30 setelah selesai submit invoice , dll )', satuan: 'Hari', triwulan: '1', bobot: '10', target: '30', realisasi: '30', keterlambatan: '95', mengaji: '88', kajian: '92', healthyWeek: '85', polaritas: 'Negative', finalScore: '10,00%', performance: '74,00%' },
     ] },
     { no: 2, namaPegawai: 'Rina Sari', posisiPegawai: 'Operation Manager', atasanLangsung: 'Arief Nugroho', posisiAtasan: 'General Manager', periode: 'Januari 2025', detail: [] },
     { no: 3, namaPegawai: 'Budi Santoso', posisiPegawai: 'Operation Manager', atasanLangsung: 'Siti Rahma', posisiAtasan: 'General Manager', periode: 'Januari 2025', detail: [] },
@@ -175,8 +194,13 @@ const GeneralListKPIDashboard: React.FC = () => {
                                     <th className="px-4 py-3 text-center" colSpan={3}>KPI Indicators</th>
                                     <th className="px-4 py-3 text-center" colSpan={3}>Plan</th>
                                     <th className="px-4 py-3 text-left" rowSpan={2}>Realisasi</th>
+                                    <th className="px-4 py-3 text-center" rowSpan={2}>Keterlambatan</th>
+                                    <th className="px-4 py-3 text-center" rowSpan={2}>Mengaji</th>
+                                    <th className="px-4 py-3 text-center" rowSpan={2}>Kajian</th>
+                                    <th className="px-4 py-3 text-center" rowSpan={2}>Healthy Week</th>
                                     <th className="px-4 py-3 text-left" rowSpan={2}>Polaritas</th>
                                     <th className="px-4 py-3 text-left" rowSpan={2}>Final Score KPI</th>
+                                    <th className="px-4 py-3 text-center" rowSpan={2}>Performance</th>
                                   </tr>
                                   <tr className="bg-gray-50 border-b border-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-wider">
                                     <th className="px-4 py-2 text-left">Variabel Indicator</th>
@@ -190,7 +214,7 @@ const GeneralListKPIDashboard: React.FC = () => {
                                 <tbody>
                                   {entry.detail.length === 0 && (
                                     <tr>
-                                      <td colSpan={11} className="px-4 py-6 text-center text-sm text-gray-500">Belum ada data KPI untuk pegawai ini.</td>
+                                      <td colSpan={15} className="px-4 py-6 text-center text-sm text-gray-500">Belum ada data KPI untuk pegawai ini.</td>
                                     </tr>
                                   )}
                                   {entry.detail.map((row, idx) => (
@@ -204,8 +228,15 @@ const GeneralListKPIDashboard: React.FC = () => {
                                       <td className="px-4 py-3">{row.bobot}%</td>
                                       <td className="px-4 py-3">{row.target}</td>
                                       <td className="px-4 py-3">{row.realisasi}</td>
+                                      <td className="px-4 py-3 text-center">{row.keterlambatan}%</td>
+                                      <td className="px-4 py-3 text-center">{row.mengaji}%</td>
+                                      <td className="px-4 py-3 text-center">{row.kajian}%</td>
+                                      <td className="px-4 py-3 text-center">{row.healthyWeek}%</td>
                                       <td className="px-4 py-3">{row.polaritas}</td>
                                       <td className={`px-4 py-3 font-semibold ${scoreBg(row.finalScore)}`}>{row.finalScore}</td>
+                                      <td className={`px-4 py-3 text-center font-semibold ${parseFloat(row.performance.replace('%', '')) < 75 ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}>
+                                        {row.performance}
+                                      </td>
                                     </tr>
                                   ))}
                                 </tbody>

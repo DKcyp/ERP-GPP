@@ -10,6 +10,7 @@ import {
   X,
   Save,
 } from "lucide-react";
+import TNAHistoryTable from "./TNAHistoryTable";
 
 interface KPIItem {
   kpi: string;
@@ -25,15 +26,29 @@ interface PegawaiKPI {
   kpis: KPIItem[];
 }
 
-// Dummy dataset: we will derive low-score indicators (e.g., < 60)
-const initialData: PegawaiKPI[] = [
+interface HistoryTNA {
+  id: string;
+  nama: string;
+  jabatan: string;
+  departemen: string;
+  kpi: string;
+  indikator: string;
+  nilaiSebelum: number;
+  nilaiSesudah: number;
+  tanggalTraining: string;
+  statusTraining: "Completed" | "In Progress" | "Cancelled";
+  trainer: string;
+}
+
+// FORCE UPDATE - Mixed dataset with both high and low values for testing
+const initialDataForceUpdate: PegawaiKPI[] = [
   {
     id: "EMP-001",
     nama: "Budi Santoso",
     jabatan: "Staff HR",
     departemen: "HRD",
     kpis: [
-      { kpi: "Komunikasi", indikator: "Presentasi", nilai: 58 },
+      { kpi: "Komunikasi", indikator: "Presentasi", nilai: 90 },
       { kpi: "Kepemimpinan", indikator: "Delegasi", nilai: 72 },
       { kpi: "Kedisiplinan", indikator: "Kehadiran", nilai: 90 },
     ],
@@ -44,9 +59,9 @@ const initialData: PegawaiKPI[] = [
     jabatan: "Teknisi",
     departemen: "Operational",
     kpis: [
-      { kpi: "Keselamatan Kerja", indikator: "APD", nilai: 55 },
-      { kpi: "Prosedur", indikator: "SOP Pelaksanaan", nilai: 62 },
-      { kpi: "Produktivitas", indikator: "Output Harian", nilai: 48 },
+      { kpi: "Keselamatan Kerja", indikator: "APD", nilai: 35 },
+      { kpi: "Prosedur", indikator: "SOP Pelaksanaan", nilai: 42 },
+      { kpi: "Produktivitas", indikator: "Output Harian", nilai: 28 },
     ],
   },
   {
@@ -55,28 +70,133 @@ const initialData: PegawaiKPI[] = [
     jabatan: "Marketing Officer",
     departemen: "Marketing",
     kpis: [
-      { kpi: "Negosiasi", indikator: "Handling Objection", nilai: 59 },
-      { kpi: "Penjualan", indikator: "Closing Rate", nilai: 65 },
+      { kpi: "Negosiasi", indikator: "Handling Objection", nilai: 38 },
+      { kpi: "Penjualan", indikator: "Closing Rate", nilai: 25 },
     ],
   },
+  {
+    id: "EMP-004",
+    nama: "Andi Pratama",
+    jabatan: "Senior Developer",
+    departemen: "IT",
+    kpis: [
+      { kpi: "Technical Skills", indikator: "Code Quality", nilai: 85 },
+      { kpi: "Problem Solving", indikator: "Bug Resolution", nilai: 78 },
+      { kpi: "Teamwork", indikator: "Collaboration", nilai: 82 },
+    ],
+  },
+  {
+    id: "EMP-005",
+    nama: "Maya Sari",
+    jabatan: "Finance Manager",
+    departemen: "Finance",
+    kpis: [
+      { kpi: "Financial Analysis", indikator: "Report Accuracy", nilai: 88 },
+      { kpi: "Leadership", indikator: "Team Management", nilai: 45 },
+      { kpi: "Strategic Planning", indikator: "Budget Planning", nilai: 92 },
+    ],
+  },
+  {
+    id: "EMP-006",
+    nama: "Rudi Hartono",
+    jabatan: "Quality Manager",
+    departemen: "QHSE",
+    kpis: [
+      { kpi: "Quality Control", indikator: "Process Improvement", nilai: 95 },
+      { kpi: "Safety Management", indikator: "Incident Prevention", nilai: 87 },
+      { kpi: "Audit Skills", indikator: "Compliance Check", nilai: 91 },
+    ],
+  },
+];
+
+// History TNA data
+const historyTNAData: HistoryTNA[] = [
+  {
+    id: "HIST-001",
+    nama: "Ahmad Rizki",
+    jabatan: "Staff Marketing",
+    departemen: "Marketing",
+    kpi: "Komunikasi",
+    indikator: "Presentasi",
+    nilaiSebelum: 45,
+    nilaiSesudah: 78,
+    tanggalTraining: "15-12-2024",
+    statusTraining: "Completed",
+    trainer: "Dr. Sari Wijaya"
+  },
+  {
+    id: "HIST-002",
+    nama: "Lisa Permata",
+    jabatan: "Teknisi",
+    departemen: "Operational",
+    kpi: "Keselamatan Kerja",
+    indikator: "APD",
+    nilaiSebelum: 38,
+    nilaiSesudah: 85,
+    tanggalTraining: "20-12-2024",
+    statusTraining: "Completed",
+    trainer: "Bpk. Hendra Saputra"
+  },
+  {
+    id: "HIST-003",
+    nama: "Doni Pratama",
+    jabatan: "Marketing Officer",
+    departemen: "Marketing",
+    kpi: "Negosiasi",
+    indikator: "Handling Objection",
+    nilaiSebelum: 52,
+    nilaiSesudah: 0,
+    tanggalTraining: "10-01-2025",
+    statusTraining: "In Progress",
+    trainer: "Ibu Ratna Sari"
+  },
+  {
+    id: "HIST-004",
+    nama: "Eka Putri",
+    jabatan: "Finance Staff",
+    departemen: "Finance",
+    kpi: "Analisis Keuangan",
+    indikator: "Report Accuracy",
+    nilaiSebelum: 41,
+    nilaiSesudah: 0,
+    tanggalTraining: "25-01-2025",
+    statusTraining: "Cancelled",
+    trainer: "Bpk. Agus Santoso"
+  },
+  {
+    id: "HIST-005",
+    nama: "Rini Handayani",
+    jabatan: "Quality Inspector",
+    departemen: "QHSE",
+    kpi: "Quality Control",
+    indikator: "Process Improvement",
+    nilaiSebelum: 55,
+    nilaiSesudah: 89,
+    tanggalTraining: "05-01-2025",
+    statusTraining: "Completed",
+    trainer: "Dr. Bambang Sutrisno"
+  }
 ];
 
 // Simple suggestion engine based on KPI/Indikator keyword
 const suggestTraining = (kpi: string, indikator: string): string => {
   const key = `${kpi} ${indikator}`.toLowerCase();
-  if (key.includes("keselamatan") || key.includes("apd")) return "Pelatihan K3 & APD";
+  if (key.includes("keselamatan") || key.includes("apd"))
+    return "Pelatihan K3 & APD";
   if (key.includes("presentasi")) return "Public Speaking & Presentation";
   if (key.includes("delegasi")) return "Leadership: Delegation Skills";
   if (key.includes("sop")) return "Pelatihan SOP & Kepatuhan";
-  if (key.includes("output") || key.includes("produkt")) return "Time Management & Productivity";
-  if (key.includes("negosiasi") || key.includes("objection")) return "Negotiation & Objection Handling";
+  if (key.includes("output") || key.includes("produkt"))
+    return "Time Management & Productivity";
+  if (key.includes("negosiasi") || key.includes("objection"))
+    return "Negotiation & Objection Handling";
   return "Pelatihan Pengembangan Kompetensi Terkait";
 };
 
 const LOW_THRESHOLD_DEFAULT = 60;
 
 const HRDTNADashboard: React.FC = () => {
-  const [rows, setRows] = useState<PegawaiKPI[]>(initialData);
+  const [rows, setRows] = useState<PegawaiKPI[]>(initialDataForceUpdate);
   const [showEntries, setShowEntries] = useState(10);
   const [filters, setFilters] = useState({
     nama: "",
@@ -100,6 +220,15 @@ const HRDTNADashboard: React.FC = () => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // Training confirmation modal states
+  const [isTrainingModalOpen, setIsTrainingModalOpen] = useState(false);
+  const [selectedTrainingItem, setSelectedTrainingItem] = useState<any>(null);
+
+  // History TNA states
+  const [historyData] = useState<HistoryTNA[]>(historyTNAData);
+  const [showHistoryEntries, setShowHistoryEntries] = useState(5);
+  const [historySearchTerm, setHistorySearchTerm] = useState("");
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -121,12 +250,14 @@ const HRDTNADashboard: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    
+
     if (!formData.nama.trim()) newErrors.nama = "Nama harus diisi";
     if (!formData.jabatan.trim()) newErrors.jabatan = "Jabatan harus diisi";
-    if (!formData.departemen.trim()) newErrors.departemen = "Departemen harus diisi";
+    if (!formData.departemen.trim())
+      newErrors.departemen = "Departemen harus diisi";
     if (!formData.kpi.trim()) newErrors.kpi = "KPI harus diisi";
-    if (!formData.indikator.trim()) newErrors.indikator = "Indikator harus diisi";
+    if (!formData.indikator.trim())
+      newErrors.indikator = "Indikator harus diisi";
     if (!formData.nilai.trim()) {
       newErrors.nilai = "Nilai harus diisi";
     } else {
@@ -142,22 +273,24 @@ const HRDTNADashboard: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     // Check if employee already exists
-    const existingEmployee = rows.find(emp => emp.nama.toLowerCase() === formData.nama.toLowerCase());
-    
+    const existingEmployee = rows.find(
+      (emp) => emp.nama.toLowerCase() === formData.nama.toLowerCase()
+    );
+
     if (existingEmployee) {
       // Add KPI to existing employee
       const newKPI: KPIItem = {
         kpi: formData.kpi,
         indikator: formData.indikator,
-        nilai: parseInt(formData.nilai)
+        nilai: parseInt(formData.nilai),
       };
-      
-      const updatedRows = rows.map(emp => 
-        emp.id === existingEmployee.id 
+
+      const updatedRows = rows.map((emp) =>
+        emp.id === existingEmployee.id
           ? { ...emp, kpis: [...emp.kpis, newKPI] }
           : emp
       );
@@ -165,15 +298,17 @@ const HRDTNADashboard: React.FC = () => {
     } else {
       // Create new employee
       const newEmployee: PegawaiKPI = {
-        id: `EMP-${String(rows.length + 1).padStart(3, '0')}`,
+        id: `EMP-${String(rows.length + 1).padStart(3, "0")}`,
         nama: formData.nama,
         jabatan: formData.jabatan,
         departemen: formData.departemen,
-        kpis: [{
-          kpi: formData.kpi,
-          indikator: formData.indikator,
-          nilai: parseInt(formData.nilai)
-        }]
+        kpis: [
+          {
+            kpi: formData.kpi,
+            indikator: formData.indikator,
+            nilai: parseInt(formData.nilai),
+          },
+        ],
       };
       setRows([...rows, newEmployee]);
     }
@@ -204,6 +339,29 @@ const HRDTNADashboard: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleLanjutkanTraining = (item: any) => {
+    setSelectedTrainingItem(item);
+    setIsTrainingModalOpen(true);
+  };
+
+  const confirmTraining = () => {
+    if (selectedTrainingItem) {
+      // Here you can add logic to:
+      // 1. Navigate to training page
+      // 2. Create training record
+      // 3. Send notification
+      alert(`Training berhasil dimulai untuk ${selectedTrainingItem.nama}!`);
+      console.log("Training confirmed for:", selectedTrainingItem);
+    }
+    setIsTrainingModalOpen(false);
+    setSelectedTrainingItem(null);
+  };
+
+  const cancelTraining = () => {
+    setIsTrainingModalOpen(false);
+    setSelectedTrainingItem(null);
+  };
+
   // Flattened rows: one line per low indicator per employee
   const flattened = useMemo(
     () =>
@@ -225,12 +383,11 @@ const HRDTNADashboard: React.FC = () => {
 
   const filtered = useMemo(() => {
     return flattened.filter((r) => {
-      const lowEnough = r.nilai < threshold; // Only focus on low performers
       const matchNama = filters.nama
         ? r.nama.toLowerCase().includes(filters.nama.toLowerCase())
         : true;
       const matchDept = filters.departemen
-        ? r.departemen === filters.departemen
+        ? r.departemen.toLowerCase().includes(filters.departemen.toLowerCase())
         : true;
       const matchKPI = filters.kpi
         ? r.kpi.toLowerCase().includes(filters.kpi.toLowerCase())
@@ -238,13 +395,22 @@ const HRDTNADashboard: React.FC = () => {
       const matchInd = filters.indikator
         ? r.indikator.toLowerCase().includes(filters.indikator.toLowerCase())
         : true;
-      const matchMin = filters.minNilai ? r.nilai >= Number(filters.minNilai) : true;
-      const matchMax = filters.maxNilai ? r.nilai <= Number(filters.maxNilai) : true;
+      const matchMin = filters.minNilai
+        ? r.nilai >= Number(filters.minNilai)
+        : true;
+      const matchMax = filters.maxNilai
+        ? r.nilai <= Number(filters.maxNilai)
+        : true;
       return (
-        lowEnough && matchNama && matchDept && matchKPI && matchInd && matchMin && matchMax
+        matchNama &&
+        matchDept &&
+        matchKPI &&
+        matchInd &&
+        matchMin &&
+        matchMax
       );
     });
-  }, [flattened, filters, threshold]);
+  }, [flattened, filters]);
 
   const paged = useMemo(
     () => filtered.slice(0, showEntries),
@@ -266,7 +432,9 @@ const HRDTNADashboard: React.FC = () => {
                 TRAINING NEED ANALYSIS (TNA)
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">HRD</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  HRD
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">TNA</span>
               </nav>
@@ -284,7 +452,9 @@ const HRDTNADashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nama
+              </label>
               <input
                 name="nama"
                 value={filters.nama}
@@ -294,7 +464,9 @@ const HRDTNADashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Departemen
+              </label>
               <select
                 name="departemen"
                 value={filters.departemen}
@@ -311,7 +483,9 @@ const HRDTNADashboard: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">KPI</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                KPI
+              </label>
               <input
                 name="kpi"
                 value={filters.kpi}
@@ -321,7 +495,9 @@ const HRDTNADashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Indikator</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Indikator
+              </label>
               <input
                 name="indikator"
                 value={filters.indikator}
@@ -331,7 +507,9 @@ const HRDTNADashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nilai Minimum</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nilai Minimum
+              </label>
               <input
                 type="number"
                 name="minNilai"
@@ -342,7 +520,9 @@ const HRDTNADashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nilai Maksimum</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nilai Maksimum
+              </label>
               <input
                 type="number"
                 name="maxNilai"
@@ -353,7 +533,9 @@ const HRDTNADashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ambang Rendah (Threshold)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Ambang Rendah (Threshold)
+              </label>
               <input
                 type="number"
                 name="threshold"
@@ -425,13 +607,30 @@ const HRDTNADashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departemen</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KPI</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Indikator</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rekomendasi Training</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Jabatan
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Departemen
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    KPI
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Indikator
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nilai
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rekomendasi Training
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -446,21 +645,51 @@ const HRDTNADashboard: React.FC = () => {
                           : "hover:bg-gray-50 transition-colors"
                       }
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{r.nama}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.jabatan}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.departemen}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.kpi}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.indikator}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {r.nama}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {r.jabatan}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {r.departemen}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {r.kpi}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {r.indikator}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          low ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            low
+                              ? "bg-red-100 text-red-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
                           {r.nilai}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 flex items-center gap-2">
-                        {low && <AlertTriangle className="h-4 w-4 text-red-500" />}
+                        {low && (
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                        )}
                         <span>{suggestTraining(r.kpi, r.indikator)}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        {r.nilai > 70 ? (
+                          <button
+                            onClick={() => handleLanjutkanTraining(r)}
+                            className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg font-medium transition-colors flex items-center space-x-1 mx-auto"
+                          >
+                            <span>Lanjutkan ke Training</span>
+                          </button>
+                        ) : (
+                          <span className="text-gray-400 text-xs">
+                            Nilai terlalu rendah
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -471,13 +700,16 @@ const HRDTNADashboard: React.FC = () => {
           {/* Footer: simple pagination placeholder */}
           <div className="p-4 flex justify-between items-center text-sm text-gray-600">
             <span>
-              Showing 1 to {Math.min(filtered.length, showEntries)} of {filtered.length} entries
+              Showing 1 to {Math.min(filtered.length, showEntries)} of{" "}
+              {filtered.length} entries
             </span>
             <div className="flex space-x-2">
               <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
                 Previous
               </button>
-              <button className="px-3 py-1 border border-primary bg-primary text-white rounded-md">1</button>
+              <button className="px-3 py-1 border border-primary bg-primary text-white rounded-md">
+                1
+              </button>
               <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
                 Next
               </button>
@@ -520,12 +752,16 @@ const HRDTNADashboard: React.FC = () => {
                         value={formData.nama}
                         onChange={handleFormChange}
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.nama ? "border-red-300 bg-red-50" : "border-gray-200"
+                          errors.nama
+                            ? "border-red-300 bg-red-50"
+                            : "border-gray-200"
                         }`}
                         placeholder="Masukkan nama pegawai"
                       />
                       {errors.nama && (
-                        <p className="mt-1 text-sm text-red-600">{errors.nama}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.nama}
+                        </p>
                       )}
                     </div>
 
@@ -540,12 +776,16 @@ const HRDTNADashboard: React.FC = () => {
                         value={formData.jabatan}
                         onChange={handleFormChange}
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.jabatan ? "border-red-300 bg-red-50" : "border-gray-200"
+                          errors.jabatan
+                            ? "border-red-300 bg-red-50"
+                            : "border-gray-200"
                         }`}
                         placeholder="Masukkan jabatan"
                       />
                       {errors.jabatan && (
-                        <p className="mt-1 text-sm text-red-600">{errors.jabatan}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.jabatan}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -560,7 +800,9 @@ const HRDTNADashboard: React.FC = () => {
                       value={formData.departemen}
                       onChange={handleFormChange}
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                        errors.departemen ? "border-red-300 bg-red-50" : "border-gray-200"
+                        errors.departemen
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
                       }`}
                     >
                       <option value="">Pilih Departemen</option>
@@ -572,7 +814,9 @@ const HRDTNADashboard: React.FC = () => {
                       <option value="QHSE">QHSE</option>
                     </select>
                     {errors.departemen && (
-                      <p className="mt-1 text-sm text-red-600">{errors.departemen}</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.departemen}
+                      </p>
                     )}
                   </div>
 
@@ -589,12 +833,16 @@ const HRDTNADashboard: React.FC = () => {
                         value={formData.kpi}
                         onChange={handleFormChange}
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.kpi ? "border-red-300 bg-red-50" : "border-gray-200"
+                          errors.kpi
+                            ? "border-red-300 bg-red-50"
+                            : "border-gray-200"
                         }`}
                         placeholder="Contoh: Komunikasi"
                       />
                       {errors.kpi && (
-                        <p className="mt-1 text-sm text-red-600">{errors.kpi}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.kpi}
+                        </p>
                       )}
                     </div>
 
@@ -609,12 +857,16 @@ const HRDTNADashboard: React.FC = () => {
                         value={formData.indikator}
                         onChange={handleFormChange}
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.indikator ? "border-red-300 bg-red-50" : "border-gray-200"
+                          errors.indikator
+                            ? "border-red-300 bg-red-50"
+                            : "border-gray-200"
                         }`}
                         placeholder="Contoh: Presentasi"
                       />
                       {errors.indikator && (
-                        <p className="mt-1 text-sm text-red-600">{errors.indikator}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.indikator}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -632,12 +884,16 @@ const HRDTNADashboard: React.FC = () => {
                       min="0"
                       max="100"
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                        errors.nilai ? "border-red-300 bg-red-50" : "border-gray-200"
+                        errors.nilai
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
                       }`}
                       placeholder="Masukkan nilai 0-100"
                     />
                     {errors.nilai && (
-                      <p className="mt-1 text-sm text-red-600">{errors.nilai}</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.nilai}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -664,6 +920,97 @@ const HRDTNADashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Training Confirmation Modal */}
+      {isTrainingModalOpen && selectedTrainingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="p-6">
+              <div className="flex items-center justify-center mb-4">
+                <div className="p-3 rounded-full bg-green-100">
+                  <svg
+                    className="h-6 w-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+                Konfirmasi Training
+              </h3>
+
+              <div className="text-center mb-6">
+                <p className="text-gray-600 mb-4">
+                  Apakah Anda yakin ingin melanjutkan ke training untuk:
+                </p>
+
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <div className="text-sm space-y-2">
+                    <div>
+                      <span className="font-medium">Nama:</span>{" "}
+                      {selectedTrainingItem.nama}
+                    </div>
+                    <div>
+                      <span className="font-medium">Jabatan:</span>{" "}
+                      {selectedTrainingItem.jabatan}
+                    </div>
+                    <div>
+                      <span className="font-medium">Departemen:</span>{" "}
+                      {selectedTrainingItem.departemen}
+                    </div>
+                    <div>
+                      <span className="font-medium">KPI:</span>{" "}
+                      {selectedTrainingItem.kpi}
+                    </div>
+                    <div>
+                      <span className="font-medium">Indikator:</span>{" "}
+                      {selectedTrainingItem.indikator}
+                    </div>
+                    <div>
+                      <span className="font-medium">Nilai:</span>
+                      <span className="ml-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                        {selectedTrainingItem.nilai}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-500">
+                  Training akan dimulai dan notifikasi akan dikirim kepada
+                  pegawai yang bersangkutan.
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={cancelTraining}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={confirmTraining}
+                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                >
+                  Lanjutkan Training
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History TNA Table */}
+      <TNAHistoryTable />
     </div>
   );
 };
