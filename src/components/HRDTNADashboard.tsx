@@ -6,6 +6,9 @@ import {
   FileText,
   Download,
   AlertTriangle,
+  Plus,
+  X,
+  Save,
 } from "lucide-react";
 
 interface KPIItem {
@@ -73,7 +76,7 @@ const suggestTraining = (kpi: string, indikator: string): string => {
 const LOW_THRESHOLD_DEFAULT = 60;
 
 const HRDTNADashboard: React.FC = () => {
-  const [rows] = useState<PegawaiKPI[]>(initialData);
+  const [rows, setRows] = useState<PegawaiKPI[]>(initialData);
   const [showEntries, setShowEntries] = useState(10);
   const [filters, setFilters] = useState({
     nama: "",
@@ -85,11 +88,120 @@ const HRDTNADashboard: React.FC = () => {
     threshold: String(LOW_THRESHOLD_DEFAULT),
   });
 
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    nama: "",
+    jabatan: "",
+    departemen: "",
+    kpi: "",
+    indikator: "",
+    nilai: "",
+  });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFilters((p) => ({ ...p, [name]: value }));
+  };
+
+  // Modal handlers
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    
+    if (!formData.nama.trim()) newErrors.nama = "Nama harus diisi";
+    if (!formData.jabatan.trim()) newErrors.jabatan = "Jabatan harus diisi";
+    if (!formData.departemen.trim()) newErrors.departemen = "Departemen harus diisi";
+    if (!formData.kpi.trim()) newErrors.kpi = "KPI harus diisi";
+    if (!formData.indikator.trim()) newErrors.indikator = "Indikator harus diisi";
+    if (!formData.nilai.trim()) {
+      newErrors.nilai = "Nilai harus diisi";
+    } else {
+      const nilaiNum = parseInt(formData.nilai);
+      if (isNaN(nilaiNum) || nilaiNum < 0 || nilaiNum > 100) {
+        newErrors.nilai = "Nilai harus berupa angka antara 0-100";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    // Check if employee already exists
+    const existingEmployee = rows.find(emp => emp.nama.toLowerCase() === formData.nama.toLowerCase());
+    
+    if (existingEmployee) {
+      // Add KPI to existing employee
+      const newKPI: KPIItem = {
+        kpi: formData.kpi,
+        indikator: formData.indikator,
+        nilai: parseInt(formData.nilai)
+      };
+      
+      const updatedRows = rows.map(emp => 
+        emp.id === existingEmployee.id 
+          ? { ...emp, kpis: [...emp.kpis, newKPI] }
+          : emp
+      );
+      setRows(updatedRows);
+    } else {
+      // Create new employee
+      const newEmployee: PegawaiKPI = {
+        id: `EMP-${String(rows.length + 1).padStart(3, '0')}`,
+        nama: formData.nama,
+        jabatan: formData.jabatan,
+        departemen: formData.departemen,
+        kpis: [{
+          kpi: formData.kpi,
+          indikator: formData.indikator,
+          nilai: parseInt(formData.nilai)
+        }]
+      };
+      setRows([...rows, newEmployee]);
+    }
+
+    // Reset form and close modal
+    setFormData({
+      nama: "",
+      jabatan: "",
+      departemen: "",
+      kpi: "",
+      indikator: "",
+      nilai: "",
+    });
+    setErrors({});
+    setIsModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setFormData({
+      nama: "",
+      jabatan: "",
+      departemen: "",
+      kpi: "",
+      indikator: "",
+      nilai: "",
+    });
+    setErrors({});
+    setIsModalOpen(false);
   };
 
   // Flattened rows: one line per low indicator per employee
@@ -276,6 +388,13 @@ const HRDTNADashboard: React.FC = () => {
             </div>
             <div className="flex gap-2">
               <button
+                className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 text-xs"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+              <button
                 className="flex items-center space-x-2 px-3 py-2 bg-green-500 text-white rounded-lg shadow-sm hover:bg-green-600 text-xs"
                 onClick={() => handleExport("Excel")}
               >
@@ -366,6 +485,185 @@ const HRDTNADashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Tambah Data KPI Pegawai
+              </h2>
+              <button
+                onClick={handleCloseModal}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
+              <form onSubmit={handleSubmit} className="p-6">
+                <div className="space-y-6">
+                  {/* Basic Information */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Nama */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nama <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="nama"
+                        value={formData.nama}
+                        onChange={handleFormChange}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                          errors.nama ? "border-red-300 bg-red-50" : "border-gray-200"
+                        }`}
+                        placeholder="Masukkan nama pegawai"
+                      />
+                      {errors.nama && (
+                        <p className="mt-1 text-sm text-red-600">{errors.nama}</p>
+                      )}
+                    </div>
+
+                    {/* Jabatan */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Jabatan <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="jabatan"
+                        value={formData.jabatan}
+                        onChange={handleFormChange}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                          errors.jabatan ? "border-red-300 bg-red-50" : "border-gray-200"
+                        }`}
+                        placeholder="Masukkan jabatan"
+                      />
+                      {errors.jabatan && (
+                        <p className="mt-1 text-sm text-red-600">{errors.jabatan}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Departemen */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Departemen <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="departemen"
+                      value={formData.departemen}
+                      onChange={handleFormChange}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        errors.departemen ? "border-red-300 bg-red-50" : "border-gray-200"
+                      }`}
+                    >
+                      <option value="">Pilih Departemen</option>
+                      <option value="HRD">HRD</option>
+                      <option value="Operational">Operational</option>
+                      <option value="Marketing">Marketing</option>
+                      <option value="Finance">Finance</option>
+                      <option value="IT">IT</option>
+                      <option value="QHSE">QHSE</option>
+                    </select>
+                    {errors.departemen && (
+                      <p className="mt-1 text-sm text-red-600">{errors.departemen}</p>
+                    )}
+                  </div>
+
+                  {/* KPI & Indikator */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* KPI */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        KPI <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="kpi"
+                        value={formData.kpi}
+                        onChange={handleFormChange}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                          errors.kpi ? "border-red-300 bg-red-50" : "border-gray-200"
+                        }`}
+                        placeholder="Contoh: Komunikasi"
+                      />
+                      {errors.kpi && (
+                        <p className="mt-1 text-sm text-red-600">{errors.kpi}</p>
+                      )}
+                    </div>
+
+                    {/* Indikator */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Indikator <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="indikator"
+                        value={formData.indikator}
+                        onChange={handleFormChange}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                          errors.indikator ? "border-red-300 bg-red-50" : "border-gray-200"
+                        }`}
+                        placeholder="Contoh: Presentasi"
+                      />
+                      {errors.indikator && (
+                        <p className="mt-1 text-sm text-red-600">{errors.indikator}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Nilai */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nilai (0-100) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="nilai"
+                      value={formData.nilai}
+                      onChange={handleFormChange}
+                      min="0"
+                      max="100"
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                        errors.nilai ? "border-red-300 bg-red-50" : "border-gray-200"
+                      }`}
+                      placeholder="Masukkan nilai 0-100"
+                    />
+                    {errors.nilai && (
+                      <p className="mt-1 text-sm text-red-600">{errors.nilai}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-all duration-200"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    <span>Simpan</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

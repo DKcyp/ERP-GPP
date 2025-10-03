@@ -843,6 +843,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "Database",
         path: "/hrd/rekrutmen/master-kualifikasi",
       },
+      {
+        title: "Master Tunjangan",
+        icon: "Gift",
+        path: "/hrd/rekrutmen/master-tunjangan",
+      },
     ],
   },
   {
@@ -1009,6 +1014,11 @@ export const hrdMenu: MenuSection[] = [
         title: "Master Izin",
         icon: "FileCog",
         path: "/hrd/absensi/master-izin",
+      },
+      {
+        title: "Approval Lembur",
+        icon: "Clock",
+        path: "/hrd/absensi/approval-lembur",
       },
     ],
   },

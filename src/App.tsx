@@ -48,7 +48,7 @@ const AppContent: React.FC = () => {
       <Navbar />
       <MenuBar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <main className="pb-8">
-        <Dashboard currentPage={currentPage} />
+        <Dashboard currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </main>
     </div>
   );

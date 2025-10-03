@@ -28,9 +28,26 @@ interface KomposisiBiayaGaji {
   tunjangan: string;
 }
 
-const HRDDashboard: React.FC = () => {
+interface PerformanceReview {
+  no: number;
+  nama: string;
+  jabatan: string;
+  tanggalReview: string;
+  periode: string;
+  score: number;
+  status: 'Excellent' | 'Good' | 'Average' | 'Needs Improvement';
+}
+
+interface HRDDashboardProps {
+  setCurrentPage?: (page: string) => void;
+}
+
+const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
   const [animateCards, setAnimateCards] = useState(false);
   const [animateChart, setAnimateChart] = useState(false);
+
+  // Debug log to check if setCurrentPage is received
+  console.log('HRDDashboard received setCurrentPage:', !!setCurrentPage);
 
   // Sample data for Program Kerja Aktif
   const programKerjaData: ProgramKerjaAktif[] = [
@@ -82,11 +99,63 @@ const HRDDashboard: React.FC = () => {
     }
   ];
 
+  // Sample data for Performance Review
+  const performanceReviewData: PerformanceReview[] = [
+    {
+      no: 1,
+      nama: 'Ahmad Rizki',
+      jabatan: 'Senior Engineer',
+      tanggalReview: '15-01-2025',
+      periode: 'Q4 2024',
+      score: 92,
+      status: 'Excellent'
+    },
+    {
+      no: 2,
+      nama: 'Sari Indah',
+      jabatan: 'Project Manager',
+      tanggalReview: '20-01-2025',
+      periode: 'Q4 2024',
+      score: 85,
+      status: 'Good'
+    },
+    {
+      no: 3,
+      nama: 'Budi Hartono',
+      jabatan: 'Technician',
+      tanggalReview: '25-01-2025',
+      periode: 'Q4 2024',
+      score: 78,
+      status: 'Good'
+    },
+    {
+      no: 4,
+      nama: 'Maya Sari',
+      jabatan: 'Admin Staff',
+      tanggalReview: '30-01-2025',
+      periode: 'Q4 2024',
+      score: 65,
+      status: 'Average'
+    }
+  ];
+
   useEffect(() => {
     // Trigger animations on component mount
     setTimeout(() => setAnimateCards(true), 100);
     setTimeout(() => setAnimateChart(true), 500);
   }, []);
+
+  // Navigation function to DaftarPegawaiDashboard with filters
+  const navigateToStaffList = (staffType: string, contractType: string) => {
+    if (setCurrentPage) {
+      // Navigate to DaftarPegawaiDashboard following MenuBar pattern
+      const url = `/hrd/pegawai/daftar`;
+      console.log('HRDDashboard: Setting currentPage to:', url, 'with filters:', { staffType, contractType });
+      setCurrentPage(url);
+    } else {
+      console.log('setCurrentPage is not available'); // Debug log
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -105,6 +174,16 @@ const HRDDashboard: React.FC = () => {
       case 'On Progress': return <Clock className="h-4 w-4" />;
       case 'Selesai': return <CheckCircle className="h-4 w-4" />;
       default: return <AlertCircle className="h-4 w-4" />;
+    }
+  };
+
+  const getPerformanceStatusColor = (status: string) => {
+    switch (status) {
+      case 'Excellent': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Good': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Average': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Needs Improvement': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -139,9 +218,12 @@ const HRDDashboard: React.FC = () => {
           {/* KPI Boxes aligned to the right */}
           <div className="flex flex-col lg:flex-row justify-end gap-6">
             {/* Staf (PKWT) */}
-            <div className={`bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-            }`}>
+            <div 
+              className={`bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
+              }`}
+              onClick={() => navigateToStaffList('staf', 'pkwt')}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center space-x-3 mb-2">
@@ -159,9 +241,13 @@ const HRDDashboard: React.FC = () => {
             </div>
 
             {/* Staf (PKWTT) */}
-            <div className={`bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-            }`} style={{ animationDelay: '200ms' }}>
+            <div 
+              className={`bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
+              }`} 
+              style={{ animationDelay: '200ms' }}
+              onClick={() => navigateToStaffList('staf', 'pkwtt')}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center space-x-3 mb-2">
@@ -179,9 +265,13 @@ const HRDDashboard: React.FC = () => {
             </div>
 
             {/* Teknisi (PKWT) */}
-            <div className={`bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-            }`} style={{ animationDelay: '400ms' }}>
+            <div 
+              className={`bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
+              }`} 
+              style={{ animationDelay: '400ms' }}
+              onClick={() => navigateToStaffList('teknisi', 'pkwt')}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center space-x-3 mb-2">
@@ -199,9 +289,13 @@ const HRDDashboard: React.FC = () => {
             </div>
 
             {/* Teknisi (PKWTT) */}
-            <div className={`bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${
-              animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
-            }`} style={{ animationDelay: '600ms' }}>
+            <div 
+              className={`bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                animateCards ? 'animate-in slide-in-from-left-5 fade-in-0' : 'opacity-0'
+              }`} 
+              style={{ animationDelay: '600ms' }}
+              onClick={() => navigateToStaffList('teknisi', 'pkwtt')}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center space-x-3 mb-2">
@@ -325,6 +419,47 @@ const HRDDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">540</td>
                     <td className="px-4 py-3 text-sm font-semibold text-gray-900">2.6%</td>
                   </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Performance Review Section */}
+        <div className="mt-12">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
+              <h3 className="text-xl font-bold text-gray-900">Performance Review</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jabatan</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Tanggal Review</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Periode</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Score</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {performanceReviewData.map((review, index) => (
+                    <tr key={review.no} className={index % 2 === 1 ? 'bg-gray-25' : ''}>
+                      <td className="px-4 py-3 text-sm text-gray-900">{review.no}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{review.nama}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{review.jabatan}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{review.tanggalReview}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{review.periode}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-bold">{review.score}/100</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getPerformanceStatusColor(review.status)}`}>
+                          {review.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -7,7 +7,7 @@ interface POItem {
   so: string;
   project: string;
   pekerjaan: string;
-  noUbs: string; // New field for No. UBS
+  noWbs: string; // Changed from noUbs to noWbs
   wo: string; // Renamed from noWbsWo
   pr: string;
   ro: string;
@@ -15,9 +15,10 @@ interface POItem {
   cro: string;
   commencementStartDate: string;
   commencementFinishDate: string;
-  absorv: string;
+  nilaiKontrak: number; // Added for automatic absorv calculation
+  absorv: string; // Will be calculated automatically
   pengembalianNilaiKontrak: string;
-  reminder: string;
+  reminder: string; // Will be calculated based on commencementFinishDate
 }
 
 const initialData: POItem[] = [
@@ -26,14 +27,15 @@ const initialData: POItem[] = [
     so: "SO-001",
     project: "Project A",
     pekerjaan: "Pekerjaan 1",
-    noUbs: "UBS-001",
+    noWbs: "WBS-001",
     wo: "WO-001",
     pr: "PR-001",
     ro: "RO-001",
     poSap: "PO-001 / SAP-001",
     cro: "CRO-001",
     commencementStartDate: "2023-01-01",
-    commencementFinishDate: "2023-03-31",
+    commencementFinishDate: "2024-12-31",
+    nilaiKontrak: 10000000,
     absorv: "80%",
     pengembalianNilaiKontrak: "Rp 10.000.000",
     reminder: "Due in 30 days",
@@ -43,14 +45,15 @@ const initialData: POItem[] = [
     so: "SO-002",
     project: "Project B",
     pekerjaan: "Pekerjaan 2",
-    noUbs: "UBS-002",
+    noWbs: "WBS-002",
     wo: "WO-002",
     pr: "PR-002",
     ro: "RO-002",
     poSap: "PO-002 / SAP-002",
     cro: "CRO-002",
     commencementStartDate: "2023-04-01",
-    commencementFinishDate: "2023-06-30",
+    commencementFinishDate: "2024-06-30",
+    nilaiKontrak: 5000000,
     absorv: "90%",
     pengembalianNilaiKontrak: "Rp 5.000.000",
     reminder: "Completed",
@@ -60,14 +63,15 @@ const initialData: POItem[] = [
     so: "SO-003",
     project: "Project C",
     pekerjaan: "Pekerjaan 3",
-    noUbs: "UBS-003",
+    noWbs: "WBS-003",
     wo: "WO-003",
     pr: "PR-003",
     ro: "RO-003",
     poSap: "PO-003 / SAP-003",
     cro: "CRO-003",
     commencementStartDate: "2023-07-01",
-    commencementFinishDate: "2023-09-30",
+    commencementFinishDate: "2024-09-30",
+    nilaiKontrak: 12000000,
     absorv: "75%",
     pengembalianNilaiKontrak: "Rp 12.000.000",
     reminder: "Due in 15 days",
@@ -77,14 +81,15 @@ const initialData: POItem[] = [
     so: "SO-004",
     project: "Project D",
     pekerjaan: "Pekerjaan 4",
-    noUbs: "UBS-004",
+    noWbs: "WBS-004",
     wo: "WO-004",
     pr: "PR-004",
     ro: "RO-004",
     poSap: "PO-004 / SAP-004",
     cro: "CRO-004",
     commencementStartDate: "2023-10-01",
-    commencementFinishDate: "2023-12-31",
+    commencementFinishDate: "2024-03-31",
+    nilaiKontrak: 8000000,
     absorv: "95%",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "Upcoming",
@@ -94,7 +99,7 @@ const initialData: POItem[] = [
     so: "SO-005",
     project: "Project E",
     pekerjaan: "Pekerjaan 5",
-    noUbs: "UBS-005",
+    noWbs: "WBS-005",
     wo: "WO-005",
     pr: "PR-005",
     ro: "RO-005",
@@ -102,12 +107,12 @@ const initialData: POItem[] = [
     cro: "CRO-005",
     commencementStartDate: "2024-01-01",
     commencementFinishDate: "2024-03-31",
-    absorv: "88%",
+    nilaiKontrak: 7500000,
+    absorv: "85%",
     pengembalianNilaiKontrak: "Rp 7.500.000",
     reminder: "Due in 5 days",
   },
 ];
-
 const MonitoringNilaiPOPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState<POItem[]>(initialData);
@@ -116,6 +121,37 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [currentPO, setCurrentPO] = useState<Partial<POItem>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
+
+  // Function to calculate absorv automatically from nilai kontrak
+  const calculateAbsorv = (nilaiKontrak: number, pengembalianNilaiKontrak: string): string => {
+    if (!nilaiKontrak || nilaiKontrak === 0) return "0%";
+    
+    // Extract numeric value from pengembalianNilaiKontrak (remove "Rp " and commas)
+    const pengembalianValue = parseInt(pengembalianNilaiKontrak.replace(/[^\d]/g, '')) || 0;
+    const absorvPercentage = ((nilaiKontrak - pengembalianValue) / nilaiKontrak) * 100;
+    
+    return `${Math.round(absorvPercentage)}%`;
+  };
+
+  // Function to calculate reminder based on commencement finish date
+  const calculateReminder = (commencementFinishDate: string): string => {
+    if (!commencementFinishDate) return "No date set";
+    
+    const finishDate = new Date(commencementFinishDate);
+    const currentDate = new Date();
+    const timeDiff = finishDate.getTime() - currentDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    if (daysDiff < 0) {
+      return `Overdue by ${Math.abs(daysDiff)} days`;
+    } else if (daysDiff === 0) {
+      return "Due today";
+    } else if (daysDiff <= 30) {
+      return `Due in ${daysDiff} days`;
+    } else {
+      return "On schedule";
+    }
+  };
 
   const filteredData = useMemo(() => {
     return data.filter(
@@ -175,7 +211,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
         so: currentPO.so,
         project: currentPO.project,
         pekerjaan: currentPO.pekerjaan,
-        noUbs: currentPO.noUbs || "",
+        noWbs: currentPO.noWbs || "",
         wo: currentPO.wo || "",
         pr: currentPO.pr || "",
         ro: currentPO.ro || "",
@@ -183,6 +219,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
         cro: currentPO.cro || "",
         commencementStartDate: currentPO.commencementStartDate || "",
         commencementFinishDate: currentPO.commencementFinishDate || "",
+        nilaiKontrak: currentPO.nilaiKontrak || 0,
         absorv: currentPO.absorv || "",
         pengembalianNilaiKontrak: currentPO.pengembalianNilaiKontrak || "",
         reminder: currentPO.reminder || "",
@@ -233,7 +270,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   Pekerjaan
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  No. UBS
+                  No. WBS
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   WO
@@ -304,7 +341,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.pekerjaan}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.noUbs}
+                    {item.noWbs}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.wo}
@@ -328,13 +365,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.commencementFinishDate}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.absorv}
+                    {calculateAbsorv(item.nilaiKontrak, item.pengembalianNilaiKontrak)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.pengembalianNilaiKontrak}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.reminder}
+                    {calculateReminder(item.commencementFinishDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex space-x-2">
@@ -408,13 +445,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  No. UBS
+                  No. WBS
                 </label>
                 <input
                   type="text"
-                  value={currentPO.noUbs || ""}
+                  value={currentPO.noWbs || ""}
                   onChange={(e) =>
-                    setCurrentPO({ ...currentPO, noUbs: e.target.value })
+                    setCurrentPO({ ...currentPO, noWbs: e.target.value })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
@@ -518,15 +555,16 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Absorv
+                  Nilai Kontrak
                 </label>
                 <input
-                  type="text"
-                  value={currentPO.absorv || ""}
+                  type="number"
+                  value={currentPO.nilaiKontrak || ""}
                   onChange={(e) =>
-                    setCurrentPO({ ...currentPO, absorv: e.target.value })
+                    setCurrentPO({ ...currentPO, nilaiKontrak: parseInt(e.target.value) || 0 })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  placeholder="Masukkan nilai kontrak"
                 />
               </div>
               <div>
@@ -541,19 +579,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
                       ...currentPO,
                       pengembalianNilaiKontrak: e.target.value,
                     })
-                  }
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Reminder
-                </label>
-                <input
-                  type="text"
-                  value={currentPO.reminder || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, reminder: e.target.value })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />

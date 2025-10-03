@@ -46,6 +46,42 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Partial<KontrakKerjaFormData>>({});
+
+  // Opsi tunjangan yang tersedia dengan nominal default
+  const tunjanganOptions = [
+    "Transport",
+    "Makan",
+    "Komunikasi",
+    "Kinerja",
+    "Lembur",
+    "Jabatan",
+    "Kesehatan",
+    "Pendidikan",
+    "Hari Raya",
+    "Kehadiran"
+  ];
+
+  // Mapping nominal default untuk setiap jenis tunjangan
+  const tunjanganNominalMap: { [key: string]: string } = {
+    "Transport": "2000000",
+    "Makan": "1500000",
+    "Komunikasi": "500000",
+    "Kinerja": "5000000",
+    "Lembur": "100000",
+    "Jabatan": "3000000",
+    "Kesehatan": "2500000",
+    "Pendidikan": "1000000",
+    "Hari Raya": "2000000",
+    "Kehadiran": "1000000"
+  };
+
+  // Fungsi untuk format nominal ke Rupiah
+  const formatToRupiah = (value: string) => {
+    if (!value) return "";
+    const number = parseInt(value.replace(/\D/g, ''));
+    return new Intl.NumberFormat('id-ID').format(number);
+  };
+
   const [isLoading, setIsLoading] = useState(false);
 
   // Options for Kualifikasi Pegawai multi-select
@@ -140,7 +176,19 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     value: string
   ) => {
     const newTunjangan = [...formData.tunjangan];
-    newTunjangan[index] = { ...newTunjangan[index], [field]: value };
+    
+    if (field === "namaTunjangan") {
+      // Otomatis set nominal berdasarkan pilihan tunjangan
+      const defaultNominal = tunjanganNominalMap[value] || "";
+      newTunjangan[index] = { 
+        ...newTunjangan[index], 
+        namaTunjangan: value,
+        nominal: defaultNominal
+      };
+    } else {
+      newTunjangan[index] = { ...newTunjangan[index], [field]: value };
+    }
+    
     setFormData((prev) => ({ ...prev, tunjangan: newTunjangan }));
   };
 
@@ -569,8 +617,7 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                       {formData.tunjangan.map((item, index) => (
                         <tr key={index}>
                           <td className="px-4 py-3">
-                            <input
-                              type="text"
+                            <select
                               value={item.namaTunjangan}
                               onChange={(e) =>
                                 handleTunjanganChange(
@@ -579,24 +626,36 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Transport"
-                            />
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            >
+                              <option value="">Pilih Tunjangan</option>
+                              {tunjanganOptions.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-4 py-3">
-                            <input
-                              type="text"
-                              value={item.nominal}
-                              onChange={(e) =>
-                                handleTunjanganChange(
-                                  index,
-                                  "nominal",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full px-2 py-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Rp. 2.000.000"
-                            />
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                                Rp
+                              </span>
+                              <input
+                                type="text"
+                                value={formatToRupiah(item.nominal)}
+                                onChange={(e) => {
+                                  const numericValue = e.target.value.replace(/\D/g, '');
+                                  handleTunjanganChange(
+                                    index,
+                                    "nominal",
+                                    numericValue
+                                  );
+                                }}
+                                className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="2.000.000"
+                              />
+                            </div>
                           </td>
                           <td className="px-4 py-3">
                             <button

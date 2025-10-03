@@ -392,18 +392,24 @@ import FinanceApprovePIDashboard from "./FinanceApprovePIDashboard";
 
 import MonitoringNilaiPOPage from "../pages/marketing/MonitoringNilaiPOPage";
 import MasterAllowancePage from "../pages/hrd/MasterAllowancePage";
+import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
+import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
 
 interface DashboardProps {
   currentPage: string;
+  setCurrentPage?: (page: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
+const Dashboard: React.FC<DashboardProps> = ({ currentPage, setCurrentPage }) => {
   const { user } = useAuth();
+  
+  // Debug log to check if setCurrentPage is received
+  console.log('Dashboard received setCurrentPage:', !!setCurrentPage);
 
   // Main dashboard content based on user role
   const renderMainDashboard = () => {
     if (user?.role === "hrd") {
-      return <HRDDashboard />;
+      return <HRDDashboard setCurrentPage={setCurrentPage} />;
     }
 
     // QHSE ISO System
@@ -876,7 +882,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
 
     // HRD Routes
     if (currentPage === "/hrd/dashboard") {
-      return <HRDDashboard />;
+      return <HRDDashboard setCurrentPage={setCurrentPage} />;
     }
     if (currentPage === "/hrd/tunjangan-unit/dashboard") {
       return <TunjanganUnitDashboard />;
@@ -904,6 +910,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/rekrutmen/master-kualifikasi") {
       return <MasterKualifikasiDashboard />;
+    }
+    if (currentPage === "/hrd/rekrutmen/master-tunjangan") {
+      return <MasterTunjanganHRDDashboard />;
     }
     if (currentPage === "/hrd/marketing/dashboard") {
       return <HRDMarketingDashboard />;
@@ -987,6 +996,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage }) => {
     }
     if (currentPage === "/hrd/absensi/master-izin") {
       return <MasterIzinDashboard />;
+    }
+    if (currentPage === "/hrd/absensi/approval-lembur") {
+      return <ApprovalLemburDashboard />;
     }
     if (currentPage === "/hrd/perjanjian/perjanjian-ikatan-dinas") {
       return <PerjanjianIkatanDinasDashboard />;

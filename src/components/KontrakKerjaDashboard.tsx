@@ -276,6 +276,13 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
 
           {/* Export Buttons */}
           <div className="flex justify-end space-x-2 mb-6">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Tambah</span>
+            </button>
             <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
               <FileSpreadsheet className="h-4 w-4" />
               <span>Export Excel</span>
