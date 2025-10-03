@@ -185,6 +185,7 @@ import PerjanjianIkatanDinasDashboard from "./PerjanjianIkatanDinasDashboard";
 import SuratIzinBekerjaDashboard from "./SuratIzinBekerjaDashboard";
 import NoSuratPerjanjianDashboard from "./NoSuratPerjanjianDashboard";
 import HRDMonitoringDokumenDashboard from "./HRDMonitoringDokumenDashboard";
+import MonitoringNoSuratDashboard from "./MonitoringNoSuratDashboard";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -400,11 +401,14 @@ interface DashboardProps {
   setCurrentPage?: (page: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ currentPage, setCurrentPage }) => {
+const Dashboard: React.FC<DashboardProps> = ({
+  currentPage,
+  setCurrentPage,
+}) => {
   const { user } = useAuth();
-  
+
   // Debug log to check if setCurrentPage is received
-  console.log('Dashboard received setCurrentPage:', !!setCurrentPage);
+  console.log("Dashboard received setCurrentPage:", !!setCurrentPage);
 
   // Main dashboard content based on user role
   const renderMainDashboard = () => {
@@ -1012,6 +1016,9 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage, setCurrentPage }) =>
     if (currentPage === "/hrd/monitoring/dokumen") {
       return <HRDMonitoringDokumenDashboard />;
     }
+    if (currentPage === "/hrd/monitoring/no-surat") {
+      return <MonitoringNoSuratDashboard />;
+    }
     if (currentPage === "/hrd/penilaian/daftar") {
       return <DaftarPenilaianDashboard />;
     }
@@ -1533,7 +1540,7 @@ const Dashboard: React.FC<DashboardProps> = ({ currentPage, setCurrentPage }) =>
       return <TimesheetBarangPegawaiDashboard />;
     }
     if (currentPage === "/procon/timesheet/barang-pegawai") {
-      return <TimesheetBarangPegawaiDashboard role="procon" />;
+      return <TimesheetBarangPegawaiDashboard />;
     }
     if (currentPage === "/operational/training/dashboard") {
       return <TrainingDashboard />;

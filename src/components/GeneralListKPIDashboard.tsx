@@ -198,9 +198,9 @@ const GeneralListKPIDashboard: React.FC = () => {
                                     <th className="px-4 py-3 text-center" rowSpan={2}>Mengaji</th>
                                     <th className="px-4 py-3 text-center" rowSpan={2}>Kajian</th>
                                     <th className="px-4 py-3 text-center" rowSpan={2}>Healthy Week</th>
+                                    <th className="px-4 py-3 text-center" rowSpan={2}>Performance</th>
                                     <th className="px-4 py-3 text-left" rowSpan={2}>Polaritas</th>
                                     <th className="px-4 py-3 text-left" rowSpan={2}>Final Score KPI</th>
-                                    <th className="px-4 py-3 text-center" rowSpan={2}>Performance</th>
                                   </tr>
                                   <tr className="bg-gray-50 border-b border-gray-200 text-gray-700 text-xs font-semibold uppercase tracking-wider">
                                     <th className="px-4 py-2 text-left">Variabel Indicator</th>
@@ -232,11 +232,11 @@ const GeneralListKPIDashboard: React.FC = () => {
                                       <td className="px-4 py-3 text-center">{row.mengaji}%</td>
                                       <td className="px-4 py-3 text-center">{row.kajian}%</td>
                                       <td className="px-4 py-3 text-center">{row.healthyWeek}%</td>
-                                      <td className="px-4 py-3">{row.polaritas}</td>
-                                      <td className={`px-4 py-3 font-semibold ${scoreBg(row.finalScore)}`}>{row.finalScore}</td>
                                       <td className={`px-4 py-3 text-center font-semibold ${parseFloat(row.performance.replace('%', '')) < 75 ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}>
                                         {row.performance}
                                       </td>
+                                      <td className="px-4 py-3">{row.polaritas}</td>
+                                      <td className={`px-4 py-3 font-semibold ${scoreBg(row.finalScore)}`}>{row.finalScore}</td>
                                     </tr>
                                   ))}
                                 </tbody>

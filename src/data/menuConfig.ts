@@ -1070,29 +1070,21 @@ export const hrdMenu: MenuSection[] = [
     ],
   },
   {
-    title: "Monitoring Dokumen HRD",
-    icon: "FileText",
-    items: [],
-    directPath: "/hrd/monitoring/dokumen",
+    title: "Monitoring",
+    icon: "Monitor",
+    items: [
+      {
+        title: "Monitoring Dokumen HRD",
+        icon: "FileText",
+        path: "/hrd/monitoring/dokumen",
+      },
+      {
+        title: "Monitoring No. Surat",
+        icon: "FileText",
+        path: "/hrd/monitoring/no-surat",
+      },
+    ],
   },
-  // {
-  //   title: "SPK", // Moved SPK Section to HRD
-  //   icon: "FileSignature",
-  //   items: [
-  //     { title: "Approve SPK", icon: "CheckCircle", path: "/hrd/spk/approve" },
-  //   ],
-  // },
-  // {
-  //   title: "Monitoring", // Moved SPK Section to HRD
-  //   icon: "Monitor",
-  //   items: [
-  //     {
-  //       title: "Monitoring",
-  //       icon: "Monitor",
-  //       path: "/qhse/monitoring/endorse-certificate",
-  //     },
-  //   ],
-  // },
   createGeneralMenu("hrd"),
 ];
 
