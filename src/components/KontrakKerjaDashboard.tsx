@@ -18,6 +18,7 @@ import {
   ChevronRight,
   ArrowUp,
   CheckCircle, // New icon for Approve
+  Printer, // New icon for Print
 } from "lucide-react";
 
 interface KontrakKerjaDashboardProps {
@@ -52,6 +53,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
       noKontrak: "KO-001",
       penerimaKontrak: "Michael Scott",
       periodeKontrak: "01-01-2000 s.d 01-01-2030",
+      jenisKontrak: "Staff PKWT",
       tunjangan: ["Transport", "Makan", "Bonus", "Kesehatan", "Asuransi"],
     },
     {
@@ -60,6 +62,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
       noKontrak: "KO-002",
       penerimaKontrak: "Pam Beesly",
       periodeKontrak: "15-06-2005 s.d 15-06-2035",
+      jenisKontrak: "Freelance",
       tunjangan: ["Makan", "Transport", "Bonus"],
     },
     {
@@ -68,6 +71,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
       noKontrak: "KO-003",
       penerimaKontrak: "Jim Halpert",
       periodeKontrak: "10-09-2010 s.d 10-09-2040",
+      jenisKontrak: "Teknisi PKWT",
       tunjangan: ["Kesehatan", "Asuransi", "Transport"],
     },
   ]);
@@ -101,6 +105,7 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
           year: "numeric",
         }
       )}`,
+      jenisKontrak: formData.jenisKontrak || "-",
       tunjangan: formData.tunjangan
         .map((t) => t.namaTunjangan)
         .filter((name) => name.trim() !== ""),
@@ -173,6 +178,29 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
 
   const handleSearch = () => {
     setCurrentPage(1);
+  };
+
+  // Function to handle document download based on contract type
+  const handlePrintContract = (jenisKontrak: string, penerimaKontrak: string) => {
+    const documentUrls: { [key: string]: string } = {
+      "Staff PKWT": "https://drive.google.com/uc?export=download&id=1cAXbPnSIFBDkUv1Tcpd3odMoRB3jhBjJ",
+      "Teknisi PKWT": "https://drive.google.com/uc?export=download&id=1EKoL0vFfCiigtfOhb8kafwvYXH7Y_6w5",
+      "Freelance": "https://drive.google.com/uc?export=download&id=1wjS-WF-_Qs0SKRzMPUTlPH92Kuonz8eN"
+    };
+
+    const downloadUrl = documentUrls[jenisKontrak];
+    
+    if (downloadUrl) {
+      // Create a temporary link element to trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `Kontrak_${jenisKontrak.replace(/\s+/g, '_')}_${penerimaKontrak.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert(`Template dokumen untuk jenis kontrak "${jenisKontrak}" tidak tersedia.`);
+    }
   };
 
   return (
@@ -382,6 +410,21 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
                       )}
                     </div>
                   </th>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort("jenisKontrak")}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Jenis Kontrak</span>
+                      {sortField === "jenisKontrak" && (
+                        <ArrowUp
+                          className={`h-3 w-3 transition-transform ${
+                            sortDirection === "desc" ? "rotate-180" : ""
+                          }`}
+                        />
+                      )}
+                    </div>
+                  </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Tunjangan
                   </th>
@@ -419,6 +462,11 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
                       {item.periodeKontrak}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                        {item.jenisKontrak}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="flex flex-wrap gap-1">
                         {item.tunjangan.map((tunjangan, idx) => (
                           <span
@@ -433,13 +481,22 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         {role === "management" ? (
-                          <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
-                            title="Approve"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </button>
+                          <>
+                            <button
+                              onClick={() => setIsModalOpen(true)}
+                              className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handlePrintContract(item.jenisKontrak, item.penerimaKontrak)}
+                              className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Print Contract"
+                            >
+                              <Printer className="h-4 w-4" />
+                            </button>
+                          </>
                         ) : (
                           <>
                             <button
@@ -455,6 +512,13 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
                               title="Edit"
                             >
                               <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handlePrintContract(item.jenisKontrak, item.penerimaKontrak)}
+                              className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Print Contract"
+                            >
+                              <Printer className="h-4 w-4" />
                             </button>
                           </>
                         )}

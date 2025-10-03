@@ -70,3 +70,18 @@ export interface AbsensiTeknisiData {
   statusAbsensi: string;
   lampiran: string;
 }
+
+export interface KontrakKerjaData {
+  id: string;
+  no: number;
+  noKontrak: string;
+  penerimaKontrak: string;
+  periodeKontrak: string;
+  jenisKontrak: string;
+  tunjangan: string[];
+}
+
+export interface TunjanganItem {
+  namaTunjangan: string;
+  nominal: string;
+}

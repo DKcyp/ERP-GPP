@@ -2,6 +2,42 @@ import React, { useState, useMemo } from "react";
 import { Search, Pencil, Trash2, PlusCircle } from "lucide-react";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 
+interface SalesOrder {
+  soNumber: string;
+  project: string;
+  pekerjaan: string;
+  nilaiKontrak: number;
+  pengembalianNilaiKontrak: string;
+  reminder: string;
+}
+
+const salesOrderData: SalesOrder[] = [
+  {
+    soNumber: "SO-001",
+    project: "Project Alpha",
+    pekerjaan: "Development Phase 1",
+    nilaiKontrak: 15000000,
+    pengembalianNilaiKontrak: "Rp 15.000.000",
+    reminder: "Due in 45 days",
+  },
+  {
+    soNumber: "SO-002",
+    project: "Project Beta",
+    pekerjaan: "Deployment & Testing",
+    nilaiKontrak: 8000000,
+    pengembalianNilaiKontrak: "Rp 8.000.000",
+    reminder: "Due in 10 days",
+  },
+  {
+    soNumber: "SO-003",
+    project: "Project Gamma",
+    pekerjaan: "Maintenance & Support",
+    nilaiKontrak: 20000000,
+    pengembalianNilaiKontrak: "Rp 20.000.000",
+    reminder: "On schedule",
+  },
+];
+
 interface POItem {
   id: string;
   so: string;
@@ -15,10 +51,10 @@ interface POItem {
   cro: string;
   commencementStartDate: string;
   commencementFinishDate: string;
-  nilaiKontrak: number; // Added for automatic absorv calculation
-  absorv: string; // Will be calculated automatically
-  pengembalianNilaiKontrak: string;
-  reminder: string; // Will be calculated based on commencementFinishDate
+  nilaiKontrak: number;
+  absorv?: string; // Will be calculated automatically
+  pengembalianNilaiKontrak?: string;
+  reminder?: string;
 }
 
 const initialData: POItem[] = [
@@ -35,10 +71,10 @@ const initialData: POItem[] = [
     cro: "CRO-001",
     commencementStartDate: "2023-01-01",
     commencementFinishDate: "2024-12-31",
-    nilaiKontrak: 10000000,
-    absorv: "80%",
-    pengembalianNilaiKontrak: "Rp 10.000.000",
-    reminder: "Due in 30 days",
+    nilaiKontrak: 15000000,
+    absorv: "-",
+    pengembalianNilaiKontrak: "Rp 15.000.000",
+    reminder: "-",
   },
   {
     id: "2",
@@ -53,10 +89,10 @@ const initialData: POItem[] = [
     cro: "CRO-002",
     commencementStartDate: "2023-04-01",
     commencementFinishDate: "2024-06-30",
-    nilaiKontrak: 5000000,
-    absorv: "90%",
-    pengembalianNilaiKontrak: "Rp 5.000.000",
-    reminder: "Completed",
+    nilaiKontrak: 8000000,
+    absorv: "-",
+    pengembalianNilaiKontrak: "Rp 8.000.000",
+    reminder: "-",
   },
   {
     id: "3",
@@ -71,10 +107,10 @@ const initialData: POItem[] = [
     cro: "CRO-003",
     commencementStartDate: "2023-07-01",
     commencementFinishDate: "2024-09-30",
-    nilaiKontrak: 12000000,
-    absorv: "75%",
-    pengembalianNilaiKontrak: "Rp 12.000.000",
-    reminder: "Due in 15 days",
+    nilaiKontrak: 20000000,
+    absorv: "-",
+    pengembalianNilaiKontrak: "Rp 20.000.000",
+    reminder: "-",
   },
   {
     id: "4",
@@ -123,25 +159,30 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
 
   // Function to calculate absorv automatically from nilai kontrak
-  const calculateAbsorv = (nilaiKontrak: number, pengembalianNilaiKontrak: string): string => {
+  const calculateAbsorv = (
+    nilaiKontrak: number,
+    pengembalianNilaiKontrak: string
+  ): string => {
     if (!nilaiKontrak || nilaiKontrak === 0) return "0%";
-    
+
     // Extract numeric value from pengembalianNilaiKontrak (remove "Rp " and commas)
-    const pengembalianValue = parseInt(pengembalianNilaiKontrak.replace(/[^\d]/g, '')) || 0;
-    const absorvPercentage = ((nilaiKontrak - pengembalianValue) / nilaiKontrak) * 100;
-    
+    const pengembalianValue =
+      parseInt(pengembalianNilaiKontrak.replace(/[^\d]/g, "")) || 0;
+    const absorvPercentage =
+      ((nilaiKontrak - pengembalianValue) / nilaiKontrak) * 100;
+
     return `${Math.round(absorvPercentage)}%`;
   };
 
   // Function to calculate reminder based on commencement finish date
   const calculateReminder = (commencementFinishDate: string): string => {
     if (!commencementFinishDate) return "No date set";
-    
+
     const finishDate = new Date(commencementFinishDate);
     const currentDate = new Date();
     const timeDiff = finishDate.getTime() - currentDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    
+
     if (daysDiff < 0) {
       return `Overdue by ${Math.abs(daysDiff)} days`;
     } else if (daysDiff === 0) {
@@ -365,13 +406,17 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.commencementFinishDate}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {calculateAbsorv(item.nilaiKontrak, item.pengembalianNilaiKontrak)}
+                    {calculateAbsorv(
+                      item.nilaiKontrak,
+                      item.pengembalianNilaiKontrak || "0"
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.pengembalianNilaiKontrak}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {calculateReminder(item.commencementFinishDate)}
+                    {item.reminder ||
+                      calculateReminder(item.commencementFinishDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex space-x-2">
@@ -406,16 +451,53 @@ const MonitoringNilaiPOPage: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  SO
+                  Nomor SO
                 </label>
-                <input
-                  type="text"
+                <select
                   value={currentPO.so || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, so: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const selectedSo = salesOrderData.find(
+                      (so) => so.soNumber === e.target.value
+                    );
+                    if (selectedSo) {
+                      const newPengembalianNilaiKontrak = `Rp ${selectedSo.nilaiKontrak.toLocaleString(
+                        "id-ID"
+                      )}`;
+                      setCurrentPO({
+                        ...currentPO,
+                        so: selectedSo.soNumber,
+                        project: selectedSo.project,
+                        pekerjaan: selectedSo.pekerjaan,
+                        nilaiKontrak: selectedSo.nilaiKontrak,
+                        absorv: calculateAbsorv(
+                          selectedSo.nilaiKontrak,
+                          newPengembalianNilaiKontrak
+                        ),
+                        pengembalianNilaiKontrak: newPengembalianNilaiKontrak,
+                        reminder: selectedSo.reminder,
+                      });
+                    } else {
+                      setCurrentPO({
+                        ...currentPO,
+                        so: e.target.value,
+                        project: "",
+                        pekerjaan: "",
+                        nilaiKontrak: 0,
+                        absorv: "",
+                        pengembalianNilaiKontrak: "",
+                        reminder: "",
+                      });
+                    }
+                  }}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
+                >
+                  <option value="">Pilih Nomor SO</option>
+                  {salesOrderData.map((so) => (
+                    <option key={so.soNumber} value={so.soNumber}>
+                      {so.soNumber}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -428,6 +510,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     setCurrentPO({ ...currentPO, project: e.target.value })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  readOnly
                 />
               </div>
               <div>
@@ -441,6 +524,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     setCurrentPO({ ...currentPO, pekerjaan: e.target.value })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  readOnly
                 />
               </div>
               <div>
@@ -558,13 +642,21 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   Nilai Kontrak
                 </label>
                 <input
-                  type="number"
-                  value={currentPO.nilaiKontrak || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, nilaiKontrak: parseInt(e.target.value) || 0 })
-                  }
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  placeholder="Masukkan nilai kontrak"
+                  type="text"
+                  value={currentPO.nilaiKontrak?.toLocaleString("id-ID") || ""}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Absorv
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.absorv || ""}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
+                  readOnly
                 />
               </div>
               <div>
@@ -574,13 +666,19 @@ const MonitoringNilaiPOPage: React.FC = () => {
                 <input
                   type="text"
                   value={currentPO.pengembalianNilaiKontrak || ""}
-                  onChange={(e) =>
-                    setCurrentPO({
-                      ...currentPO,
-                      pengembalianNilaiKontrak: e.target.value,
-                    })
-                  }
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Reminder
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.reminder || ""}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
+                  readOnly
                 />
               </div>
             </div>

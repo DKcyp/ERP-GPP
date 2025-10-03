@@ -10,7 +10,8 @@ import {
   X,
   Save,
 } from "lucide-react";
-import TNAHistoryTable from "./TNAHistoryTable";
+import TNAHistoryModal from "./TNAHistoryModal";
+import { HistoryTNA } from "./TNAHistoryModal";
 
 interface KPIItem {
   kpi: string;
@@ -24,20 +25,6 @@ interface PegawaiKPI {
   jabatan: string;
   departemen: string;
   kpis: KPIItem[];
-}
-
-interface HistoryTNA {
-  id: string;
-  nama: string;
-  jabatan: string;
-  departemen: string;
-  kpi: string;
-  indikator: string;
-  nilaiSebelum: number;
-  nilaiSesudah: number;
-  tanggalTraining: string;
-  statusTraining: "Completed" | "In Progress" | "Cancelled";
-  trainer: string;
 }
 
 // FORCE UPDATE - Mixed dataset with both high and low values for testing
@@ -109,7 +96,6 @@ const initialDataForceUpdate: PegawaiKPI[] = [
   },
 ];
 
-// History TNA data
 const historyTNAData: HistoryTNA[] = [
   {
     id: "HIST-001",
@@ -122,7 +108,7 @@ const historyTNAData: HistoryTNA[] = [
     nilaiSesudah: 78,
     tanggalTraining: "15-12-2024",
     statusTraining: "Completed",
-    trainer: "Dr. Sari Wijaya"
+    trainer: "Dr. Sari Wijaya",
   },
   {
     id: "HIST-002",
@@ -135,7 +121,7 @@ const historyTNAData: HistoryTNA[] = [
     nilaiSesudah: 85,
     tanggalTraining: "20-12-2024",
     statusTraining: "Completed",
-    trainer: "Bpk. Hendra Saputra"
+    trainer: "Bpk. Hendra Saputra",
   },
   {
     id: "HIST-003",
@@ -148,7 +134,7 @@ const historyTNAData: HistoryTNA[] = [
     nilaiSesudah: 0,
     tanggalTraining: "10-01-2025",
     statusTraining: "In Progress",
-    trainer: "Ibu Ratna Sari"
+    trainer: "Ibu Ratna Sari",
   },
   {
     id: "HIST-004",
@@ -161,7 +147,7 @@ const historyTNAData: HistoryTNA[] = [
     nilaiSesudah: 0,
     tanggalTraining: "25-01-2025",
     statusTraining: "Cancelled",
-    trainer: "Bpk. Agus Santoso"
+    trainer: "Bpk. Agus Santoso",
   },
   {
     id: "HIST-005",
@@ -174,8 +160,34 @@ const historyTNAData: HistoryTNA[] = [
     nilaiSesudah: 89,
     tanggalTraining: "05-01-2025",
     statusTraining: "Completed",
-    trainer: "Dr. Bambang Sutrisno"
-  }
+    trainer: "Dr. Bambang Sutrisno",
+  },
+  {
+    id: "HIST-006",
+    nama: "Fajar Nugroho",
+    jabatan: "IT Support",
+    departemen: "IT",
+    kpi: "Technical Skills",
+    indikator: "Problem Solving",
+    nilaiSebelum: 42,
+    nilaiSesudah: 76,
+    tanggalTraining: "08-01-2025",
+    statusTraining: "Completed",
+    trainer: "Bpk. Andi Wijaya",
+  },
+  {
+    id: "HIST-007",
+    nama: "Sinta Dewi",
+    jabatan: "Admin HRD",
+    departemen: "HRD",
+    kpi: "Administrasi",
+    indikator: "Document Management",
+    nilaiSebelum: 48,
+    nilaiSesudah: 0,
+    tanggalTraining: "15-01-2025",
+    statusTraining: "In Progress",
+    trainer: "Ibu Maya Sari",
+  },
 ];
 
 // Simple suggestion engine based on KPI/Indikator keyword
@@ -217,6 +229,7 @@ const HRDTNADashboard: React.FC = () => {
     kpi: "",
     indikator: "",
     nilai: "",
+    rekomendasiTraining: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -225,9 +238,8 @@ const HRDTNADashboard: React.FC = () => {
   const [selectedTrainingItem, setSelectedTrainingItem] = useState<any>(null);
 
   // History TNA states
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [historyData] = useState<HistoryTNA[]>(historyTNAData);
-  const [showHistoryEntries, setShowHistoryEntries] = useState(5);
-  const [historySearchTerm, setHistorySearchTerm] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -321,6 +333,7 @@ const HRDTNADashboard: React.FC = () => {
       kpi: "",
       indikator: "",
       nilai: "",
+      rekomendasiTraining: "",
     });
     setErrors({});
     setIsModalOpen(false);
@@ -334,6 +347,7 @@ const HRDTNADashboard: React.FC = () => {
       kpi: "",
       indikator: "",
       nilai: "",
+      rekomendasiTraining: "",
     });
     setErrors({});
     setIsModalOpen(false);
@@ -379,6 +393,10 @@ const HRDTNADashboard: React.FC = () => {
     [rows]
   );
 
+  const openHistoryModal = () => {
+    setShowHistoryModal(true);
+  };
+
   const threshold = Number(filters.threshold || LOW_THRESHOLD_DEFAULT);
 
   const filtered = useMemo(() => {
@@ -402,12 +420,7 @@ const HRDTNADashboard: React.FC = () => {
         ? r.nilai <= Number(filters.maxNilai)
         : true;
       return (
-        matchNama &&
-        matchDept &&
-        matchKPI &&
-        matchInd &&
-        matchMin &&
-        matchMax
+        matchNama && matchDept && matchKPI && matchInd && matchMin && matchMax
       );
     });
   }, [flattened, filters]);
@@ -575,6 +588,13 @@ const HRDTNADashboard: React.FC = () => {
               >
                 <Plus className="h-4 w-4" />
                 <span>Tambah</span>
+              </button>
+              <button
+                className="flex items-center space-x-2 px-3 py-2 bg-purple-600 text-white rounded-lg shadow-sm hover:bg-purple-700 text-xs"
+                onClick={openHistoryModal}
+              >
+                <Clock className="h-4 w-4" />
+                <span>History</span>
               </button>
               <button
                 className="flex items-center space-x-2 px-3 py-2 bg-green-500 text-white rounded-lg shadow-sm hover:bg-green-600 text-xs"
@@ -896,6 +916,21 @@ const HRDTNADashboard: React.FC = () => {
                       </p>
                     )}
                   </div>
+
+                  {/* Rekomendasi Training */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Rekomendasi Training
+                    </label>
+                    <input
+                      type="text"
+                      name="rekomendasiTraining"
+                      value={formData.rekomendasiTraining}
+                      onChange={handleFormChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Contoh: Pelatihan K3 & APD"
+                    />
+                  </div>
                 </div>
 
                 {/* Footer */}
@@ -1009,8 +1044,12 @@ const HRDTNADashboard: React.FC = () => {
         </div>
       )}
 
-      {/* History TNA Table */}
-      <TNAHistoryTable />
+      {/* TNA History Modal */}
+      <TNAHistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        historyData={historyData}
+      />
     </div>
   );
 };
