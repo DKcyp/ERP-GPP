@@ -19,6 +19,7 @@ import PengajianEntryModal, {
 
 interface PenggajianEntry {
   no: number;
+  namaPegawai: string;
   absenGapok: string;
   umUt: string;
   tunjanganJabatan: string;
@@ -41,6 +42,7 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
   const [penggajianData, setPenggajianData] = useState<PenggajianEntry[]>([
     {
       no: 1,
+      namaPegawai: "Ahmad Suryanto",
       absenGapok: "Rp 5.000.000",
       umUt: "Rp 500.000",
       tunjanganJabatan: "Rp 1.000.000",
@@ -50,6 +52,7 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
     },
     {
       no: 2,
+      namaPegawai: "Siti Nurhaliza",
       absenGapok: "Rp 4.500.000",
       umUt: "Rp 400.000",
       tunjanganJabatan: "Rp 800.000",
@@ -256,6 +259,11 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
+                      Nama Pegawai <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
                       Absen (Gapok) <ChevronDown className="ml-1 h-3 w-3" />
                     </div>
                   </th>
@@ -296,6 +304,9 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
                   <tr key={entry.no}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {entry.no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                      {entry.namaPegawai}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {entry.absenGapok}

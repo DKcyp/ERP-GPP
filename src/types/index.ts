@@ -60,3 +60,13 @@ export interface PayVoucherFormData {
   jenisBayar: string;
   nominal: number;
 }
+
+export interface AbsensiTeknisiData {
+  id: string;
+  no: number;
+  namaTeknisi: string;
+  tanggalAbsensi: string;
+  zonaKerja: string;
+  statusAbsensi: string;
+  lampiran: string;
+}

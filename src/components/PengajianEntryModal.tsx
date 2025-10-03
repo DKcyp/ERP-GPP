@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X, Save, Loader2 } from 'lucide-react';
 
 export interface PengajianEntryFormData {
+  namaPegawai: string;
   absenGapok: string;
   umUt: string;
   tunjanganJabatan: string;
@@ -18,6 +19,7 @@ interface PengajianEntryModalProps {
 
 const PengajianEntryModal: React.FC<PengajianEntryModalProps> = ({ isOpen, onClose, onSave }) => {
   const [form, setForm] = useState<PengajianEntryFormData>({
+    namaPegawai: '',
     absenGapok: '',
     umUt: '',
     tunjanganJabatan: '',
@@ -75,7 +77,7 @@ const PengajianEntryModal: React.FC<PengajianEntryModalProps> = ({ isOpen, onClo
     await new Promise(r => setTimeout(r, 800));
     onSave(form);
     setIsLoading(false);
-    setForm({ absenGapok: '', umUt: '', tunjanganJabatan: '', tunjanganLainnya: '', tunjanganBpjs: '', tunjanganProyek: '' });
+    setForm({ namaPegawai: '', absenGapok: '', umUt: '', tunjanganJabatan: '', tunjanganLainnya: '', tunjanganBpjs: '', tunjanganProyek: '' });
     setErrors({});
     onClose();
   };
@@ -97,6 +99,11 @@ const PengajianEntryModal: React.FC<PengajianEntryModalProps> = ({ isOpen, onClo
         </div>
         <div className="overflow-y-auto max-h-[calc(85vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai <span className="text-red-500">*</span></label>
+              <input type="text" value={form.namaPegawai} onChange={(e) => handleChange('namaPegawai')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.namaPegawai ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Masukkan nama pegawai" />
+              {errors.namaPegawai && <p className="text-sm text-red-600 mt-1">{errors.namaPegawai}</p>}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Absen (Gapok) <span className="text-red-500">*</span></label>

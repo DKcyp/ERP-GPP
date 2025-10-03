@@ -22,7 +22,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "DL",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "2",
@@ -30,9 +29,8 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       namaTeknisi: "Budi Santoso",
       tanggalAbsensi: "02-01-2025",
       zonaKerja: "Zona 3",
-      statusAbsensi: "H",
+      statusAbsensi: "TL",
       lampiran: "Rp 2.000.000",
-      statusApprove: "Process",
     },
     {
       id: "3",
@@ -42,7 +40,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 2",
       statusAbsensi: "CT",
       lampiran: "Rp 1.750.000",
-      statusApprove: "Rejected",
     },
     {
       id: "4",
@@ -50,9 +47,8 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       namaTeknisi: "Agus Prasetyo",
       tanggalAbsensi: "04-01-2025",
       zonaKerja: "Zona 1",
-      statusAbsensi: "CP",
+      statusAbsensi: "CK",
       lampiran: "Rp 1.250.000",
-      statusApprove: "Approved",
     },
     {
       id: "5",
@@ -60,9 +56,8 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       namaTeknisi: "Rudi Hartono",
       tanggalAbsensi: "05-01-2025",
       zonaKerja: "Zona 3",
-      statusAbsensi: "TM",
+      statusAbsensi: "CI",
       lampiran: "Rp 1.800.000",
-      statusApprove: "Process",
     },
     {
       id: "6",
@@ -70,9 +65,8 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       namaTeknisi: "Fauzan Malik",
       tanggalAbsensi: "06-01-2025",
       zonaKerja: "Zona 2",
-      statusAbsensi: "DL",
+      statusAbsensi: "CP",
       lampiran: "Rp 1.600.000",
-      statusApprove: "Rejected",
     },
     {
       id: "7",
@@ -82,7 +76,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "H",
       lampiran: "Rp 2.100.000",
-      statusApprove: "Approved",
     },
     {
       id: "8",
@@ -90,9 +83,8 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       namaTeknisi: "Hariyanto",
       tanggalAbsensi: "08-01-2025",
       zonaKerja: "Zona 3",
-      statusAbsensi: "CT",
+      statusAbsensi: "TL",
       lampiran: "Rp 1.450.000",
-      statusApprove: "Process",
     },
     // Recent dummy records for Ahmad (within last 16 days from 10-09-2025)
     {
@@ -103,7 +95,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "H",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A2",
@@ -113,7 +104,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "DL",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A3",
@@ -123,7 +113,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 2",
       statusAbsensi: "H",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A4",
@@ -133,7 +122,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 2",
       statusAbsensi: "CP",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A5",
@@ -143,7 +131,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "CT",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A6",
@@ -151,9 +138,8 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       namaTeknisi: "Ahmad",
       tanggalAbsensi: "04-09-2025",
       zonaKerja: "Zona 3",
-      statusAbsensi: "TM",
+      statusAbsensi: "TL",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A7",
@@ -163,7 +149,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "H",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A8",
@@ -173,7 +158,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 1",
       statusAbsensi: "DL",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A9",
@@ -183,7 +167,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 2",
       statusAbsensi: "H",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
     {
       id: "A10",
@@ -193,7 +176,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
       zonaKerja: "Zona 2",
       statusAbsensi: "H",
       lampiran: "Rp 1.500.000",
-      statusApprove: "Approved",
     },
   ]);
 
@@ -235,18 +217,6 @@ const AbsensiTeknisiDashboard: React.FC = () => {
     }
   };
 
-  const getStatusApproveColor = (status: string) => {
-    switch (status) {
-      case "Approved":
-        return "bg-green-600 text-white";
-      case "Process":
-        return "bg-yellow-500 text-white";
-      case "Rejected":
-        return "bg-red-600 text-white";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   // Helpers for 16-day period
   const today = new Date();
@@ -295,10 +265,13 @@ const AbsensiTeknisiDashboard: React.FC = () => {
     sakit: number;
     libur: number;
     cuti: number;
+    cutiTahunan: number;
+    cutiPotong: number;
+    cutiKhusus: number;
+    cutiIstimewa: number;
     alpha: number;
     hadir: number;
-    gajiPokok: string;
-    statusApprove: string;
+    terlambat: number;
   };
 
   // Build summaries per employee for the last 16 days
@@ -317,13 +290,27 @@ const AbsensiTeknisiDashboard: React.FC = () => {
         sakit = 0,
         libur = 0,
         cuti = 0,
+        cutiTahunan = 0,
+        cutiPotong = 0,
+        cutiKhusus = 0,
+        cutiIstimewa = 0,
         alpha = 0,
-        hadir = 0;
+        hadir = 0,
+        terlambat = 0;
       // consider only within period
       const within = rows.filter((r) => isWithinPeriod(r.tanggalAbsensi));
       within.forEach((r) => {
+        const status = r.statusAbsensi.trim().toUpperCase();
         // count DL separately
-        if (r.statusAbsensi.trim().toUpperCase() === "DL") dl += 1;
+        if (status === "DL") dl += 1;
+        // count different types of cuti
+        else if (status === "CT" || status === "CUTI") cutiTahunan += 1;
+        else if (status === "CP" || status === "CUTI_POTONG") cutiPotong += 1;
+        else if (status === "CK" || status === "CUTI_KHUSUS") cutiKhusus += 1;
+        else if (status === "CI" || status === "CUTI_ISTIMEWA") cutiIstimewa += 1;
+        // count terlambat
+        else if (status === "TL" || status === "TERLAMBAT") terlambat += 1;
+        
         const cat = mapStatusToCategory(r.statusAbsensi);
         if (cat === "izin") izin += 1;
         else if (cat === "sakit") sakit += 1;
@@ -332,10 +319,7 @@ const AbsensiTeknisiDashboard: React.FC = () => {
         else if (cat === "alpha") alpha += 1;
         else if (cat === "hadir") hadir += 1;
       });
-      // pick last known gaji from rows (using lampiran as placeholder)
-      const last = rows[rows.length - 1];
-      const gajiPokok = last?.lampiran ?? "Rp 0";
-      const statusApprove = last?.statusApprove ?? "-";
+      
       results.push({
         no: counter++,
         nama,
@@ -345,10 +329,13 @@ const AbsensiTeknisiDashboard: React.FC = () => {
         sakit,
         libur,
         cuti,
+        cutiTahunan,
+        cutiPotong,
+        cutiKhusus,
+        cutiIstimewa,
         alpha,
         hadir,
-        gajiPokok,
-        statusApprove,
+        terlambat,
       });
     });
     return results;
@@ -435,13 +422,22 @@ const AbsensiTeknisiDashboard: React.FC = () => {
                     Alpha
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Cuti Tahunan
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Cuti Potong
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Cuti Khusus
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Cuti Istimewa
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Hadir
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Gaji pokok
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Status Approve
+                    Terlambat
                   </th>
                 </tr>
               </thead>
@@ -493,19 +489,22 @@ const AbsensiTeknisiDashboard: React.FC = () => {
                       {row.alpha}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.cutiTahunan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.cutiPotong}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.cutiKhusus}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.cutiIstimewa}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
                       {row.hadir}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                      {row.gajiPokok}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusApproveColor(
-                          row.statusApprove
-                        )}`}
-                      >
-                        {row.statusApprove}
-                      </span>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {row.terlambat}
                     </td>
                   </tr>
                 ))}

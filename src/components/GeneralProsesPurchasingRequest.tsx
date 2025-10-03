@@ -1,28 +1,35 @@
 import React, { useState } from 'react';
-import { ChevronDown, Eye, Clock, Printer, Plus, FileCheck, FilePlus, X, Info } from 'lucide-react';
+import { ChevronDown, Plus, X, Info } from 'lucide-react';
 import EntryPurchasingRequestModal from './EntryPurchasingRequestModal'; // Import the new modal
 import { EntryPurchasingRequestFormData } from '../types'; // Import the new type
 
 interface PurchasingRequest {
   id: number;
-  tanggalPR: string;
-  noPR: string;
-  noPO: string;
   noSO: string;
-  departemen: string;
-  keterangan: string;
-  statusPR: 'Approve' | 'Rejected' | 'Pending'; // Added 'Pending' for form options
-  statusPO: 'PO' | '-';
-  statusDO: 'Delivered' | 'Received' | 'BA' | '-';
+  jenis: string;
+  noSistemACTS: string;
+  tanggalPengajuan: string;
+  cust: string;
+  deskripsiPekerjaan: string;
+  jumlah: number;
+  satuan: string;
+  noPO: string;
+  statusPOFinance: string;
+  statusBarang: string;
 }
 
 const GeneralProsesPurchasingRequest: React.FC = () => {
   const [purchasingRequests, setPurchasingRequests] = useState<PurchasingRequest[]>([
-    { id: 1, tanggalPR: '07-02-2025', noPR: 'PR001', noPO: 'PO-001', noSO: 'SO001.22', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: 'PO', statusDO: 'Delivered' },
-    { id: 2, tanggalPR: '08-02-2025', noPR: 'PR002', noPO: '-',      noSO: 'SO002.12', departemen: 'Finance', keterangan: 'Pembelian Software Akuntansi', statusPR: 'Approve', statusPO: '-',  statusDO: '-' },
-    { id: 3, tanggalPR: '09-02-2025', noPR: 'PR003', noPO: '-',      noSO: 'SO003.33', departemen: 'HRD', keterangan: 'Jasa Pelatihan Karyawan', statusPR: 'Approve', statusPO: '-',  statusDO: 'BA' },
-    { id: 4, tanggalPR: '10-02-2025', noPR: 'PR004', noPO: 'PO-002', noSO: 'SO004.90', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Approve', statusPO: 'PO', statusDO: 'Received' },
-    { id: 5, tanggalPR: '11-02-2025', noPR: 'PR005', noPO: '-',      noSO: 'SO005.55', departemen: 'Operasional', keterangan: 'Pembelian Alat Tulis Kantor', statusPR: 'Rejected', statusPO: '-',  statusDO: '-' },
+    { id: 1, noSO: '001-2020-AKS', jenis: 'JASA', noSistemACTS: 'PPE-GBP/2025/04/071', tanggalPengajuan: '22 January 2025', cust: 'PHE', deskripsiPekerjaan: 'sewa plugging tools', jumlah: 13, satuan: '-', noPO: 'PHE/A', statusPOFinance: '-', statusBarang: '-' },
+    { id: 2, noSO: '051-2020-548', jenis: 'JASA', noSistemACTS: 'PPE-GBP/2025/04/071', tanggalPengajuan: '21 April 2025', cust: 'PHE ONWJ', deskripsiPekerjaan: 'sewa plugging tools', jumlah: 13, satuan: '-', noPO: 'PHE/A', statusPOFinance: '-', statusBarang: '-' },
+    { id: 3, noSO: '086-2025', jenis: 'BARANG', noSistemACTS: 'PPE-GBP/2025/08/067', tanggalPengajuan: '20 Juli', cust: 'PHE ONWJ', deskripsiPekerjaan: 'BOROSCOPE', jumlah: 1, satuan: '-', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
+    { id: 4, noSO: '004-2025', jenis: 'JASA', noSistemACTS: 'PPE-GBP/2025/08/075', tanggalPengajuan: '25 Aug', cust: 'SSB', deskripsiPekerjaan: 'SEWA ALAT DWT', jumlah: 7, satuan: 'HARI', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
+    { id: 5, noSO: '048-2025-48', jenis: 'JASA', noSistemACTS: 'PPE-GBP/2025/08/057', tanggalPengajuan: '27 Aug', cust: 'PHE ONWJ', deskripsiPekerjaan: 'SEWA PROBE BOROSCOPE Panjang 1-13 Sep 2025', jumlah: 13, satuan: '-', noPO: 'SSB', statusPOFinance: '-', statusBarang: '-' },
+    { id: 6, noSO: '004-2025', jenis: 'BARANG', noSistemACTS: 'PPE-GBP/2025/08/059', tanggalPengajuan: '28 Aug', cust: 'SSB', deskripsiPekerjaan: 'Penjualan 1-13 Sep 2025', jumlah: 30, satuan: '-', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
+    { id: 7, noSO: '037-2024', jenis: 'BARANG', noSistemACTS: 'PPE-GBP/2025/08/111', tanggalPengajuan: '29 Aug', cust: 'DHM', deskripsiPekerjaan: 'SPAREPART PERALATAN PROJECT ( PGD )', jumlah: 1, satuan: '-', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
+    { id: 8, noSO: '040-2025', jenis: 'BARANG', noSistemACTS: 'PPE-GBP/2025/09/002', tanggalPengajuan: '02 Sep', cust: 'PHE ONWJ', deskripsiPekerjaan: 'CD RW', jumlah: 200, satuan: '-', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
+    { id: 9, noSO: '045-2025-48', jenis: 'JASA', noSistemACTS: 'PPE-GBP/2025/09/048', tanggalPengajuan: '17 Sep', cust: 'PHE ONWJ', deskripsiPekerjaan: 'COVER CD', jumlah: 1, satuan: '-', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
+    { id: 10, noSO: '048-2025', jenis: 'JASA', noSistemACTS: 'PPE-GBP/2025/09/027', tanggalPengajuan: '17 Sep', cust: 'PHE ONWJ', deskripsiPekerjaan: 'BIAYA KIRIM ( AKP )', jumlah: 200, satuan: '-', noPO: '-', statusPOFinance: '-', statusBarang: '-' },
   ]);
 
   const [alert, setAlert] = useState<{ type: 'success' | 'info' | 'warning' | 'error'; message: string } | null>(null);
@@ -67,34 +74,31 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
     const newId = purchasingRequests.length > 0 ? Math.max(...purchasingRequests.map(req => req.id)) + 1 : 1;
     const newRequest: PurchasingRequest = {
       id: newId,
-      tanggalPR: newData.tanggalPR,
-      noPR: newData.noPR,
+      noSO: newData.noSO || '',
+      jenis: 'JASA',
+      noSistemACTS: '',
+      tanggalPengajuan: new Date().toLocaleDateString('id-ID'),
+      cust: '',
+      deskripsiPekerjaan: newData.keterangan || '',
+      jumlah: 1,
+      satuan: '-',
       noPO: '-',
-      noSO: newData.noSO,
-      departemen: newData.departemen,
-      keterangan: newData.keterangan,
-      // Default statuses for new PR since inputs removed from modal
-      statusPR: 'Pending',
-      statusPO: '-',
-      statusDO: '-',
+      statusPOFinance: '-',
+      statusBarang: '-',
     };
     setPurchasingRequests((prev) => [...prev, newRequest]);
     console.log('New Purchasing Request Added:', newRequest);
   };
 
-  const handleGenerateBA = (id: number) => {
-    setPurchasingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, statusDO: 'BA' } : req)));
-    const pr = purchasingRequests.find((r) => r.id === id);
-    setAlert({ type: 'success', message: `Status DO (BA) berhasil diset untuk PR ${pr?.noPR ?? id}.` });
-    // Auto dismiss after 4 seconds
-    setTimeout(() => setAlert(null), 4000);
-  };
 
   const getRowBackgroundColor = (index: number) => {
     // Replicating the exact background colors from the image
-    if (index === 0 || index === 2) return 'bg-red-50'; // Light red for rows 1 and 3
-    if (index === 3) return 'bg-blue-50'; // Light blue for row 4
-    return 'bg-white'; // Default white for rows 2 and 5
+    if (index === 0) return 'bg-red-50'; // Light red for first row
+    if (index === 2) return 'bg-red-50'; // Light red for third row  
+    if (index === 3) return 'bg-blue-50'; // Light blue for fourth row
+    if (index === 6) return 'bg-red-50'; // Light red for seventh row
+    if (index === 8) return 'bg-red-50'; // Light red for ninth row
+    return 'bg-white'; // Default white for other rows
   };
 
   return (
@@ -190,34 +194,37 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     <div className="flex items-center">No <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Tanggal PR <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">No. SO <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">No PR <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">Jenis <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">No. Sistem ACTS <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">Tanggal Pengajuan <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">Cust <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">Deskripsi Pekerjaan <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">Jumlah <ChevronDown className="ml-1 h-3 w-3" /></div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">satuan <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">No PO <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">No SO <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">status PO ke finance <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Departemen <ChevronDown className="ml-1 h-3 w-3" /></div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Keterangan <ChevronDown className="ml-1 h-3 w-3" /></div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Status PR <ChevronDown className="ml-1 h-3 w-3" /></div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Status PO <ChevronDown className="ml-1 h-3 w-3" /></div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Status DO <ChevronDown className="ml-1 h-3 w-3" /></div>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">Aksi <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">status barang <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                 </tr>
               </thead>
@@ -236,75 +243,21 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                         </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{request.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.tanggalPR}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPR}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPO}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noSO}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.departemen}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.keterangan}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          request.statusPR === 'Approve' ? 'bg-green-100 text-green-800' : request.statusPR === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {request.statusPR}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          request.statusPO === 'PO' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {request.statusPO === 'PO' ? 'Lengkap' : 'Belum Lengkap'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          request.statusDO === 'Delivered'
-                            ? 'bg-green-100 text-green-800'
-                            : request.statusDO === 'Received'
-                            ? 'bg-blue-100 text-blue-800'
-                            : request.statusDO === 'BA'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {request.statusDO}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          {request.statusDO === 'BA' ? (
-                            <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="BA sudah dibuat">
-                              <FileCheck className="h-4 w-4" />
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleGenerateBA(request.id)}
-                              className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
-                              title="Buat BA"
-                            >
-                              <FilePlus className="h-4 w-4" />
-                            </button>
-                          )}
-                          {request.statusPO === 'PO' ? (
-                            <button className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                          ) : (
-                            <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          )}
-                          <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors">
-                            <Clock className="h-4 w-4" />
-                          </button>
-                          <button className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors">
-                            <Printer className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.jenis}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noSistemACTS}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.tanggalPengajuan}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.cust}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.deskripsiPekerjaan}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{request.jumlah}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{request.satuan}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.noPO}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.statusPOFinance}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.statusBarang}</td>
                     </tr>
                     {expanded.has(request.id) && (
                       <tr className="bg-gray-50">
-                        <td colSpan={12} className="px-6 py-4">
+                        <td colSpan={13} className="px-6 py-4">
                           <div className="border border-gray-200 rounded-lg overflow-hidden">
                             <table className="w-full text-xs">
                               <thead className="bg-gray-100">
@@ -316,7 +269,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                               </thead>
                               <tbody className="divide-y divide-gray-200">
                                 {(detailMap[request.id] || [
-                                  { nama: 'Item', jumlah: 1, tanggal: request.tanggalPR },
+                                  { nama: 'Item', jumlah: 1, tanggal: request.tanggalPengajuan },
                                 ]).map((d, i) => (
                                   <tr key={i}>
                                     <td className="px-3 py-2 text-gray-700">{d.nama}</td>
