@@ -13,6 +13,7 @@ export interface HistoryTNA {
   tanggalTraining: string;
   statusTraining: "Completed" | "In Progress" | "Cancelled";
   trainer: string;
+  rekomendasiTraining: string;
 }
 
 interface TNAHistoryModalProps {
@@ -153,6 +154,9 @@ const TNAHistoryModal: React.FC<TNAHistoryModalProps> = ({
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Trainer
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Rekomendasi Training
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -208,6 +212,9 @@ const TNAHistoryModal: React.FC<TNAHistoryModalProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                     {item.trainer}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {item.rekomendasiTraining}
                   </td>
                 </tr>
               ))}

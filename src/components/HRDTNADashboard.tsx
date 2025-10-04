@@ -109,6 +109,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "15-12-2024",
     statusTraining: "Completed",
     trainer: "Dr. Sari Wijaya",
+    rekomendasiTraining: "Public Speaking & Presentation",
   },
   {
     id: "HIST-002",
@@ -122,6 +123,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "20-12-2024",
     statusTraining: "Completed",
     trainer: "Bpk. Hendra Saputra",
+    rekomendasiTraining: "Pelatihan K3 & APD",
   },
   {
     id: "HIST-003",
@@ -135,6 +137,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "10-01-2025",
     statusTraining: "In Progress",
     trainer: "Ibu Ratna Sari",
+    rekomendasiTraining: "Negotiation & Objection Handling",
   },
   {
     id: "HIST-004",
@@ -148,6 +151,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "25-01-2025",
     statusTraining: "Cancelled",
     trainer: "Bpk. Agus Santoso",
+    rekomendasiTraining: "Financial Analysis & Reporting",
   },
   {
     id: "HIST-005",
@@ -161,6 +165,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "05-01-2025",
     statusTraining: "Completed",
     trainer: "Dr. Bambang Sutrisno",
+    rekomendasiTraining: "Quality Management & Process Improvement",
   },
   {
     id: "HIST-006",
@@ -174,6 +179,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "08-01-2025",
     statusTraining: "Completed",
     trainer: "Bpk. Andi Wijaya",
+    rekomendasiTraining: "Technical Problem Solving & Troubleshooting",
   },
   {
     id: "HIST-007",
@@ -187,6 +193,7 @@ const historyTNAData: HistoryTNA[] = [
     tanggalTraining: "15-01-2025",
     statusTraining: "In Progress",
     trainer: "Ibu Maya Sari",
+    rekomendasiTraining: "Document Management & Administrative Skills",
   },
 ];
 

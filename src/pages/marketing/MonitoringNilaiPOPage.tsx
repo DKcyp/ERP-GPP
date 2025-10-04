@@ -6,7 +6,6 @@ interface SalesOrder {
   soNumber: string;
   project: string;
   pekerjaan: string;
-  nilaiKontrak: number;
   pengembalianNilaiKontrak: string;
   reminder: string;
 }
@@ -16,7 +15,6 @@ const salesOrderData: SalesOrder[] = [
     soNumber: "SO-001",
     project: "Project Alpha",
     pekerjaan: "Development Phase 1",
-    nilaiKontrak: 15000000,
     pengembalianNilaiKontrak: "Rp 15.000.000",
     reminder: "Due in 45 days",
   },
@@ -24,7 +22,6 @@ const salesOrderData: SalesOrder[] = [
     soNumber: "SO-002",
     project: "Project Beta",
     pekerjaan: "Deployment & Testing",
-    nilaiKontrak: 8000000,
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "Due in 10 days",
   },
@@ -32,7 +29,6 @@ const salesOrderData: SalesOrder[] = [
     soNumber: "SO-003",
     project: "Project Gamma",
     pekerjaan: "Maintenance & Support",
-    nilaiKontrak: 20000000,
     pengembalianNilaiKontrak: "Rp 20.000.000",
     reminder: "On schedule",
   },
@@ -51,7 +47,6 @@ interface POItem {
   cro: string;
   commencementStartDate: string;
   commencementFinishDate: string;
-  nilaiKontrak: number;
   absorv?: string; // Will be calculated automatically
   pengembalianNilaiKontrak?: string;
   reminder?: string;
@@ -71,7 +66,6 @@ const initialData: POItem[] = [
     cro: "CRO-001",
     commencementStartDate: "2023-01-01",
     commencementFinishDate: "2024-12-31",
-    nilaiKontrak: 15000000,
     absorv: "-",
     pengembalianNilaiKontrak: "Rp 15.000.000",
     reminder: "-",
@@ -89,7 +83,6 @@ const initialData: POItem[] = [
     cro: "CRO-002",
     commencementStartDate: "2023-04-01",
     commencementFinishDate: "2024-06-30",
-    nilaiKontrak: 8000000,
     absorv: "-",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "-",
@@ -107,7 +100,6 @@ const initialData: POItem[] = [
     cro: "CRO-003",
     commencementStartDate: "2023-07-01",
     commencementFinishDate: "2024-09-30",
-    nilaiKontrak: 20000000,
     absorv: "-",
     pengembalianNilaiKontrak: "Rp 20.000.000",
     reminder: "-",
@@ -125,7 +117,6 @@ const initialData: POItem[] = [
     cro: "CRO-004",
     commencementStartDate: "2023-10-01",
     commencementFinishDate: "2024-03-31",
-    nilaiKontrak: 8000000,
     absorv: "95%",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "Upcoming",
@@ -143,7 +134,6 @@ const initialData: POItem[] = [
     cro: "CRO-005",
     commencementStartDate: "2024-01-01",
     commencementFinishDate: "2024-03-31",
-    nilaiKontrak: 7500000,
     absorv: "85%",
     pengembalianNilaiKontrak: "Rp 7.500.000",
     reminder: "Due in 5 days",
@@ -158,20 +148,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
 
-  // Function to calculate absorv automatically from nilai kontrak
-  const calculateAbsorv = (
-    nilaiKontrak: number,
-    pengembalianNilaiKontrak: string
-  ): string => {
-    if (!nilaiKontrak || nilaiKontrak === 0) return "0%";
-
-    // Extract numeric value from pengembalianNilaiKontrak (remove "Rp " and commas)
-    const pengembalianValue =
-      parseInt(pengembalianNilaiKontrak.replace(/[^\d]/g, "")) || 0;
-    const absorvPercentage =
-      ((nilaiKontrak - pengembalianValue) / nilaiKontrak) * 100;
-
-    return `${Math.round(absorvPercentage)}%`;
+  // Function to calculate absorv automatically from pengembalian nilai kontrak
+  const calculateAbsorv = (pengembalianNilaiKontrak: string): string => {
+    if (!pengembalianNilaiKontrak) return "0%";
+    
+    // Since we don't have nilai kontrak, absorv will be calculated differently
+    // For now, return a placeholder or calculate based on business logic
+    return "-";
   };
 
   // Function to calculate reminder based on commencement finish date
@@ -260,7 +243,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
         cro: currentPO.cro || "",
         commencementStartDate: currentPO.commencementStartDate || "",
         commencementFinishDate: currentPO.commencementFinishDate || "",
-        nilaiKontrak: currentPO.nilaiKontrak || 0,
         absorv: currentPO.absorv || "",
         pengembalianNilaiKontrak: currentPO.pengembalianNilaiKontrak || "",
         reminder: currentPO.reminder || "",
@@ -406,10 +388,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.commencementFinishDate}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {calculateAbsorv(
-                      item.nilaiKontrak,
-                      item.pengembalianNilaiKontrak || "0"
-                    )}
+                    {item.absorv || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.pengembalianNilaiKontrak}
@@ -460,19 +439,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
                       (so) => so.soNumber === e.target.value
                     );
                     if (selectedSo) {
-                      const newPengembalianNilaiKontrak = `Rp ${selectedSo.nilaiKontrak.toLocaleString(
-                        "id-ID"
-                      )}`;
+                      const newPengembalianNilaiKontrak = selectedSo.pengembalianNilaiKontrak;
                       setCurrentPO({
                         ...currentPO,
                         so: selectedSo.soNumber,
                         project: selectedSo.project,
                         pekerjaan: selectedSo.pekerjaan,
-                        nilaiKontrak: selectedSo.nilaiKontrak,
-                        absorv: calculateAbsorv(
-                          selectedSo.nilaiKontrak,
-                          newPengembalianNilaiKontrak
-                        ),
+                        absorv: calculateAbsorv(newPengembalianNilaiKontrak),
                         pengembalianNilaiKontrak: newPengembalianNilaiKontrak,
                         reminder: selectedSo.reminder,
                       });
@@ -482,7 +455,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
                         so: e.target.value,
                         project: "",
                         pekerjaan: "",
-                        nilaiKontrak: 0,
                         absorv: "",
                         pengembalianNilaiKontrak: "",
                         reminder: "",
@@ -635,17 +607,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nilai Kontrak
-                </label>
-                <input
-                  type="text"
-                  value={currentPO.nilaiKontrak?.toLocaleString("id-ID") || ""}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
-                  readOnly
                 />
               </div>
               <div>

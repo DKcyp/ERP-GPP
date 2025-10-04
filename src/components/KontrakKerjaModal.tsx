@@ -58,28 +58,28 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     "Kesehatan",
     "Pendidikan",
     "Hari Raya",
-    "Kehadiran"
+    "Kehadiran",
   ];
 
   // Mapping nominal default untuk setiap jenis tunjangan
   const tunjanganNominalMap: { [key: string]: string } = {
-    "Transport": "2000000",
-    "Makan": "1500000",
-    "Komunikasi": "500000",
-    "Kinerja": "5000000",
-    "Lembur": "100000",
-    "Jabatan": "3000000",
-    "Kesehatan": "2500000",
-    "Pendidikan": "1000000",
+    Transport: "2000000",
+    Makan: "1500000",
+    Komunikasi: "500000",
+    Kinerja: "5000000",
+    Lembur: "100000",
+    Jabatan: "3000000",
+    Kesehatan: "2500000",
+    Pendidikan: "1000000",
     "Hari Raya": "2000000",
-    "Kehadiran": "1000000"
+    Kehadiran: "1000000",
   };
 
   // Fungsi untuk format nominal ke Rupiah
   const formatToRupiah = (value: string) => {
     if (!value) return "";
-    const number = parseInt(value.replace(/\D/g, ''));
-    return new Intl.NumberFormat('id-ID').format(number);
+    const number = parseInt(value.replace(/\D/g, ""));
+    return new Intl.NumberFormat("id-ID").format(number);
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -176,19 +176,19 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     value: string
   ) => {
     const newTunjangan = [...formData.tunjangan];
-    
+
     if (field === "namaTunjangan") {
       // Otomatis set nominal berdasarkan pilihan tunjangan
       const defaultNominal = tunjanganNominalMap[value] || "";
-      newTunjangan[index] = { 
-        ...newTunjangan[index], 
+      newTunjangan[index] = {
+        ...newTunjangan[index],
         namaTunjangan: value,
-        nominal: defaultNominal
+        nominal: defaultNominal,
       };
     } else {
       newTunjangan[index] = { ...newTunjangan[index], [field]: value };
     }
-    
+
     setFormData((prev) => ({ ...prev, tunjangan: newTunjangan }));
   };
 
@@ -344,16 +344,17 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                   </label>
                   <select
                     value={formData.jenisKontrak || ""}
-                    onChange={(e) => handleInputChange("jenisKontrak", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("jenisKontrak", e.target.value)
+                    }
                     className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
                   >
                     <option value="">-- Pilih Jenis Kontrak --</option>
-                    <option value="Intern">Intern</option>
                     <option value="Staff PKWT">Staff PKWT</option>
                     <option value="Staff PKWTT">Staff PKWTT</option>
                     <option value="Teknisi PKWT">Teknisi PKWT</option>
                     <option value="Teknisi PKWTT">Teknisi PKWTT</option>
-                    <option value="Freelance">Freelance</option>
+                    <option value="Teknisi Freelance">Freelance</option>
                   </select>
                 </div>
 
@@ -365,7 +366,9 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                   <input
                     type="text"
                     value={formData.gajiPokok || ""}
-                    onChange={(e) => handleInputChange("gajiPokok", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("gajiPokok", e.target.value)
+                    }
                     className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border-gray-200"
                     placeholder="Rp. 5.000.000"
                   />
@@ -645,7 +648,10 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                                 type="text"
                                 value={formatToRupiah(item.nominal)}
                                 onChange={(e) => {
-                                  const numericValue = e.target.value.replace(/\D/g, '');
+                                  const numericValue = e.target.value.replace(
+                                    /\D/g,
+                                    ""
+                                  );
                                   handleTunjanganChange(
                                     index,
                                     "nominal",
