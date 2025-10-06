@@ -12,6 +12,7 @@ interface GajiModalProps {
 
 export interface GajiRow {
   namaPegawai: string;
+  noSO: string; // Added NO SO field
   totalIncome: string; // formatted Rp
   totalDeduct: string; // formatted Rp
   potonganLain: string; // formatted Rp
@@ -118,8 +119,9 @@ const GajiModal: React.FC<GajiModalProps> = ({
     }
     // If initialRows are provided (prefill), do not override them
     if (initialRows && initialRows.length > 0) return;
-    const initial: GajiRow[] = pegawaiOptions.map((nama) => ({
+    const initial: GajiRow[] = pegawaiOptions.map((nama, index) => ({
       namaPegawai: nama,
+      noSO: `SO${String(index + 1).padStart(3, '0')}`, // Generate SO001, SO002, etc.
       totalIncome: formatRp(0),
       totalDeduct: formatRp(0),
       potonganLain: formatRp(0),
@@ -136,9 +138,15 @@ const GajiModal: React.FC<GajiModalProps> = ({
     setRows((prev) =>
       prev.map((r, i) => {
         if (i !== idx) return r;
-        // Only currency fields are editable
-        const formatted = formatCurrencyInput(value);
-        return { ...r, [field]: formatted } as GajiRow;
+        // Handle different field types
+        if (field === 'noSO' || field === 'namaPegawai') {
+          // Non-currency fields - use value as is
+          return { ...r, [field]: value } as GajiRow;
+        } else {
+          // Currency fields - format the input
+          const formatted = formatCurrencyInput(value);
+          return { ...r, [field]: formatted } as GajiRow;
+        }
       })
     );
   };
@@ -277,6 +285,9 @@ const GajiModal: React.FC<GajiModalProps> = ({
                         <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                           Nama Pegawai
                         </th>
+                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                          NO SO
+                        </th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
                           Total Income
                         </th>
@@ -323,6 +334,17 @@ const GajiModal: React.FC<GajiModalProps> = ({
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-900 font-medium">
                             {r.namaPegawai}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            <input
+                              type="text"
+                              value={r.noSO}
+                              onChange={(e) =>
+                                updateRow(idx, "noSO", e.target.value)
+                              }
+                              className="w-32 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="SO001"
+                            />
                           </td>
                           <td className="px-4 py-2 text-sm text-gray-900 text-right">
                             <input

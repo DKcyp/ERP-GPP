@@ -5,30 +5,22 @@ import ApproveTimesheetModal, {
 import ApproveTimesheetDetailModal from "./ApproveTimesheetDetailModal";
 import { Plus, ArrowUp } from "lucide-react";
 
-// Local interface for timesheet data used in this component
+// Local interface for timesheet data mirrored from Operation
 interface ApprovalTimesheetPegawaiData {
   id: string;
   no: number;
-  nama: string;
+  tanggal: string;
+  noSO: string;
+  noSOTurunan: string;
+  namaProyek: string;
+  namaPegawai: string;
   kualifikasi: string[];
   mob: string;
   demob: string;
   durasi: string;
-  noSO: string;
-  noHPP: string;
-  lokasi: string;
-  jenisPekerjaan: string;
-  status: "Menunggu Review" | "Release" | "Approve" | "Rejected";
-  namaProject: string;
-  namaClient: string;
-  jamAwalKerja: string;
-  jamSelesaiKerja: string;
-  overtime: string;
-  tunjangan: {
-    namaTunjangan: string;
-    rateTunjangan: string;
-    overtime: string;
-  }[];
+  zona: string;
+  nilaiTimesheet: string;
+  statusApproval: 'Approve by HRD' | 'Approve by Manager OPS' | 'Pending' | 'Rejected';
 }
 
 const ApprovalTimesheetDashboard: React.FC = () => {
@@ -46,123 +38,73 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   >(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Sample data matching the second image, updated with new fields
+  // Sample data mirrored from Operation timesheet structure
   const [approvalTimesheetData, setApprovalTimesheetData] = useState<
     ApprovalTimesheetPegawaiData[]
   >([
     {
       id: "1",
       no: 1,
-      nama: "Ahmad",
+      tanggal: "2025-01-15",
+      noSO: "SO-001",
+      noSOTurunan: "SO-001.1",
+      namaProyek: "Proyek Jembatan A",
+      namaPegawai: "Ahmad",
       kualifikasi: ["Welder", "Fitter"],
       mob: "01-01-2025",
       demob: "05-01-2025",
       durasi: "4 hari",
-      noSO: "SO-001",
-      noHPP: "SO-001.1",
-      lokasi: "Bali",
-      jenisPekerjaan: "On Call",
-      status: "Approve",
-      namaProject: "Proyek Jembatan A",
-      namaClient: "PT Konstruksi Sejahtera",
-      jamAwalKerja: "08:00",
-      jamSelesaiKerja: "17:00",
-      overtime: "2 Jam",
-      tunjangan: [
-        {
-          namaTunjangan: "Team Leader - Daily Rate/",
-          rateTunjangan: "Rp. 750,000",
-          overtime: "Rp. 187,500 (3 Jam)",
-        },
-        {
-          namaTunjangan: "Team Leader-Daily Basic M",
-          rateTunjangan: "Rp. 500,000",
-          overtime: "",
-        },
-      ],
+      zona: "Zona A",
+      nilaiTimesheet: "Rp 3.000.000",
+      statusApproval: "Approve by HRD",
     },
     {
       id: "2",
       no: 2,
-      nama: "Budi",
+      tanggal: "2025-02-10",
+      noSO: "SO-002",
+      noSOTurunan: "SO-002.1",
+      namaProyek: "Pembangunan Gedung B",
+      namaPegawai: "Budi",
       kualifikasi: ["Electrician"],
       mob: "03-02-2025",
       demob: "08-02-2025",
       durasi: "5 hari",
-      noSO: "SO-002",
-      noHPP: "SO-002.1",
-      lokasi: "Jakarta",
-      jenisPekerjaan: "Tender",
-      status: "Menunggu Review",
-      namaProject: "Pembangunan Gedung B",
-      namaClient: "PT Pembangunan Nasional",
-      jamAwalKerja: "09:00",
-      jamSelesaiKerja: "18:00",
-      overtime: "1 Jam",
-      tunjangan: [
-        {
-          namaTunjangan: "Electrician Daily Rate",
-          rateTunjangan: "Rp. 600,000",
-          overtime: "Rp. 150,000 (1 Jam)",
-        },
-      ],
+      zona: "Zona B",
+      nilaiTimesheet: "Rp 2.500.000",
+      statusApproval: "Pending",
     },
     {
       id: "3",
       no: 3,
-      nama: "Charlie",
+      tanggal: "2025-03-12",
+      noSO: "SO-003",
+      noSOTurunan: "SO-003.1",
+      namaProyek: "Instalasi Sistem C",
+      namaPegawai: "Charlie",
       kualifikasi: ["Technician", "Supervisor"],
       mob: "10-03-2025",
       demob: "15-03-2025",
       durasi: "5 hari",
-      noSO: "SO-003",
-      noHPP: "SO-003.1",
-      lokasi: "Surabaya",
-      jenisPekerjaan: "On Call",
-      status: "Rejected",
-      namaProject: "Instalasi Sistem C",
-      namaClient: "CV Infrastruktur Jaya",
-      jamAwalKerja: "07:00",
-      jamSelesaiKerja: "16:00",
-      overtime: "3 Jam",
-      tunjangan: [
-        {
-          namaTunjangan: "Technician Daily Rate",
-          rateTunjangan: "Rp. 700,000",
-          overtime: "Rp. 175,000 (2 Jam)",
-        },
-        {
-          namaTunjangan: "Supervisor Allowance",
-          rateTunjangan: "Rp. 200,000",
-          overtime: "",
-        },
-      ],
+      zona: "Zona C",
+      nilaiTimesheet: "Rp 3.500.000",
+      statusApproval: "Rejected",
     },
     {
       id: "4",
       no: 4,
-      nama: "Dewi",
+      tanggal: "2025-04-08",
+      noSO: "SO-004",
+      noSOTurunan: "SO-004.1",
+      namaProyek: "Renovasi Kantor D",
+      namaPegawai: "Dewi",
       kualifikasi: ["Supervisor"],
       mob: "05-04-2025",
       demob: "10-04-2025",
       durasi: "5 hari",
-      noSO: "SO-004",
-      noHPP: "SO-004.1",
-      lokasi: "Medan",
-      jenisPekerjaan: "Tender",
-      status: "Approve",
-      namaProject: "Renovasi Kantor D",
-      namaClient: "PT Teknologi Maju",
-      jamAwalKerja: "08:30",
-      jamSelesaiKerja: "17:30",
-      overtime: "0 Jam",
-      tunjangan: [
-        {
-          namaTunjangan: "Supervisor Daily Rate",
-          rateTunjangan: "Rp. 800,000",
-          overtime: "",
-        },
-      ],
+      zona: "Zona D",
+      nilaiTimesheet: "Rp 4.000.000",
+      statusApproval: "Approve by Manager OPS",
     },
   ]);
 
@@ -210,17 +152,17 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const handleApprove = (id: string) => {
     setApprovalTimesheetData((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, status: "Approve" as const } : item
+        item.id === id ? { ...item, statusApproval: "Approve by HRD" as const } : item
       )
     );
     setIsDetailModalOpen(false); // Close modal after action
     setSelectedTimesheetForDetail(null);
   };
 
-  const handleRelease = (id: string) => {
+  const handleApproveByManager = (id: string) => {
     setApprovalTimesheetData((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, status: "Release" as const } : item
+        item.id === id ? { ...item, statusApproval: "Approve by Manager OPS" as const } : item
       )
     );
     setIsDetailModalOpen(false);
@@ -230,7 +172,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const handleReject = (id: string) => {
     setApprovalTimesheetData((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, status: "Rejected" as const } : item
+        item.id === id ? { ...item, statusApproval: "Rejected" as const } : item
       )
     );
     setIsDetailModalOpen(false); // Close modal after action
@@ -245,12 +187,12 @@ const ApprovalTimesheetDashboard: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Approve":
+      case "Approve by HRD":
         return "bg-green-600 text-white";
-      case "Menunggu Review":
-        return "bg-yellow-500 text-white";
-      case "Release":
+      case "Approve by Manager OPS":
         return "bg-blue-600 text-white";
+      case "Pending":
+        return "bg-yellow-500 text-white";
       case "Rejected":
         return "bg-red-600 text-white";
       default:
@@ -273,10 +215,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const filteredData = approvalTimesheetData.filter((item) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      item.nama.toLowerCase().includes(searchLower) ||
+      item.namaPegawai.toLowerCase().includes(searchLower) ||
       item.kualifikasi.join(", ").toLowerCase().includes(searchLower) || // Search in joined kualifikasi
       item.noSO.toLowerCase().includes(searchLower) ||
-      item.lokasi.toLowerCase().includes(searchLower)
+      item.namaProyek.toLowerCase().includes(searchLower) ||
+      item.zona.toLowerCase().includes(searchLower)
     );
   });
 
@@ -607,10 +550,10 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                           <>
                             <button
                               onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}
-                              className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
-                              title="Release"
+                              className="px-2 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700"
+                              title="Approve"
                             >
-                              Release
+                              Approve
                             </button>
                             <button
                               onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}

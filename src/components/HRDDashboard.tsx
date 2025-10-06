@@ -9,7 +9,8 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  DollarSign
 } from 'lucide-react';
 
 interface ProgramKerjaAktif {
@@ -36,6 +37,28 @@ interface PerformanceReview {
   periode: string;
   score: number;
   status: 'Excellent' | 'Good' | 'Average' | 'Needs Improvement';
+}
+
+interface ActiveProject {
+  no: number;
+  namaProyek: string;
+  noSO: string;
+  client: string;
+  startDate: string;
+  endDate: string;
+  progress: number;
+  status: 'On Track' | 'Delay' | 'Completed' | 'On Hold';
+  manpowerCount: number;
+}
+
+interface ManpowerStandby {
+  no: number;
+  nama: string;
+  kualifikasi: string;
+  zona: string;
+  statusStandby: 'Available' | 'On Project' | 'Training' | 'Leave';
+  lastProject: string;
+  standbyDuration: string;
 }
 
 interface HRDDashboardProps {
@@ -98,6 +121,106 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
       tunjangan: 'Rp 1.200.000'
     }
   ];
+
+  // Sample data for Active Projects (mirrored from Operation)
+  const activeProjectsData: ActiveProject[] = [
+    {
+      no: 1,
+      namaProyek: 'Proyek Infrastruktur Kota',
+      noSO: 'SO-001',
+      client: 'PT Pembangunan Nasional',
+      startDate: '01-01-2025',
+      endDate: '30-06-2025',
+      progress: 75,
+      status: 'On Track',
+      manpowerCount: 25
+    },
+    {
+      no: 2,
+      namaProyek: 'Pengembangan Aplikasi ERP',
+      noSO: 'SO-002',
+      client: 'PT Teknologi Maju',
+      startDate: '15-02-2025',
+      endDate: '15-08-2025',
+      progress: 45,
+      status: 'Delay',
+      manpowerCount: 18
+    },
+    {
+      no: 3,
+      namaProyek: 'Implementasi Smart Factory',
+      noSO: 'SO-003',
+      client: 'CV Industri Sejahtera',
+      startDate: '01-03-2025',
+      endDate: '31-12-2025',
+      progress: 30,
+      status: 'On Track',
+      manpowerCount: 35
+    }
+  ];
+
+  // Sample data for Manpower Standby Teknisi
+  const manpowerStandbyData: ManpowerStandby[] = [
+    {
+      no: 1,
+      nama: 'Ahmad Rizki',
+      kualifikasi: 'Welder Level 2',
+      zona: 'Jakarta',
+      statusStandby: 'Available',
+      lastProject: 'SO-001',
+      standbyDuration: '5 hari'
+    },
+    {
+      no: 2,
+      nama: 'Budi Santoso',
+      kualifikasi: 'Electrician',
+      zona: 'Surabaya',
+      statusStandby: 'Available',
+      lastProject: 'SO-002',
+      standbyDuration: '3 hari'
+    },
+    {
+      no: 3,
+      nama: 'Charlie Wijaya',
+      kualifikasi: 'Fitter',
+      zona: 'Bandung',
+      statusStandby: 'Training',
+      lastProject: 'SO-003',
+      standbyDuration: '1 hari'
+    },
+    {
+      no: 4,
+      nama: 'Dewi Kartika',
+      kualifikasi: 'Supervisor',
+      zona: 'Jakarta',
+      statusStandby: 'Available',
+      lastProject: 'SO-001',
+      standbyDuration: '7 hari'
+    }
+  ];
+
+  // Calculate total gaji bulan berjalan
+  const calculateTotalGajiBulanBerjalan = () => {
+    // Sample calculation based on komposisiBiayaGajiData
+    const totalGaji = komposisiBiayaGajiData.reduce((total, item) => {
+      const gajiValue = parseInt(item.gaji.replace(/[Rp\s.]/g, '')) || 0;
+      const tunjanganValue = parseInt(item.tunjangan.replace(/[Rp\s.]/g, '')) || 0;
+      return total + gajiValue + tunjanganValue;
+    }, 0);
+    
+    // Add estimated total for all employees (525 employees)
+    const averageGaji = totalGaji / komposisiBiayaGajiData.length;
+    return averageGaji * 525; // Total employees
+  };
+
+  const formatRupiah = (amount: number): string => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   // Sample data for Performance Review
   const performanceReviewData: PerformanceReview[] = [
@@ -183,6 +306,26 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
       case 'Good': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'Average': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'Needs Improvement': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getProjectStatusColor = (status: string) => {
+    switch (status) {
+      case 'On Track': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Delay': return 'bg-red-100 text-red-800 border-red-200';
+      case 'Completed': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'On Hold': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStandbyStatusColor = (status: string) => {
+    switch (status) {
+      case 'Available': return 'bg-green-100 text-green-800 border-green-200';
+      case 'On Project': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Training': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Leave': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -466,8 +609,100 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
           </div>
         </div>
 
+        {/* New Sections: Manpower Standby & Active Projects */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+          {/* Manpower Standby untuk Teknisi */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-white">
+              <h3 className="text-xl font-bold text-gray-900">Manpower Standby untuk Teknisi</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Kualifikasi</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Zona</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Standby Duration</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {manpowerStandbyData.map((standby, index) => (
+                    <tr key={standby.no} className={index % 2 === 1 ? 'bg-gray-25' : ''}>
+                      <td className="px-4 py-3 text-sm text-gray-900">{standby.no}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{standby.nama}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{standby.kualifikasi}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{standby.zona}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStandbyStatusColor(standby.statusStandby)}`}>
+                          {standby.statusStandby}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{standby.standbyDuration}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Active Projects (mirrored from Operation) */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
+              <h3 className="text-xl font-bold text-gray-900">Active Projects</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Proyek</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">No SO</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Client</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Progress</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Manpower</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {activeProjectsData.map((project, index) => (
+                    <tr key={project.no} className={index % 2 === 1 ? 'bg-gray-25' : ''}>
+                      <td className="px-4 py-3 text-sm text-gray-900">{project.no}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{project.namaProyek}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{project.noSO}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{project.client}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-bold">{project.progress}%</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getProjectStatusColor(project.status)}`}>
+                          {project.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{project.manpowerCount} orang</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         {/* Quick Stats Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          {/* Total Gaji Bulan Berjalan */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <DollarSign className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Total Gaji Bulan Berjalan</p>
+                <p className="text-xl font-bold text-gray-900">{formatRupiah(calculateTotalGajiBulanBerjalan())}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Total Karyawan */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center space-x-3">

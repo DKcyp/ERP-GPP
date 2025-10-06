@@ -75,14 +75,14 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
     const newRequest: PurchasingRequest = {
       id: newId,
       noSO: newData.noSO || '',
-      jenis: newData.kategori.toUpperCase(),
+      jenis: newData.jenis.toUpperCase(),
       noSistemACTS: newData.noSistemACTS || '',
       tanggalPengajuan: new Date().toLocaleDateString('id-ID'),
-      cust: '',
+      cust: newData.customer || '',
       deskripsiPekerjaan: newData.detailItems.length > 0 ? newData.detailItems[0].namaItem : '',
       jumlah: newData.detailItems.length > 0 ? newData.detailItems[0].qty : 1,
       satuan: newData.detailItems.length > 0 ? newData.detailItems[0].satuan || '-' : '-',
-      noPO: '',
+      noPO: newData.noPo || '',
       statusPOFinance: '-',
       statusBarang: '-',
     };

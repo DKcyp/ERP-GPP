@@ -31,9 +31,78 @@ const DaftarGajiDashboard: React.FC = () => {
   };
 
   const [periods, setPeriods] = useState<PeriodPayroll[]>([
-    { id: '1', no: 1, periode: '2025-08', total: 'Rp 12.500.000', rows: [] },
-    { id: '2', no: 2, periode: '2025-07', total: 'Rp 11.300.000', rows: [] },
-    { id: '3', no: 3, periode: '2025-06', total: 'Rp 10.950.000', rows: [] },
+    { 
+      id: '1', 
+      no: 1, 
+      periode: '2025-08', 
+      total: 'Rp 12.500.000', 
+      rows: [
+        {
+          namaPegawai: 'Ahmad Fauzi',
+          noSO: 'SO001',
+          totalIncome: 'Rp 5.000.000',
+          totalDeduct: 'Rp 500.000',
+          potonganLain: 'Rp 100.000',
+          gajiBersih: 'Rp 4.400.000',
+          tahap1: 'Rp 2.200.000',
+          tahap2: 'Rp 2.200.000',
+          tahap3: 'Rp 0',
+          outstanding: 'Rp 0'
+        },
+        {
+          namaPegawai: 'Siti Nurhaliza',
+          noSO: 'SO002',
+          totalIncome: 'Rp 4.500.000',
+          totalDeduct: 'Rp 450.000',
+          potonganLain: 'Rp 50.000',
+          gajiBersih: 'Rp 4.000.000',
+          tahap1: 'Rp 2.000.000',
+          tahap2: 'Rp 2.000.000',
+          tahap3: 'Rp 0',
+          outstanding: 'Rp 0'
+        }
+      ]
+    },
+    { 
+      id: '2', 
+      no: 2, 
+      periode: '2025-07', 
+      total: 'Rp 11.300.000', 
+      rows: [
+        {
+          namaPegawai: 'Budi Santoso',
+          noSO: 'SO003',
+          totalIncome: 'Rp 4.800.000',
+          totalDeduct: 'Rp 480.000',
+          potonganLain: 'Rp 70.000',
+          gajiBersih: 'Rp 4.250.000',
+          tahap1: 'Rp 2.125.000',
+          tahap2: 'Rp 2.125.000',
+          tahap3: 'Rp 0',
+          outstanding: 'Rp 0'
+        }
+      ]
+    },
+    { 
+      id: '3', 
+      no: 3, 
+      periode: '2025-06', 
+      total: 'Rp 10.950.000', 
+      rows: [
+        {
+          namaPegawai: 'Rina Setiawati',
+          noSO: 'SO004',
+          totalIncome: 'Rp 4.200.000',
+          totalDeduct: 'Rp 420.000',
+          potonganLain: 'Rp 80.000',
+          gajiBersih: 'Rp 3.700.000',
+          tahap1: 'Rp 1.850.000',
+          tahap2: 'Rp 1.850.000',
+          tahap3: 'Rp 0',
+          outstanding: 'Rp 0'
+        }
+      ]
+    },
   ]);
 
   useEffect(() => {
