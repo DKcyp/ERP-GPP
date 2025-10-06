@@ -256,124 +256,161 @@ const FinanceDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Mapping Pembayaran (detail per hari) */}
+        {/* Mapping Cashflow (detail per minggu) */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
-            Mapping Pembayaran
+            Mapping Cashflow
           </h3>
+          
+          {/* Summary Totals */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-green-700">Total Cash In</span>
+                <span className="text-lg font-bold text-green-900">
+                  Rp {formatCurrency(paymentIn.flat().reduce((sum, item) => sum + item.nominal, 0))}
+                </span>
+              </div>
+            </div>
+            <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-red-700">Total Cash Out</span>
+                <span className="text-lg font-bold text-red-900">
+                  Rp {formatCurrency(paymentOut.flat().reduce((sum, item) => sum + item.nominal, 0))}
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Cash In */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-4">
                 <h4 className="text-lg font-semibold text-gray-900">
-                  Cash In (per Hari)
+                  Cash In (per Minggu)
                 </h4>
                 <span className="text-xs text-gray-500">
-                  {new Date().toLocaleDateString("id-ID")}
+                  Minggu ini: {new Date().toLocaleDateString("id-ID")}
                 </span>
               </div>
-              {paymentIn.map((rows, idx) => (
-                <div key={idx} className="mb-4">
-                  <div className="text-xs text-gray-500 mb-1">
-                    Hari ke-{idx + 1}
-                  </div>
-                  <div className="overflow-x-auto border border-gray-100 rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-100 text-sm">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 py-2 text-left text-gray-600">
-                            Nama Customer
-                          </th>
-                          <th className="px-3 py-2 text-right text-gray-600">
-                            Nominal
-                          </th>
-                          <th className="px-3 py-2 text-left text-gray-600">
-                            Jadwal Penerimaan
-                          </th>
-                          <th className="px-3 py-2 text-left text-gray-600">
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {rows.map((r, i) => (
-                          <tr key={i} className="hover:bg-gray-50">
-                            <td className="px-3 py-2 text-gray-900">
-                              {r.namaCustomer}
-                            </td>
-                            <td className="px-3 py-2 text-right text-gray-900">
-                              Rp {formatCurrency(r.nominal)}
-                            </td>
-                            <td className="px-3 py-2 text-gray-700">
-                              {new Date(r.jadwal).toLocaleDateString("id-ID")}
-                            </td>
-                            <td className="px-3 py-2">
-                              {statusBadgeOut(r.status)}
-                            </td>
+              {paymentIn.map((rows, idx) => {
+                const dayTotal = rows.reduce((sum, item) => sum + item.nominal, 0);
+                return (
+                  <div key={idx} className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="text-xs text-gray-500">
+                        Minggu ke-{idx + 1}
+                      </div>
+                      <div className="text-xs font-semibold text-green-600">
+                        Total: Rp {formatCurrency(dayTotal)}
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-100 text-sm">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 py-2 text-left text-gray-600 w-1/3">
+                              Nama Customer
+                            </th>
+                            <th className="px-3 py-2 text-right text-gray-600 w-1/4">
+                              Nominal
+                            </th>
+                            <th className="px-3 py-2 text-center text-gray-600 w-1/4">
+                              Jadwal Penerimaan
+                            </th>
+                            <th className="px-3 py-2 text-center text-gray-600 w-1/6">
+                              Status
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {rows.map((r, i) => (
+                            <tr key={i} className="hover:bg-gray-50">
+                              <td className="px-3 py-2 text-gray-900 text-left">
+                                {r.namaCustomer}
+                              </td>
+                              <td className="px-3 py-2 text-right text-gray-900 font-semibold">
+                                Rp {formatCurrency(r.nominal)}
+                              </td>
+                              <td className="px-3 py-2 text-center text-gray-700">
+                                {new Date(r.jadwal).toLocaleDateString("id-ID")}
+                              </td>
+                              <td className="px-3 py-2 text-center">
+                                {statusBadge(r.status)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Cash Out */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-4">
                 <h4 className="text-lg font-semibold text-gray-900">
-                  Cash Out (per Hari)
+                  Cash Out (per Minggu)
                 </h4>
                 <span className="text-xs text-gray-500">
-                  {new Date().toLocaleDateString("id-ID")}
+                  Minggu ini: {new Date().toLocaleDateString("id-ID")}
                 </span>
               </div>
-              {paymentOut.map((rows, idx) => (
-                <div key={idx} className="mb-4">
-                  <div className="text-xs text-gray-500 mb-1">
-                    Hari ke-{idx + 1}
-                  </div>
-                  <div className="overflow-x-auto border border-gray-100 rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-100 text-sm">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 py-2 text-left text-gray-600">
-                            Nama Pembiayaan
-                          </th>
-                          <th className="px-3 py-2 text-right text-gray-600">
-                            Nominal
-                          </th>
-                          <th className="px-3 py-2 text-left text-gray-600">
-                            Jadwal Pembayaran
-                          </th>
-                          <th className="px-3 py-2 text-left text-gray-600">
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {rows.map((r, i) => (
-                          <tr key={i} className="hover:bg-gray-50">
-                            <td className="px-3 py-2 text-gray-900">
-                              {r.namaPembiayaan}
-                            </td>
-                            <td className="px-3 py-2 text-right text-gray-900">
-                              Rp {formatCurrency(r.nominal)}
-                            </td>
-                            <td className="px-3 py-2 text-gray-700">
-                              {new Date(r.jadwal).toLocaleDateString("id-ID")}
-                            </td>
-                            <td className="px-3 py-2">
-                              {statusBadge(r.status)}
-                            </td>
+              {paymentOut.map((rows, idx) => {
+                const dayTotal = rows.reduce((sum, item) => sum + item.nominal, 0);
+                return (
+                  <div key={idx} className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="text-xs text-gray-500">
+                        Minggu ke-{idx + 1}
+                      </div>
+                      <div className="text-xs font-semibold text-red-600">
+                        Total: Rp {formatCurrency(dayTotal)}
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-100 text-sm">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 py-2 text-left text-gray-600 w-1/3">
+                              Nama Pembiayaan
+                            </th>
+                            <th className="px-3 py-2 text-right text-gray-600 w-1/4">
+                              Nominal
+                            </th>
+                            <th className="px-3 py-2 text-center text-gray-600 w-1/4">
+                              Jadwal Pembayaran
+                            </th>
+                            <th className="px-3 py-2 text-center text-gray-600 w-1/6">
+                              Status
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {rows.map((r, i) => (
+                            <tr key={i} className="hover:bg-gray-50">
+                              <td className="px-3 py-2 text-gray-900 text-left">
+                                {r.namaPembiayaan}
+                              </td>
+                              <td className="px-3 py-2 text-right text-gray-900 font-semibold">
+                                Rp {formatCurrency(r.nominal)}
+                              </td>
+                              <td className="px-3 py-2 text-center text-gray-700">
+                                {new Date(r.jadwal).toLocaleDateString("id-ID")}
+                              </td>
+                              <td className="px-3 py-2 text-center">
+                                {statusBadgeOut(r.status)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

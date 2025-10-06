@@ -198,14 +198,12 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
     if (filterType === 'kas') {
       return kasData.filter(item =>
         item.namaKas.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.lokasi.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.penanggungJawab.toLowerCase().includes(searchTerm.toLowerCase())
       );
     } else {
       return bankDataKhusus.filter(item =>
         item.namaBank.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.noRek.includes(searchTerm) ||
-        item.alamat.toLowerCase().includes(searchTerm.toLowerCase())
+        item.noRek.includes(searchTerm)
       );
     }
   }, [searchTerm, filterType, kasData, bankDataKhusus]);
@@ -392,7 +390,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-10"
-                  placeholder="Nama bank, no rekening, alamat..."
+                  placeholder="Nama kas/bank, no rekening..."
                 />
                 <Search className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
@@ -441,9 +439,6 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                     Nama Kas
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Lokasi
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Penanggung Jawab
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -468,9 +463,6 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         {item.namaKas}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.lokasi}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {item.penanggungJawab}
@@ -501,7 +493,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr>
-                  <td colSpan={3} className="px-6 py-3 text-sm font-semibold text-gray-900 text-right">
+                  <td colSpan={2} className="px-6 py-3 text-sm font-semibold text-gray-900 text-right">
                     Total:
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-gray-900">
@@ -530,9 +522,6 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     No Rekening
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Alamat
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Saldo Awal
@@ -571,9 +560,6 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.noRek}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                      {item.alamat}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
                       Rp {item.saldoAwal.toLocaleString('id-ID')}
                     </td>
@@ -606,7 +592,7 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr>
-                  <td colSpan={3} className="px-6 py-3 text-sm font-semibold text-gray-900 text-right">
+                  <td colSpan={2} className="px-6 py-3 text-sm font-semibold text-gray-900 text-right">
                     Total:
                   </td>
                   <td className="px-6 py-3 text-sm font-semibold text-right text-gray-900">
@@ -662,6 +648,36 @@ const FinanceLaporanKasBankHarianDashboard: React.FC = () => {
 
             {/* Modal Body */}
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {/* Detail Information */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Informasi Detail</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  {'namaKas' in selectedItem ? (
+                    <>
+                      <div>
+                        <span className="text-gray-600">Lokasi:</span>
+                        <span className="ml-2 font-medium text-gray-900">{selectedItem.lokasi}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Penanggung Jawab:</span>
+                        <span className="ml-2 font-medium text-gray-900">{selectedItem.penanggungJawab}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <span className="text-gray-600">Alamat:</span>
+                        <span className="ml-2 font-medium text-gray-900">{selectedItem.alamat}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">No. Rekening:</span>
+                        <span className="ml-2 font-medium text-gray-900">{selectedItem.noRek}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
               {/* Summary Info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gray-50 rounded-lg p-4">
