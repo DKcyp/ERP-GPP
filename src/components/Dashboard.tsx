@@ -83,6 +83,7 @@ import FinanceLaporanPembayaranHutangDashboard from "./FinanceLaporanPembayaranH
 import ReimburseVoucherDashboard from "./ReimburseVoucherDashboard";
 import ARDashboard from "./ARDashboard";
 import ProsesPembayaranARDashboard from "./ProsesPembayaranARDashboard";
+import PajakPPhPrepaid23Dashboard from "./PajakPPhPrepaid23Dashboard";
 import FinancePembayaranGajiPage from "./FinancePembayaranGajiPage";
 import ReportKontrakDashboard from "./ReportKontrakDashboard";
 import InsentifMarketingDashboard from "./InsentifMarketingDashboard";
@@ -1706,6 +1707,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/finance/ar/proses-pembayaran") {
       return <ProsesPembayaranARDashboard />;
+    }
+    if (currentPage === "/finance/ar/pajak-pph-prepaid-23") {
+      return <PajakPPhPrepaid23Dashboard />;
     }
     if (currentPage === "/finance/ar/laporan") {
       return <FinanceLaporanARDashboard />;

@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { Search, CheckCircle, X, Calendar, FileText, Printer, Clock } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Search,
+  CheckCircle,
+  X,
+  Calendar,
+  FileText,
+  Printer,
+  Clock,
+} from "lucide-react";
 
 interface PIData {
   id: number;
@@ -7,7 +15,7 @@ interface PIData {
   tanggal: string;
   supplier: string;
   totalAmount: number;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: "Pending" | "Approved" | "Rejected";
   description: string;
 }
 
@@ -18,80 +26,81 @@ interface ApprovalModalData {
 }
 
 const FinanceApprovePIDashboard: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedPI, setSelectedPI] = useState<PIData | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
+  const [rejectReason, setRejectReason] = useState("");
   const [approvalData, setApprovalData] = useState<ApprovalModalData>({
     pi: {} as PIData,
-    formatCetakan: '',
-    jatuhTempo: 30
+    formatCetakan: "",
+    jatuhTempo: 30,
   });
 
   // Sample PI data
   const [piData, setPiData] = useState<PIData[]>([
     {
       id: 1,
-      noPi: 'PI-2025-001',
-      tanggal: '2025-01-15',
-      supplier: 'PT. Supplier ABC',
+      noPi: "PI-2025-001",
+      tanggal: "2025-01-15",
+      supplier: "PT. Supplier ABC",
       totalAmount: 15000000,
-      status: 'Pending',
-      description: 'Pembelian material konstruksi'
+      status: "Pending",
+      description: "Pembelian material konstruksi",
     },
     {
       id: 2,
-      noPi: 'PI-2025-002',
-      tanggal: '2025-01-16',
-      supplier: 'CV. Mitra Jaya',
+      noPi: "PI-2025-002",
+      tanggal: "2025-01-16",
+      supplier: "CV. Mitra Jaya",
       totalAmount: 8500000,
-      status: 'Pending',
-      description: 'Pengadaan alat keselamatan kerja'
+      status: "Pending",
+      description: "Pengadaan alat keselamatan kerja",
     },
     {
       id: 3,
-      noPi: 'PI-2025-003',
-      tanggal: '2025-01-17',
-      supplier: 'PT. Teknologi Maju',
+      noPi: "PI-2025-003",
+      tanggal: "2025-01-17",
+      supplier: "PT. Teknologi Maju",
       totalAmount: 25000000,
-      status: 'Approved',
-      description: 'Pembelian perangkat IT'
+      status: "Approved",
+      description: "Pembelian perangkat IT",
     },
     {
       id: 4,
-      noPi: 'PI-2025-004',
-      tanggal: '2025-01-18',
-      supplier: 'UD. Sumber Rejeki',
+      noPi: "PI-2025-004",
+      tanggal: "2025-01-18",
+      supplier: "UD. Sumber Rejeki",
       totalAmount: 12000000,
-      status: 'Pending',
-      description: 'Pembelian bahan baku produksi'
+      status: "Pending",
+      description: "Pembelian bahan baku produksi",
     },
     {
       id: 5,
-      noPi: 'PI-2025-005',
-      tanggal: '2025-01-19',
-      supplier: 'PT. Global Solutions',
+      noPi: "PI-2025-005",
+      tanggal: "2025-01-19",
+      supplier: "PT. Global Solutions",
       totalAmount: 18500000,
-      status: 'Rejected',
-      description: 'Pengadaan software lisensi'
-    }
+      status: "Rejected",
+      description: "Pengadaan software lisensi",
+    },
   ]);
 
   const formatCetakanOptions = [
-    'Format A4 - Standard',
-    'Format A4 - Detailed',
-    'Format A3 - Landscape',
-    'Format Letter - Compact',
-    'Format Legal - Extended'
+    "Format A4 - Standard",
+    "Format A4 - Detailed",
+    "Format A3 - Landscape",
+    "Format Letter - Compact",
+    "Format Legal - Extended",
   ];
 
-  const filteredData = piData.filter(item => {
-    const matchesSearch = item.noPi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === '' || item.status === statusFilter;
+  const filteredData = piData.filter((item) => {
+    const matchesSearch =
+      item.noPi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "" || item.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -100,52 +109,62 @@ const FinanceApprovePIDashboard: React.FC = () => {
     setApprovalData({
       pi: pi,
       formatCetakan: formatCetakanOptions[0],
-      jatuhTempo: 30
+      jatuhTempo: 30,
     });
     setShowApprovalModal(true);
   };
 
   const handleReject = (pi: PIData) => {
     setSelectedPI(pi);
-    setRejectReason('');
+    setRejectReason("");
     setShowRejectModal(true);
   };
 
   const confirmReject = () => {
     if (selectedPI && rejectReason.trim()) {
-      setPiData(prev => prev.map(item => 
-        item.id === selectedPI.id ? { ...item, status: 'Rejected' as const } : item
-      ));
-      
+      setPiData((prev) =>
+        prev.map((item) =>
+          item.id === selectedPI.id
+            ? { ...item, status: "Rejected" as const }
+            : item
+        )
+      );
+
       // Log rejection details (in real implementation, this would be sent to backend)
-      console.log('PI Rejected:', {
+      console.log("PI Rejected:", {
         piNumber: selectedPI.noPi,
         reason: rejectReason,
-        rejectedAt: new Date().toISOString()
+        rejectedAt: new Date().toISOString(),
       });
-      
+
       alert(`PI ${selectedPI.noPi} berhasil ditolak!\nAlasan: ${rejectReason}`);
       setShowRejectModal(false);
       setSelectedPI(null);
-      setRejectReason('');
+      setRejectReason("");
     }
   };
 
   const confirmApproval = () => {
     if (selectedPI) {
-      setPiData(prev => prev.map(item => 
-        item.id === selectedPI.id ? { ...item, status: 'Approved' as const } : item
-      ));
-      
+      setPiData((prev) =>
+        prev.map((item) =>
+          item.id === selectedPI.id
+            ? { ...item, status: "Approved" as const }
+            : item
+        )
+      );
+
       // Log approval details (in real implementation, this would be sent to backend)
-      console.log('PI Approved:', {
+      console.log("PI Approved:", {
         piNumber: selectedPI.noPi,
         formatCetakan: approvalData.formatCetakan,
         jatuhTempo: approvalData.jatuhTempo,
-        approvedAt: new Date().toISOString()
+        approvedAt: new Date().toISOString(),
       });
-      
-      alert(`PI ${selectedPI.noPi} berhasil disetujui!\nFormat Cetakan: ${approvalData.formatCetakan}\nJatuh Tempo: ${approvalData.jatuhTempo} hari`);
+
+      alert(
+        `PI ${selectedPI.noPi} berhasil disetujui!\nFormat Cetakan: ${approvalData.formatCetakan}\nJatuh Tempo: ${approvalData.jatuhTempo} hari`
+      );
     }
     setShowApprovalModal(false);
     setSelectedPI(null);
@@ -153,22 +172,38 @@ const FinanceApprovePIDashboard: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Pending':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>;
-      case 'Approved':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Approved</span>;
-      case 'Rejected':
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Rejected</span>;
+      case "Pending":
+        return (
+          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+            Pending
+          </span>
+        );
+      case "Approved":
+        return (
+          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+            Approved
+          </span>
+        );
+      case "Rejected":
+        return (
+          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+            Rejected
+          </span>
+        );
       default:
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{status}</span>;
+        return (
+          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+            {status}
+          </span>
+        );
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -178,7 +213,10 @@ const FinanceApprovePIDashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Approve PI</h1>
-          <p className="text-gray-600">Kelola persetujuan Purchase Invoice dengan format cetakan dan jatuh tempo</p>
+          <p className="text-gray-600">
+            Kelola persetujuan Purchase Invoice dengan format cetakan dan jatuh
+            tempo
+          </p>
         </div>
 
         {/* Filter Section */}
@@ -186,7 +224,10 @@ const FinanceApprovePIDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Search */}
             <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="search"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Cari PI
               </label>
               <div className="relative">
@@ -204,7 +245,10 @@ const FinanceApprovePIDashboard: React.FC = () => {
 
             {/* Status Filter */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Filter Status
               </label>
               <select
@@ -225,9 +269,11 @@ const FinanceApprovePIDashboard: React.FC = () => {
         {/* PI Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Daftar Purchase Invoice</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Daftar Proforma Invoice
+            </h2>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -262,7 +308,7 @@ const FinanceApprovePIDashboard: React.FC = () => {
                       {pi.noPi}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {new Date(pi.tanggal).toLocaleDateString('id-ID')}
+                      {new Date(pi.tanggal).toLocaleDateString("id-ID")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {pi.supplier}
@@ -277,7 +323,7 @@ const FinanceApprovePIDashboard: React.FC = () => {
                       {getStatusBadge(pi.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      {pi.status === 'Pending' && (
+                      {pi.status === "Pending" && (
                         <div className="flex justify-center space-x-2">
                           <button
                             onClick={() => handleApprove(pi)}
@@ -295,7 +341,7 @@ const FinanceApprovePIDashboard: React.FC = () => {
                           </button>
                         </div>
                       )}
-                      {pi.status !== 'Pending' && (
+                      {pi.status !== "Pending" && (
                         <span className="text-gray-400 text-xs">No action</span>
                       )}
                     </td>
@@ -308,8 +354,12 @@ const FinanceApprovePIDashboard: React.FC = () => {
           {filteredData.length === 0 && (
             <div className="text-center py-12">
               <FileText className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Tidak ada data PI</h3>
-              <p className="mt-1 text-sm text-gray-500">Tidak ada Purchase Invoice yang sesuai dengan filter.</p>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                Tidak ada data PI
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Tidak ada Purchase Invoice yang sesuai dengan filter.
+              </p>
             </div>
           )}
         </div>
@@ -319,18 +369,31 @@ const FinanceApprovePIDashboard: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Approve Purchase Invoice</h3>
-                <p className="text-sm text-gray-600 mt-1">PI: {selectedPI.noPi}</p>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Approve Purchase Invoice
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  PI: {selectedPI.noPi}
+                </p>
               </div>
-              
+
               <div className="px-6 py-4 space-y-4">
                 {/* PI Details */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="font-medium text-gray-900 mb-2">Detail PI</h4>
                   <div className="space-y-1 text-sm">
-                    <p><span className="font-medium">Supplier:</span> {selectedPI.supplier}</p>
-                    <p><span className="font-medium">Total:</span> {formatCurrency(selectedPI.totalAmount)}</p>
-                    <p><span className="font-medium">Deskripsi:</span> {selectedPI.description}</p>
+                    <p>
+                      <span className="font-medium">Supplier:</span>{" "}
+                      {selectedPI.supplier}
+                    </p>
+                    <p>
+                      <span className="font-medium">Total:</span>{" "}
+                      {formatCurrency(selectedPI.totalAmount)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Deskripsi:</span>{" "}
+                      {selectedPI.description}
+                    </p>
                   </div>
                 </div>
 
@@ -343,10 +406,17 @@ const FinanceApprovePIDashboard: React.FC = () => {
                   <select
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     value={approvalData.formatCetakan}
-                    onChange={(e) => setApprovalData(prev => ({ ...prev, formatCetakan: e.target.value }))}
+                    onChange={(e) =>
+                      setApprovalData((prev) => ({
+                        ...prev,
+                        formatCetakan: e.target.value,
+                      }))
+                    }
                   >
                     {formatCetakanOptions.map((format) => (
-                      <option key={format} value={format}>{format}</option>
+                      <option key={format} value={format}>
+                        {format}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -363,10 +433,18 @@ const FinanceApprovePIDashboard: React.FC = () => {
                     max="365"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     value={approvalData.jatuhTempo}
-                    onChange={(e) => setApprovalData(prev => ({ ...prev, jatuhTempo: parseInt(e.target.value) || 30 }))}
+                    onChange={(e) =>
+                      setApprovalData((prev) => ({
+                        ...prev,
+                        jatuhTempo: parseInt(e.target.value) || 30,
+                      }))
+                    }
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Jatuh tempo: {new Date(Date.now() + approvalData.jatuhTempo * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID')}
+                    Jatuh tempo:{" "}
+                    {new Date(
+                      Date.now() + approvalData.jatuhTempo * 24 * 60 * 60 * 1000
+                    ).toLocaleDateString("id-ID")}
                   </p>
                 </div>
               </div>
@@ -394,18 +472,31 @@ const FinanceApprovePIDashboard: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Reject Purchase Invoice</h3>
-                <p className="text-sm text-gray-600 mt-1">PI: {selectedPI.noPi}</p>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Reject Purchase Invoice
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  PI: {selectedPI.noPi}
+                </p>
               </div>
-              
+
               <div className="px-6 py-4 space-y-4">
                 {/* PI Details */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="font-medium text-gray-900 mb-2">Detail PI</h4>
                   <div className="space-y-1 text-sm">
-                    <p><span className="font-medium">Supplier:</span> {selectedPI.supplier}</p>
-                    <p><span className="font-medium">Total:</span> {formatCurrency(selectedPI.totalAmount)}</p>
-                    <p><span className="font-medium">Deskripsi:</span> {selectedPI.description}</p>
+                    <p>
+                      <span className="font-medium">Supplier:</span>{" "}
+                      {selectedPI.supplier}
+                    </p>
+                    <p>
+                      <span className="font-medium">Total:</span>{" "}
+                      {formatCurrency(selectedPI.totalAmount)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Deskripsi:</span>{" "}
+                      {selectedPI.description}
+                    </p>
                   </div>
                 </div>
 
@@ -433,7 +524,7 @@ const FinanceApprovePIDashboard: React.FC = () => {
                   onClick={() => {
                     setShowRejectModal(false);
                     setSelectedPI(null);
-                    setRejectReason('');
+                    setRejectReason("");
                   }}
                   className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                 >

@@ -1274,6 +1274,11 @@ export const financeMenu: MenuSection[] = [
             path: "/finance/ar/proses-pembayaran",
           },
           {
+            title: "Pajak PPh Prepaid 23",
+            icon: "Receipt",
+            path: "/finance/ar/pajak-pph-prepaid-23",
+          },
+          {
             title: "Laporan AR",
             icon: "FileBarChart",
             path: "/finance/ar/laporan",

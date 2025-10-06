@@ -9,6 +9,7 @@ type ARPaymentRow = {
   metode: "Transfer" | "Giro" | "Tunai";
   dpp: number;
   ppn: number;
+  ppnType: "Wapu" | "Non Wapu"; // PPN Wapu atau Non Wapu
   pph: number; // Pajak Penghasilan
   total: number;
   noBuktiTerima: string;
@@ -18,9 +19,9 @@ type ARPaymentRow = {
 const ProsesPembayaranARDashboard: React.FC = () => {
   const today = new Date();
   const [rows, setRows] = useState<ARPaymentRow[]>([
-    { id: 1, tanggal: "2025-09-08", customer: "PT Global Tech", noInvoice: "INV-AR-001", metode: "Transfer", dpp: 15000000, ppn: 1650000, pph: 300000, total: 17350000, noBuktiTerima: "BT-001", keterangan: "Pembayaran jasa konsultasi" },
-    { id: 2, tanggal: "2025-09-10", customer: "CV Solusi Digital", noInvoice: "INV-AR-002", metode: "Giro", dpp: 9000000, ppn: 990000, pph: 180000, total: 10170000, noBuktiTerima: "BT-002", keterangan: "Pembayaran lisensi software" },
-    { id: 3, tanggal: "2025-09-12", customer: "PT Maju Bersama", noInvoice: "INV-AR-003", metode: "Transfer", dpp: 12000000, ppn: 1320000, pph: 240000, total: 13560000, noBuktiTerima: "BT-003", keterangan: "Pembayaran maintenance" },
+    { id: 1, tanggal: "2025-09-08", customer: "PT Global Tech", noInvoice: "INV-AR-001", metode: "Transfer", dpp: 15000000, ppn: 1650000, ppnType: "Wapu", pph: 300000, total: 17350000, noBuktiTerima: "BT-001", keterangan: "Pembayaran jasa konsultasi" },
+    { id: 2, tanggal: "2025-09-10", customer: "CV Solusi Digital", noInvoice: "INV-AR-002", metode: "Giro", dpp: 9000000, ppn: 990000, ppnType: "Non Wapu", pph: 180000, total: 10170000, noBuktiTerima: "BT-002", keterangan: "Pembayaran lisensi software" },
+    { id: 3, tanggal: "2025-09-12", customer: "PT Maju Bersama", noInvoice: "INV-AR-003", metode: "Transfer", dpp: 12000000, ppn: 1320000, ppnType: "Wapu", pph: 240000, total: 13560000, noBuktiTerima: "BT-003", keterangan: "Pembayaran maintenance" },
   ]);
   const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -28,7 +29,7 @@ const ProsesPembayaranARDashboard: React.FC = () => {
 
   const filtered = useMemo(() => rows.filter(r => [r.noInvoice, r.customer, r.noBuktiTerima].join(" ").toLowerCase().includes(search.toLowerCase())), [rows, search]);
 
-  const startAdd = () => { setEditing({ id: 0, tanggal: new Date().toISOString().split('T')[0], customer: '', noInvoice: '', metode: 'Transfer', dpp: 0, ppn: 0, pph: 0, total: 0, noBuktiTerima: '', keterangan: '' }); setFormOpen(true); };
+  const startAdd = () => { setEditing({ id: 0, tanggal: new Date().toISOString().split('T')[0], customer: '', noInvoice: '', metode: 'Transfer', dpp: 0, ppn: 0, ppnType: 'Wapu', pph: 0, total: 0, noBuktiTerima: '', keterangan: '' }); setFormOpen(true); };
   const startEdit = (row: ARPaymentRow) => { setEditing(row); setFormOpen(true); };
   const remove = (id: number) => setRows(prev => prev.filter(r => r.id !== id));
   const onSave = (data: ARPaymentRow) => {
@@ -96,6 +97,7 @@ const ProsesPembayaranARDashboard: React.FC = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DPP</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PPN</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PPN Type</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PPh</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Bukti Terima</th>
@@ -120,6 +122,13 @@ const ProsesPembayaranARDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {row.dpp.toLocaleString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {row.ppn.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        row.ppnType === 'Wapu' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                      }`}>
+                        {row.ppnType}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-orange-600 font-medium">Rp {row.pph.toLocaleString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {row.total.toLocaleString('id-ID')}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.noBuktiTerima}</td>
@@ -225,6 +234,19 @@ const ProsesPembayaranARDashboard: React.FC = () => {
                     />
                   </div>
                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">PPN Type</label>
+                    <select
+                      value={editing?.ppnType || 'Wapu'}
+                      onChange={(e) => setEditing(prev => prev ? {...prev, ppnType: e.target.value as 'Wapu' | 'Non Wapu'} : null)}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="Wapu">Wapu</option>
+                      <option value="Non Wapu">Non Wapu</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">PPh (2%)</label>
                     <input
                       type="number"
@@ -239,6 +261,7 @@ const ProsesPembayaranARDashboard: React.FC = () => {
                       min="0"
                     />
                   </div>
+                  <div></div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>

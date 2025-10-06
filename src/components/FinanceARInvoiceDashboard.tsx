@@ -16,6 +16,8 @@ interface InvoiceRow {
   noSO: string;
   nilai: string; // formatted currency
   status: 'Draft' | 'Dikirim' | 'Diterima' | 'Ditolak';
+  ppnType?: 'Wapu' | 'Non Wapu'; // PPN Wapu atau Non Wapu
+  ppnDibebaskan?: boolean; // PPN dibebaskan
   tanggalDikirim?: string; // yyyy-mm-dd
   tanggalDiterima?: string; // yyyy-mm-dd
   dokumenDiterima?: File | null;
@@ -23,9 +25,9 @@ interface InvoiceRow {
 }
 
 const initialData: InvoiceRow[] = [
-  { id: 1, noInvoice: 'INV-001', noPI: 'PI-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', followUps: [] },
-  { id: 2, noInvoice: 'INV-002', noPI: 'PI-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
-  { id: 3, noInvoice: 'INV-003', noPI: 'PI-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
+  { id: 1, noInvoice: 'INV-001', noPI: 'PI-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', ppnType: 'Wapu', ppnDibebaskan: false, followUps: [] },
+  { id: 2, noInvoice: 'INV-002', noPI: 'PI-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', ppnType: 'Non Wapu', ppnDibebaskan: false, tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
+  { id: 3, noInvoice: 'INV-003', noPI: 'PI-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', ppnType: 'Wapu', ppnDibebaskan: true, tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
 ];
 
 const FinanceARInvoiceDashboard: React.FC = () => {
@@ -59,7 +61,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
     setEditFormData(null);
   };
 
-  const handleEditInputChange = (field: keyof InvoiceRow, value: string | File | null) => {
+  const handleEditInputChange = (field: keyof InvoiceRow, value: string | File | null | boolean) => {
     if (editFormData) {
       setEditFormData({
         ...editFormData,
@@ -372,6 +374,24 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                       {selectedInvoice.status}
                     </span>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">PPN Type</label>
+                    <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
+                      selectedInvoice.ppnType === 'Wapu' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                    }`}>
+                      {selectedInvoice.ppnType || 'Wapu'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">PPN Dibebaskan</label>
+                    <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${
+                      selectedInvoice.ppnDibebaskan ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {selectedInvoice.ppnDibebaskan ? 'Ya' : 'Tidak'}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Customer & Financial Information */}
@@ -545,6 +565,44 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                       <option value="Diterima">Diterima</option>
                       <option value="Ditolak">Ditolak</option>
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">PPN Type</label>
+                    <select
+                      value={editFormData.ppnType || 'Wapu'}
+                      onChange={(e) => handleEditInputChange('ppnType', e.target.value as 'Wapu' | 'Non Wapu')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="Wapu">Wapu</option>
+                      <option value="Non Wapu">Non Wapu</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">PPN Dibebaskan</label>
+                    <div className="flex items-center space-x-4">
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="ppnDibebaskan"
+                          checked={editFormData.ppnDibebaskan === true}
+                          onChange={() => handleEditInputChange('ppnDibebaskan', true)}
+                          className="mr-2 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Ya</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="ppnDibebaskan"
+                          checked={editFormData.ppnDibebaskan === false}
+                          onChange={() => handleEditInputChange('ppnDibebaskan', false)}
+                          className="mr-2 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Tidak</span>
+                      </label>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Dikirim</label>
