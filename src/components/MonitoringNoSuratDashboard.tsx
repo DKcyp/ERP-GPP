@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { 
-  Search, 
-  PlusCircle, 
-  Pencil, 
-  Trash2, 
+import {
+  Search,
+  PlusCircle,
+  Pencil,
+  Trash2,
   Clock,
   FileSpreadsheet,
   Download,
@@ -106,7 +106,7 @@ const MonitoringNoSuratDashboard: React.FC = () => {
         documentPath: `/Folder/${files[0].name}`,
       })); // Simulate path
     } else {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
     // Clear error when user starts typing
     if (errors[name]) {
