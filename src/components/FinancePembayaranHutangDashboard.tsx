@@ -26,8 +26,15 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
 
   const filtered = useMemo(() => rows.filter(r => [r.noPo, r.vendor, r.noBuktiBayar].join(" ").toLowerCase().includes(search.toLowerCase())), [rows, search]);
 
-  // Dummy data untuk dropdown No. PO
-  const [purchaseOrders] = useState(['PO-001', 'PO-002', 'PO-003', 'PO-004']);
+  // Data PO dengan vendor dan PPN
+  const purchaseOrdersData = {
+    'PO-001': { vendor: 'PT Jaya Abadi', ppn: 1100000 },
+    'PO-002': { vendor: 'CV Mitra Sejahtera', ppn: 2200000 },
+    'PO-003': { vendor: 'PT Sukses Mandiri', ppn: 1650000 },
+    'PO-004': { vendor: 'UD Berkah Jaya', ppn: 3300000 }
+  };
+  
+  const [purchaseOrders] = useState(Object.keys(purchaseOrdersData));
 
   const kasOptions = ['Kas Kecil', 'Kas Operasional', 'Kas Proyek A'];
   const bankOptions = ['Bank Mandiri', 'Bank BCA', 'Bank BNI'];
@@ -199,11 +206,31 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Vendor</label>
-                  <input value={editing.vendor} onChange={e => setEditing({ ...editing, vendor: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm" />
+                  <input 
+                    value={editing.vendor} 
+                    onChange={e => setEditing({ ...editing, vendor: e.target.value })} 
+                    className="w-full border rounded px-2 py-1.5 text-sm bg-gray-100" 
+                    readOnly
+                    placeholder="Pilih PO untuk auto-fill vendor"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">No. PO</label>
-                  <select value={editing.noPo} onChange={e => setEditing({ ...editing, noPo: e.target.value })} className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white">
+                  <select 
+                    value={editing.noPo} 
+                    onChange={e => {
+                      const selectedPO = e.target.value;
+                      const poData = purchaseOrdersData[selectedPO as keyof typeof purchaseOrdersData];
+                      
+                      setEditing({ 
+                        ...editing, 
+                        noPo: selectedPO,
+                        vendor: poData ? poData.vendor : '',
+                        ppn: poData ? poData.ppn : 0
+                      });
+                    }} 
+                    className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white"
+                  >
                     <option value="">Pilih No. PO</option>
                     {purchaseOrders.map(po => (
                       <option key={po} value={po}>{po}</option>
@@ -235,7 +262,14 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">PPN</label>
-                  <input type="number" value={editing.ppn} onChange={e => setEditing({ ...editing, ppn: parseFloat(e.target.value)||0 })} className="w-full border rounded px-2 py-1.5 text-sm" />
+                  <input 
+                    type="number" 
+                    value={editing.ppn} 
+                    onChange={e => setEditing({ ...editing, ppn: parseFloat(e.target.value)||0 })} 
+                    className="w-full border rounded px-2 py-1.5 text-sm bg-gray-100" 
+                    readOnly
+                    placeholder="Pilih PO untuk auto-fill PPN"
+                  />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-gray-700 mb-1">No Bukti Bayar</label>

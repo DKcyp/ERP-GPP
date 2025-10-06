@@ -14,8 +14,7 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
     tanggalPR: '',
     noPR: '',
     noSO: '',
-    departemen: '',
-    keterangan: '',
+    noPBG: '',
     kategori: 'Barang',
     detailItems: [
       { id: crypto.randomUUID(), namaItem: '', qty: 1, satuan: '', keterangan: '' }
@@ -59,8 +58,7 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
       tanggalPR: '',
       noPR: '',
       noSO: '',
-      departemen: '',
-      keterangan: '',
+      noPBG: '',
       kategori: 'Barang',
       detailItems: [{ id: crypto.randomUUID(), namaItem: '', qty: 1, satuan: '', keterangan: '' }],
     });
@@ -88,7 +86,7 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
     }));
   };
 
-  const firstColLabel = formData.kategori === 'Jasa' ? 'Nama Jasa' : 'Nama Barang';
+  const firstColLabel = 'Nama Pekerjaan';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Entry Purchasing Request" size="6xl">
@@ -156,25 +154,10 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
               placeholder="Masukkan No. PBG"
             />
           </div>
-
-          {/* Departemen */}
-          <div>
-            <label htmlFor="departemen" className="block text-sm font-medium text-textSecondary mb-1">Departemen</label>
-            <input
-              type="text"
-              id="departemen"
-              name="departemen"
-              value={formData.departemen}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-              placeholder="HRD, Finance, Operasional"
-            />
-          </div>
         </div>
 
-        {/* Kategori & Keterangan on the same row */}
+        {/* Kategori */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Kategori */}
           <div>
             <label htmlFor="kategori" className="block text-sm font-medium text-textSecondary mb-1">Kategori</label>
             <select
@@ -188,25 +171,11 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
               <option value="Jasa">Jasa</option>
             </select>
           </div>
-
-          {/* Keterangan */}
-          <div>
-            <label htmlFor="keterangan" className="block text-sm font-medium text-textSecondary mb-1">Keterangan</label>
-            <textarea
-              id="keterangan"
-              name="keterangan"
-              value={formData.keterangan}
-              onChange={handleChange}
-              rows={3}
-              className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-              placeholder="Masukkan keterangan..."
-            ></textarea>
-          </div>
         </div>
 
         {/* Detail Items Table at Bottom */}
         <div className="border border-border rounded-md">
-          <div className="px-3 py-2 border-b text-sm font-medium">Detail PR</div>
+          <div className="px-3 py-2 border-b text-sm font-medium">Deskripsi Pekerjaan</div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50">

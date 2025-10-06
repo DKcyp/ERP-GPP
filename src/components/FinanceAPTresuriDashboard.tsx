@@ -16,7 +16,7 @@ type ItemJenis = "jasa" | "barang";
 type TresuriRow = {
   id: number;
   jenis: ItemJenis; // jasa/barang
-  noDokumen: string; // No dokumen utama (Invoice/BA/DO)
+  tglPO: string; // Tgl PO - field baru, menggantikan No dokumen utama (Invoice/BA/DO)
   noPO: string; // No. PO - field baru
   vendor: string;
   tanggalPembuatan: string; // Tanggal Pembuatan - field baru
@@ -39,7 +39,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
     {
       id: 1,
       jenis: "jasa",
-      noDokumen: "INV-001",
+      tglPO: "2025-01-15",
       noPO: "PO-2025-001",
       vendor: "PT Jasa Prima",
       tanggalPembuatan: "2025-01-15",
@@ -54,7 +54,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
     {
       id: 2,
       jenis: "barang",
-      noDokumen: "INV-002",
+      tglPO: "2025-01-16",
       noPO: "PO-2025-002",
       vendor: "CV Sukses",
       tanggalPembuatan: "2025-01-16",
@@ -83,7 +83,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
   const filtered = useMemo(
     () =>
       rows.filter((r) => {
-        const textHit = [r.noDokumen, r.vendor, r.noPO]
+        const textHit = [r.tglPO, r.vendor, r.noPO]
           .join(" ")
           .toLowerCase()
           .includes(filter.toLowerCase());
@@ -126,7 +126,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
     setEditing({
       id: 0,
       jenis: "jasa",
-      noDokumen: "",
+      tglPO: "",
       noPO: "",
       vendor: "",
       tanggalPembuatan: today,
@@ -159,14 +159,14 @@ const FinanceAPTresuriDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 tracking-wide mb-2">
-                AP - TRESURI
+                AP - TREASURY
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
                   Finance
                 </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">AP / Tresuri</span>
+                <span className="text-blue-600 font-medium">AP / Treasury</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -191,7 +191,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                   setFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder="No Dokumen / Vendor / No PO"
+                placeholder="Tgl PO / Vendor / No PO"
                 className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
             </div>
@@ -214,13 +214,27 @@ const FinanceAPTresuriDashboard: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tgl Pembuatan
+                Tgl Pembuatan (Mulai)
               </label>
               <input
                 type="date"
                 value={tanggalMulai}
                 onChange={(e) => {
                   setTanggalMulai(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tgl Pembuatan (Akhir)
+              </label>
+              <input
+                type="date"
+                value={tanggalAkhir}
+                onChange={(e) => {
+                  setTanggalAkhir(e.target.value);
                   setCurrentPage(1);
                 }}
                 className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
@@ -254,7 +268,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                     Jenis
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
-                    No Dokumen
+                    Tgl PO
                   </th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">
                     No. PO
@@ -300,7 +314,7 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                     <td className="px-4 py-2 text-sm text-gray-900 uppercase">
                       {row.jenis}
                     </td>
-                    <td className="px-4 py-2 text-sm">{row.noDokumen}</td>
+                    <td className="px-4 py-2 text-sm">{row.tglPO}</td>
                     <td className="px-4 py-2 text-sm">{row.noPO}</td>
                     <td className="px-4 py-2 text-sm">{row.vendor}</td>
                     <td className="px-4 py-2 text-sm">
@@ -481,6 +495,25 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tgl PO
+                  </label>
+                  <input
+                    type="date"
+                    value={editing.tglPO}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        tglPO: e.target.value,
+                      })
+                    }
+                    className="w-full border rounded px-2 py-1.5 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     No. PO
                   </label>
                   <input
@@ -493,26 +526,6 @@ const FinanceAPTresuriDashboard: React.FC = () => {
                       })
                     }
                     placeholder="Masukkan No. PO"
-                    className="w-full border rounded px-2 py-1.5 text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    No Dokumen
-                  </label>
-                  <input
-                    type="text"
-                    value={editing.noDokumen}
-                    onChange={(e) =>
-                      setEditing({
-                        ...editing,
-                        noDokumen: e.target.value,
-                      })
-                    }
-                    placeholder="Masukkan No Dokumen"
                     className="w-full border rounded px-2 py-1.5 text-sm"
                   />
                 </div>

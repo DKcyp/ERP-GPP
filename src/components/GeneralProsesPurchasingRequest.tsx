@@ -75,14 +75,14 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
     const newRequest: PurchasingRequest = {
       id: newId,
       noSO: newData.noSO || '',
-      jenis: 'JASA',
+      jenis: newData.kategori.toUpperCase(),
       noSistemACTS: '',
       tanggalPengajuan: new Date().toLocaleDateString('id-ID'),
       cust: '',
-      deskripsiPekerjaan: newData.keterangan || '',
-      jumlah: 1,
-      satuan: '-',
-      noPO: '-',
+      deskripsiPekerjaan: newData.detailItems.length > 0 ? newData.detailItems[0].namaItem : '',
+      jumlah: newData.detailItems.length > 0 ? newData.detailItems[0].qty : 1,
+      satuan: newData.detailItems.length > 0 ? newData.detailItems[0].satuan || '-' : '-',
+      noPO: '',
       statusPOFinance: '-',
       statusBarang: '-',
     };
@@ -262,7 +262,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                             <table className="w-full text-xs">
                               <thead className="bg-gray-100">
                                 <tr>
-                                  <th className="px-3 py-2 text-left font-medium text-gray-700">Nama</th>
+                                  <th className="px-3 py-2 text-left font-medium text-gray-700">Nama Pekerjaan</th>
                                   <th className="px-3 py-2 text-left font-medium text-gray-700">Jumlah</th>
                                   <th className="px-3 py-2 text-left font-medium text-gray-700">Tanggal</th>
                                 </tr>

@@ -10,7 +10,7 @@ import {
   FileText,
   RefreshCw,
   X,
-  Save
+  Save,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
@@ -18,11 +18,22 @@ interface NoSuratItem {
   id: string;
   noSurat: string;
   keterangan: string;
+  documentPath?: string; // Add this line
 }
 
 const initialData: NoSuratItem[] = [
-  { id: "1", noSurat: "001/HRD/I/2024", keterangan: "Surat Keterangan Kerja" },
-  { id: "2", noSurat: "002/HRD/I/2024", keterangan: "Surat Peringatan Pertama" },
+  {
+    id: "1",
+    noSurat: "001/HRD/I/2024",
+    keterangan: "Surat Keterangan Kerja",
+    documentPath: "/Folder/cetakprovorma.pdf",
+  },
+  {
+    id: "2",
+    noSurat: "002/HRD/I/2024",
+    keterangan: "Surat Peringatan Pertama",
+    documentPath: "/Folder/cetakprovorma2.pdf",
+  },
   { id: "3", noSurat: "003/HRD/I/2024", keterangan: "Surat Cuti Tahunan" },
   { id: "4", noSurat: "004/HRD/I/2024", keterangan: "Surat Izin Bekerja" },
   { id: "5", noSurat: "005/HRD/I/2024", keterangan: "Surat Kontrak Kerja" },
@@ -41,6 +52,7 @@ const MonitoringNoSuratDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<NoSuratItem | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New state for file
 
   const filteredData = useMemo(() => {
     return data.filter(
@@ -59,6 +71,7 @@ const MonitoringNoSuratDashboard: React.FC = () => {
     setFormData({});
     setErrors({});
     setIsModalOpen(true);
+    setSelectedFile(null); // Clear selected file
   };
 
   const handleEditClick = (item: NoSuratItem) => {
@@ -66,6 +79,7 @@ const MonitoringNoSuratDashboard: React.FC = () => {
     setFormData(item);
     setErrors({});
     setIsModalOpen(true);
+    setSelectedFile(null); // Clear selected file
   };
 
   const handleDeleteClick = (item: NoSuratItem) => {
@@ -84,8 +98,16 @@ const MonitoringNoSuratDashboard: React.FC = () => {
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (name === "documentUpload" && files && files.length > 0) {
+      setSelectedFile(files[0]);
+      setFormData((prev) => ({
+        ...prev,
+        documentPath: `/Folder/${files[0].name}`,
+      })); // Simulate path
+    } else {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    }
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -96,7 +118,8 @@ const MonitoringNoSuratDashboard: React.FC = () => {
     const newErrors: { [key: string]: string } = {};
 
     if (!formData.noSurat?.trim()) newErrors.noSurat = "No. Surat harus diisi";
-    if (!formData.keterangan?.trim()) newErrors.keterangan = "Keterangan harus diisi";
+    if (!formData.keterangan?.trim())
+      newErrors.keterangan = "Keterangan harus diisi";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -124,12 +147,14 @@ const MonitoringNoSuratDashboard: React.FC = () => {
     setIsModalOpen(false);
     setFormData({});
     setErrors({});
+    setSelectedFile(null); // Clear selected file on submit
   };
 
   const handleCloseModal = () => {
     setFormData({});
     setErrors({});
     setIsModalOpen(false);
+    setSelectedFile(null); // Clear selected file on close
   };
 
   const handleExport = (type: string) => {
@@ -139,6 +164,12 @@ const MonitoringNoSuratDashboard: React.FC = () => {
   const handleRefresh = () => {
     setData([...initialData]);
     setSearchTerm("");
+  };
+
+  const handleDownloadDocument = (documentPath: string) => {
+    // In a real application, this would trigger a download of the file
+    alert(`Downloading document from: ${documentPath}`);
+    window.open(documentPath, "_blank");
   };
 
   return (
@@ -160,7 +191,9 @@ const MonitoringNoSuratDashboard: React.FC = () => {
                   Monitoring
                 </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Monitoring No. Surat</span>
+                <span className="text-blue-600 font-medium">
+                  Monitoring No. Surat
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
@@ -266,18 +299,40 @@ const MonitoringNoSuratDashboard: React.FC = () => {
                     Keterangan
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Dokumen
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {pagedData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={item.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {item.noSurat}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {item.keterangan}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                      {item.documentPath ? (
+                        <button
+                          onClick={() =>
+                            handleDownloadDocument(item.documentPath!)
+                          }
+                          className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg p-2 transition-all duration-200"
+                          title="Unduh Dokumen"
+                        >
+                          <Download className="h-4 w-4" />
+                          <span>Unduh</span>
+                        </button>
+                      ) : (
+                        <span className="text-gray-500">Tidak Ada</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="flex justify-center space-x-2">
@@ -388,6 +443,44 @@ const MonitoringNoSuratDashboard: React.FC = () => {
                     {errors.keterangan && (
                       <p className="mt-1 text-sm text-red-600">
                         {errors.keterangan}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Document Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Dokumen (PDF)
+                    </label>
+                    <input
+                      type="file"
+                      name="documentUpload"
+                      accept=".pdf"
+                      onChange={handleFormChange}
+                      className="w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100
+                      "
+                    />
+                    {formData.documentPath && !selectedFile && (
+                      <p className="mt-2 text-sm text-gray-500">
+                        Dokumen saat ini:
+                        <a
+                          href={formData.documentPath}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline ml-1"
+                        >
+                          {formData.documentPath.split("/").pop()}
+                        </a>
+                      </p>
+                    )}
+                    {selectedFile && (
+                      <p className="mt-2 text-sm text-gray-500">
+                        File dipilih: {selectedFile.name}
                       </p>
                     )}
                   </div>

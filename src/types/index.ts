@@ -41,8 +41,6 @@ export interface EntryPurchasingRequestFormData {
   tanggalPR: string;
   noPR: string;
   noSO: string;
-  departemen: string;
-  keterangan: string;
   kategori: 'Barang' | 'Jasa';
   detailItems: PRDetailItem[];
 }

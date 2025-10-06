@@ -66,7 +66,7 @@ const initialData: POItem[] = [
     cro: "CRO-001",
     commencementStartDate: "2023-01-01",
     commencementFinishDate: "2024-12-31",
-    absorv: "-",
+    absorv: "Rp 2.500.000.000",
     pengembalianNilaiKontrak: "Rp 15.000.000",
     reminder: "-",
   },
@@ -83,7 +83,7 @@ const initialData: POItem[] = [
     cro: "CRO-002",
     commencementStartDate: "2023-04-01",
     commencementFinishDate: "2024-06-30",
-    absorv: "-",
+    absorv: "Rp 2.500.000.000",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "-",
   },
@@ -100,7 +100,7 @@ const initialData: POItem[] = [
     cro: "CRO-003",
     commencementStartDate: "2023-07-01",
     commencementFinishDate: "2024-09-30",
-    absorv: "-",
+    absorv: "Rp 2.500.000.000",
     pengembalianNilaiKontrak: "Rp 20.000.000",
     reminder: "-",
   },
@@ -117,7 +117,7 @@ const initialData: POItem[] = [
     cro: "CRO-004",
     commencementStartDate: "2023-10-01",
     commencementFinishDate: "2024-03-31",
-    absorv: "95%",
+    absorv: "Rp 1.800.000.000",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "Upcoming",
   },
@@ -134,7 +134,7 @@ const initialData: POItem[] = [
     cro: "CRO-005",
     commencementStartDate: "2024-01-01",
     commencementFinishDate: "2024-03-31",
-    absorv: "85%",
+    absorv: "Rp 3.200.000.000",
     pengembalianNilaiKontrak: "Rp 7.500.000",
     reminder: "Due in 5 days",
   },
@@ -150,11 +150,11 @@ const MonitoringNilaiPOPage: React.FC = () => {
 
   // Function to calculate absorv automatically from pengembalian nilai kontrak
   const calculateAbsorv = (pengembalianNilaiKontrak: string): string => {
-    if (!pengembalianNilaiKontrak) return "0%";
+    if (!pengembalianNilaiKontrak) return "Rp 0";
     
     // Since we don't have nilai kontrak, absorv will be calculated differently
-    // For now, return a placeholder or calculate based on business logic
-    return "-";
+    // For now, return a default currency value or calculate based on business logic
+    return "Rp 2.500.000.000";
   };
 
   // Function to calculate reminder based on commencement finish date
@@ -245,7 +245,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
         commencementFinishDate: currentPO.commencementFinishDate || "",
         absorv: currentPO.absorv || "",
         pengembalianNilaiKontrak: currentPO.pengembalianNilaiKontrak || "",
-        reminder: currentPO.reminder || "",
       };
       setData([...data, newPO]);
     }
@@ -387,7 +386,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.commencementFinishDate}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
                     {item.absorv || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -447,7 +446,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
                         pekerjaan: selectedSo.pekerjaan,
                         absorv: calculateAbsorv(newPengembalianNilaiKontrak),
                         pengembalianNilaiKontrak: newPengembalianNilaiKontrak,
-                        reminder: selectedSo.reminder,
                       });
                     } else {
                       setCurrentPO({
@@ -457,7 +455,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
                         pekerjaan: "",
                         absorv: "",
                         pengembalianNilaiKontrak: "",
-                        reminder: "",
                       });
                     }
                   }}
@@ -627,17 +624,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
                 <input
                   type="text"
                   value={currentPO.pengembalianNilaiKontrak || ""}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
-                  readOnly
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Reminder
-                </label>
-                <input
-                  type="text"
-                  value={currentPO.reminder || ""}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
                   readOnly
                 />
