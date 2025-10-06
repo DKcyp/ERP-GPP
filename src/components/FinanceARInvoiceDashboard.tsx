@@ -10,6 +10,7 @@ interface FollowUp {
 interface InvoiceRow {
   id: number;
   noInvoice: string;
+  noPI: string; // No PI (Proforma Invoice)
   tanggal: string; // dd-mm-yyyy
   customer: string;
   noSO: string;
@@ -22,9 +23,9 @@ interface InvoiceRow {
 }
 
 const initialData: InvoiceRow[] = [
-  { id: 1, noInvoice: 'INV-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', followUps: [] },
-  { id: 2, noInvoice: 'INV-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
-  { id: 3, noInvoice: 'INV-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
+  { id: 1, noInvoice: 'INV-001', noPI: 'PI-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', followUps: [] },
+  { id: 2, noInvoice: 'INV-002', noPI: 'PI-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
+  { id: 3, noInvoice: 'INV-003', noPI: 'PI-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
 ];
 
 const FinanceARInvoiceDashboard: React.FC = () => {
@@ -103,6 +104,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
             </div>
             <div class="invoice-info">
               <div><span class="label">No. Invoice:</span><span class="value">${selectedInvoice.noInvoice}</span></div>
+              <div><span class="label">No. PI:</span><span class="value">${selectedInvoice.noPI}</span></div>
               <div><span class="label">Tanggal:</span><span class="value">${selectedInvoice.tanggal}</span></div>
               <div><span class="label">Customer:</span><span class="value">${selectedInvoice.customer}</span></div>
               <div><span class="label">No. SO:</span><span class="value">${selectedInvoice.noSO}</span></div>
@@ -240,6 +242,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3">No</th>
                   <th className="px-6 py-3">No Invoice</th>
+                  <th className="px-6 py-3">No PI</th>
                   <th className="px-6 py-3">Tanggal</th>
                   <th className="px-6 py-3">Customer</th>
                   <th className="px-6 py-3">No SO</th>
@@ -253,6 +256,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                   <tr key={r.id} className="bg-white border-b hover:bg-gray-50">
                     <td className="px-6 py-4">{i + 1}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">{r.noInvoice}</td>
+                    <td className="px-6 py-4 font-medium text-blue-600">{r.noPI}</td>
                     <td className="px-6 py-4">{r.tanggal}</td>
                     <td className="px-6 py-4">{r.customer}</td>
                     <td className="px-6 py-4">{r.noSO}</td>
@@ -340,6 +344,11 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-600">No. Invoice</label>
                     <p className="mt-1 text-sm text-gray-900 font-semibold">{selectedInvoice.noInvoice}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">No. PI (Proforma Invoice)</label>
+                    <p className="mt-1 text-sm text-gray-900 font-semibold text-blue-600">{selectedInvoice.noPI}</p>
                   </div>
 
                   <div>
@@ -465,6 +474,16 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                       type="text"
                       value={editFormData.noInvoice}
                       onChange={(e) => handleEditInputChange('noInvoice', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">No. PI (Proforma Invoice)</label>
+                    <input
+                      type="text"
+                      value={editFormData.noPI}
+                      onChange={(e) => handleEditInputChange('noPI', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>

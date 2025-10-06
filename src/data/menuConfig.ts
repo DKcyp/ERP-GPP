@@ -1219,11 +1219,6 @@ export const financeMenu: MenuSection[] = [
             icon: "LayoutDashboard",
             path: "/finance/ap/dashboard",
           },
-          // {
-          //   title: "Laporan Outstanding Hutang",
-          //   icon: "FileText",
-          //   path: "/finance/ap/laporan-outstanding-hutang",
-          // },
           {
             title: "Laporan Pembayaran Hutang",
             icon: "FileText",
@@ -1236,21 +1231,11 @@ export const financeMenu: MenuSection[] = [
         icon: "Folder",
         items: [
           { title: "Tresuri", icon: "FolderUp", path: "/finance/ap/tresuri" },
-          // {
-          //   title: "Laporan Hutang",
-          //   icon: "FileText",
-          //   path: "/finance/ap/laporan-hutang",
-          // },
           {
             title: "Laporan Hutang",
             icon: "FileText",
             path: "/finance/ap/laporan-outstanding-hutang",
           },
-          // {
-          //   title: "Pengajuan Dana Hutang",
-          //   icon: "Send",
-          //   path: "/finance/ap/pengajuan-dana-hutang",
-          // },
           {
             title: "Pembayaran Hutang",
             icon: "Wallet",
@@ -1274,7 +1259,7 @@ export const financeMenu: MenuSection[] = [
         icon: "ClipboardCheck",
         items: [
           {
-            title: "Dashboard AR",
+            title: "AR Dashboard",
             icon: "LayoutDashboard",
             path: "/finance/ar/dashboard",
           },

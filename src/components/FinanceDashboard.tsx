@@ -282,49 +282,69 @@ const FinanceDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Cash In */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-semibold text-gray-900">
-                  Cash In (per Minggu)
-                </h4>
-                <span className="text-xs text-gray-500">
-                  Minggu ini: {new Date().toLocaleDateString("id-ID")}
-                </span>
-              </div>
-              {paymentIn.map((rows, idx) => {
-                const dayTotal = rows.reduce((sum, item) => sum + item.nominal, 0);
-                return (
-                  <div key={idx} className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="text-xs text-gray-500">
-                        Minggu ke-{idx + 1}
-                      </div>
-                      <div className="text-xs font-semibold text-green-600">
-                        Total: Rp {formatCurrency(dayTotal)}
-                      </div>
-                    </div>
-                    <div className="overflow-x-auto border border-gray-100 rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-100 text-sm">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-3 py-2 text-left text-gray-600 w-1/3">
-                              Nama Customer
-                            </th>
-                            <th className="px-3 py-2 text-right text-gray-600 w-1/4">
-                              Nominal
-                            </th>
-                            <th className="px-3 py-2 text-center text-gray-600 w-1/4">
-                              Jadwal Penerimaan
-                            </th>
-                            <th className="px-3 py-2 text-center text-gray-600 w-1/6">
-                              Status
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {rows.map((r, i) => (
+          {/* Headers */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-lg font-semibold text-gray-900">
+                Cash In (per Minggu)
+              </h4>
+              <span className="text-xs text-gray-500">
+                Minggu ini: {new Date().toLocaleDateString("id-ID")}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <h4 className="text-lg font-semibold text-gray-900">
+                Cash Out (per Minggu)
+              </h4>
+              <span className="text-xs text-gray-500">
+                Minggu ini: {new Date().toLocaleDateString("id-ID")}
+              </span>
+            </div>
+          </div>
+
+          {/* Synchronized Week Tables */}
+          {Array.from({ length: Math.max(paymentIn.length, paymentOut.length) }).map((_, idx) => {
+            const inRows = paymentIn[idx] || [];
+            const outRows = paymentOut[idx] || [];
+            const inTotal = inRows.reduce((sum, item) => sum + item.nominal, 0);
+            const outTotal = outRows.reduce((sum, item) => sum + item.nominal, 0);
+
+            return (
+              <div key={idx} className="mb-6">
+                {/* Week Headers */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-2">
+                  <div className="text-xs text-gray-500">
+                    Minggu ke-{idx + 1}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Minggu ke-{idx + 1}
+                  </div>
+                </div>
+
+                {/* Tables */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Cash In Table */}
+                  <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                    <table className="min-w-full divide-y divide-gray-100 text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-gray-600 w-1/3">
+                            Nama Customer
+                          </th>
+                          <th className="px-3 py-2 text-right text-gray-600 w-1/4">
+                            Nominal
+                          </th>
+                          <th className="px-3 py-2 text-center text-gray-600 w-1/4">
+                            Jadwal Penerimaan
+                          </th>
+                          <th className="px-3 py-2 text-center text-gray-600 w-1/6">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {inRows.length > 0 ? (
+                          inRows.map((r, i) => (
                             <tr key={i} className="hover:bg-gray-50">
                               <td className="px-3 py-2 text-gray-900 text-left">
                                 {r.namaCustomer}
@@ -339,57 +359,52 @@ const FinanceDashboard: React.FC = () => {
                                 {statusBadge(r.status)}
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Cash Out */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-semibold text-gray-900">
-                  Cash Out (per Minggu)
-                </h4>
-                <span className="text-xs text-gray-500">
-                  Minggu ini: {new Date().toLocaleDateString("id-ID")}
-                </span>
-              </div>
-              {paymentOut.map((rows, idx) => {
-                const dayTotal = rows.reduce((sum, item) => sum + item.nominal, 0);
-                return (
-                  <div key={idx} className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="text-xs text-gray-500">
-                        Minggu ke-{idx + 1}
-                      </div>
-                      <div className="text-xs font-semibold text-red-600">
-                        Total: Rp {formatCurrency(dayTotal)}
-                      </div>
-                    </div>
-                    <div className="overflow-x-auto border border-gray-100 rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-100 text-sm">
-                        <thead className="bg-gray-50">
+                          ))
+                        ) : (
                           <tr>
-                            <th className="px-3 py-2 text-left text-gray-600 w-1/3">
-                              Nama Pembiayaan
-                            </th>
-                            <th className="px-3 py-2 text-right text-gray-600 w-1/4">
-                              Nominal
-                            </th>
-                            <th className="px-3 py-2 text-center text-gray-600 w-1/4">
-                              Jadwal Pembayaran
-                            </th>
-                            <th className="px-3 py-2 text-center text-gray-600 w-1/6">
-                              Status
-                            </th>
+                            <td colSpan={4} className="px-3 py-4 text-center text-gray-500 italic">
+                              Tidak ada data untuk minggu ini
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {rows.map((r, i) => (
+                        )}
+                      </tbody>
+                      <tfoot className="bg-green-50">
+                        <tr>
+                          <td className="px-3 py-2 text-left font-semibold text-green-800">
+                            Total Nominal
+                          </td>
+                          <td className="px-3 py-2 text-right font-bold text-green-900">
+                            Rp {formatCurrency(inTotal)}
+                          </td>
+                          <td className="px-3 py-2"></td>
+                          <td className="px-3 py-2"></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+
+                  {/* Cash Out Table */}
+                  <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                    <table className="min-w-full divide-y divide-gray-100 text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-gray-600 w-1/3">
+                            Nama Pembiayaan
+                          </th>
+                          <th className="px-3 py-2 text-right text-gray-600 w-1/4">
+                            Nominal
+                          </th>
+                          <th className="px-3 py-2 text-center text-gray-600 w-1/4">
+                            Jadwal Pembayaran
+                          </th>
+                          <th className="px-3 py-2 text-center text-gray-600 w-1/6">
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {outRows.length > 0 ? (
+                          outRows.map((r, i) => (
                             <tr key={i} className="hover:bg-gray-50">
                               <td className="px-3 py-2 text-gray-900 text-left">
                                 {r.namaPembiayaan}
@@ -404,15 +419,33 @@ const FinanceDashboard: React.FC = () => {
                                 {statusBadgeOut(r.status)}
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={4} className="px-3 py-4 text-center text-gray-500 italic">
+                              Tidak ada data untuk minggu ini
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                      <tfoot className="bg-red-50">
+                        <tr>
+                          <td className="px-3 py-2 text-left font-semibold text-red-800">
+                            Total Nominal
+                          </td>
+                          <td className="px-3 py-2 text-right font-bold text-red-900">
+                            Rp {formatCurrency(outTotal)}
+                          </td>
+                          <td className="px-3 py-2"></td>
+                          <td className="px-3 py-2"></td>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

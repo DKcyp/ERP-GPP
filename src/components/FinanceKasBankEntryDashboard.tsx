@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Edit, Trash2, Printer, RefreshCw, Plus, X, Clock } from "lucide-react";
+import { Edit, Trash2, Printer, Plus, X } from "lucide-react";
 
 // Interface matching the exact table structure from the image
 interface KasBankEntry {
@@ -8,6 +8,7 @@ interface KasBankEntry {
   nomorBukti: string; // Nomor Bukti column
   keterangan: string; // Keterangan column
   jumlah: number; // Jumlah column (always shows Rp0 in image)
+  namaPenerima: string; // Nama Penerima column
   namaPengguna: string; // Nama Pengguna column
   entriRealTime: string; // Entri Real Time column
 }
@@ -101,6 +102,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       nomorBukti: "APBk-2025080307",
       keterangan: "Peralatan pembukaan pekerjaan ONM CSU Agustus 2025",
       jumlah: 0,
+      namaPenerima: "I GEDE RYANTA PUTRA ARSANA",
       namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:08:01",
     },
@@ -110,6 +112,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       nomorBukti: "APBk-2025080031",
       keterangan: "Beban Pembelian barang pekerjaan AC Agustus 2025",
       jumlah: 0,
+      namaPenerima: "SITI NURHALIZA DEWI",
       namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:06:58",
     },
@@ -120,6 +123,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       keterangan:
         "Beban peralatan pembukaan pekerjaan HK Pekanbaru Agustus 2025",
       jumlah: 0,
+      namaPenerima: "BUDI SANTOSO WIJAYA",
       namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:06:31",
     },
@@ -129,6 +133,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       nomorBukti: "APBK-2025080030",
       keterangan: "Beban Pembelian barang pekerjaan HK Pekanbaru Agustus 2025",
       jumlah: 0,
+      namaPenerima: "AHMAD RIZKI PRATAMA",
       namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:06:15",
     },
@@ -138,6 +143,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       nomorBukti: "APBK-2025080029",
       keterangan: "Beban Pembelian barang pekerjaan HK Pekanbaru Agustus 2025",
       jumlah: 0,
+      namaPenerima: "DEWI SARTIKA PUTRI",
       namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:05:58",
     },
@@ -153,6 +159,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
         !searchTerm ||
         entry.nomorBukti.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.keterangan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entry.namaPenerima.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.namaPengguna.toLowerCase().includes(searchTerm.toLowerCase());
 
       return matchesNomorBukti && matchesSearch;
@@ -258,6 +265,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
           (sum, item) => sum + item.debet + item.kredit,
           0
         ),
+        namaPenerima: detailFormData.diberikanKepada,
         namaPengguna: "Current User", // In real app, this would come from auth context
         entriRealTime: new Date().toLocaleString("sv-SE").replace("T", " "), // Current timestamp
       };
@@ -353,7 +361,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       kasBank: "kas", // Default value, in real app this would come from entry data
       noPTJ: "",
       tanggalTransaksi: entry.tanggal.split("-").reverse().join("-"), // Convert DD-MM-YYYY to YYYY-MM-DD
-      diberikanKepada: "User from entry", // In real app, this would come from entry data
+      diberikanKepada: entry.namaPenerima, // Use the actual recipient name from entry
       keterangan: entry.keterangan,
     });
 
@@ -362,7 +370,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       ...prev,
       noTransaksi: entry.nomorBukti,
       tanggalTransaksi: entry.tanggal.split("-").reverse().join("-"),
-      diberikanKepada: "User from entry",
+      diberikanKepada: entry.namaPenerima,
       keterangan: entry.keterangan,
     }));
 
@@ -403,6 +411,12 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
             <td style="padding: 8px; border: 1px solid #ddd;">${formatCurrency(
               entry.jumlah
             )}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Nama Penerima:</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${
+              entry.namaPenerima
+            }</td>
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Nama Pengguna:</td>
@@ -586,6 +600,9 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     Jumlah
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                    Nama Penerima
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Nama Pengguna
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
@@ -646,6 +663,9 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
                       {formatCurrency(entry.jumlah)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {entry.namaPenerima}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                       {entry.namaPengguna}
