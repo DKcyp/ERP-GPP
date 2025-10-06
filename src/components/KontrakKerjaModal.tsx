@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { X, Calendar, Save, Loader2, Plus, Trash2 } from "lucide-react";
-import { TunjanganItem } from "../types";
+import { X, Calendar, Save, Loader2, Plus } from "lucide-react";
+import { TunjanganItem } from "../types/index";
 
 interface KontrakKerjaModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: KontrakKerjaFormData) => void;
+}
+
+// Interface for Data Pihak Kedua
+export interface DataPihakKedua {
+  no: string; // Auto-generated
+  nama: string;
+  tempatLahir: string;
+  tanggalLahir: string;
+  status: string;
+  alamat: string;
+  nik: string;
+  npwp: string;
+  nomorHandphone: string;
+  posisi: string; // Pasal 2 Ayat 2
+  imbalanUpah: string; // Pasal 4
+  masaKontrakKerja: string; // Periode
+  gajiPokok: string; // Kompensasi
+  uangMakan: string; // Kompensasi (Jika Ada)
+  uangTransport: string; // Kompensasi (Jika Ada)
 }
 
 export interface KontrakKerjaFormData {
@@ -22,6 +41,7 @@ export interface KontrakKerjaFormData {
   kualifikasi: string[];
   jenisKontrak?: string;
   gajiPokok?: string;
+  dataPihakKedua: DataPihakKedua;
 }
 
 const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
@@ -29,6 +49,12 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
   onClose,
   onSave,
 }) => {
+  // Generate auto number for Data Pihak Kedua
+  const generateAutoNumber = () => {
+    const timestamp = Date.now().toString().slice(-6);
+    return `DPK-${timestamp}`;
+  };
+
   const [formData, setFormData] = useState<KontrakKerjaFormData>({
     nomorKontrak: "",
     penerimaKontrak: "",
@@ -43,6 +69,23 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     kualifikasi: [],
     jenisKontrak: "",
     gajiPokok: "",
+    dataPihakKedua: {
+      no: generateAutoNumber(),
+      nama: "",
+      tempatLahir: "",
+      tanggalLahir: "",
+      status: "",
+      alamat: "",
+      nik: "",
+      npwp: "",
+      nomorHandphone: "",
+      posisi: "",
+      imbalanUpah: "",
+      masaKontrakKerja: "",
+      gajiPokok: "",
+      uangMakan: "",
+      uangTransport: "",
+    },
   });
 
   const [errors, setErrors] = useState<Partial<KontrakKerjaFormData>>({});
@@ -170,6 +213,20 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     }
   };
 
+  // Handler for Data Pihak Kedua fields
+  const handleDataPihakKeduaChange = (
+    field: keyof DataPihakKedua,
+    value: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      dataPihakKedua: {
+        ...prev.dataPihakKedua,
+        [field]: value,
+      },
+    }));
+  };
+
   const handleTunjanganChange = (
     index: number,
     field: keyof TunjanganItem,
@@ -246,6 +303,23 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
       kualifikasi: [],
       jenisKontrak: "",
       gajiPokok: "",
+      dataPihakKedua: {
+        no: generateAutoNumber(),
+        nama: "",
+        tempatLahir: "",
+        tanggalLahir: "",
+        status: "",
+        alamat: "",
+        nik: "",
+        npwp: "",
+        nomorHandphone: "",
+        posisi: "",
+        imbalanUpah: "",
+        masaKontrakKerja: "",
+        gajiPokok: "",
+        uangMakan: "",
+        uangTransport: "",
+      },
     });
     setErrors({});
     onClose();
@@ -582,6 +656,257 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                       File selected: {formData.uploadSertifikasi.name}
                     </p>
                   )}
+                </div>
+              </div>
+
+              {/* Data Pihak Kedua Section - Green Theme */}
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-green-800 mb-6 flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                  Data Pihak Kedua
+                </h3>
+
+                <div className="space-y-6">
+                  {/* Auto-generated No */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        No <span className="text-green-600">(Auto-generated)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.dataPihakKedua.no}
+                        readOnly
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl bg-green-50 text-green-800 font-medium cursor-not-allowed"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        Nama <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.dataPihakKedua.nama}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("nama", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                        placeholder="Masukkan nama lengkap"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        Tempat Lahir
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.dataPihakKedua.tempatLahir}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("tempatLahir", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                        placeholder="Kota tempat lahir"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        Tanggal Lahir
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.dataPihakKedua.tanggalLahir}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("tanggalLahir", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        Status
+                      </label>
+                      <select
+                        value={formData.dataPihakKedua.status}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("status", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                      >
+                        <option value="">-- Pilih Status --</option>
+                        <option value="Belum Menikah">Belum Menikah</option>
+                        <option value="Menikah">Menikah</option>
+                        <option value="Cerai">Cerai</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        NIK
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.dataPihakKedua.nik}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("nik", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                        placeholder="16 digit NIK"
+                        maxLength={16}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        Alamat
+                      </label>
+                      <textarea
+                        value={formData.dataPihakKedua.alamat}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("alamat", e.target.value)
+                        }
+                        rows={3}
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 resize-none bg-white"
+                        placeholder="Alamat lengkap"
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          NPWP
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.dataPihakKedua.npwp}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("npwp", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="Nomor NPWP"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          Nomor Handphone
+                        </label>
+                        <input
+                          type="tel"
+                          value={formData.dataPihakKedua.nomorHandphone}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("nomorHandphone", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="08xxxxxxxxxx"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pasal 2 Ayat 2 */}
+                  <div className="bg-green-100 rounded-xl p-4 border border-green-300">
+                    <h4 className="text-lg font-semibold text-green-800 mb-3">Pasal 2 Ayat 2</h4>
+                    <div>
+                      <label className="block text-sm font-medium text-green-700 mb-2">
+                        Posisi
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.dataPihakKedua.posisi}
+                        onChange={(e) =>
+                          handleDataPihakKeduaChange("posisi", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                        placeholder="Posisi/Jabatan"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Pasal 4 - Imbalan dan Upah */}
+                  <div className="bg-green-100 rounded-xl p-4 border border-green-300">
+                    <h4 className="text-lg font-semibold text-green-800 mb-3">Pasal 4 - Imbalan dan Upah</h4>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          Posisi
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.dataPihakKedua.imbalanUpah}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("imbalanUpah", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="Deskripsi imbalan dan upah"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          Masa Kontrak Kerja (Periode)
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.dataPihakKedua.masaKontrakKerja}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("masaKontrakKerja", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="Periode kontrak kerja"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Kompensasi */}
+                  <div className="bg-green-100 rounded-xl p-4 border border-green-300">
+                    <h4 className="text-lg font-semibold text-green-800 mb-3">Kompensasi</h4>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          Gaji Pokok
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.dataPihakKedua.gajiPokok}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("gajiPokok", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="Rp 5.000.000"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          Uang Makan <span className="text-green-600">(Jika Ada)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.dataPihakKedua.uangMakan}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("uangMakan", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="Rp 500.000"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">
+                          Uang Transport <span className="text-green-600">(Jika Ada)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.dataPihakKedua.uangTransport}
+                          onChange={(e) =>
+                            handleDataPihakKeduaChange("uangTransport", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                          placeholder="Rp 300.000"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
