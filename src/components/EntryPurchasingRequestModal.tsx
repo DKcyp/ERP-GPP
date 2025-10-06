@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { CalendarDays } from 'lucide-react';
-import { EntryPurchasingRequestFormData, PRDetailItem } from '../types';
+import { EntryPurchasingRequestFormData, PRDetailItem } from '../types/index';
 
 interface EntryPurchasingRequestModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
     tanggalPR: '',
     noPR: '',
     noSO: '',
+    noSistemACTS: '',
     noPBG: '',
     kategori: 'Barang',
     detailItems: [
@@ -58,6 +59,7 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
       tanggalPR: '',
       noPR: '',
       noSO: '',
+      noSistemACTS: '',
       noPBG: '',
       kategori: 'Barang',
       detailItems: [{ id: crypto.randomUUID(), namaItem: '', qty: 1, satuan: '', keterangan: '' }],
@@ -141,6 +143,22 @@ const EntryPurchasingRequestModal: React.FC<EntryPurchasingRequestModalProps> = 
             </select>
           </div>
 
+          {/* No. Sistem ACTS */}
+          <div>
+            <label htmlFor="noSistemACTS" className="block text-sm font-medium text-textSecondary mb-1">No. Sistem ACTS</label>
+            <input
+              type="text"
+              id="noSistemACTS"
+              name="noSistemACTS"
+              value={formData.noSistemACTS}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
+              placeholder="PPE-GBP/2025/XX/XXX"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* No PBG */}
           <div>
             <label htmlFor="noPBG" className="block text-sm font-medium text-textSecondary mb-1">No. PBG</label>

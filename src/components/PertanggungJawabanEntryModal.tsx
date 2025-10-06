@@ -7,9 +7,10 @@ interface PertanggungJawabanEntryModalProps {
   isOpen: boolean;
   onClose: () => void;
   voucherData: VoucherEntry | null; // Initial data for the form
+  userRole?: string; // User role to determine access level
 }
 
-const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> = ({ isOpen, onClose, voucherData }) => {
+const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> = ({ isOpen, onClose, voucherData, userRole = 'user' }) => {
   const [noReimburse, setNoReimburse] = useState('');
   const [noSO, setNoSO] = useState('');
   const [noSOTurunan, setNoSOTurunan] = useState('');
@@ -17,6 +18,9 @@ const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> 
   const [namaDepartemen, setNamaDepartemen] = useState('');
   const [lampiranFiles, setLampiranFiles] = useState<File[]>([]);
   const [detailItems, setDetailItems] = useState<ReimburseDetailItem[]>([]);
+
+  // Check if user has accounting role
+  const isAccountingUser = userRole === 'accounting';
 
   useEffect(() => {
     if (voucherData) {
@@ -32,7 +36,7 @@ const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> 
           id: '1', // Unique ID
           keperluan: voucherData.keterangan,
           nominal: parseFloat(voucherData.nominal.replace('Rp ', '').replace(/\./g, '')),
-          namaAkunCoa: '8011-Kas Kecil', // Default
+          namaAkunCoa: isAccountingUser ? '8011-Kas Kecil' : undefined, // Default only for accounting users
         },
       ]);
     } else {
@@ -67,7 +71,12 @@ const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> 
   const handleAddDetailItem = () => {
     setDetailItems((prevItems) => [
       ...prevItems,
-      { id: String(prevItems.length + 1), keperluan: '', nominal: 0, namaAkunCoa: '' },
+      { 
+        id: String(prevItems.length + 1), 
+        keperluan: '', 
+        nominal: 0, 
+        namaAkunCoa: isAccountingUser ? '' : undefined 
+      },
     ]);
   };
 
@@ -211,7 +220,9 @@ const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> 
                 <tr className="bg-background border-b border-border text-textSecondary text-xs font-semibold uppercase tracking-wider">
                   <th className="px-3 py-2 text-left">KEPERLUAN</th>
                   <th className="px-3 py-2 text-left">NOMINAL</th>
-                  <th className="px-3 py-2 text-left">NAMA AKUN / COA</th>
+                  {isAccountingUser && (
+                    <th className="px-3 py-2 text-left">NAMA AKUN / COA</th>
+                  )}
                   <th className="px-3 py-2 text-left">AKSI</th>
                 </tr>
               </thead>
@@ -234,17 +245,24 @@ const PertanggungJawabanEntryModal: React.FC<PertanggungJawabanEntryModalProps> 
                         onChange={(e) => handleDetailItemChange(item.id, 'nominal', parseFloat(e.target.value))}
                       />
                     </td>
-                    <td className="px-3 py-2">
-                      <select
-                        className="w-full px-2 py-1 border border-border rounded-lg bg-background text-text text-xs focus:ring-primary focus:border-primary"
-                        value={item.namaAkunCoa}
-                        onChange={(e) => handleDetailItemChange(item.id, 'namaAkunCoa', e.target.value)}
-                      >
-                        <option value="">--Pilih Akun--</option>
-                        <option value="8011-Kas Kecil">8011-Kas Kecil</option>
-                        <option value="8012-Biaya Perjalanan">8012-Biaya Perjalanan</option>
-                      </select>
-                    </td>
+                    {isAccountingUser && (
+                      <td className="px-3 py-2">
+                        <select
+                          className="w-full px-2 py-1 border border-border rounded-lg bg-background text-text text-xs focus:ring-primary focus:border-primary"
+                          value={item.namaAkunCoa}
+                          onChange={(e) => handleDetailItemChange(item.id, 'namaAkunCoa', e.target.value)}
+                        >
+                          <option value="">--Pilih Akun--</option>
+                          <option value="8011-Kas Kecil">8011-Kas Kecil</option>
+                          <option value="8012-Biaya Perjalanan">8012-Biaya Perjalanan</option>
+                          <option value="8013-Biaya Operasional">8013-Biaya Operasional</option>
+                          <option value="8014-Biaya Konsumsi">8014-Biaya Konsumsi</option>
+                          <option value="8015-Biaya Transport">8015-Biaya Transport</option>
+                          <option value="8016-Biaya Komunikasi">8016-Biaya Komunikasi</option>
+                          <option value="8017-Biaya Alat Tulis">8017-Biaya Alat Tulis</option>
+                        </select>
+                      </td>
+                    )}
                     <td className="px-3 py-2">
                       <button
                         onClick={() => handleRemoveDetailItem(item.id)}

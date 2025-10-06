@@ -11,7 +11,6 @@ interface KontrakKerjaModalProps {
 // Interface for Data Pihak Kedua
 export interface DataPihakKedua {
   no: string; // Auto-generated
-  nama: string;
   tempatLahir: string;
   tanggalLahir: string;
   status: string;
@@ -22,9 +21,6 @@ export interface DataPihakKedua {
   posisi: string; // Pasal 2 Ayat 2
   imbalanUpah: string; // Pasal 4
   masaKontrakKerja: string; // Periode
-  gajiPokok: string; // Kompensasi
-  uangMakan: string; // Kompensasi (Jika Ada)
-  uangTransport: string; // Kompensasi (Jika Ada)
 }
 
 export interface KontrakKerjaFormData {
@@ -49,14 +45,14 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
   onClose,
   onSave,
 }) => {
-  // Generate auto number for Data Pihak Kedua
+  // Generate auto number
   const generateAutoNumber = () => {
     const timestamp = Date.now().toString().slice(-6);
-    return `DPK-${timestamp}`;
+    return `KK-${timestamp}`;
   };
 
   const [formData, setFormData] = useState<KontrakKerjaFormData>({
-    nomorKontrak: "",
+    nomorKontrak: generateAutoNumber(),
     penerimaKontrak: "",
     periodeKontrakStart: "",
     periodeKontrakEnd: "",
@@ -71,7 +67,6 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     gajiPokok: "",
     dataPihakKedua: {
       no: generateAutoNumber(),
-      nama: "",
       tempatLahir: "",
       tanggalLahir: "",
       status: "",
@@ -82,13 +77,21 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
       posisi: "",
       imbalanUpah: "",
       masaKontrakKerja: "",
-      gajiPokok: "",
-      uangMakan: "",
-      uangTransport: "",
     },
   });
 
   const [errors, setErrors] = useState<Partial<KontrakKerjaFormData>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  // Contract type to document URL mapping
+  const contractDocuments = {
+    "Kontrak Tetap": "https://drive.google.com/file/d/1ABC123_KontrakTetap/view?usp=sharing",
+    "Kontrak Sementara": "https://drive.google.com/file/d/1DEF456_KontrakSementara/view?usp=sharing", 
+    "Kontrak Freelance": "https://drive.google.com/file/d/1GHI789_KontrakFreelance/view?usp=sharing",
+    "Kontrak Magang": "https://drive.google.com/file/d/1JKL012_KontrakMagang/view?usp=sharing",
+    "Kontrak Konsultan": "https://drive.google.com/file/d/1MNO345_KontrakKonsultan/view?usp=sharing"
+  } as const;
 
   // Opsi tunjangan yang tersedia dengan nominal default
   const tunjanganOptions = [
@@ -124,8 +127,6 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
     const number = parseInt(value.replace(/\D/g, ""));
     return new Intl.NumberFormat("id-ID").format(number);
   };
-
-  const [isLoading, setIsLoading] = useState(false);
 
   // Options for Kualifikasi Pegawai multi-select
   const kualifikasiOptions: string[] = [
@@ -282,30 +283,58 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
 
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Simulate API call for saving
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    onSave(formData);
-    setIsLoading(false);
+      onSave(formData);
+      
+      // Show download loading state
+      setIsDownloading(true);
+      
+      // Download document based on contract type
+      if (formData.jenisKontrak && contractDocuments[formData.jenisKontrak as keyof typeof contractDocuments]) {
+        // Simulate download preparation time
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        
+        const documentUrl = contractDocuments[formData.jenisKontrak as keyof typeof contractDocuments];
+        
+        // Convert Google Drive view link to download link
+        const downloadUrl = documentUrl.replace('/view?usp=sharing', '/export?format=pdf');
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `Kontrak_${formData.jenisKontrak}_${formData.nomorKontrak}.pdf`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show success message
+        alert(`Dokumen ${formData.jenisKontrak} berhasil didownload!`);
+      }
+      
+      setIsDownloading(false);
+      setIsLoading(false);
 
-    // Reset form
-    setFormData({
-      nomorKontrak: "",
-      penerimaKontrak: "",
-      periodeKontrakStart: "",
-      periodeKontrakEnd: "",
-      keterangan: "",
-      uploadSuratLamaran: null,
-      uploadCV: null,
-      uploadFotoDiri: null,
-      uploadSertifikasi: null,
-      tunjangan: [{ namaTunjangan: "Transport", nominal: "Rp. 2.000.000" }],
-      kualifikasi: [],
-      jenisKontrak: "",
-      gajiPokok: "",
+      // Reset form
+      setFormData({
+        nomorKontrak: generateAutoNumber(),
+        penerimaKontrak: "",
+        periodeKontrakStart: "",
+        periodeKontrakEnd: "",
+        keterangan: "",
+        uploadSuratLamaran: null,
+        uploadCV: null,
+        uploadFotoDiri: null,
+        uploadSertifikasi: null,
+        tunjangan: [{ namaTunjangan: "Transport", nominal: "Rp. 2.000.000" }],
+        kualifikasi: [],
+        jenisKontrak: "",
+        gajiPokok: "",
       dataPihakKedua: {
         no: generateAutoNumber(),
-        nama: "",
         tempatLahir: "",
         tanggalLahir: "",
         status: "",
@@ -316,13 +345,16 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
         posisi: "",
         imbalanUpah: "",
         masaKontrakKerja: "",
-        gajiPokok: "",
-        uangMakan: "",
-        uangTransport: "",
       },
-    });
-    setErrors({});
-    onClose();
+      });
+      setErrors({});
+      onClose();
+    } catch (error) {
+      console.error('Error saving contract:', error);
+      setIsLoading(false);
+      setIsDownloading(false);
+      alert('Terjadi kesalahan saat menyimpan kontrak. Silakan coba lagi.');
+    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -330,6 +362,7 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
       onClose();
     }
   };
+
 
   if (!isOpen) return null;
 
@@ -668,7 +701,7 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
 
                 <div className="space-y-6">
                   {/* Auto-generated No */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-green-700 mb-2">
                         No <span className="text-green-600">(Auto-generated)</span>
@@ -678,20 +711,6 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                         value={formData.dataPihakKedua.no}
                         readOnly
                         className="w-full px-4 py-3 border-2 border-green-200 rounded-xl bg-green-50 text-green-800 font-medium cursor-not-allowed"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-green-700 mb-2">
-                        Nama <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.dataPihakKedua.nama}
-                        onChange={(e) =>
-                          handleDataPihakKeduaChange("nama", e.target.value)
-                        }
-                        className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
-                        placeholder="Masukkan nama lengkap"
                       />
                     </div>
                     <div>
@@ -859,54 +878,6 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Kompensasi */}
-                  <div className="bg-green-100 rounded-xl p-4 border border-green-300">
-                    <h4 className="text-lg font-semibold text-green-800 mb-3">Kompensasi</h4>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-green-700 mb-2">
-                          Gaji Pokok
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.dataPihakKedua.gajiPokok}
-                          onChange={(e) =>
-                            handleDataPihakKeduaChange("gajiPokok", e.target.value)
-                          }
-                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
-                          placeholder="Rp 5.000.000"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-green-700 mb-2">
-                          Uang Makan <span className="text-green-600">(Jika Ada)</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.dataPihakKedua.uangMakan}
-                          onChange={(e) =>
-                            handleDataPihakKeduaChange("uangMakan", e.target.value)
-                          }
-                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
-                          placeholder="Rp 500.000"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-green-700 mb-2">
-                          Uang Transport <span className="text-green-600">(Jika Ada)</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.dataPihakKedua.uangTransport}
-                          onChange={(e) =>
-                            handleDataPihakKeduaChange("uangTransport", e.target.value)
-                          }
-                          className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
-                          placeholder="Rp 300.000"
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -1020,18 +991,23 @@ const KontrakKerjaModal: React.FC<KontrakKerjaModalProps> = ({
           <button
             type="submit"
             onClick={handleSubmit}
-            disabled={isLoading}
+            disabled={isLoading || isDownloading}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
-            {isLoading ? (
+            {isLoading && !isDownloading ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Saving...</span>
+                <span>Menyimpan...</span>
+              </>
+            ) : isDownloading ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <span>Mengunduh Dokumen...</span>
               </>
             ) : (
               <>
                 <Save className="h-3.5 w-3.5" />
-                <span>Save changes</span>
+                <span>Simpan & Download</span>
               </>
             )}
           </button>

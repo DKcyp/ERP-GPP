@@ -1,117 +1,129 @@
-import React, { useState } from 'react';
-import { Search, CalendarDays, FileText, FileSpreadsheet, FileDown, ThumbsUp, ThumbsDown } from 'lucide-react';
-import PertanggungJawabanEntryModal from './PertanggungJawabanEntryModal'; // Import the new modal
-import { VoucherEntry, PTJDetailItem } from '../types'; // Only import VoucherEntry
-import PTJDetailModal from './PTJDetailModal';
-import ConfirmationModal from './ConfirmationModal';
+import React, { useState } from "react";
+import {
+  Search,
+  CalendarDays,
+  FileText,
+  FileSpreadsheet,
+  FileDown,
+  ThumbsUp,
+  ThumbsDown,
+} from "lucide-react";
+import PertanggungJawabanEntryModal from "./PertanggungJawabanEntryModal"; // Import the new modal
+import { VoucherEntry, PTJDetailItem } from "../types"; // Only import VoucherEntry
+import PTJDetailModal from "./PTJDetailModal";
+import ConfirmationModal from "./ConfirmationModal";
 
 const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedVoucher, setSelectedVoucher] = useState<VoucherEntry | null>(null); // Change type to VoucherEntry | null
+  const [selectedVoucher, setSelectedVoucher] = useState<VoucherEntry | null>(
+    null
+  ); // Change type to VoucherEntry | null
   const [isPTJModalOpen, setIsPTJModalOpen] = useState(false);
   const [ptjDetails, setPtjDetails] = useState<PTJDetailItem[]>([]);
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<'approve' | 'reject' | null>(null);
+  const [confirmAction, setConfirmAction] = useState<
+    "approve" | "reject" | null
+  >(null);
   const [selectedEntry, setSelectedEntry] = useState<VoucherEntry | null>(null);
-
+  const [rejectionNote, setRejectionNote] = useState<string>(""); // New state for rejection note
 
   const voucherData: VoucherEntry[] = [
     {
       no: 1,
-      noVoucher: 'VCH001',
-      noSO: 'SO001',
-      noSOTurunan: '-',
-      namaProject: 'Project A',
-      namaPemohon: 'Abdul Karim',
-      tglPengajuanVoucher: '10-01-2025',
-      tglPembayaranVoucher: '15-01-2025',
-      tglExpired: '25-01-2025',
-      tglLaporanExpense: '30-01-2025',
-      nominal: 'Rp 20,000,000',
-      keterangan: 'Tugas Luar Kota',
-      ptjNominal: 'Rp 5,000,000',
+      noVoucher: "VCH001",
+      noSO: "SO001",
+      noSOTurunan: "-",
+      namaProject: "Project A",
+      namaPemohon: "Abdul Karim",
+      tglPengajuanVoucher: "10-01-2025",
+      tglPembayaranVoucher: "15-01-2025",
+      tglExpired: "25-01-2025",
+      tglLaporanExpense: "30-01-2025",
+      nominal: "Rp 20,000,000",
+      keterangan: "Tugas Luar Kota",
+      ptjNominal: "Rp 5,000,000",
       ptjDetails: [
-        { deskripsi: 'Transport', nominal: 3000000 },
-        { deskripsi: 'Makan', nominal: 2000000 },
+        { deskripsi: "Transport", nominal: 3000000 },
+        { deskripsi: "Makan", nominal: 2000000 },
       ],
     },
     {
       no: 2,
-      noVoucher: 'VCH002',
-      noSO: 'SO002',
-      noSOTurunan: 'SO002.4',
-      namaProject: 'Project B',
-      namaPemohon: 'Juna Saputra',
-      tglPengajuanVoucher: '10-01-2025',
-      tglPembayaranVoucher: '15-01-2025',
-      tglExpired: '25-01-2025',
-      tglLaporanExpense: '30-01-2025',
-      nominal: 'Rp 25,000,000',
-      keterangan: 'Tugas Luar Kota',
-      ptjNominal: 'Rp 12,000,000',
+      noVoucher: "VCH002",
+      noSO: "SO002",
+      noSOTurunan: "SO002.4",
+      namaProject: "Project B",
+      namaPemohon: "Juna Saputra",
+      tglPengajuanVoucher: "10-01-2025",
+      tglPembayaranVoucher: "15-01-2025",
+      tglExpired: "25-01-2025",
+      tglLaporanExpense: "30-01-2025",
+      nominal: "Rp 25,000,000",
+      keterangan: "Tugas Luar Kota",
+      ptjNominal: "Rp 12,000,000",
       ptjDetails: [
-        { deskripsi: 'Hotel', nominal: 7000000 },
-        { deskripsi: 'BBM', nominal: 5000000 },
+        { deskripsi: "Hotel", nominal: 7000000 },
+        { deskripsi: "BBM", nominal: 5000000 },
       ],
     },
     {
       no: 3,
-      noVoucher: 'VCH003',
-      noSO: 'SO003',
-      noSOTurunan: 'SO003.12',
-      namaProject: 'Inspeksi Rope Access',
-      namaPemohon: 'Rizky Andrian',
-      tglPengajuanVoucher: '12-02-2025',
-      tglPembayaranVoucher: '17-02-2025',
-      tglExpired: '27-02-2025',
-      tglLaporanExpense: '05-03-2025',
-      nominal: 'Rp 15,000,000',
-      keterangan: 'Perjalanan Dinas ke Site',
-      ptjNominal: 'Rp 0',
+      noVoucher: "VCH003",
+      noSO: "SO003",
+      noSOTurunan: "SO003.12",
+      namaProject: "Inspeksi Rope Access",
+      namaPemohon: "Rizky Andrian",
+      tglPengajuanVoucher: "12-02-2025",
+      tglPembayaranVoucher: "17-02-2025",
+      tglExpired: "27-02-2025",
+      tglLaporanExpense: "05-03-2025",
+      nominal: "Rp 15,000,000",
+      keterangan: "Perjalanan Dinas ke Site",
+      ptjNominal: "Rp 0",
       ptjDetails: [],
     },
     {
       no: 4,
-      noVoucher: 'VCH004',
-      noSO: '-',
-      noSOTurunan: '-',
-      namaProject: 'Training Keselamatan Kerja',
-      namaPemohon: 'Hendra Prasetyo',
-      tglPengajuanVoucher: '15-02-2025',
-      tglPembayaranVoucher: '20-02-2025',
-      tglExpired: '01-03-2025',
-      tglLaporanExpense: '07-03-2025',
-      nominal: 'Rp 30,000,000',
-      keterangan: 'Pelatihan Internal',
+      noVoucher: "VCH004",
+      noSO: "-",
+      noSOTurunan: "-",
+      namaProject: "Training Keselamatan Kerja",
+      namaPemohon: "Hendra Prasetyo",
+      tglPengajuanVoucher: "15-02-2025",
+      tglPembayaranVoucher: "20-02-2025",
+      tglExpired: "01-03-2025",
+      tglLaporanExpense: "07-03-2025",
+      nominal: "Rp 30,000,000",
+      keterangan: "Pelatihan Internal",
     },
     {
       no: 5,
-      noVoucher: 'VCH005',
-      noSO: 'SO005',
-      noSOTurunan: '-',
-      namaProject: 'Audit Sistem Manajemen K3',
-      namaPemohon: 'Indra Wijaya',
-      tglPengajuanVoucher: '18-02-2025',
-      tglPembayaranVoucher: '23-02-2025',
-      tglExpired: '05-03-2025',
-      tglLaporanExpense: '12-03-2025',
-      nominal: 'Rp 22,000,000',
-      keterangan: 'Proyek Audit K3',
+      noVoucher: "VCH005",
+      noSO: "SO005",
+      noSOTurunan: "-",
+      namaProject: "Audit Sistem Manajemen K3",
+      namaPemohon: "Indra Wijaya",
+      tglPengajuanVoucher: "18-02-2025",
+      tglPembayaranVoucher: "23-02-2025",
+      tglExpired: "05-03-2025",
+      tglLaporanExpense: "12-03-2025",
+      nominal: "Rp 22,000,000",
+      keterangan: "Proyek Audit K3",
     },
     {
       no: 6,
-      noVoucher: 'VCH006',
-      noSO: 'SO006',
-      noSOTurunan: 'SO006.13',
-      namaProject: 'Pemeliharaan Struktur Baja',
-      namaPemohon: 'Doni Saputra',
-      tglPengajuanVoucher: '22-02-2025',
-      tglPembayaranVoucher: '27-02-2025',
-      tglExpired: '10-03-2025',
-      tglLaporanExpense: '17-03-2025',
-      nominal: 'Rp 18,500,000',
-      keterangan: 'Pemeliharaan Rutin',
+      noVoucher: "VCH006",
+      noSO: "SO006",
+      noSOTurunan: "SO006.13",
+      namaProject: "Pemeliharaan Struktur Baja",
+      namaPemohon: "Doni Saputra",
+      tglPengajuanVoucher: "22-02-2025",
+      tglPembayaranVoucher: "27-02-2025",
+      tglExpired: "10-03-2025",
+      tglLaporanExpense: "17-03-2025",
+      nominal: "Rp 18,500,000",
+      keterangan: "Pemeliharaan Rutin",
     },
   ];
 
@@ -127,11 +139,15 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
   const parseCurrency = (val: string | undefined): number => {
     if (!val) return 0;
-    return parseInt(val.replace(/[^0-9]/g, '') || '0', 10);
+    return parseInt(val.replace(/[^0-9]/g, "") || "0", 10);
   };
 
   const formatCurrency = (num: number): string => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(num);
   };
 
   const handleOpenPTJ = (entry: VoucherEntry) => {
@@ -144,7 +160,10 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
     setPtjDetails([]);
   };
 
-  const openConfirmation = (entry: VoucherEntry, action: 'approve' | 'reject') => {
+  const openConfirmation = (
+    entry: VoucherEntry,
+    action: "approve" | "reject"
+  ) => {
     setSelectedEntry(entry);
     setConfirmAction(action);
     setIsConfirmModalOpen(true);
@@ -152,7 +171,18 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
   const handleConfirm = () => {
     if (selectedEntry && confirmAction) {
-      console.log(`${confirmAction.charAt(0).toUpperCase() + confirmAction.slice(1)}d:`, selectedEntry.noVoucher);
+      if (confirmAction === "reject" && !rejectionNote) {
+        alert("Catatan penolakan tidak boleh kosong.");
+        return;
+      }
+      console.log(
+        `${confirmAction.charAt(0).toUpperCase() + confirmAction.slice(1)}d:`,
+        selectedEntry.noVoucher
+      );
+      if (confirmAction === "reject") {
+        console.log("Rejection Note:", rejectionNote);
+        // Here you would send the rejectionNote along with the reject action
+      }
       // Here you would put your actual approve/reject logic
     }
     closeConfirmation();
@@ -162,20 +192,28 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
     setIsConfirmModalOpen(false);
     setSelectedEntry(null);
     setConfirmAction(null);
+    setRejectionNote(""); // Clear rejection note on close
   };
 
   return (
     <div className="min-h-screen bg-background text-text p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <h1 className="text-2xl font-semibold text-text mb-4">Approval Pertanggung Jawaban Voucher</h1>
+        <h1 className="text-2xl font-semibold text-text mb-4">
+          Approval Pertanggung Jawaban Voucher
+        </h1>
 
         {/* Filter Section */}
         <div className="bg-surface rounded-2xl shadow-lg border border-border p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
             {/* Cari No Voucher */}
             <div>
-              <label htmlFor="noVoucher" className="block text-xs font-medium text-textSecondary mb-1">Cari No Voucher</label>
+              <label
+                htmlFor="noVoucher"
+                className="block text-xs font-medium text-textSecondary mb-1"
+              >
+                Cari No Voucher
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -188,7 +226,12 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             </div>
             {/* Cari No SO */}
             <div>
-              <label htmlFor="noSO" className="block text-xs font-medium text-textSecondary mb-1">Cari No SO</label>
+              <label
+                htmlFor="noSO"
+                className="block text-xs font-medium text-textSecondary mb-1"
+              >
+                Cari No SO
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -201,7 +244,12 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             </div>
             {/* Cari No SO Turunan */}
             <div>
-              <label htmlFor="noSOTurunan" className="block text-xs font-medium text-textSecondary mb-1">Cari No SO Turunan</label>
+              <label
+                htmlFor="noSOTurunan"
+                className="block text-xs font-medium text-textSecondary mb-1"
+              >
+                Cari No SO Turunan
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -214,7 +262,12 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             </div>
             {/* Cari Nama Project */}
             <div>
-              <label htmlFor="namaProject" className="block text-xs font-medium text-textSecondary mb-1">Cari Nama Project</label>
+              <label
+                htmlFor="namaProject"
+                className="block text-xs font-medium text-textSecondary mb-1"
+              >
+                Cari Nama Project
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -227,7 +280,12 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             </div>
             {/* Cari Status */}
             <div>
-              <label htmlFor="status" className="block text-xs font-medium text-textSecondary mb-1">Cari Status</label>
+              <label
+                htmlFor="status"
+                className="block text-xs font-medium text-textSecondary mb-1"
+              >
+                Cari Status
+              </label>
               <select
                 id="status"
                 className="w-full px-3 py-1.5 border border-border rounded-xl shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
@@ -244,7 +302,12 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
           <div className="flex flex-col md:flex-row items-end md:items-center gap-3">
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="periodeStart" className="block text-xs font-medium text-textSecondary mb-1">Periode</label>
+                <label
+                  htmlFor="periodeStart"
+                  className="block text-xs font-medium text-textSecondary mb-1"
+                >
+                  Periode
+                </label>
                 <div className="relative">
                   <input
                     type="text"
@@ -305,55 +368,94 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             <table className="min-w-full bg-surface rounded-xl shadow-sm border border-border whitespace-nowrap">
               <thead>
                 <tr className="bg-background border-b border-border text-textSecondary text-xs font-semibold uppercase tracking-wider">
-                  <th className="px-3 py-2 text-left">No <span className="text-primary">↑</span></th>
+                  <th className="px-3 py-2 text-left">
+                    No <span className="text-primary">↑</span>
+                  </th>
                   <th className="px-3 py-2 text-left">No Voucher</th>
                   <th className="px-3 py-2 text-left">No SO</th>
                   <th className="px-3 py-2 text-left">No SO Turunan</th>
                   <th className="px-3 py-2 text-left">Nama Project</th>
                   <th className="px-3 py-2 text-left">Nama Pemohon</th>
                   <th className="px-3 py-2 text-left">Tgl Pengajuan Voucher</th>
-                  <th className="px-3 py-2 text-left">Tgl Pembayaran Voucher</th>
+                  <th className="px-3 py-2 text-left">
+                    Tgl Pembayaran Voucher
+                  </th>
                   <th className="px-3 py-2 text-left">Tgl Expired</th>
                   <th className="px-3 py-2 text-left">Tgl Laporan Expense</th>
                   <th className="px-3 py-2 text-left">UM</th>
                   <th className="px-3 py-2 text-left">PTJ</th>
                   <th className="px-3 py-2 text-left">Sisa</th>
                   <th className="px-3 py-2 text-left">Keterangan</th>
-                  <th className="px-3 py-2 text-left">Aksi</th> {/* New Action Column Header */}
+                  <th className="px-3 py-2 text-left">Aksi</th>{" "}
+                  {/* New Action Column Header */}
                 </tr>
               </thead>
               <tbody>
                 {voucherData.map((entry) => (
-                  <tr key={entry.no} className="border-b border-border last:border-b-0 hover:bg-background transition-colors duration-150">
+                  <tr
+                    key={entry.no}
+                    className="border-b border-border last:border-b-0 hover:bg-background transition-colors duration-150"
+                  >
                     <td className="px-3 py-2 text-xs text-text">{entry.no}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.noVoucher}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.noSO}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.noSOTurunan}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.namaProject}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.namaPemohon}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.tglPengajuanVoucher}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.tglPembayaranVoucher}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.tglExpired}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.tglLaporanExpense}</td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.nominal}</td>
-                    <td className="px-3 py-2 text-xs text-primary underline cursor-pointer" onClick={() => handleOpenPTJ(entry)}>
-                      {entry.ptjNominal ?? 'Rp 0'}
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.noVoucher}
                     </td>
                     <td className="px-3 py-2 text-xs text-text">
-                      {formatCurrency(Math.max(parseCurrency(entry.nominal) - parseCurrency(entry.ptjNominal), 0))}
+                      {entry.noSO}
                     </td>
-                    <td className="px-3 py-2 text-xs text-text">{entry.keterangan}</td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.noSOTurunan}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.namaProject}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.namaPemohon}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.tglPengajuanVoucher}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.tglPembayaranVoucher}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.tglExpired}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.tglLaporanExpense}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.nominal}
+                    </td>
+                    <td
+                      className="px-3 py-2 text-xs text-primary underline cursor-pointer"
+                      onClick={() => handleOpenPTJ(entry)}
+                    >
+                      {entry.ptjNominal ?? "Rp 0"}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {formatCurrency(
+                        Math.max(
+                          parseCurrency(entry.nominal) -
+                            parseCurrency(entry.ptjNominal),
+                          0
+                        )
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.keterangan}
+                    </td>
                     <td className="px-3 py-2 text-xs text-text">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => openConfirmation(entry, 'approve')}
+                          onClick={() => openConfirmation(entry, "approve")}
                           className="p-1 text-success hover:text-success/80 transition-colors duration-200"
                           title="Approve"
                         >
                           <ThumbsUp className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => openConfirmation(entry, 'reject')}
+                          onClick={() => openConfirmation(entry, "reject")}
                           className="p-1 text-error hover:text-error/80 transition-colors duration-200"
                           title="Reject"
                         >
@@ -369,11 +471,19 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
           {/* Pagination */}
           <div className="flex justify-between items-center mt-4 text-xs text-textSecondary">
-            <span>Showing 1 to {voucherData.length} of {voucherData.length} entries</span>
+            <span>
+              Showing 1 to {voucherData.length} of {voucherData.length} entries
+            </span>
             <div className="flex space-x-2">
-              <button className="px-3 py-1.5 border border-border rounded-xl hover:bg-background transition-colors duration-200">Previous</button>
-              <button className="px-3 py-1.5 bg-primary text-white rounded-xl hover:bg-primary/80 transition-colors duration-200">1</button>
-              <button className="px-3 py-1.5 border border-border rounded-xl hover:bg-background transition-colors duration-200">Next</button>
+              <button className="px-3 py-1.5 border border-border rounded-xl hover:bg-background transition-colors duration-200">
+                Previous
+              </button>
+              <button className="px-3 py-1.5 bg-primary text-white rounded-xl hover:bg-primary/80 transition-colors duration-200">
+                1
+              </button>
+              <button className="px-3 py-1.5 border border-border rounded-xl hover:bg-background transition-colors duration-200">
+                Next
+              </button>
             </div>
           </div>
         </div>
@@ -397,9 +507,18 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
         isOpen={isConfirmModalOpen}
         onClose={closeConfirmation}
         onConfirm={handleConfirm}
-        title={confirmAction === 'approve' ? 'Konfirmasi Approval' : 'Konfirmasi Penolakan'}
-        message={`Apakah Anda yakin ingin ${confirmAction === 'approve' ? 'menyetujui' : 'menolak'} pertanggung jawaban untuk voucher ${selectedEntry?.noVoucher}?`}
-        confirmText={confirmAction === 'approve' ? 'Approve' : 'Reject'}
+        title={
+          confirmAction === "approve"
+            ? "Konfirmasi Approval"
+            : "Konfirmasi Penolakan"
+        }
+        message={`Apakah Anda yakin ingin ${
+          confirmAction === "approve" ? "menyetujui" : "menolak"
+        } pertanggung jawaban untuk voucher ${selectedEntry?.noVoucher}?`}
+        confirmText={confirmAction === "approve" ? "Approve" : "Reject"}
+        showNoteInput={confirmAction === "reject"} // Conditionally show note input
+        note={rejectionNote}
+        onNoteChange={setRejectionNote}
       />
     </div>
   );

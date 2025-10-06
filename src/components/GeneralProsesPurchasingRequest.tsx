@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Plus, X, Info } from 'lucide-react';
 import EntryPurchasingRequestModal from './EntryPurchasingRequestModal'; // Import the new modal
-import { EntryPurchasingRequestFormData } from '../types'; // Import the new type
+import { EntryPurchasingRequestFormData } from '../types/index'; // Import the new type
 
 interface PurchasingRequest {
   id: number;
@@ -76,7 +76,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
       id: newId,
       noSO: newData.noSO || '',
       jenis: newData.kategori.toUpperCase(),
-      noSistemACTS: '',
+      noSistemACTS: newData.noSistemACTS || '',
       tanggalPengajuan: new Date().toLocaleDateString('id-ID'),
       cust: '',
       deskripsiPekerjaan: newData.detailItems.length > 0 ? newData.detailItems[0].namaItem : '',

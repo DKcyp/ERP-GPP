@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { X, AlertTriangle } from "lucide-react";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -10,6 +10,9 @@ interface ConfirmationModalProps {
   confirmText?: string;
   cancelText?: string;
   isLoading?: boolean;
+  showNoteInput?: boolean; // New prop for conditional note input
+  note?: string; // New prop for note value
+  onNoteChange?: (note: string) => void; // New prop for note change handler
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -18,9 +21,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
   isLoading = false,
+  showNoteInput = false, // Default to false
+  note = "",
+  onNoteChange,
 }) => {
   if (!isOpen) return null;
 
@@ -47,6 +53,24 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </div>
         <div className="text-textSecondary mb-6">
           <p>{message}</p>
+          {showNoteInput && (
+            <div className="mt-4">
+              <label
+                htmlFor="rejectionNote"
+                className="block text-sm font-medium text-text mb-2"
+              >
+                Catatan Penolakan:
+              </label>
+              <textarea
+                id="rejectionNote"
+                rows={4}
+                className="w-full px-3 py-2 border border-border rounded-lg shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
+                placeholder="Masukkan catatan penolakan..."
+                value={note}
+                onChange={(e) => onNoteChange && onNoteChange(e.target.value)}
+              ></textarea>
+            </div>
+          )}
         </div>
         <div className="flex justify-end space-x-3">
           <button
@@ -61,7 +85,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
           >
-            {isLoading ? 'Processing...' : confirmText}
+            {isLoading ? "Processing..." : confirmText}
           </button>
         </div>
       </div>
