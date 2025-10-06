@@ -106,12 +106,11 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
   const [searchPemohon, setSearchPemohon] = useState("");
   const [filterKategori, setFilterKategori] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterPrioritas, setFilterPrioritas] = useState("");
+  const [filterPrioritas] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
   const kategoriOptions = ["Hotel", "Travel", "Pesawat"];
-  const prioritasOptions = ["Low", "Medium", "High", "Urgent"];
 
   const [rows, setRows] = useState<TicketRow[]>([
     {
@@ -393,6 +392,19 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
     dateTo,
   ]);
 
+  // Calculate total nominal for filtered tickets
+  const totalNominal = useMemo(() => {
+    return filtered.reduce((total, row) => {
+      const nominal =
+        (row.hargaBerangkat || 0) +
+        (row.hargaPulang || 0) +
+        (row.hargaBerangkatTravel || 0) +
+        (row.hargaPulangTravel || 0) +
+        (row.hargaTotalHotel || 0);
+      return total + nominal;
+    }, 0);
+  }, [filtered]);
+
   const exportExcel = () => alert("Export Excel belum diimplementasikan");
   const exportPDF = () => alert("Export PDF belum diimplementasikan");
 
@@ -409,20 +421,6 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "Urgent":
-        return "bg-red-100 text-red-800";
-      case "High":
-        return "bg-orange-100 text-orange-800";
-      case "Medium":
-        return "bg-yellow-100 text-yellow-800";
-      case "Low":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   // Statistics
   const stats = {
@@ -504,126 +502,145 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Filter</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cari No Ticket
-              </label>
-              <input
-                type="text"
-                value={searchNo}
-                onChange={(e) => setSearchNo(e.target.value)}
-                placeholder="TKT-..."
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pemohon
-              </label>
-              <input
-                type="text"
-                value={searchPemohon}
-                onChange={(e) => setSearchPemohon(e.target.value)}
-                placeholder="Nama pemohon..."
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kategori
-              </label>
-              <select
-                multiple
-                value={filterKategori}
-                onChange={(e) =>
-                  setFilterKategori(
-                    Array.from(
-                      e.target.selectedOptions,
-                      (option) => option.value
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 px-8 py-6 border-b border-gray-200">
+            <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+              <Search className="h-6 w-6 mr-3 text-green-600" />
+              Filter
+            </h3>
+          </div>
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cari No Ticket
+                </label>
+                <input
+                  type="text"
+                  value={searchNo}
+                  onChange={(e) => setSearchNo(e.target.value)}
+                  placeholder="TKT-..."
+                  className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-all duration-200 hover:border-green-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Pemohon
+                </label>
+                <input
+                  type="text"
+                  value={searchPemohon}
+                  onChange={(e) => setSearchPemohon(e.target.value)}
+                  placeholder="Nama pemohon..."
+                  className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-all duration-200 hover:border-green-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Kategori
+                </label>
+                <select
+                  multiple
+                  value={filterKategori}
+                  onChange={(e) =>
+                    setFilterKategori(
+                      Array.from(
+                        e.target.selectedOptions,
+                        (option) => option.value
+                      )
                     )
-                  )
-                }
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm"
-              >
-                {kategoriOptions.map((k) => (
-                  <option key={k} value={k}>
-                    {k}
-                  </option>
-                ))}
-              </select>
+                  }
+                  className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-all duration-200 hover:border-green-400"
+                >
+                  {kategoriOptions.map((k) => (
+                    <option key={k} value={k}>
+                      {k}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status
+                </label>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none transition-all duration-200 hover:border-green-400"
+                >
+                  <option value="">Semua</option>
+                  <option value="Submitted">Submitted</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal Dari
+                </label>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  placeholder="dd/mm/yyyy"
+                  className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-all duration-200 hover:border-green-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tanggal Sampai
+                </label>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  placeholder="dd/mm/yyyy"
+                  className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-all duration-200 hover:border-green-400"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm appearance-none"
-              >
-                <option value="">Semua</option>
-                <option value="Submitted">Submitted</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Dari
-              </label>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Sampai
-              </label>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-green-500 focus:border-green-500 text-sm"
-              />
-            </div>
-            <div className="flex items-end">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <button
                 onClick={() => {
                   /* trigger memo */
                 }}
-                className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none h-[42px]"
+                className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105"
               >
                 <Search className="h-4 w-4 mr-2" /> Cari Data
               </button>
-            </div>
-          </div>
 
-          <div className="flex flex-col md:flex-row justify-end items-center space-y-3 md:space-y-0 md:space-x-3 mt-2">
-            <button
-              onClick={exportExcel}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 w-full md:w-auto"
-            >
-              <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
-            </button>
-            <button
-              onClick={exportPDF}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 w-full md:w-auto"
-            >
-              <FileDown className="h-4 w-4 mr-2" /> Export PDF
-            </button>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  onClick={exportExcel}
+                  className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                >
+                  <FileSpreadsheet className="h-4 w-4 mr-2" /> Export Excel
+                </button>
+                <button
+                  onClick={exportPDF}
+                  className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
+                >
+                  <FileDown className="h-4 w-4 mr-2" /> Export PDF
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">
-            Daftar Ticket untuk Approval
-          </h3>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 px-8 py-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+                <FileSpreadsheet className="h-6 w-6 mr-3 text-green-600" />
+                Daftar Ticket untuk Approval
+              </h3>
+              <div className="bg-white rounded-lg px-4 py-2 shadow-sm border border-green-200">
+                <span className="text-sm font-medium text-gray-600">Total Data: </span>
+                <span className="text-lg font-bold text-green-600">{filtered.length}</span>
+              </div>
+            </div>
+          </div>
+          <div className="p-8">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -680,7 +697,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                   const keterangan = row.deskripsi || "-";
 
                   return (
-                    <tr key={row.id}>
+                    <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {index + 1}
                       </td>
@@ -724,7 +741,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <button
                           onClick={() => handleViewDetail(row)}
-                          className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50"
+                          className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50 transition-colors duration-150"
                           title="View Detail"
                         >
                           <Eye className="h-4 w-4" />
@@ -733,8 +750,19 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                     </tr>
                   );
                 })}
+                {/* Total Row */}
+                <tr className="bg-gradient-to-r from-green-50 to-blue-50 border-t-2 border-green-200">
+                  <td colSpan={6} className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
+                    TOTAL NOMINAL:
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right text-lg">
+                    {`Rp ${totalNominal.toLocaleString("id-ID")}`}
+                  </td>
+                  <td colSpan={3} className="px-6 py-4"></td>
+                </tr>
               </tbody>
             </table>
+          </div>
           </div>
         </div>
       </div>

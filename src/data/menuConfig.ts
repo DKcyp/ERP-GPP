@@ -1230,7 +1230,7 @@ export const financeMenu: MenuSection[] = [
         title: "AP Transaksi",
         icon: "Folder",
         items: [
-          { title: "Tresuri", icon: "FolderUp", path: "/finance/ap/tresuri" },
+          { title: "Treasury", icon: "FolderUp", path: "/finance/ap/tresuri" },
           {
             title: "Laporan Hutang",
             icon: "FileText",

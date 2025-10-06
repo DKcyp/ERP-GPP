@@ -9,7 +9,6 @@ interface KasBankEntry {
   keterangan: string; // Keterangan column
   jumlah: number; // Jumlah column (always shows Rp0 in image)
   namaPenerima: string; // Nama Penerima column
-  namaPengguna: string; // Nama Pengguna column
   entriRealTime: string; // Entri Real Time column
 }
 
@@ -103,7 +102,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       keterangan: "Peralatan pembukaan pekerjaan ONM CSU Agustus 2025",
       jumlah: 0,
       namaPenerima: "I GEDE RYANTA PUTRA ARSANA",
-      namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:08:01",
     },
     {
@@ -113,7 +111,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       keterangan: "Beban Pembelian barang pekerjaan AC Agustus 2025",
       jumlah: 0,
       namaPenerima: "SITI NURHALIZA DEWI",
-      namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:06:58",
     },
     {
@@ -124,7 +121,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
         "Beban peralatan pembukaan pekerjaan HK Pekanbaru Agustus 2025",
       jumlah: 0,
       namaPenerima: "BUDI SANTOSO WIJAYA",
-      namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:06:31",
     },
     {
@@ -134,7 +130,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       keterangan: "Beban Pembelian barang pekerjaan HK Pekanbaru Agustus 2025",
       jumlah: 0,
       namaPenerima: "AHMAD RIZKI PRATAMA",
-      namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:06:15",
     },
     {
@@ -144,7 +139,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
       keterangan: "Beban Pembelian barang pekerjaan HK Pekanbaru Agustus 2025",
       jumlah: 0,
       namaPenerima: "DEWI SARTIKA PUTRI",
-      namaPengguna: "ARIO SETYO N",
       entriRealTime: "2025-09-02 09:05:58",
     },
   ]);
@@ -159,8 +153,7 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
         !searchTerm ||
         entry.nomorBukti.toLowerCase().includes(searchTerm.toLowerCase()) ||
         entry.keterangan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.namaPenerima.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.namaPengguna.toLowerCase().includes(searchTerm.toLowerCase());
+        entry.namaPenerima.toLowerCase().includes(searchTerm.toLowerCase());
 
       return matchesNomorBukti && matchesSearch;
     });
@@ -266,7 +259,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
           0
         ),
         namaPenerima: detailFormData.diberikanKepada,
-        namaPengguna: "Current User", // In real app, this would come from auth context
         entriRealTime: new Date().toLocaleString("sv-SE").replace("T", " "), // Current timestamp
       };
 
@@ -419,12 +411,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
             }</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Nama Pengguna:</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${
-              entry.namaPengguna
-            }</td>
-          </tr>
-          <tr>
             <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Waktu Entry:</td>
             <td style="padding: 8px; border: 1px solid #ddd;">${
               entry.entriRealTime
@@ -447,21 +433,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
     }
   };
 
-  const handleUnpost = (entry: KasBankEntry) => {
-    const confirmUnpost = window.confirm(
-      `Apakah Anda yakin ingin melakukan unpost untuk transaksi:\n\n` +
-        `Nomor Bukti: ${entry.nomorBukti}\n` +
-        `Tanggal: ${entry.tanggal}\n` +
-        `Jumlah: ${formatCurrency(entry.jumlah)}\n\n` +
-        `Proses unpost akan membatalkan posting transaksi ini.`
-    );
-
-    if (confirmUnpost) {
-      // In a real app, this would call an API to unpost the transaction
-      alert(`Transaksi ${entry.nomorBukti} berhasil di-unpost!`);
-      console.log("Unpost entry:", entry);
-    }
-  };
 
   const formatCurrency = (amount: number) => {
     return `Rp${amount.toLocaleString("id-ID")}`;
@@ -603,9 +574,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     Nama Penerima
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                    Nama Pengguna
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                     Entri Real Time
                   </th>
                 </tr>
@@ -666,9 +634,6 @@ const FinanceKasBankEntryDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                       {entry.namaPenerima}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {entry.namaPengguna}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                       {entry.entriRealTime}
