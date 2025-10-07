@@ -9,6 +9,11 @@ export interface PengajianEntryFormData {
   tunjanganLainnya: string;
   tunjanganBpjs: string;
   tunjanganProyek: string;
+  totalTahap1: string;
+  totalTahap2: string;
+  totalTunjanganProyek: string;
+  gajiPokokTeknisi: string;
+  gajiPokokStaff: string;
 }
 
 interface PengajianEntryModalProps {
@@ -26,6 +31,11 @@ const PengajianEntryModal: React.FC<PengajianEntryModalProps> = ({ isOpen, onClo
     tunjanganLainnya: '',
     tunjanganBpjs: '',
     tunjanganProyek: '',
+    totalTahap1: '',
+    totalTahap2: '',
+    totalTunjanganProyek: '',
+    gajiPokokTeknisi: '',
+    gajiPokokStaff: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof PengajianEntryFormData, string>>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +87,20 @@ const PengajianEntryModal: React.FC<PengajianEntryModalProps> = ({ isOpen, onClo
     await new Promise(r => setTimeout(r, 800));
     onSave(form);
     setIsLoading(false);
-    setForm({ namaPegawai: '', absenGapok: '', umUt: '', tunjanganJabatan: '', tunjanganLainnya: '', tunjanganBpjs: '', tunjanganProyek: '' });
+    setForm({ 
+      namaPegawai: '', 
+      absenGapok: '', 
+      umUt: '', 
+      tunjanganJabatan: '', 
+      tunjanganLainnya: '', 
+      tunjanganBpjs: '', 
+      tunjanganProyek: '',
+      totalTahap1: '',
+      totalTahap2: '',
+      totalTunjanganProyek: '',
+      gajiPokokTeknisi: '',
+      gajiPokokStaff: ''
+    });
     setErrors({});
     onClose();
   };
@@ -134,6 +157,38 @@ const PengajianEntryModal: React.FC<PengajianEntryModalProps> = ({ isOpen, onClo
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tunjangan Proyek <span className="text-red-500">*</span></label>
                 <input type="text" value={form.tunjanganProyek} onChange={(e) => handleChange('tunjanganProyek')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.tunjanganProyek ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Rp 0" />
                 {errors.tunjanganProyek && <p className="text-sm text-red-600 mt-1">{errors.tunjanganProyek}</p>}
+              </div>
+            </div>
+            
+            {/* New Fields Section */}
+            <div className="border-t border-gray-200 pt-5 mt-5">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Total & Gaji Pokok</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Tahap 1</label>
+                  <input type="text" value={form.totalTahap1} onChange={(e) => handleChange('totalTahap1')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.totalTahap1 ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Rp 0" />
+                  {errors.totalTahap1 && <p className="text-sm text-red-600 mt-1">{errors.totalTahap1}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Tahap 2</label>
+                  <input type="text" value={form.totalTahap2} onChange={(e) => handleChange('totalTahap2')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.totalTahap2 ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Rp 0" />
+                  {errors.totalTahap2 && <p className="text-sm text-red-600 mt-1">{errors.totalTahap2}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Tunjangan Proyek</label>
+                  <input type="text" value={form.totalTunjanganProyek} onChange={(e) => handleChange('totalTunjanganProyek')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.totalTunjanganProyek ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Rp 0" />
+                  {errors.totalTunjanganProyek && <p className="text-sm text-red-600 mt-1">{errors.totalTunjanganProyek}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Gaji Pokok Teknisi</label>
+                  <input type="text" value={form.gajiPokokTeknisi} onChange={(e) => handleChange('gajiPokokTeknisi')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.gajiPokokTeknisi ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Rp 0" />
+                  {errors.gajiPokokTeknisi && <p className="text-sm text-red-600 mt-1">{errors.gajiPokokTeknisi}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Gaji Pokok Staff</label>
+                  <input type="text" value={form.gajiPokokStaff} onChange={(e) => handleChange('gajiPokokStaff')(e.target.value)} className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.gajiPokokStaff ? 'border-red-300 bg-red-50' : 'border-gray-200'}`} placeholder="Rp 0" />
+                  {errors.gajiPokokStaff && <p className="text-sm text-red-600 mt-1">{errors.gajiPokokStaff}</p>}
+                </div>
               </div>
             </div>
           </form>

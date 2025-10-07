@@ -28,6 +28,11 @@ interface PenggajianEntry {
   tunjanganLainnya: string;
   tunjanganBpjs: string;
   tunjanganProyek: string;
+  totalTahap1: string;
+  totalTahap2: string;
+  totalTunjanganProyek: string;
+  gajiPokokTeknisi: string;
+  gajiPokokStaff: string;
 }
 
 interface PengajianActiveDashboardProps {
@@ -53,6 +58,11 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
       tunjanganLainnya: "Rp 250.000",
       tunjanganBpjs: "Rp 200.000",
       tunjanganProyek: "Rp 750.000",
+      totalTahap1: "Rp 7.700.000",
+      totalTahap2: "Rp 0",
+      totalTunjanganProyek: "Rp 750.000",
+      gajiPokokTeknisi: "Rp 5.000.000",
+      gajiPokokStaff: "Rp 0",
     },
     {
       no: 2,
@@ -65,6 +75,11 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
       tunjanganLainnya: "Rp 150.000",
       tunjanganBpjs: "Rp 180.000",
       tunjanganProyek: "Rp 500.000",
+      totalTahap1: "Rp 6.530.000",
+      totalTahap2: "Rp 0",
+      totalTunjanganProyek: "Rp 500.000",
+      gajiPokokTeknisi: "Rp 0",
+      gajiPokokStaff: "Rp 4.500.000",
     },
     {
       no: 3,
@@ -77,6 +92,11 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
       tunjanganLainnya: "Rp 300.000",
       tunjanganBpjs: "Rp 220.000",
       tunjanganProyek: "Rp 800.000",
+      totalTahap1: "Rp 0",
+      totalTahap2: "Rp 8.140.000",
+      totalTunjanganProyek: "Rp 800.000",
+      gajiPokokTeknisi: "Rp 5.200.000",
+      gajiPokokStaff: "Rp 0",
     },
     {
       no: 4,
@@ -89,45 +109,54 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
       tunjanganLainnya: "Rp 200.000",
       tunjanganBpjs: "Rp 190.000",
       tunjanganProyek: "Rp 600.000",
+      totalTahap1: "Rp 0",
+      totalTahap2: "Rp 7.140.000",
+      totalTunjanganProyek: "Rp 600.000",
+      gajiPokokTeknisi: "Rp 0",
+      gajiPokokStaff: "Rp 4.800.000",
     },
   ]);
 
   // Helper function to convert Rupiah string to number
   const parseRupiah = (rupiahString: string): number => {
-    return parseInt(rupiahString.replace(/[Rp\s.]/g, '')) || 0;
+    return parseInt(rupiahString.replace(/[Rp\s.]/g, "")) || 0;
   };
 
   // Helper function to format number to Rupiah
   const formatRupiah = (amount: number): string => {
-    return `Rp ${amount.toLocaleString('id-ID')}`;
+    return `Rp ${amount.toLocaleString("id-ID")}`;
   };
 
   // Calculate totals
   const calculateTotalTahap1 = (): number => {
     return penggajianData
-      .filter(entry => entry.tahap === 1)
+      .filter((entry) => entry.tahap === 1)
       .reduce((total, entry) => {
-        return total + 
-          parseRupiah(entry.absenGapok) + 
-          parseRupiah(entry.umUt) + 
-          parseRupiah(entry.tunjanganJabatan) + 
-          parseRupiah(entry.tunjanganLainnya) + 
-          parseRupiah(entry.tunjanganBpjs) + 
-          parseRupiah(entry.tunjanganProyek);
+        return (
+          total +
+          parseRupiah(entry.absenGapok) +
+          parseRupiah(entry.umUt) +
+          parseRupiah(entry.tunjanganJabatan) +
+          parseRupiah(entry.tunjanganLainnya) +
+          parseRupiah(entry.tunjanganBpjs) +
+          parseRupiah(entry.tunjanganProyek)
+        );
       }, 0);
   };
 
   const calculateTotalTahap2 = (): number => {
     return penggajianData
-      .filter(entry => entry.tahap === 2)
+      .filter((entry) => entry.tahap === 2)
       .reduce((total, entry) => {
-        return total + 
-          parseRupiah(entry.absenGapok) + 
-          parseRupiah(entry.umUt) + 
-          parseRupiah(entry.tunjanganJabatan) + 
-          parseRupiah(entry.tunjanganLainnya) + 
-          parseRupiah(entry.tunjanganBpjs) + 
-          parseRupiah(entry.tunjanganProyek);
+        return (
+          total +
+          parseRupiah(entry.absenGapok) +
+          parseRupiah(entry.umUt) +
+          parseRupiah(entry.tunjanganJabatan) +
+          parseRupiah(entry.tunjanganLainnya) +
+          parseRupiah(entry.tunjanganBpjs) +
+          parseRupiah(entry.tunjanganProyek)
+        );
       }, 0);
   };
 
@@ -139,7 +168,7 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
 
   const calculateGajiPokokTeknisi = (): number => {
     return penggajianData
-      .filter(entry => entry.posisi === 'Teknisi')
+      .filter((entry) => entry.posisi === "Teknisi")
       .reduce((total, entry) => {
         return total + parseRupiah(entry.absenGapok);
       }, 0);
@@ -147,7 +176,7 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
 
   const calculateGajiPokokStaff = (): number => {
     return penggajianData
-      .filter(entry => entry.posisi === 'Staff')
+      .filter((entry) => entry.posisi === "Staff")
       .reduce((total, entry) => {
         return total + parseRupiah(entry.absenGapok);
       }, 0);
@@ -157,15 +186,19 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
   const handleOpenEntryModal = () => setIsEntryModalOpen(true);
   const handleCloseEntryModal = () => setIsEntryModalOpen(false);
   const handleSaveEntry = (data: PengajianEntryFormData) => {
-    setPenggajianData((prev) => [
-      { 
-        no: prev.length + 1, 
-        posisi: 'Staff', // Default position
+    setPenggajianData((prev) => {
+      const newEntry: PenggajianEntry = {
+        no: prev.length + 1,
+        posisi: "Staff", // Default position
         tahap: 1, // Default tahap
-        ...data 
-      },
-      ...prev.map((r) => ({ ...r, no: r.no + 1 })),
-    ]);
+        ...data,
+      };
+      
+      return [
+        newEntry,
+        ...prev.map((r) => ({ ...r, no: r.no + 1 })),
+      ];
+    });
   };
 
   return (
@@ -282,104 +315,6 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
           </div>
         </div>
 
-        {/* Totals Summary Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Ringkasan Total Penggajian
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Total Tahap 1 */}
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-blue-600">Total Tahap 1</p>
-                  <p className="text-2xl font-bold text-blue-800">
-                    {formatRupiah(calculateTotalTahap1())}
-                  </p>
-                </div>
-                <div className="p-3 bg-blue-200 rounded-full">
-                  <FileText className="h-6 w-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Total Tahap 2 */}
-            <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-600">Total Tahap 2</p>
-                  <p className="text-2xl font-bold text-green-800">
-                    {formatRupiah(calculateTotalTahap2())}
-                  </p>
-                </div>
-                <div className="p-3 bg-green-200 rounded-full">
-                  <FileText className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Total Tunjangan Proyek */}
-            <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-purple-600">Total Tunjangan Proyek</p>
-                  <p className="text-2xl font-bold text-purple-800">
-                    {formatRupiah(calculateTotalTunjanganProyek())}
-                  </p>
-                </div>
-                <div className="p-3 bg-purple-200 rounded-full">
-                  <FileText className="h-6 w-6 text-purple-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Gaji Pokok Teknisi */}
-            <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-orange-600">Gaji Pokok Teknisi</p>
-                  <p className="text-2xl font-bold text-orange-800">
-                    {formatRupiah(calculateGajiPokokTeknisi())}
-                  </p>
-                </div>
-                <div className="p-3 bg-orange-200 rounded-full">
-                  <FileText className="h-6 w-6 text-orange-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Gaji Pokok Staff */}
-            <div className="bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg p-4 border border-teal-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-teal-600">Gaji Pokok Staff</p>
-                  <p className="text-2xl font-bold text-teal-800">
-                    {formatRupiah(calculateGajiPokokStaff())}
-                  </p>
-                </div>
-                <div className="p-3 bg-teal-200 rounded-full">
-                  <FileText className="h-6 w-6 text-teal-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Grand Total */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Grand Total</p>
-                  <p className="text-2xl font-bold text-gray-800">
-                    {formatRupiah(calculateTotalTahap1() + calculateTotalTahap2())}
-                  </p>
-                </div>
-                <div className="p-3 bg-gray-200 rounded-full">
-                  <FileText className="h-6 w-6 text-gray-600" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Main Content Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           {/* Export and Add Buttons */}
@@ -488,6 +423,31 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">
+                      Total Tahap 1 <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      Total Tahap 2 <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      Total Tunjangan Proyek <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      Gaji Pokok Teknisi <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      Gaji Pokok Staff <ChevronDown className="ml-1 h-3 w-3" />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div className="flex items-center">
                       Aksi <ChevronDown className="ml-1 h-3 w-3" />
                     </div>
                   </th>
@@ -519,6 +479,21 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {entry.tunjanganProyek}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-blue-600">
+                      {entry.totalTahap1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-green-600">
+                      {entry.totalTahap2}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-purple-600">
+                      {entry.totalTunjanganProyek}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-orange-600">
+                      {entry.gajiPokokTeknisi}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-teal-600">
+                      {entry.gajiPokokStaff}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center space-x-2">

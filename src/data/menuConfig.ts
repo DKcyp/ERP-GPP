@@ -1918,13 +1918,18 @@ export const accountingMenu: MenuSection[] = [
         ],
       },
       {
-        title: "Master COA",
+        title: "Master",
         icon: "BookText",
         items: [
           {
             title: "Master COA",
             icon: "BookText",
             path: "/accounting/master-coa",
+          },
+          {
+            title: "Master Jasa",
+            icon: "Briefcase",
+            path: "/accounting/master/jasa",
           },
         ],
       },
@@ -1938,7 +1943,7 @@ export const accountingMenu: MenuSection[] = [
             path: "/accounting/posting-jurnal",
           },
           {
-            title: "Jurnal Manual",
+            title: "Jurnal Penyesuaian",
             icon: "ClipboardList",
             path: "/accounting/jurnal-manual",
           },

@@ -3,7 +3,7 @@ import ApproveTimesheetModal, {
   ApproveTimesheetFormData,
 } from "./ApproveTimesheetModal";
 import ApproveTimesheetDetailModal from "./ApproveTimesheetDetailModal";
-import { Plus, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 // Local interface for timesheet data mirrored from Operation
 interface ApprovalTimesheetPegawaiData {
@@ -20,7 +20,7 @@ interface ApprovalTimesheetPegawaiData {
   durasi: string;
   zona: string;
   nilaiTimesheet: string;
-  statusApproval: 'Approve by HRD' | 'Approve by Manager OPS' | 'Pending' | 'Rejected';
+  statusApproval: 'Approve by HRD' | 'Approve by Manager OPS' | 'Pending' | 'Rejected' | 'Released';
 }
 
 const ApprovalTimesheetDashboard: React.FC = () => {
@@ -116,22 +116,18 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     const newApprovalTimesheet: ApprovalTimesheetPegawaiData = {
       id: (approvalTimesheetData.length + 1).toString(),
       no: approvalTimesheetData.length + 1,
-      nama: formData.nama,
-      kualifikasi: formData.kualifikasi, // Now an array
-      mob: formData.mob,
-      demob: formData.demob,
-      durasi: formData.durasi,
-      noSO: formData.noSO,
-      noHPP: formData.noHPP,
-      lokasi: formData.lokasi,
-      jenisPekerjaan: formData.jenisPekerjaan,
-      status: "Menunggu Review",
-      namaProject: formData.namaProject,
-      namaClient: formData.namaClient,
-      jamAwalKerja: "08:00", // Default or derive from form
-      jamSelesaiKerja: "17:00", // Default or derive from form
-      overtime: "0 Jam", // Default or derive from form
-      tunjangan: formData.tunjangan,
+      tanggal: new Date().toISOString().split('T')[0],
+      noSO: formData.noSO || '',
+      noSOTurunan: formData.noSO + '.1' || '',
+      namaProyek: formData.namaProject || '',
+      namaPegawai: formData.nama || '',
+      kualifikasi: formData.kualifikasi || [],
+      mob: formData.mob || '',
+      demob: formData.demob || '',
+      durasi: formData.durasi || '',
+      zona: formData.lokasi || '',
+      nilaiTimesheet: 'Rp 0',
+      statusApproval: "Pending",
     };
 
     setApprovalTimesheetData((prev) => [
@@ -159,30 +155,24 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     setSelectedTimesheetForDetail(null);
   };
 
-  const handleApproveByManager = (id: string) => {
-    setApprovalTimesheetData((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, statusApproval: "Approve by Manager OPS" as const } : item
-      )
-    );
-    setIsDetailModalOpen(false);
-    setSelectedTimesheetForDetail(null);
-  };
-
   const handleReject = (id: string) => {
     setApprovalTimesheetData((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, statusApproval: "Rejected" as const } : item
       )
     );
-    setIsDetailModalOpen(false); // Close modal after action
+    setIsDetailModalOpen(false);
     setSelectedTimesheetForDetail(null);
   };
 
-  // Open detail modal (if needed in the future)
-  const openDetailModal = (item: ApprovalTimesheetPegawaiData) => {
-    setSelectedTimesheetForDetail(item);
-    setIsDetailModalOpen(true);
+  const handleRelease = (id: string) => {
+    setApprovalTimesheetData((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, statusApproval: "Released" as const } : item
+      )
+    );
+    setIsDetailModalOpen(false);
+    setSelectedTimesheetForDetail(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -195,19 +185,10 @@ const ApprovalTimesheetDashboard: React.FC = () => {
         return "bg-yellow-500 text-white";
       case "Rejected":
         return "bg-red-600 text-white";
+      case "Released":
+        return "bg-blue-500 text-white";
       default:
         return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getJenisPekerjaanColor = (jenis: string) => {
-    switch (jenis) {
-      case "On Call":
-        return "bg-cyan-100 text-cyan-800 border-cyan-200";
-      case "Tender":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -330,11 +311,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("nama")}
+                    onClick={() => handleSort("namaPegawai")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama</span>
-                      {sortField === "nama" && (
+                      {sortField === "namaPegawai" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -420,11 +401,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("noHPP")}
+                    onClick={() => handleSort("zona")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>No HPP</span>
-                      {sortField === "noHPP" && (
+                      <span>Zona</span>
+                      {sortField === "zona" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -435,11 +416,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("lokasi")}
+                    onClick={() => handleSort("nilaiTimesheet")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Lokasi</span>
-                      {sortField === "lokasi" && (
+                      <span>Nilai Timesheet</span>
+                      {sortField === "nilaiTimesheet" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -450,26 +431,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("jenisPekerjaan")}
+                    onClick={() => handleSort("statusApproval")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Jenis Pekerjaan</span>
-                      {sortField === "jenisPekerjaan" && (
-                        <ArrowUp
-                          className={`h-3 w-3 transition-transform ${
-                            sortDirection === "desc" ? "rotate-180" : ""
-                          }`}
-                        />
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("status")}
-                  >
-                    <div className="flex items-center space-x-1">
-                      <span>Status</span>
-                      {sortField === "status" && (
+                      <span>Status Approval</span>
+                      {sortField === "statusApproval" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -503,7 +469,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       {item.no}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                      {item.nama}
+                      {item.namaPegawai}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {item.kualifikasi.join(", ")}
@@ -520,33 +486,24 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
                       {item.noSO}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
-                      {item.noHPP}
-                    </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      {item.lokasi}
+                      {item.zona}
                     </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getJenisPekerjaanColor(
-                          item.jenisPekerjaan
-                        )}`}
-                      >
-                        {item.jenisPekerjaan}
-                      </span>
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.nilaiTimesheet}
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
-                          item.status
+                          item.statusApproval
                         )}`}
                       >
-                        {item.status}
+                        {item.statusApproval}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        {item.status === "Menunggu Review" && (
+                        {item.statusApproval === "Pending" && (
                           <>
                             <button
                               onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}
@@ -564,27 +521,19 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                             </button>
                           </>
                         )}
-                        {item.status === "Release" && (
-                          <>
-                            <button
-                              onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}
-                              className="px-2 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700"
-                              title="Approve"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}
-                              className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700"
-                              title="Reject"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                        {item.status === "Approve" && (
+                        {(item.statusApproval === "Approve by HRD" || item.statusApproval === "Approve by Manager OPS") && (
                           <span className="text-xs text-gray-500">
-                            No action
+                            Approved
+                          </span>
+                        )}
+                        {item.statusApproval === "Rejected" && (
+                          <span className="text-xs text-red-500">
+                            Rejected
+                          </span>
+                        )}
+                        {item.statusApproval === "Released" && (
+                          <span className="text-xs text-blue-500">
+                            Released
                           </span>
                         )}
                       </div>
@@ -649,7 +598,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
       <ApproveTimesheetDetailModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        timesheetData={selectedTimesheetForDetail}
+        timesheetData={selectedTimesheetForDetail as any}
         onApprove={handleApprove}
         onReject={handleReject}
         onRelease={handleRelease}

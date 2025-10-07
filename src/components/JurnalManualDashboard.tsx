@@ -205,7 +205,7 @@ const JurnalManualDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                JURNAL MANUAL
+                Jurnal Penyesuaian
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">
@@ -564,7 +564,13 @@ const JurnalManualDashboard: React.FC = () => {
                     ...f,
                     details: [
                       ...f.details,
-                      { coa: "", namaCoa: "", keterangan: "", debit: 0, kredit: 0 },
+                      {
+                        coa: "",
+                        namaCoa: "",
+                        keterangan: "",
+                        debit: 0,
+                        kredit: 0,
+                      },
                     ],
                   }))
                 }
