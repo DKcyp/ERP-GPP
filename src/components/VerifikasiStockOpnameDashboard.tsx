@@ -3,6 +3,7 @@ import { Clock, Search, FileSpreadsheet, FileText, FileBarChart, CalendarDays, C
 
 const VerifikasiStockOpnameDashboard: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [kategoriFilter, setKategoriFilter] = useState("all");
 
   const stockOpnameData = [
     { no: 1, kodeBarang: 'BRG001', namaBarang: 'Barang A', kategori: 'Elektronik', hpp: 50000, stokTercatatQty: 10, stokTercatatHPP: 500000, stokFisikQty: 9, stokFisikHPP: 450000, selisihQty: -1, selisihHPP: -50000, keterangan: '-' },
@@ -12,11 +13,19 @@ const VerifikasiStockOpnameDashboard: React.FC = () => {
     { no: 5, kodeBarang: 'BRG005', namaBarang: 'Barang E', kategori: 'Perabot', hpp: 75000, stokTercatatQty: 5, stokTercatatHPP: 375000, stokFisikQty: 4, stokFisikHPP: 300000, selisihQty: -1, selisihHPP: -75000, keterangan: '-' },
   ];
 
-  const totalHPP = stockOpnameData.reduce((sum, item) => sum + item.hpp, 0);
-  const totalStokTercatatQty = stockOpnameData.reduce((sum, item) => sum + item.stokTercatatQty, 0);
-  const totalStokTercatatHPP = stockOpnameData.reduce((sum, item) => sum + item.stokTercatatHPP, 0);
-  const totalStokFisikQty = stockOpnameData.reduce((sum, item) => sum + item.stokFisikQty, 0);
-  const totalStokFisikHPP = stockOpnameData.reduce((sum, item) => sum + item.stokFisikHPP, 0);
+  // Get unique categories for filter options
+  const uniqueCategories = [...new Set(stockOpnameData.map(item => item.kategori))];
+
+  // Filter data based on selected category
+  const filteredData = kategoriFilter === "all" 
+    ? stockOpnameData 
+    : stockOpnameData.filter(item => item.kategori === kategoriFilter);
+
+  const totalHPP = filteredData.reduce((sum, item) => sum + item.hpp, 0);
+  const totalStokTercatatQty = filteredData.reduce((sum, item) => sum + item.stokTercatatQty, 0);
+  const totalStokTercatatHPP = filteredData.reduce((sum, item) => sum + item.stokTercatatHPP, 0);
+  const totalStokFisikQty = filteredData.reduce((sum, item) => sum + item.stokFisikQty, 0);
+  const totalStokFisikHPP = filteredData.reduce((sum, item) => sum + item.stokFisikHPP, 0);
 
   const handleCheckboxChange = (no: number) => {
     setSelectedItems(prevSelected => {
@@ -95,6 +104,26 @@ const VerifikasiStockOpnameDashboard: React.FC = () => {
                 <option>--Pilih Gudang--</option>
                 <option>Gudang Proyek MEDCO</option>
                 <option>Gudang Proyek SSB</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Second Row - Filter Kategori and Search */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label htmlFor="filterKategori" className="block text-sm font-medium text-gray-700 mb-1">Filter Kategori</label>
+              <select
+                id="filterKategori"
+                value={kategoriFilter}
+                onChange={(e) => setKategoriFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              >
+                <option value="all">--Semua Kategori--</option>
+                {uniqueCategories.map((kategori) => (
+                  <option key={kategori} value={kategori}>
+                    {kategori}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="relative">
@@ -196,7 +225,7 @@ const VerifikasiStockOpnameDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {stockOpnameData.map((item) => (
+                {filteredData.map((item) => (
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.no}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -237,7 +266,12 @@ const VerifikasiStockOpnameDashboard: React.FC = () => {
           {/* Pagination and Verifikasi Button */}
           <div className="flex justify-between items-center mt-6">
             <div className="text-sm text-gray-600">
-              Showing 1 to {stockOpnameData.length} of {stockOpnameData.length} entries
+              Showing 1 to {filteredData.length} of {filteredData.length} entries
+              {kategoriFilter !== "all" && (
+                <span className="ml-2 text-blue-600 font-medium">
+                  (filtered by {kategoriFilter})
+                </span>
+              )}
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm">

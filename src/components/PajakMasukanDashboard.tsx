@@ -8,7 +8,6 @@ interface PajakMasukanData {
   namaPengadaan: string;
   tanggal: string;
   vendor: string;
-  npwp: string;
   ppn: number; // Changed to number for better handling (e.g., 0.11 for 11%)
   nilaiProject: number;
   keterangan: string;
@@ -21,7 +20,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Pembelian Bahan Baku A', 
     tanggal: '2024-01-15', 
     vendor: 'PT Supplier Maju', 
-    npwp: '01.234.567.8-901.000',
     ppn: 0.11, 
     nilaiProject: 15000000,
     keterangan: 'Pembelian bahan baku untuk produksi Q1',
@@ -32,7 +30,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Jasa Konsultan IT', 
     tanggal: '2024-02-01', 
     vendor: 'CV Tech Solusi', 
-    npwp: '02.345.678.9-012.000',
     ppn: 0.11, 
     nilaiProject: 25000000,
     keterangan: 'Konsultasi pengembangan sistem ERP',
@@ -43,7 +40,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Sewa Peralatan Kantor', 
     tanggal: '2024-02-20', 
     vendor: 'UD Rental Prima', 
-    npwp: '03.456.789.0-123.000',
     ppn: 0.11, 
     nilaiProject: 5000000,
     keterangan: 'Sewa printer dan komputer untuk 6 bulan',
@@ -54,7 +50,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Pengadaan Mesin Produksi', 
     tanggal: '2024-03-10', 
     vendor: 'PT Manufaktur Jaya', 
-    npwp: '04.567.890.1-234.000',
     ppn: 0.11, 
     nilaiProject: 75000000,
     keterangan: 'Mesin produksi otomatis untuk line A',
@@ -65,7 +60,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Pembelian Perlengkapan Gudang', 
     tanggal: '2024-03-25', 
     vendor: 'Toko Logistik', 
-    npwp: '05.678.901.2-345.000',
     ppn: 0.11, 
     nilaiProject: 8000000,
     keterangan: 'Rak gudang dan peralatan handling',
@@ -76,7 +70,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Jasa Perbaikan Kendaraan', 
     tanggal: '2024-04-05', 
     vendor: 'Bengkel Sejahtera', 
-    npwp: '06.789.012.3-456.000',
     ppn: 0.11, 
     nilaiProject: 3000000,
     keterangan: 'Service rutin kendaraan operasional',
@@ -87,7 +80,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Pembelian Software Akuntansi', 
     tanggal: '2024-04-18', 
     vendor: 'PT Software Cerdas', 
-    npwp: '07.890.123.4-567.000',
     ppn: 0.11, 
     nilaiProject: 12000000,
     keterangan: 'Lisensi software akuntansi untuk 1 tahun',
@@ -98,7 +90,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Pengadaan Seragam Karyawan', 
     tanggal: '2024-05-02', 
     vendor: 'Konveksi Indah', 
-    npwp: '08.901.234.5-678.000',
     ppn: 0.11, 
     nilaiProject: 6000000,
     keterangan: 'Seragam kerja untuk 100 karyawan',
@@ -109,7 +100,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Biaya Pemasaran Digital', 
     tanggal: '2024-05-10', 
     vendor: 'Agency Kreatif', 
-    npwp: '09.012.345.6-789.000',
     ppn: 0.11, 
     nilaiProject: 10000000,
     keterangan: 'Campaign digital marketing Q2 2024',
@@ -120,7 +110,6 @@ const initialDummyData: PajakMasukanData[] = [
     namaPengadaan: 'Pembelian ATK Bulanan', 
     tanggal: '2024-05-25', 
     vendor: 'Stationery Mart', 
-    npwp: '10.123.456.7-890.000',
     ppn: 0.11, 
     nilaiProject: 2000000,
     keterangan: 'Alat tulis kantor untuk bulan Mei',
@@ -139,7 +128,6 @@ const PajakMasukanDashboard: React.FC = () => {
   const filteredData = data.filter(item => {
     const matchesSearch = item.namaPengadaan.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.vendor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          item.npwp.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.keterangan.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.noInvoice.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
@@ -217,7 +205,7 @@ const PajakMasukanDashboard: React.FC = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Cari pengadaan, vendor, NPWP, invoice, atau keterangan..."
+                placeholder="Cari pengadaan, vendor, invoice, atau keterangan..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -263,9 +251,6 @@ const PajakMasukanDashboard: React.FC = () => {
                     Vendor
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    NPWP
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     PPN
                   </th>
                   <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -293,9 +278,6 @@ const PajakMasukanDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {item.vendor}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
-                      {item.npwp}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {item.ppn * 100}% {/* Display PPN as percentage */}
@@ -329,7 +311,7 @@ const PajakMasukanDashboard: React.FC = () => {
                 ))}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
                       Tidak ada data Pajak Masukan yang ditemukan.
                     </td>
                   </tr>

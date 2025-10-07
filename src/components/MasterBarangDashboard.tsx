@@ -70,6 +70,30 @@ const MasterBarangDashboard: React.FC = () => {
       statusBarang: "Aktif",
       statusIzin: "Sudah Memiliki Izin",
     },
+    {
+      no: 5,
+      kodeBarang: "BRG005",
+      namaBarang: "Laptop Dell",
+      kategori: "Elektronik",
+      satuan: "Unit",
+      hargaBeli: "Rp 8.000.000",
+      hargaJual: "Rp 10.000.000",
+      masaExpired: "15-12-2026",
+      statusBarang: "Aktif",
+      statusIzin: "Disetujui",
+    },
+    {
+      no: 6,
+      kodeBarang: "BRG006",
+      namaBarang: "Kabel HDMI",
+      kategori: "Elektronik",
+      satuan: "Pcs",
+      hargaBeli: "Rp 50.000",
+      hargaJual: "Rp 75.000",
+      masaExpired: "20-08-2025",
+      statusBarang: "Aktif",
+      statusIzin: "Disetujui",
+    },
   ]);
 
   const [filters, setFilters] = useState({
@@ -81,6 +105,9 @@ const MasterBarangDashboard: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
+
+  // Get unique categories from data
+  const uniqueCategories = [...new Set(barangData.map(item => item.kategori))];
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -249,9 +276,11 @@ const MasterBarangDashboard: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
               >
                 <option value="">--Pilih Kategori--</option>
-                <option value="alat">Alat</option>
-                <option value="material">Material</option>
-                <option value="elektronik">Elektronik</option>
+                {uniqueCategories.map((kategori) => (
+                  <option key={kategori} value={kategori.toLowerCase()}>
+                    {kategori}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -296,6 +325,65 @@ const MasterBarangDashboard: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {/* Active Filters Indicator */}
+          {(filters.kategori || filters.statusBarang || filters.statusIzin || filters.namaBarang || filters.kodeBarang) && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div className="flex items-center flex-wrap gap-2">
+                <span className="text-sm font-medium text-blue-800">Filter Aktif:</span>
+                {filters.kategori && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    Kategori: {uniqueCategories.find(cat => cat.toLowerCase() === filters.kategori)}
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, kategori: "" }))}
+                      className="ml-2 text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {filters.statusBarang && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Status: {filters.statusBarang}
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, statusBarang: "" }))}
+                      className="ml-2 text-green-600 hover:text-green-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {filters.statusIzin && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Izin: {filters.statusIzin}
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, statusIzin: "" }))}
+                      className="ml-2 text-purple-600 hover:text-purple-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                {(filters.namaBarang || filters.kodeBarang) && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    Pencarian: {filters.namaBarang || filters.kodeBarang}
+                    <button
+                      onClick={() => setFilters(prev => ({ ...prev, namaBarang: "", kodeBarang: "" }))}
+                      className="ml-2 text-gray-600 hover:text-gray-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                <button
+                  onClick={() => setFilters({ namaBarang: "", kodeBarang: "", kategori: "", statusBarang: "", statusIzin: "" })}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Data Table */}
           <div className="overflow-x-auto bg-gray-50 rounded-xl border border-gray-100 shadow-sm mb-6">

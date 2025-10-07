@@ -174,6 +174,7 @@ const PostingJurnalDashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showEntries, setShowEntries] = useState("10");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Check for selected journal number from BukuBesarDashboard
   React.useEffect(() => {
@@ -341,13 +342,18 @@ const PostingJurnalDashboard: React.FC = () => {
       (entry.noJurnal &&
         entry.noJurnal.toLowerCase().includes(searchQuery.toLowerCase())) ||
       entry.keterangan.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.id.toLowerCase().includes(searchQuery.toLowerCase()); // Allow search by ID for pending journals
-    const entryDate = new Date(entry.tanggal);
+      entry.user.toLowerCase().includes(searchQuery.toLowerCase());
+
     const matchesDate =
-      (!startDate || entryDate >= startDate) &&
-      (!endDate || entryDate <= endDate);
-    return matchesSearch && matchesDate;
+      (!startDate || new Date(entry.tanggal) >= startDate) &&
+      (!endDate || new Date(entry.tanggal) <= endDate);
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "posted" && entry.isPosted) ||
+      (statusFilter === "pending" && !entry.isPosted);
+
+    return matchesSearch && matchesDate && matchesStatus;
   });
 
   const selectedJurnalEntries = filteredData.filter((entry) =>
@@ -403,6 +409,28 @@ const PostingJurnalDashboard: React.FC = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="statusFilter"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Filter Status
+              </label>
+              <div className="relative">
+                <select
+                  id="statusFilter"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="block w-full border border-gray-300 rounded-lg pl-4 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none bg-white"
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="posted">Posted</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
             </div>
 

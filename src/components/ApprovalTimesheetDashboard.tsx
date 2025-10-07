@@ -1,110 +1,158 @@
 import React, { useState, useEffect } from "react";
-import ApproveTimesheetModal, {
-  ApproveTimesheetFormData,
-} from "./ApproveTimesheetModal";
-import ApproveTimesheetDetailModal from "./ApproveTimesheetDetailModal";
-import { ArrowUp } from "lucide-react";
+import {
+  ArrowUp,
+} from "lucide-react";
 
-// Local interface for timesheet data mirrored from Operation
-interface ApprovalTimesheetPegawaiData {
+// Define an extended interface for the dashboard table to include all displayed fields
+interface DashboardTimesheetItem {
   id: string;
   no: number;
-  tanggal: string;
-  noSO: string;
-  noSOTurunan: string;
-  namaProyek: string;
-  namaPegawai: string;
+  nama: string;
   kualifikasi: string[];
+  tanggalTimesheet: string;
   mob: string;
   demob: string;
   durasi: string;
+  overtime: string;
+  noSO: string;
+  noHPP: string;
+  lokasi: string;
   zona: string;
-  nilaiTimesheet: string;
-  statusApproval: 'Approve by HRD' | 'Approve by Manager OPS' | 'Pending' | 'Rejected' | 'Released';
+  jenisPekerjaan: string;
+  rate: string;
+  pegawai: "Freelance" | "Pegawai Tetap";
+  status: "Approved" | "Pending" | "Rejected";
+  namaProject: string;
+  namaClient: string;
+  jamAwalKerja: string;
+  jamSelesaiKerja: string;
+  tunjangan: Array<{
+    namaTunjangan: string;
+    rateTunjangan: string;
+    overtime: string;
+  }>;
 }
 
 const ApprovalTimesheetDashboard: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchKualifikasi, setSearchKualifikasi] = useState("");
+  const [searchSOTurunan, setSearchSOTurunan] = useState("");
+  const [searchNamaProject, setSearchNamaProject] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Renamed for clarity
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // New state
-  const [selectedTimesheetForDetail, setSelectedTimesheetForDetail] =
-    useState<ApprovalTimesheetPegawaiData | null>(null); // New state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  // Removed delete modal logic
   const [sortField, setSortField] = useState<
-    keyof ApprovalTimesheetPegawaiData | null
+    keyof DashboardTimesheetItem | null
   >(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Sample data mirrored from Operation timesheet structure
-  const [approvalTimesheetData, setApprovalTimesheetData] = useState<
-    ApprovalTimesheetPegawaiData[]
+  // Sample data matching TimesheetPegawaiDashboard structure
+  const [timesheetPegawaiData, setTimesheetPegawaiData] = useState<
+    DashboardTimesheetItem[]
   >([
     {
       id: "1",
       no: 1,
-      tanggal: "2025-01-15",
-      noSO: "SO-001",
-      noSOTurunan: "SO-001.1",
-      namaProyek: "Proyek Jembatan A",
-      namaPegawai: "Ahmad",
+      nama: "Ahmad",
       kualifikasi: ["Welder", "Fitter"],
+      tanggalTimesheet: "2025-01-15",
       mob: "01-01-2025",
       demob: "05-01-2025",
-      durasi: "4 hari",
+      durasi: "4 Hari",
+      overtime: "8 Jam",
+      noSO: "SO-001",
+      noHPP: "SO-001.1",
+      lokasi: "Jakarta",
       zona: "Zona A",
-      nilaiTimesheet: "Rp 3.000.000",
-      statusApproval: "Approve by HRD",
+      jenisPekerjaan: "On Call",
+      rate: "500,000",
+      pegawai: "Freelance",
+      status: "Approved",
+      namaProject: "Proyek Jembatan A",
+      namaClient: "PT ABC",
+      jamAwalKerja: "08:00",
+      jamSelesaiKerja: "17:00",
+      tunjangan: [
+        { namaTunjangan: "Makan", rateTunjangan: "50,000", overtime: "" },
+      ],
     },
     {
       id: "2",
       no: 2,
-      tanggal: "2025-02-10",
-      noSO: "SO-002",
-      noSOTurunan: "SO-002.1",
-      namaProyek: "Pembangunan Gedung B",
-      namaPegawai: "Budi",
+      nama: "Budi",
       kualifikasi: ["Electrician"],
+      tanggalTimesheet: "2025-02-10",
       mob: "03-02-2025",
       demob: "08-02-2025",
-      durasi: "5 hari",
+      durasi: "5 Hari",
+      overtime: "6 Jam",
+      noSO: "SO-002",
+      noHPP: "SO-002.1",
+      lokasi: "Surabaya",
       zona: "Zona B",
-      nilaiTimesheet: "Rp 2.500.000",
-      statusApproval: "Pending",
+      jenisPekerjaan: "Project",
+      rate: "400,000",
+      pegawai: "Pegawai Tetap",
+      status: "Pending",
+      namaProject: "Pembangunan Gedung B",
+      namaClient: "PT XYZ",
+      jamAwalKerja: "07:00",
+      jamSelesaiKerja: "16:00",
+      tunjangan: [],
     },
     {
       id: "3",
       no: 3,
-      tanggal: "2025-03-12",
-      noSO: "SO-003",
-      noSOTurunan: "SO-003.1",
-      namaProyek: "Instalasi Sistem C",
-      namaPegawai: "Charlie",
+      nama: "Charlie",
       kualifikasi: ["Technician", "Supervisor"],
+      tanggalTimesheet: "2025-03-12",
       mob: "10-03-2025",
       demob: "15-03-2025",
-      durasi: "5 hari",
+      durasi: "5 Hari",
+      overtime: "4 Jam",
+      noSO: "SO-003",
+      noHPP: "SO-003.1",
+      lokasi: "Bandung",
       zona: "Zona C",
-      nilaiTimesheet: "Rp 3.500.000",
-      statusApproval: "Rejected",
+      jenisPekerjaan: "Maintenance",
+      rate: "350,000",
+      pegawai: "Freelance",
+      status: "Rejected",
+      namaProject: "Instalasi Sistem C",
+      namaClient: "PT DEF",
+      jamAwalKerja: "08:30",
+      jamSelesaiKerja: "17:30",
+      tunjangan: [],
     },
     {
       id: "4",
       no: 4,
-      tanggal: "2025-04-08",
-      noSO: "SO-004",
-      noSOTurunan: "SO-004.1",
-      namaProyek: "Renovasi Kantor D",
-      namaPegawai: "Dewi",
+      nama: "Dewi",
       kualifikasi: ["Supervisor"],
+      tanggalTimesheet: "2025-04-08",
       mob: "05-04-2025",
       demob: "10-04-2025",
-      durasi: "5 hari",
+      durasi: "5 Hari",
+      overtime: "2 Jam",
+      noSO: "SO-004",
+      noHPP: "SO-004.1",
+      lokasi: "Medan",
       zona: "Zona D",
-      nilaiTimesheet: "Rp 4.000.000",
-      statusApproval: "Approve by Manager OPS",
+      jenisPekerjaan: "Supervision",
+      rate: "600,000",
+      pegawai: "Pegawai Tetap",
+      status: "Approved",
+      namaProject: "Renovasi Kantor D",
+      namaClient: "PT GHI",
+      jamAwalKerja: "07:30",
+      jamSelesaiKerja: "16:30",
+      tunjangan: [
+        { namaTunjangan: "Transport", rateTunjangan: "100,000", overtime: "" },
+      ],
     },
   ]);
 
@@ -112,31 +160,12 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     setTimeout(() => setAnimateRows(true), 100);
   }, []);
 
-  const handleAddApprovalTimesheet = (formData: ApproveTimesheetFormData) => {
-    const newApprovalTimesheet: ApprovalTimesheetPegawaiData = {
-      id: (approvalTimesheetData.length + 1).toString(),
-      no: approvalTimesheetData.length + 1,
-      tanggal: new Date().toISOString().split('T')[0],
-      noSO: formData.noSO || '',
-      noSOTurunan: formData.noSO + '.1' || '',
-      namaProyek: formData.namaProject || '',
-      namaPegawai: formData.nama || '',
-      kualifikasi: formData.kualifikasi || [],
-      mob: formData.mob || '',
-      demob: formData.demob || '',
-      durasi: formData.durasi || '',
-      zona: formData.lokasi || '',
-      nilaiTimesheet: 'Rp 0',
-      statusApproval: "Pending",
-    };
-
-    setApprovalTimesheetData((prev) => [
-      newApprovalTimesheet,
-      ...prev.map((a) => ({ ...a, no: a.no + 1 })),
-    ]);
+  const handleSearch = () => {
+    // Search functionality - filter is already applied in filteredData
+    setCurrentPage(1);
   };
 
-  const handleSort = (field: keyof ApprovalTimesheetPegawaiData) => {
+  const handleSort = (field: keyof DashboardTimesheetItem) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -145,63 +174,28 @@ const ApprovalTimesheetDashboard: React.FC = () => {
     }
   };
 
-  const handleApprove = (id: string) => {
-    setApprovalTimesheetData((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, statusApproval: "Approve by HRD" as const } : item
-      )
-    );
-    setIsDetailModalOpen(false); // Close modal after action
-    setSelectedTimesheetForDetail(null);
-  };
-
-  const handleReject = (id: string) => {
-    setApprovalTimesheetData((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, statusApproval: "Rejected" as const } : item
-      )
-    );
-    setIsDetailModalOpen(false);
-    setSelectedTimesheetForDetail(null);
-  };
-
-  const handleRelease = (id: string) => {
-    setApprovalTimesheetData((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, statusApproval: "Released" as const } : item
-      )
-    );
-    setIsDetailModalOpen(false);
-    setSelectedTimesheetForDetail(null);
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Approve by HRD":
+      case "Approved":
         return "bg-green-600 text-white";
-      case "Approve by Manager OPS":
-        return "bg-blue-600 text-white";
       case "Pending":
         return "bg-yellow-500 text-white";
       case "Rejected":
         return "bg-red-600 text-white";
-      case "Released":
-        return "bg-blue-500 text-white";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
   // Filter data based on search criteria
-  const filteredData = approvalTimesheetData.filter((item) => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      item.namaPegawai.toLowerCase().includes(searchLower) ||
-      item.kualifikasi.join(", ").toLowerCase().includes(searchLower) || // Search in joined kualifikasi
-      item.noSO.toLowerCase().includes(searchLower) ||
-      item.namaProyek.toLowerCase().includes(searchLower) ||
-      item.zona.toLowerCase().includes(searchLower)
-    );
+  const filteredData = timesheetPegawaiData.filter((item) => {
+    const matchesNoSO = !searchNoSO || item.noSO.toLowerCase().includes(searchNoSO.toLowerCase());
+    const matchesKualifikasi = !searchKualifikasi || item.kualifikasi.some(k => k.toLowerCase().includes(searchKualifikasi.toLowerCase()));
+    const matchesSOTurunan = !searchSOTurunan || item.noHPP.toLowerCase().includes(searchSOTurunan.toLowerCase());
+    const matchesNamaProject = !searchNamaProject || item.namaProject.toLowerCase().includes(searchNamaProject.toLowerCase());
+    const matchesStatus = !selectedStatus || item.status === selectedStatus;
+    
+    return matchesNoSO && matchesKualifikasi && matchesSOTurunan && matchesNamaProject && matchesStatus;
   });
 
   // Sort data
@@ -280,10 +274,10 @@ const ApprovalTimesheetDashboard: React.FC = () => {
             <span className="text-sm text-gray-700">Search:</span>
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchNoSO}
+              onChange={(e) => setSearchNoSO(e.target.value)}
               className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent w-64"
-              placeholder="Search..."
+              placeholder="Search No SO..."
             />
           </div>
         </div>
@@ -311,11 +305,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("namaPegawai")}
+                    onClick={() => handleSort("nama")}
                   >
                     <div className="flex items-center space-x-1">
                       <span>Nama</span>
-                      {sortField === "namaPegawai" && (
+                      {sortField === "nama" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -416,11 +410,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("nilaiTimesheet")}
+                    onClick={() => handleSort("rate")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Nilai Timesheet</span>
-                      {sortField === "nilaiTimesheet" && (
+                      <span>Rate</span>
+                      {sortField === "rate" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -431,11 +425,11 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("statusApproval")}
+                    onClick={() => handleSort("status")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Status Approval</span>
-                      {sortField === "statusApproval" && (
+                      <span>Status</span>
+                      {sortField === "status" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -469,7 +463,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       {item.no}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                      {item.namaPegawai}
+                      {item.nama}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {item.kualifikasi.join(", ")}
@@ -490,30 +484,28 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                       {item.zona}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
-                      {item.nilaiTimesheet}
+                      Rp {item.rate}
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColor(
-                          item.statusApproval
+                          item.status
                         )}`}
                       >
-                        {item.statusApproval}
+                        {item.status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        {item.statusApproval === "Pending" && (
+                        {item.status === "Pending" && (
                           <>
                             <button
-                              onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}
                               className="px-2 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700"
                               title="Approve"
                             >
                               Approve
                             </button>
                             <button
-                              onClick={() => { setSelectedTimesheetForDetail(item); setIsDetailModalOpen(true); }}
                               className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700"
                               title="Reject"
                             >
@@ -521,19 +513,14 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                             </button>
                           </>
                         )}
-                        {(item.statusApproval === "Approve by HRD" || item.statusApproval === "Approve by Manager OPS") && (
-                          <span className="text-xs text-gray-500">
+                        {item.status === "Approved" && (
+                          <span className="text-xs text-green-600 font-medium">
                             Approved
                           </span>
                         )}
-                        {item.statusApproval === "Rejected" && (
-                          <span className="text-xs text-red-500">
+                        {item.status === "Rejected" && (
+                          <span className="text-xs text-red-600 font-medium">
                             Rejected
-                          </span>
-                        )}
-                        {item.statusApproval === "Released" && (
-                          <span className="text-xs text-blue-500">
-                            Released
                           </span>
                         )}
                       </div>
@@ -587,22 +574,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Add Timesheet Modal (existing) */}
-      <ApproveTimesheetModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSave={handleAddApprovalTimesheet}
-      />
-
-      {/* New Approve Timesheet Detail Modal */}
-      <ApproveTimesheetDetailModal
-        isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        timesheetData={selectedTimesheetForDetail as any}
-        onApprove={handleApprove}
-        onReject={handleReject}
-        onRelease={handleRelease}
-      />
+      {/* No modals needed for approval timesheet dashboard */}
     </div>
   );
 };

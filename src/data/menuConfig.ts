@@ -1887,10 +1887,26 @@ export const qhseMenu: MenuSection[] = [
 
 export const accountingMenu: MenuSection[] = [
   {
-    title: "Main Dashboard",
-    icon: "Home",
-    items: [],
-    directPath: "/accounting/dashboard",
+    title: "Dashboard",
+    icon: "LayoutDashboard",
+    subSections: [
+      {
+        title: "Dashboard",
+        icon: "LayoutDashboard",
+        items: [
+          {
+            title: "Dashboard Accounting",
+            icon: "Calculator",
+            path: "/accounting/dashboard",
+          },
+          {
+            title: "Dashboard Tax",
+            icon: "Scale",
+            path: "/tax/dashboard",
+          },
+        ],
+      },
+    ],
   },
   {
     title: "Accounting",
@@ -2050,13 +2066,6 @@ export const accountingMenu: MenuSection[] = [
     title: "Tax",
     icon: "Scale", // Icon for tax section
     subSections: [
-      {
-        title: "Tax Dashboard",
-        icon: "LayoutDashboard",
-        items: [
-          { title: "Dashboard", icon: "BarChart3", path: "/tax/dashboard" },
-        ],
-      },
       {
         title: "PPN",
         icon: "Scale",
