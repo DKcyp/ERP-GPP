@@ -72,11 +72,11 @@ const GAKendaraanMasterDashboard: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleSave = (item: { merek: string; platNomor: string; tahunPembelian: number; warna: string }) => {
+  const handleSave = (item: { merek: string; platNomor: string; tahunPembelian: number; warna: string; noRangka: string; noMesin: string }) => {
     // Khusus modal tambah kendaraan (merek/plat)
     if (!editingItem) {
       // Add new
-      setData(prev => [{ id: `${Date.now()}`, ...item, noRangka: '', noMesin: '' }, ...prev]);
+      setData(prev => [{ id: `${Date.now()}`, ...item }, ...prev]);
       setCurrentPage(1);
     }
     setIsModalOpen(false);

@@ -15,6 +15,7 @@ interface StockItem {
   kategori: string;
   satuan: string;
   serialNumber: string;
+  gudang: string;
   stock: number;
 }
 
@@ -89,6 +90,8 @@ const StockBarangDashboard: React.FC = () => {
   const [selectedGudang, setSelectedGudang] = useState<string>("ALL");
   const [searchBarang, setSearchBarang] = useState("");
   const [searchKodeBarang, setSearchKodeBarang] = useState("");
+  const [searchSerialNumber, setSearchSerialNumber] = useState("");
+  const [searchGudang, setSearchGudang] = useState("");
 
   const allStockItems = [
     {
@@ -98,6 +101,7 @@ const StockBarangDashboard: React.FC = () => {
       kategori: "Sparepart",
       satuan: "PCS",
       serialNumber: "SN-BM10-001",
+      gudang: "Gudang Utama",
       stock: 500,
     },
     {
@@ -107,6 +111,7 @@ const StockBarangDashboard: React.FC = () => {
       kategori: "Sparepart",
       satuan: "PCS",
       serialNumber: "SN-BRG6203-002",
+      gudang: "Gudang A",
       stock: 300,
     },
     {
@@ -116,6 +121,7 @@ const StockBarangDashboard: React.FC = () => {
       kategori: "Pelumas",
       satuan: "Kg",
       serialNumber: "SN-GSG-003",
+      gudang: "Gudang B",
       stock: 200,
     },
     {
@@ -125,6 +131,7 @@ const StockBarangDashboard: React.FC = () => {
       kategori: "Material",
       satuan: "Kg",
       serialNumber: "SN-WRE6013-004",
+      gudang: "Gudang Utama",
       stock: 150,
     },
     {
@@ -134,6 +141,7 @@ const StockBarangDashboard: React.FC = () => {
       kategori: "Pelumas",
       satuan: "Liter",
       serialNumber: "SN-HOA68-005",
+      gudang: "Gudang A",
       stock: 250,
     },
   ];
@@ -149,9 +157,17 @@ const StockBarangDashboard: React.FC = () => {
         searchBarang === "" ||
         item.namaBarang.toLowerCase().includes(searchBarang.toLowerCase());
 
-      return matchKodeBarang && matchNamaBarang;
+      const matchSerialNumber =
+        searchSerialNumber === "" ||
+        item.serialNumber.toLowerCase().includes(searchSerialNumber.toLowerCase());
+
+      const matchGudang =
+        searchGudang === "" ||
+        item.gudang.toLowerCase().includes(searchGudang.toLowerCase());
+
+      return matchKodeBarang && matchNamaBarang && matchSerialNumber && matchGudang;
     });
-  }, [searchBarang, searchKodeBarang]);
+  }, [searchBarang, searchKodeBarang, searchSerialNumber, searchGudang]);
 
   const stockItems = filteredStockItems;
 
@@ -195,7 +211,7 @@ const StockBarangDashboard: React.FC = () => {
               <Search className="h-5 w-5 mr-2 text-blue-600" />
               Panel Pencarian Laporan Stok
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
               <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   🔢 Kode Barang
@@ -244,11 +260,37 @@ const StockBarangDashboard: React.FC = () => {
                   <option>Liter</option>
                 </select>
               </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  🔢 Serial Number
+                </label>
+                <input
+                  type="text"
+                  value={searchSerialNumber}
+                  onChange={(e) => setSearchSerialNumber(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                  placeholder="Cari serial number"
+                />
+                <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  🏢 Gudang
+                </label>
+                <input
+                  type="text"
+                  value={searchGudang}
+                  onChange={(e) => setSearchGudang(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                  placeholder="Cari gudang"
+                />
+                <Search className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
+              </div>
             </div>
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-600">
-                {(searchKodeBarang || searchBarang) && (
-                  <div className="flex items-center space-x-2">
+                {(searchKodeBarang || searchBarang || searchSerialNumber || searchGudang) && (
+                  <div className="flex items-center space-x-2 flex-wrap">
                     <span>📊 Hasil: {stockItems.length} item</span>
                     {searchKodeBarang && (
                       <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
@@ -260,6 +302,16 @@ const StockBarangDashboard: React.FC = () => {
                         Nama: "{searchBarang}"
                       </span>
                     )}
+                    {searchSerialNumber && (
+                      <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                        Serial: "{searchSerialNumber}"
+                      </span>
+                    )}
+                    {searchGudang && (
+                      <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs">
+                        Gudang: "{searchGudang}"
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -267,6 +319,8 @@ const StockBarangDashboard: React.FC = () => {
                 onClick={() => {
                   setSearchBarang("");
                   setSearchKodeBarang("");
+                  setSearchSerialNumber("");
+                  setSearchGudang("");
                 }}
                 className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
               >
@@ -334,6 +388,9 @@ const StockBarangDashboard: React.FC = () => {
                     Serial Number
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Gudang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Stock
                   </th>
                 </tr>
@@ -364,7 +421,12 @@ const StockBarangDashboard: React.FC = () => {
                         {item.serialNumber}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {item.stock}
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {item.gudang}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        {item.stock.toLocaleString('id-ID')}
                       </td>
                     </tr>
                   );

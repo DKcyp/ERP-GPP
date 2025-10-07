@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { X, Trash2, Plus } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Trash2, Plus, Search, ChevronDown } from "lucide-react";
 
 type Mode = "create" | "view" | "edit";
 
@@ -35,11 +35,16 @@ interface EntryPenerimaanBarangModalProps {
 
 // Data master PO-Supplier untuk auto-select
 const masterPoSupplier = [
-  { noPo: 'PO001', namaSupplier: 'Supplier A' },
-  { noPo: 'PO002', namaSupplier: 'Supplier B' },
-  { noPo: 'PO003', namaSupplier: 'Supplier C' },
-  { noPo: 'PO004', namaSupplier: 'Supplier D' },
-  { noPo: 'PO005', namaSupplier: 'Supplier E' },
+  { noPo: 'PO001', namaSupplier: 'PT Supplier Alpha' },
+  { noPo: 'PO002', namaSupplier: 'CV Beta Jaya' },
+  { noPo: 'PO003', namaSupplier: 'PT Gamma Konstruksi' },
+  { noPo: 'PO004', namaSupplier: 'UD Delta Material' },
+  { noPo: 'PO005', namaSupplier: 'PT Epsilon Trading' },
+  { noPo: 'PO006', namaSupplier: 'CV Zeta Hardware' },
+  { noPo: 'PO007', namaSupplier: 'PT Eta Building' },
+  { noPo: 'PO008', namaSupplier: 'UD Theta Supply' },
+  { noPo: 'PO009', namaSupplier: 'PT Iota Machinery' },
+  { noPo: 'PO010', namaSupplier: 'CV Kappa Tools' },
 ];
 
 // Fungsi untuk generate No. RFI otomatis
@@ -99,6 +104,25 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
     },
   ]);
 
+  // State untuk search functionality
+  const [searchPO, setSearchPO] = useState(headerForm.noPo || "");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   const isReadOnly = mode === "view";
@@ -136,7 +160,15 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
       noPo: noPo,
       namaSupplier: selectedSupplier ? selectedSupplier.namaSupplier : ""
     }));
+    setSearchPO(noPo);
+    setIsDropdownOpen(false);
   };
+
+  // Filter PO berdasarkan search
+  const filteredPoOptions = masterPoSupplier.filter(item => 
+    item.noPo.toLowerCase().includes(searchPO.toLowerCase()) ||
+    item.namaSupplier.toLowerCase().includes(searchPO.toLowerCase())
+  );
 
   const resolvedTanggal =
     headerData?.tanggalPenerimaan ?? new Date().toISOString().split("T")[0];
@@ -195,25 +227,52 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                 readOnly
               />
             </div>
-            <div>
+            <div className="relative">
               <label
                 htmlFor="noPo"
                 className="block text-xs font-medium text-gray-700 mb-1"
               >
                 No PO
               </label>
-              <select
-                id="noPo"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
-                value={headerForm.noPo}
-                onChange={(e) => handlePoChange(e.target.value)}
-                disabled={isReadOnly}
-              >
-                <option value="">--Pilih No PO--</option>
-                {masterPoSupplier.map(item => (
-                  <option key={item.noPo} value={item.noPo}>{item.noPo} - {item.namaSupplier}</option>
-                ))}
-              </select>
+              <div className="relative" ref={dropdownRef}>
+                <input
+                  type="text"
+                  id="noPo"
+                  className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
+                  value={searchPO || headerForm.noPo}
+                  onChange={(e) => {
+                    setSearchPO(e.target.value);
+                    setIsDropdownOpen(true);
+                  }}
+                  onFocus={() => setIsDropdownOpen(true)}
+                  placeholder="Cari No PO atau Supplier..."
+                  readOnly={isReadOnly}
+                  disabled={isReadOnly}
+                />
+                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                
+                {/* Dropdown Options */}
+                {isDropdownOpen && !isReadOnly && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {filteredPoOptions.length > 0 ? (
+                      filteredPoOptions.map(item => (
+                        <div
+                          key={item.noPo}
+                          className="px-3 py-2 hover:bg-blue-50 cursor-pointer text-xs border-b border-gray-100 last:border-b-0"
+                          onClick={() => handlePoChange(item.noPo)}
+                        >
+                          <div className="font-medium text-gray-900">{item.noPo}</div>
+                          <div className="text-gray-600">{item.namaSupplier}</div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-xs text-gray-500">
+                        Tidak ada PO yang ditemukan
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <label

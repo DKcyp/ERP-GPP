@@ -30,6 +30,9 @@ interface StockItem {
   stokMinimal: number;
   lokasi: string;
   serialNumber: string;
+  noRFI: string;
+  noMutasiBarang: string;
+  nomorPenerimaanManual: string;
   lastUpdate: string;
   status: "Normal" | "Low Stock" | "Critical" | "Out of Stock";
 }
@@ -51,10 +54,10 @@ const KartuStockDashboard: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"overview" | "detail">("overview");
-
+  const [viewMode, setViewMode] = useState<"overview" | "detail" | "add">("overview");
+  
   // Data dummy untuk kartu stock
-  const stockData: StockItem[] = [
+  const initialStockData: StockItem[] = [
     {
       id: "1",
       kodeBarang: "BRG-001",
@@ -68,6 +71,9 @@ const KartuStockDashboard: React.FC = () => {
       stokMinimal: 100,
       lokasi: "Gudang A-01",
       serialNumber: "SN-BSI-001",
+      noRFI: "RFI-2025-001",
+      noMutasiBarang: "MB-2025-001",
+      nomorPenerimaanManual: "PM-2025-001",
       lastUpdate: "2025-01-20 14:30",
       status: "Normal",
     },
@@ -84,6 +90,9 @@ const KartuStockDashboard: React.FC = () => {
       stokMinimal: 75,
       lokasi: "Gudang A-02",
       serialNumber: "SN-SMN-002",
+      noRFI: "RFI-2025-002",
+      noMutasiBarang: "MB-2025-002",
+      nomorPenerimaanManual: "PM-2025-002",
       lastUpdate: "2025-01-20 13:15",
       status: "Low Stock",
     },
@@ -100,6 +109,9 @@ const KartuStockDashboard: React.FC = () => {
       stokMinimal: 20,
       lokasi: "Gudang B-01",
       serialNumber: "SN-CAT-003",
+      noRFI: "RFI-2025-003",
+      noMutasiBarang: "MB-2025-003",
+      nomorPenerimaanManual: "PM-2025-003",
       lastUpdate: "2025-01-20 12:45",
       status: "Critical",
     },
@@ -116,10 +128,15 @@ const KartuStockDashboard: React.FC = () => {
       stokMinimal: 25,
       lokasi: "Gudang C-01",
       serialNumber: "SN-PVC-004",
+      noRFI: "RFI-2025-004",
+      noMutasiBarang: "MB-2025-004",
+      nomorPenerimaanManual: "PM-2025-004",
       lastUpdate: "2025-01-20 11:20",
       status: "Out of Stock",
     },
   ];
+
+  const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
 
   // Data pergerakan stock
   const stockMovements: StockMovement[] = [
@@ -332,6 +349,13 @@ const KartuStockDashboard: React.FC = () => {
             </div>
 
             <div className="flex space-x-3">
+              <button 
+                onClick={() => setViewMode("add")}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl shadow-sm text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Tambah Stock
+              </button>
               <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
                 <Download className="h-4 w-4 mr-2" />
                 Export
@@ -364,6 +388,15 @@ const KartuStockDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Lokasi
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No RFI
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No Mutasi Barang
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No Penerimaan Manual
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Stok Awal
@@ -406,6 +439,15 @@ const KartuStockDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.lokasi}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.noRFI}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.noMutasiBarang}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.nomorPenerimaanManual}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.stokAwal} {item.satuan}
@@ -536,6 +578,157 @@ const KartuStockDashboard: React.FC = () => {
                   </table>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Stock Modal */}
+        {viewMode === "add" && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center p-6 border-b">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Tambah Stock Barang
+                </h3>
+                <button
+                  onClick={() => setViewMode("overview")}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Kode Barang
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: BRG-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nama Barang
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: Besi Beton 12mm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Kategori
+                    </label>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <option value="">Pilih Kategori</option>
+                      <option value="Material Konstruksi">Material Konstruksi</option>
+                      <option value="Material Finishing">Material Finishing</option>
+                      <option value="Material Plumbing">Material Plumbing</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Satuan
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: Batang"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lokasi
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: Gudang A-01"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Serial Number
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: SN-BSI-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      No RFI
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: RFI-2025-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      No Mutasi Barang
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: MB-2025-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nomor Penerimaan Manual
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Contoh: PM-2025-001"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Stok Awal
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Stok Minimal
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("overview")}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Simpan
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

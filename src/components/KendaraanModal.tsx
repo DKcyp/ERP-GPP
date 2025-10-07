@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 interface KendaraanModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { merek: string; platNomor: string; tahunPembelian: number; warna: string }) => void;
-  initialData?: { merek: string; platNomor: string; tahunPembelian: number; warna: string } | null;
+  onSave: (data: { merek: string; platNomor: string; tahunPembelian: number; warna: string; noRangka: string; noMesin: string }) => void;
+  initialData?: { merek: string; platNomor: string; tahunPembelian: number; warna: string; noRangka?: string; noMesin?: string } | null;
   title?: string;
   submitLabel?: string;
 }
@@ -14,6 +14,8 @@ const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave
   const [platNomor, setPlatNomor] = useState(initialData?.platNomor ?? '');
   const [tahunPembelian, setTahunPembelian] = useState(initialData?.tahunPembelian ?? 0);
   const [warna, setWarna] = useState(initialData?.warna ?? '');
+  const [noRangka, setNoRangka] = useState(initialData?.noRangka ?? '');
+  const [noMesin, setNoMesin] = useState(initialData?.noMesin ?? '');
 
   useEffect(() => {
     if (isOpen) {
@@ -21,6 +23,8 @@ const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave
       setPlatNomor(initialData?.platNomor ?? '');
       setTahunPembelian(initialData?.tahunPembelian ?? 0);
       setWarna(initialData?.warna ?? '');
+      setNoRangka(initialData?.noRangka ?? '');
+      setNoMesin(initialData?.noMesin ?? '');
     }
   }, [isOpen, initialData]);
 
@@ -29,7 +33,14 @@ const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!merek.trim() || !platNomor.trim() || !tahunPembelian || !warna.trim()) return;
-    onSave({ merek: merek.trim(), platNomor: platNomor.trim(), tahunPembelian, warna: warna.trim() });
+    onSave({ 
+      merek: merek.trim(), 
+      platNomor: platNomor.trim(), 
+      tahunPembelian, 
+      warna: warna.trim(),
+      noRangka: noRangka.trim(),
+      noMesin: noMesin.trim()
+    });
   };
 
   return (
@@ -77,6 +88,26 @@ const KendaraanModal: React.FC<KendaraanModalProps> = ({ isOpen, onClose, onSave
               onChange={(e) => setWarna(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Contoh: Hitam"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">No. Rangka</label>
+            <input
+              type="text"
+              value={noRangka}
+              onChange={(e) => setNoRangka(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Contoh: MHFCV26EXHJ123456"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">No. Mesin</label>
+            <input
+              type="text"
+              value={noMesin}
+              onChange={(e) => setNoMesin(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Contoh: 4G15MIVEC123456"
             />
           </div>
           <div className="flex items-center justify-end space-x-2 pt-2">
