@@ -1083,6 +1083,11 @@ export const hrdMenu: MenuSection[] = [
         icon: "FileText",
         path: "/hrd/monitoring/no-surat",
       },
+      {
+        title: "Monitoring HPP",
+        icon: "Calculator",
+        path: "/hrd/monitoring/hpp",
+      },
     ],
   },
   createGeneralMenu("hrd"),
@@ -1943,7 +1948,7 @@ export const accountingMenu: MenuSection[] = [
             path: "/accounting/laporan-jurnal",
           },
           {
-            title: "Jurnal Rasio",
+            title: "Rasio Keuangan",
             icon: "Calculator",
             path: "/accounting/jurnal-rasio",
           },
@@ -2018,6 +2023,22 @@ export const accountingMenu: MenuSection[] = [
           },
         ],
       },
+      {
+        title: "Approval",
+        icon: "CheckCircle",
+        items: [
+          {
+            title: "Approval Reimburse",
+            icon: "UserCheck",
+            path: "/accounting/approval/reimburse",
+          },
+          {
+            title: "Approval Voucher",
+            icon: "Ticket",
+            path: "/accounting/approval/voucher",
+          },
+        ],
+      },
     ],
   },
   {
@@ -2075,6 +2096,22 @@ export const accountingMenu: MenuSection[] = [
             title: "Rekonsiliasi Pajak Keluaran",
             icon: "XSquare",
             path: "/accounting/reconcilliation/unmatch",
+          },
+        ],
+      },
+      {
+        title: "Approval",
+        icon: "CheckCircle",
+        items: [
+          {
+            title: "Approval Reimburse",
+            icon: "UserCheck",
+            path: "/tax/approval/reimburse",
+          },
+          {
+            title: "Approval Voucher",
+            icon: "Ticket",
+            path: "/tax/approval/voucher",
           },
         ],
       },

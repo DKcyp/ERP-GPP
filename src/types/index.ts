@@ -42,6 +42,7 @@ export interface EntryPurchasingRequestFormData {
   noPR: string;
   noSO: string;
   noSistemACTS: string;
+  noPBG: string; // Re-added field for No. PBG
   customer: string; // New field for Customer
   noPo: string; // New field for No. Po
   jenis: "Barang" | "Jasa"; // Changed from 'kategori' to 'jenis'

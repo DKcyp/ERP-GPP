@@ -187,6 +187,7 @@ import SuratIzinBekerjaDashboard from "./SuratIzinBekerjaDashboard";
 import NoSuratPerjanjianDashboard from "./NoSuratPerjanjianDashboard";
 import HRDMonitoringDokumenDashboard from "./HRDMonitoringDokumenDashboard";
 import MonitoringNoSuratDashboard from "./MonitoringNoSuratDashboard";
+import MonitoringHPPPage from "./MonitoringHPPPage";
 
 // QHSE Dashboards
 import QHSENewDashboard from "./QHSENewDashboard";
@@ -1019,6 +1020,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/hrd/monitoring/no-surat") {
       return <MonitoringNoSuratDashboard />;
+    }
+    if (currentPage === "/hrd/monitoring/hpp") {
+      return <MonitoringHPPPage />;
     }
     if (currentPage === "/hrd/penilaian/daftar") {
       return <DaftarPenilaianDashboard />;
@@ -2160,6 +2164,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     if (currentPage === "/accounting/reconcilliation/unmatch") {
       return <ReconcilliationUnmatchDashboard />;
     }
+    if (currentPage === "/accounting/approval/reimburse") {
+      return <FinanceApprovalReimburseDashboard />;
+    }
+    if (currentPage === "/accounting/approval/voucher") {
+      return <FinanceApprovalVoucherDashboard />;
+    }
 
     // Tax Routes
     if (currentPage === "/tax/dashboard") {
@@ -2233,6 +2243,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/tax/voucher-lainya/monitoring") {
       return <MonitoringVoucherDashboard />;
+    }
+    if (currentPage === "/tax/approval/reimburse") {
+      return <FinanceApprovalReimburseDashboard />;
+    }
+    if (currentPage === "/tax/approval/voucher") {
+      return <FinanceApprovalVoucherDashboard />;
     }
 
     // Procon Routes

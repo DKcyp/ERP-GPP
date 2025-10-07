@@ -12,9 +12,7 @@ interface EntryPurchasingRequestModalProps {
 const EntryPurchasingRequestModal: React.FC<
   EntryPurchasingRequestModalProps
 > = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState<
-    EntryPurchasingRequestFormData & { noPBG: string }
-  >({
+  const [formData, setFormData] = useState<EntryPurchasingRequestFormData>({
     tanggalPR: "",
     noPR: "",
     noSO: "",
@@ -297,7 +295,12 @@ const EntryPurchasingRequestModal: React.FC<
         {/* Jenis */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="jenis" className="block text-sm font-medium text-textSecondary mb-1">Jenis</label>
+            <label
+              htmlFor="jenis"
+              className="block text-sm font-medium text-textSecondary mb-1"
+            >
+              Jenis
+            </label>
             <select
               id="jenis"
               name="jenis"

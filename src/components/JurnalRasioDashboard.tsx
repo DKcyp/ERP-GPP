@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Clock, FileSpreadsheet, FileDown, FileText } from 'lucide-react';
+import React, { useState } from "react";
+import { Clock, FileSpreadsheet, FileDown, FileText } from "lucide-react";
 
 interface RasioData {
   kategori: string;
@@ -13,12 +13,13 @@ interface RasioData {
 }
 
 const JurnalRasioDashboard: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState('2024');
+  const [selectedYear, setSelectedYear] = useState("2024");
 
   const rasioData: RasioData[] = [
     {
-      kategori: 'Current Ratio (Aset Lancar / Hutang Lancar)',
-      deskripsi: 'Menunjukkan perbandingan aset lancar dengan hutang lancar\nSemakin tinggi semakin baik likuiditasnya',
+      kategori: "Current Ratio (Aset Lancar / Hutang Lancar)",
+      deskripsi:
+        "Menunjukkan perbandingan aset lancar dengan hutang lancar\nSemakin tinggi semakin baik likuiditasnya",
       januari: 1,
       februari: 1,
       maret: 1,
@@ -27,8 +28,9 @@ const JurnalRasioDashboard: React.FC = () => {
       juni: 1,
     },
     {
-      kategori: 'Working Capital / Modal Kerja (Aset Lancar - Hutang Lancar)',
-      deskripsi: 'Mengukur modal kerja bersih, perlu dibandingkan per tahun\nSemakin besar semakin baik',
+      kategori: "Working Capital / Modal Kerja (Aset Lancar - Hutang Lancar)",
+      deskripsi:
+        "Mengukur modal kerja bersih, perlu dibandingkan per tahun\nSemakin besar semakin baik",
       januari: 6841572030,
       februari: 6841572030,
       maret: 6841572030,
@@ -37,8 +39,8 @@ const JurnalRasioDashboard: React.FC = () => {
       juni: 6841572030,
     },
     {
-      kategori: 'Assets-to-Equity Ratio (Total Assets / Modal)',
-      deskripsi: 'Mengukur total aset terhadap modal',
+      kategori: "Assets-to-Equity Ratio (Total Assets / Modal)",
+      deskripsi: "Mengukur total aset terhadap modal",
       januari: 1,
       februari: 1,
       maret: 1,
@@ -47,8 +49,9 @@ const JurnalRasioDashboard: React.FC = () => {
       juni: 1,
     },
     {
-      kategori: 'Debt Ratio (Total Kewajiban / Total Assets)',
-      deskripsi: 'Mengukur besarnya dana yang berasal dari utang\nSemakin kecil rasionya, maka semakin aman (solvable)',
+      kategori: "Debt Ratio (Total Kewajiban / Total Assets)",
+      deskripsi:
+        "Mengukur besarnya dana yang berasal dari utang\nSemakin kecil rasionya, maka semakin aman (solvable)",
       januari: 0,
       februari: 0,
       maret: 0,
@@ -57,8 +60,9 @@ const JurnalRasioDashboard: React.FC = () => {
       juni: 0,
     },
     {
-      kategori: 'Debt-to-Equity Ratio (Total Hutang/ Modal)',
-      deskripsi: 'Mengukur utang yang dimiliki dengan modal sendiri\nSemakin kecil utang akan semakin baik dan aman\nRasio wajar menurut pajak 1:4',
+      kategori: "Debt-to-Equity Ratio (Total Hutang/ Modal)",
+      deskripsi:
+        "Mengukur utang yang dimiliki dengan modal sendiri\nSemakin kecil utang akan semakin baik dan aman\nRasio wajar menurut pajak 1:4",
       januari: 2,
       februari: 2,
       maret: 2,
@@ -70,17 +74,17 @@ const JurnalRasioDashboard: React.FC = () => {
 
   const formatNumber = (num: number) => {
     if (num >= 1000000000) {
-      return (num / 1000000000).toFixed(1) + 'B';
+      return (num / 1000000000).toFixed(1) + "B";
     } else if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
+      return (num / 1000000).toFixed(1) + "M";
     } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
+      return (num / 1000).toFixed(1) + "K";
     }
     return num.toString();
   };
 
   const getRowColor = (index: number) => {
-    return index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+    return index % 2 === 0 ? "bg-white" : "bg-gray-50";
   };
 
   return (
@@ -91,19 +95,25 @@ const JurnalRasioDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                JURNAL RASIO KEUANGAN
+                Rasio Keuangan KEUANGAN
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Accounting</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Accounting
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Jurnal</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Jurnal
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Jurnal Rasio</span>
+                <span className="text-blue-600 font-medium">
+                  Rasio Keuangan
+                </span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -115,7 +125,9 @@ const JurnalRasioDashboard: React.FC = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tahun
+                </label>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
@@ -145,10 +157,12 @@ const JurnalRasioDashboard: React.FC = () => {
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center space-x-3">
               <FileText className="h-6 w-6 text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Rasio Keuangan Tahun {selectedYear}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Rasio Keuangan Tahun {selectedYear}
+              </h2>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-green-700 text-white">
@@ -178,7 +192,12 @@ const JurnalRasioDashboard: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {rasioData.map((item, index) => (
-                  <tr key={index} className={`${getRowColor(index)} hover:bg-blue-50 transition-colors`}>
+                  <tr
+                    key={index}
+                    className={`${getRowColor(
+                      index
+                    )} hover:bg-blue-50 transition-colors`}
+                  >
                     <td className="px-4 py-4 border-r border-gray-200">
                       <div>
                         <div className="font-semibold text-gray-900 text-sm mb-1">
@@ -190,22 +209,32 @@ const JurnalRasioDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
-                      {item.januari >= 1000000 ? formatNumber(item.januari) : item.januari}
+                      {item.januari >= 1000000
+                        ? formatNumber(item.januari)
+                        : item.januari}
                     </td>
                     <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
-                      {item.februari >= 1000000 ? formatNumber(item.februari) : item.februari}
+                      {item.februari >= 1000000
+                        ? formatNumber(item.februari)
+                        : item.februari}
                     </td>
                     <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
-                      {item.maret >= 1000000 ? formatNumber(item.maret) : item.maret}
+                      {item.maret >= 1000000
+                        ? formatNumber(item.maret)
+                        : item.maret}
                     </td>
                     <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
-                      {item.april >= 1000000 ? formatNumber(item.april) : item.april}
+                      {item.april >= 1000000
+                        ? formatNumber(item.april)
+                        : item.april}
                     </td>
                     <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200">
                       {item.mei >= 1000000 ? formatNumber(item.mei) : item.mei}
                     </td>
                     <td className="px-4 py-4 text-center text-sm font-medium text-gray-900">
-                      {item.juni >= 1000000 ? formatNumber(item.juni) : item.juni}
+                      {item.juni >= 1000000
+                        ? formatNumber(item.juni)
+                        : item.juni}
                     </td>
                   </tr>
                 ))}
@@ -219,7 +248,9 @@ const JurnalRasioDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Likuiditas</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Likuiditas
+                </h3>
                 <p className="text-sm text-gray-600 mt-1">Current Ratio</p>
               </div>
               <div className="text-3xl font-bold text-green-600">1.0</div>
@@ -232,7 +263,9 @@ const JurnalRasioDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Solvabilitas</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Solvabilitas
+                </h3>
                 <p className="text-sm text-gray-600 mt-1">Debt Ratio</p>
               </div>
               <div className="text-3xl font-bold text-blue-600">0.0</div>
@@ -245,7 +278,9 @@ const JurnalRasioDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Modal Kerja</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Modal Kerja
+                </h3>
                 <p className="text-sm text-gray-600 mt-1">Working Capital</p>
               </div>
               <div className="text-3xl font-bold text-purple-600">6.8B</div>
