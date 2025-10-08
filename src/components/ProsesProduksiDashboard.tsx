@@ -28,6 +28,7 @@ interface ProsesProduksiData {
   tanggalApprovalTeknisi?: string;
   tanggalApprovalBAST?: string;
   tanggalFinalApproval?: string;
+  tglSubmitPI?: string;
   fileUrl?: string;
   fileName?: string;
 }
@@ -72,6 +73,7 @@ const ProsesProduksiDashboard: React.FC = () => {
       statusReport: "Approved",
       tanggalApprovalTeknisi: "23-02-2025",
       tanggalApprovalBAST: "26-02-2025",
+      tglSubmitPI: "01-02-2025",
     },
     {
       id: "2",
@@ -87,6 +89,7 @@ const ProsesProduksiDashboard: React.FC = () => {
       statusReport: "Pending",
       tanggalApprovalTeknisi: "-",
       tanggalApprovalBAST: "-",
+      tglSubmitPI: "10-01-2025",
     },
     {
       id: "3",
@@ -102,6 +105,7 @@ const ProsesProduksiDashboard: React.FC = () => {
       statusReport: "Approved",
       tanggalApprovalTeknisi: "03-03-2025",
       tanggalApprovalBAST: "07-03-2025",
+      tglSubmitPI: "15-01-2025",
     },
     {
       id: "4",
@@ -117,6 +121,7 @@ const ProsesProduksiDashboard: React.FC = () => {
       statusReport: "Revisi",
       tanggalApprovalTeknisi: "-",
       tanggalApprovalBAST: "-",
+      tglSubmitPI: "-",
     },
   ]);
 
@@ -573,6 +578,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                     Tgl Submit ke PC
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    Tanggal Submit PI
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Nilai Produksi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
@@ -621,6 +629,9 @@ const ProsesProduksiDashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-2 text-gray-600">
                       {item.tanggalFinalApproval || "-"}
+                    </td>
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.tglSubmitPI || "-"}
                     </td>
                     <td className="px-3 py-2 text-gray-900 font-medium">
                       {item.nilaiProduksi}
