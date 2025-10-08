@@ -1,16 +1,9 @@
 import React, { useState } from "react";
 import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Calendar,
   Download,
   RefreshCw,
   ChevronRight,
   X,
-  BarChart3,
-  PieChart,
-  LineChart,
 } from "lucide-react";
 
 interface BiayaItem {
@@ -189,10 +182,9 @@ const sampleBiayaData: BiayaItem[] = [
 ];
 
 const GrafikLabaRugiDashboard: React.FC = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("2024");
+  const [selectedPeriod] = useState<string>("2024");
   const [selectedBiaya, setSelectedBiaya] = useState<BiayaItem | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [chartType, setChartType] = useState<"bar" | "line">("bar");
 
   const bulanNames = [
     "Jan",
@@ -259,7 +251,7 @@ const GrafikLabaRugiDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section - Style Master Barang */}
+      {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
@@ -279,144 +271,17 @@ const GrafikLabaRugiDashboard: React.FC = () => {
                 <span className="text-blue-600 font-medium">Grafik Pergerakan Biaya</span>
               </nav>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <Calendar className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString("id-ID", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-              })}</span>
-            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <DollarSign className="h-6 w-6 text-blue-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-500">
-                Total Biaya
-              </span>
-            </div>
-            <div className="text-2xl font-bold text-gray-900">
-              {formatCurrency(totalBiaya)}
-            </div>
-            <div className="flex items-center mt-2 text-sm text-gray-500">
-              <TrendingUp className="h-4 w-4 mr-1 text-green-500" />
-              <span>Tahun {selectedPeriod}</span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-purple-100 rounded-xl">
-                <BarChart3 className="h-6 w-6 text-purple-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-500">
-                Kategori Biaya
-              </span>
-            </div>
-            <div className="text-2xl font-bold text-gray-900">
-              {sampleBiayaData.length}
-            </div>
-            <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>Item Biaya</span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-green-100 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-green-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-500">
-                Biaya Tertinggi
-              </span>
-            </div>
-            <div className="text-lg font-bold text-gray-900">
-              {sampleBiayaData[0].namaBiaya}
-            </div>
-            <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>{formatCurrency(sampleBiayaData[0].total)}</span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-orange-100 rounded-xl">
-                <PieChart className="h-6 w-6 text-orange-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-500">
-                Rata-rata/Bulan
-              </span>
-            </div>
-            <div className="text-2xl font-bold text-gray-900">
-              {formatCurrency(totalBiaya / 12)}
-            </div>
-            <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>Per Bulan</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Filter & Controls */}
+        {/* Chart Section */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Periode
-                </label>
-                <select
-                  value={selectedPeriod}
-                  onChange={(e) => setSelectedPeriod(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="2024">2024</option>
-                  <option value="2023">2023</option>
-                  <option value="2022">2022</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tipe Grafik
-                </label>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setChartType("bar")}
-                    className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
-                      chartType === "bar"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    <BarChart3 className="h-4 w-4" />
-                    <span>Bar</span>
-                  </button>
-                  <button
-                    onClick={() => setChartType("line")}
-                    className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
-                      chartType === "line"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    <LineChart className="h-4 w-4" />
-                    <span>Line</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">
+              Grafik Pergerakan Biaya Per Bulan
+            </h2>
             <div className="flex space-x-3">
               <button
                 onClick={() => handleExport("Excel")}
@@ -438,18 +303,10 @@ const GrafikLabaRugiDashboard: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Chart Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
-            Grafik Pergerakan Biaya Per Bulan
-          </h2>
 
           {/* Chart Area */}
           <div className="overflow-x-auto">
             <div className="min-w-[800px]">
-              {/* Y-axis labels */}
               <div className="flex">
                 <div className="w-32 flex flex-col justify-between pr-4 text-right text-sm text-gray-500">
                   <span>{formatCurrency(maxValue)}</span>
@@ -459,55 +316,87 @@ const GrafikLabaRugiDashboard: React.FC = () => {
                   <span>Rp 0</span>
                 </div>
 
-                {/* Chart bars */}
                 <div className="flex-1">
-                  <div className="h-96 flex items-end space-x-4 border-l border-b border-gray-300 pl-4 pb-4">
-                    {bulanNames.map((bulan, idx) => (
-                      <div key={idx} className="flex-1 flex flex-col items-center">
-                        <div className="w-full relative" style={{ height: "100%" }}>
-                          {sampleBiayaData.map((biaya, biayaIdx) => {
-                            const monthlyData = getMonthlyData(biaya);
-                            const value = monthlyData[idx];
-                            const heightPercent = (value / maxValue) * 100;
-                            const colors = [
-                              "bg-blue-500",
-                              "bg-purple-500",
-                              "bg-green-500",
-                              "bg-orange-500",
-                              "bg-pink-500",
-                              "bg-indigo-500",
-                              "bg-yellow-500",
-                              "bg-red-500",
-                            ];
+                  <div className="h-96 relative border-l border-b border-gray-300 pl-4 pb-4">
+                    <svg className="w-full h-full" viewBox="0 0 1000 400" preserveAspectRatio="none">
+                      {/* Grid lines */}
+                      {[0, 0.25, 0.5, 0.75, 1].map((factor, idx) => (
+                        <line
+                          key={idx}
+                          x1="0"
+                          y1={400 - 400 * factor}
+                          x2="1000"
+                          y2={400 - 400 * factor}
+                          stroke="#e5e7eb"
+                          strokeWidth="1"
+                        />
+                      ))}
 
-                            return (
-                              <div
-                                key={biayaIdx}
-                                className={`absolute bottom-0 ${
-                                  colors[biayaIdx % colors.length]
-                                } hover:opacity-80 cursor-pointer transition-all rounded-t-lg group`}
-                                style={{
-                                  height: `${heightPercent}%`,
-                                  width: `${100 / sampleBiayaData.length}%`,
-                                  left: `${(biayaIdx * 100) / sampleBiayaData.length}%`,
-                                }}
-                                onClick={() => handleBiayaClick(biaya)}
-                                title={`${biaya.namaBiaya}: ${formatCurrency(value)}`}
-                              >
-                                <div className="hidden group-hover:block absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap z-10">
-                                  <div className="font-semibold">{biaya.namaBiaya}</div>
-                                  <div>{formatCurrency(value)}</div>
-                                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-                                    <div className="border-4 border-transparent border-t-gray-900"></div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <span className="text-xs text-gray-600 mt-2">{bulan}</span>
-                      </div>
-                    ))}
+                      {/* Lines for each biaya */}
+                      {sampleBiayaData.map((biaya, biayaIdx) => {
+                        const monthlyData = getMonthlyData(biaya);
+                        const colors = [
+                          "#3b82f6",
+                          "#a855f7",
+                          "#22c55e",
+                          "#f97316",
+                          "#ec4899",
+                          "#6366f1",
+                          "#eab308",
+                          "#ef4444",
+                        ];
+
+                        const points = monthlyData
+                          .map((value, idx) => {
+                            const x = (idx / 11) * 1000;
+                            const y = 400 - (value / maxValue) * 400;
+                            return `${x},${y}`;
+                          })
+                          .join(" ");
+
+                        return (
+                          <g key={biayaIdx}>
+                            <polyline
+                              points={points}
+                              fill="none"
+                              stroke={colors[biayaIdx % colors.length]}
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="hover:stroke-[5] cursor-pointer transition-all"
+                              onClick={() => handleBiayaClick(biaya)}
+                            />
+
+                            {monthlyData.map((value, idx) => {
+                              const x = (idx / 11) * 1000;
+                              const y = 400 - (value / maxValue) * 400;
+                              return (
+                                <circle
+                                  key={idx}
+                                  cx={x}
+                                  cy={y}
+                                  r="5"
+                                  fill={colors[biayaIdx % colors.length]}
+                                  className="hover:r-8 cursor-pointer transition-all"
+                                  onClick={() => handleBiayaClick(biaya)}
+                                >
+                                  <title>{`${biaya.namaBiaya}: ${formatCurrency(value)}`}</title>
+                                </circle>
+                              );
+                            })}
+                          </g>
+                        );
+                      })}
+                    </svg>
+
+                    {/* X-axis labels */}
+                    <div className="flex justify-between mt-2">
+                      {bulanNames.map((bulan, idx) => (
+                        <span key={idx} className="text-xs text-gray-600">
+                          {bulan}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -533,9 +422,7 @@ const GrafikLabaRugiDashboard: React.FC = () => {
                   onClick={() => handleBiayaClick(biaya)}
                   className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <div
-                    className={`w-4 h-4 rounded ${colors[idx % colors.length]}`}
-                  ></div>
+                  <div className={`w-4 h-4 rounded ${colors[idx % colors.length]}`}></div>
                   <span className="text-sm text-gray-700">{biaya.namaBiaya}</span>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </button>
@@ -547,9 +434,7 @@ const GrafikLabaRugiDashboard: React.FC = () => {
         {/* Table Section */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">
-              Detail Biaya Per Kategori
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900">Detail Biaya Per Kategori</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -623,18 +508,13 @@ const GrafikLabaRugiDashboard: React.FC = () => {
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr>
-                  <td
-                    colSpan={3}
-                    className="px-6 py-4 text-sm font-bold text-gray-900"
-                  >
+                  <td colSpan={3} className="px-6 py-4 text-sm font-bold text-gray-900">
                     TOTAL
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
                     {formatCurrency(totalBiaya)}
                   </td>
-                  <td className="px-6 py-4 text-sm font-bold text-gray-900 text-center">
-                    100%
-                  </td>
+                  <td className="px-6 py-4 text-sm font-bold text-gray-900 text-center">100%</td>
                   <td></td>
                 </tr>
               </tfoot>
@@ -649,9 +529,7 @@ const GrafikLabaRugiDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Detail Biaya
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900">Detail Biaya</h2>
                 <p className="text-sm text-gray-600 mt-1">
                   {selectedBiaya.namaBiaya} ({selectedBiaya.kode})
                 </p>
@@ -689,18 +567,13 @@ const GrafikLabaRugiDashboard: React.FC = () => {
 
               {/* Monthly Breakdown */}
               <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Rincian Per Bulan
-                </h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Rincian Per Bulan</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {bulanNames.map((bulan, idx) => {
                     const monthlyData = getMonthlyData(selectedBiaya);
                     const value = monthlyData[idx];
                     return (
-                      <div
-                        key={idx}
-                        className="bg-white rounded-lg p-4 border border-gray-200"
-                      >
+                      <div key={idx} className="bg-white rounded-lg p-4 border border-gray-200">
                         <div className="text-sm text-gray-600 mb-1">{bulan}</div>
                         <div className="text-lg font-bold text-gray-900">
                           {formatCurrency(value)}
@@ -713,15 +586,11 @@ const GrafikLabaRugiDashboard: React.FC = () => {
 
               {/* Trend Analysis */}
               <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">
-                  Analisis Trend
-                </h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Analisis Trend</h3>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Kategori:</span>
-                    <span className="font-semibold text-gray-900">
-                      {selectedBiaya.kategori}
-                    </span>
+                    <span className="font-semibold text-gray-900">{selectedBiaya.kategori}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Bulan Tertinggi:</span>

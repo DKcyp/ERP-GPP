@@ -37,7 +37,8 @@ interface ReqrutmenData {
     | "Pending"
     | "Accepted"
     | "Reject"
-    | "Move to talent poll";
+    | "Move to talent poll"
+    | "Ajukan Kontrak";
   keterangan: string; // Added for modal compatibility
 }
 
@@ -80,6 +81,8 @@ const ReqrutmenDashboard: React.FC = () => {
         return "Rejected";
       case "Move to talent poll":
         return "Move To Talent Pool";
+      case "Ajukan Kontrak":
+        return "Ajukan Kontrak";
       default:
         return "Pending";
     }
@@ -97,6 +100,8 @@ const ReqrutmenDashboard: React.FC = () => {
         return "Reject";
       case "Move To Talent Pool":
         return "Move to talent poll";
+      case "Ajukan Kontrak":
+        return "Ajukan Kontrak";
       default:
         return "Pending";
     }
@@ -194,6 +199,8 @@ const ReqrutmenDashboard: React.FC = () => {
     switch (status) {
       case "Accepted":
         return { label: "Lolos", cls: "bg-green-100 text-green-800" };
+      case "Ajukan Kontrak":
+        return { label: "Ajukan Kontrak", cls: "bg-blue-100 text-blue-800" };
       case "Reject":
         return { label: "Tidak Lolos", cls: "bg-red-100 text-red-800" };
       case "Move to talent poll":
@@ -245,6 +252,8 @@ const ReqrutmenDashboard: React.FC = () => {
     switch (status) {
       case "Pending":
         return "bg-yellow-500 text-white";
+      case "Ajukan Kontrak":
+        return "bg-blue-500 text-white";
       case "Accepted":
         return "bg-green-600 text-white";
       case "Reject":

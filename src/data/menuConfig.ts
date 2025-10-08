@@ -1807,11 +1807,11 @@ export const qhseMenu: MenuSection[] = [
         icon: "Computer",
         path: "/qhse/monitoring-personnel-report",
       },
-      {
-        title: "Matrix Training",
-        icon: "BookOpen",
-        path: "/qhse/monitoring-personnel/training-matrix",
-      },
+      // {
+      //   title: "Matrix Training",
+      //   icon: "BookOpen",
+      //   path: "/qhse/monitoring-personnel/training-matrix",
+      // },
       {
         title: "Logbook RAT",
         icon: "BookOpen",

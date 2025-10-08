@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Search, Pencil, Trash2, PlusCircle } from "lucide-react";
+import { Search, Pencil, Trash2, PlusCircle, Upload, X, FileText } from "lucide-react";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 
 interface SalesOrder {
@@ -50,6 +50,11 @@ interface POItem {
   absorv?: string; // Will be calculated automatically
   pengembalianNilaiKontrak?: string;
   reminder?: string;
+  poAttachment?: {
+    fileName: string;
+    fileSize: string;
+    uploadDate: string;
+  };
 }
 
 const initialData: POItem[] = [
@@ -147,6 +152,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [currentPO, setCurrentPO] = useState<Partial<POItem>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   // Function to calculate absorv automatically from pengembalian nilai kontrak
   const calculateAbsorv = (pengembalianNilaiKontrak: string): string => {
@@ -190,12 +196,14 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const handleAddPO = () => {
     setIsEditing(false);
     setCurrentPO({});
+    setUploadedFile(null);
     setShowAddEditModal(true);
   };
 
   const handleEditPO = (item: POItem) => {
     setIsEditing(true);
     setCurrentPO(item);
+    setUploadedFile(null);
     setShowAddEditModal(true);
   };
 
@@ -210,6 +218,66 @@ const MonitoringNilaiPOPage: React.FC = () => {
       setShowDeleteConfirm(false);
       setPoToDelete(null);
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type (PDF, DOC, DOCX, XLS, XLSX, JPG, PNG)
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png'
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        alert('Format file tidak didukung. Harap upload PDF, DOC, DOCX, XLS, XLSX, JPG, atau PNG.');
+        return;
+      }
+      
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran file terlalu besar. Maksimal 10MB.');
+        return;
+      }
+      
+      setUploadedFile(file);
+      
+      // Create attachment info
+      const fileSize = (file.size / 1024).toFixed(2) + ' KB';
+      if (file.size > 1024 * 1024) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+        setCurrentPO({
+          ...currentPO,
+          poAttachment: {
+            fileName: file.name,
+            fileSize: fileSizeMB,
+            uploadDate: new Date().toISOString().split('T')[0]
+          }
+        });
+      } else {
+        setCurrentPO({
+          ...currentPO,
+          poAttachment: {
+            fileName: file.name,
+            fileSize: fileSize,
+            uploadDate: new Date().toISOString().split('T')[0]
+          }
+        });
+      }
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+    setCurrentPO({
+      ...currentPO,
+      poAttachment: undefined
+    });
   };
 
   const handleSavePO = () => {
@@ -245,10 +313,12 @@ const MonitoringNilaiPOPage: React.FC = () => {
         commencementFinishDate: currentPO.commencementFinishDate || "",
         absorv: currentPO.absorv || "",
         pengembalianNilaiKontrak: currentPO.pengembalianNilaiKontrak || "",
+        poAttachment: currentPO.poAttachment,
       };
       setData([...data, newPO]);
     }
     setShowAddEditModal(false);
+    setUploadedFile(null);
   };
 
   return (
@@ -627,6 +697,68 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
                   readOnly
                 />
+              </div>
+              
+              {/* Upload PO Attachment */}
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload PO / Attachment
+                </label>
+                
+                {!uploadedFile && !currentPO.poAttachment ? (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                    <input
+                      type="file"
+                      id="po-upload"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
+                      onChange={handleFileUpload}
+                    />
+                    <label
+                      htmlFor="po-upload"
+                      className="cursor-pointer flex flex-col items-center"
+                    >
+                      <Upload className="h-12 w-12 text-gray-400 mb-2" />
+                      <span className="text-sm text-gray-600 mb-1">
+                        Klik untuk upload atau drag & drop
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 10MB)
+                      </span>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <FileText className="h-8 w-8 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {uploadedFile?.name || currentPO.poAttachment?.fileName}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {uploadedFile
+                              ? `${(uploadedFile.size / 1024).toFixed(2)} KB`
+                              : currentPO.poAttachment?.fileSize}
+                            {currentPO.poAttachment?.uploadDate && (
+                              <span> • Uploaded: {currentPO.poAttachment.uploadDate}</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveFile}
+                        className="text-red-600 hover:text-red-800 transition-colors"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <p className="mt-2 text-xs text-gray-500">
+                  * Upload dokumen PO untuk referensi dan dokumentasi
+                </p>
               </div>
             </div>
             <div className="mt-6 flex justify-end space-x-3">

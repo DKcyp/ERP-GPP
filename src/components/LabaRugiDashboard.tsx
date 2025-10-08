@@ -27,6 +27,7 @@ const LabaRugiDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2025-07"]); // Default: Juli 2025
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [levelFilter, setLevelFilter] = useState<"all" | "induk">("all"); // Filter level: all atau induk
 
   // Form state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -269,10 +270,12 @@ const LabaRugiDashboard: React.FC = () => {
     },
   ];
 
-  // Filtered data based on search term (uraian)
-  const filteredData = data.filter((item) =>
-    item.uraian.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filtered data based on search term (uraian) and level
+  const filteredData = data.filter((item) => {
+    const matchesSearch = item.uraian.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLevel = levelFilter === "all" || (levelFilter === "induk" && item.level === 0);
+    return matchesSearch && matchesLevel;
+  });
 
   // Combined filtered data including new entries
   const combinedFilteredData = [
@@ -986,9 +989,11 @@ const LabaRugiDashboard: React.FC = () => {
     },
   ];
 
-  const filteredPLRows = plRows.filter((r) =>
-    r.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPLRows = plRows.filter((r) => {
+    const matchesSearch = r.label.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLevel = levelFilter === "all" || (levelFilter === "induk" && r.level === 0);
+    return matchesSearch && matchesLevel;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -1041,6 +1046,16 @@ const LabaRugiDashboard: React.FC = () => {
                 {selectedMonths.length}
               </div>
             </button>
+            
+            {/* Filter Level */}
+            <select
+              value={levelFilter}
+              onChange={(e) => setLevelFilter(e.target.value as "all" | "induk")}
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700"
+            >
+              <option value="all">All Level</option>
+              <option value="induk">Level Induk</option>
+            </select>
           </div>
 
           <div className="flex justify-end items-center w-full">
