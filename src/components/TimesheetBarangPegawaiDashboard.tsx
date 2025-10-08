@@ -8,6 +8,7 @@ import {
   ArrowUp,
   Check,
   X,
+  Eye,
 } from "lucide-react";
 import TimesheetBarangPegawaiModal, {
   TimesheetFormData,
@@ -126,6 +127,7 @@ const TimesheetBarangPegawaiDashboard: React.FC<
   const [search, setSearch] = useState("");
   const [selectedPegawai, setSelectedPegawai] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingData, setEditingData] = useState<TimesheetFormData | null>(null);
   const [animateRows, setAnimateRows] = useState(false);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -280,6 +282,42 @@ const TimesheetBarangPegawaiDashboard: React.FC<
       setSortField(field);
       setSortDirection("asc");
     }
+  };
+
+  const handleDetailClick = (item: PegawaiData) => {
+    // Helper function to convert DD-MM-YYYY to yyyy-MM-dd
+    const convertDateFormat = (dateStr: string): string => {
+      if (!dateStr || dateStr === "-") return "";
+      const [day, month, year] = dateStr.split("-");
+      return `${year}-${month}-${day}`;
+    };
+
+    // Convert PegawaiData to TimesheetFormData for modal
+    const formData: TimesheetFormData = {
+      noSO: item.noSO,
+      noSOTurunan: item.noSOTurunan,
+      namaProyek: item.namaProyek,
+      nilaiTimesheet: item.nilaiTimesheet,
+      mob: convertDateFormat(item.mob),
+      demob: convertDateFormat(item.demob),
+      pegawai: [
+        {
+          id: item.id,
+          nama: item.namaPegawai,
+          kualifikasi: item.kualifikasi.join(", "),
+          zona: item.zona,
+          hargaAkhir: item.nilaiTimesheet,
+          rate: 0,
+          startKerja: convertDateFormat(item.mob),
+          finishKerja: convertDateFormat(item.demob),
+          overtime: 0,
+          file: null,
+        },
+      ],
+      barang: [],
+    };
+    setEditingData(formData);
+    setIsModalOpen(true);
   };
 
   const handleSave = (data: TimesheetFormData) => {
@@ -645,22 +683,32 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                     </td>
                     {role !== "procon" && (
                       <td className="px-4 py-3 text-sm text-gray-900">
-                        {item.statusApproval === "Pending" && (
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handleApprove(item)}
-                              className="flex items-center space-x-1 text-green-600 hover:text-green-800 transition-colors"
-                            >
-                              <Check className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handleReject(item)}
-                              className="flex items-center space-x-1 text-red-600 hover:text-red-800 transition-colors"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleDetailClick(item)}
+                            className="flex items-center space-x-1 px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                            title="Lihat Detail"
+                          >
+                            <Eye className="h-4 w-4" />
+                            <span className="text-xs">Detail</span>
+                          </button>
+                          {item.statusApproval === "Pending" && (
+                            <>
+                              <button
+                                onClick={() => handleApprove(item)}
+                                className="flex items-center space-x-1 text-green-600 hover:text-green-800 transition-colors"
+                              >
+                                <Check className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleReject(item)}
+                                className="flex items-center space-x-1 text-red-600 hover:text-red-800 transition-colors"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -673,8 +721,12 @@ const TimesheetBarangPegawaiDashboard: React.FC<
 
       <TimesheetBarangPegawaiModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingData(null);
+        }}
         onSave={handleSave}
+        initialData={editingData}
       />
 
       {isConfirmModalOpen && selectedItem && (

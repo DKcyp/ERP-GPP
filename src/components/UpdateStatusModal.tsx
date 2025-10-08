@@ -8,6 +8,7 @@ export interface UpdateStatusFormData {
     | "Rejected"
     | "Move To Talent Pool"
     | "Aktif"
+    | "Ajukan Kontrak"
     | "";
   keterangan: string;
 }
@@ -24,7 +25,8 @@ interface UpdateStatusModalProps {
       | "Accepted"
       | "Rejected"
       | "Move To Talent Pool"
-      | "Aktif";
+      | "Aktif"
+      | "Ajukan Kontrak";
   } | null;
 }
 
@@ -34,6 +36,7 @@ const statusOptions: Array<NonNullable<UpdateStatusFormData["status"]>> = [
   "Rejected",
   "Move To Talent Pool",
   "Aktif",
+  "Ajukan Kontrak",
 ];
 
 const UpdateStatusModal: React.FC<UpdateStatusModalProps> = ({

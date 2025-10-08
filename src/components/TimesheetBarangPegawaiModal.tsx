@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export interface PegawaiRow {
   id: string;
@@ -95,6 +95,22 @@ const TimesheetBarangPegawaiModal: React.FC<
     pegawai: initialData?.pegawai || [],
     barang: initialData?.barang || [],
   });
+
+  // Update form when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        noSO: initialData.noSO || "",
+        noSOTurunan: initialData.noSOTurunan || "",
+        namaProyek: initialData.namaProyek || "",
+        nilaiTimesheet: initialData.nilaiTimesheet || "",
+        mob: initialData.mob || "",
+        demob: initialData.demob || "",
+        pegawai: initialData.pegawai || [],
+        barang: initialData.barang || [],
+      });
+    }
+  }, [initialData]);
 
   const addPegawai = () => {
     setForm((prev) => ({

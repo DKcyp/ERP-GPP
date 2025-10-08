@@ -171,6 +171,7 @@ const ReqrutmenDashboard: React.FC = () => {
     "Accepted",
     "Reject",
     "Move to talent poll",
+    "Ajukan Kontrak",
   ];
 
   // Nama options from current dataset
@@ -307,15 +308,20 @@ const ReqrutmenDashboard: React.FC = () => {
 
     // Numeric compare for 'no'
     if (sortField === "no") {
-      const aNum = typeof aValue === "number" ? aValue : parseFloat(aValue ?? 0);
-      const bNum = typeof bValue === "number" ? bValue : parseFloat(bValue ?? 0);
+      const aNum =
+        typeof aValue === "number" ? aValue : parseFloat(aValue ?? 0);
+      const bNum =
+        typeof bValue === "number" ? bValue : parseFloat(bValue ?? 0);
       return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
     }
 
     // String compare for others, safe for undefined
     const aStr = (aValue ?? "").toString().toLowerCase();
     const bStr = (bValue ?? "").toString().toLowerCase();
-    const cmp = aStr.localeCompare(bStr, undefined, { numeric: true, sensitivity: "base" });
+    const cmp = aStr.localeCompare(bStr, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
     return sortDirection === "asc" ? cmp : -cmp;
   });
 
@@ -345,7 +351,8 @@ const ReqrutmenDashboard: React.FC = () => {
     fileUrl?: string;
   }) => {
     setReqrutmenData((prev) => {
-      const nextNo = prev.length > 0 ? Math.max(...prev.map((p) => p.no)) + 1 : 1;
+      const nextNo =
+        prev.length > 0 ? Math.max(...prev.map((p) => p.no)) + 1 : 1;
       const newItem: ReqrutmenData = {
         id: Date.now().toString(),
         no: nextNo,

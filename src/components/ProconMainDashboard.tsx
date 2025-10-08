@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, FileText, BarChart2, ClipboardList, FileSpreadsheet } from 'lucide-react';
+import { Clock, FileText, BarChart2, ClipboardList, FileSpreadsheet, TrendingUp } from 'lucide-react';
 
 const ProconOverviewDashboard: React.FC = () => {
   // Dashboard summary data
@@ -9,6 +9,11 @@ const ProconOverviewDashboard: React.FC = () => {
   const totalSOTercreate = 150;
   const totalSOComplete = 120;
   const totalSO = totalSOTercreate + totalSOComplete; // sync total with breakdown
+  
+  // Calculate total Laba Rugi from all projects
+  const totalLabaRugi = 285000000; // Total laba rugi proyek (mock)
+  const projectProfit = 8; // Jumlah proyek profit
+  const projectLoss = 2; // Jumlah proyek loss
 
   const proformaInvoiceMonthly = [
     { month: 'Jan', amount: 120_000_000 },
@@ -96,7 +101,7 @@ const ProconOverviewDashboard: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Proforma Invoice */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center space-x-4">
@@ -134,6 +139,20 @@ const ProconOverviewDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600 font-medium">Total Sales Order</p>
                 <p className="text-2xl md:text-3xl font-bold text-gray-900">{totalSO}</p>
                 <p className="text-sm text-gray-500">SO Tercreate - SO Complete: <span className="font-medium">{totalSOTercreate} - {totalSOComplete}</span></p>
+              </div>
+            </div>
+          </div>
+
+          {/* Laba Rugi Proyek */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-green-100 rounded-xl">
+                <TrendingUp className="h-8 w-8 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Laba Rugi Proyek</p>
+                <p className="text-2xl md:text-3xl font-bold text-green-600">Rp {totalLabaRugi.toLocaleString('id-ID')}</p>
+                <p className="text-sm text-gray-500">Profit: <span className="font-medium text-green-600">{projectProfit}</span> | Loss: <span className="font-medium text-red-600">{projectLoss}</span></p>
               </div>
             </div>
           </div>

@@ -3,11 +3,14 @@ import { X, Save } from 'lucide-react';
 
 interface PajakMasukanData {
   id: number;
-  namaPengadaan: string;
   tanggal: string; // YYYY-MM-DD format for date input
-  vendor: string;
-  ppn: number; // e.g., 0.11 for 11%
-  nilaiProject: number;
+  namaSupplier: string;
+  nomorPO: string;
+  nomorInvoice: string;
+  nomorFP: string;
+  nilaiDPP: number;
+  nilaiPPN: number;
+  keterangan: string;
 }
 
 interface EntryPajakMasukanModalProps {
@@ -25,40 +28,49 @@ const EntryPajakMasukanModal: React.FC<EntryPajakMasukanModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<Omit<PajakMasukanData, 'id'> & { id?: number }>({
     id: undefined,
-    namaPengadaan: '',
     tanggal: '',
-    vendor: '',
-    ppn: 0.11, // Default to 11%
-    nilaiProject: 0,
+    namaSupplier: '',
+    nomorPO: '',
+    nomorInvoice: '',
+    nomorFP: '',
+    nilaiDPP: 0,
+    nilaiPPN: 0,
+    keterangan: '',
   });
 
   useEffect(() => {
     if (itemToEdit) {
       setFormData({
         id: itemToEdit.id,
-        namaPengadaan: itemToEdit.namaPengadaan,
         tanggal: itemToEdit.tanggal,
-        vendor: itemToEdit.vendor,
-        ppn: itemToEdit.ppn,
-        nilaiProject: itemToEdit.nilaiProject,
+        namaSupplier: itemToEdit.namaSupplier,
+        nomorPO: itemToEdit.nomorPO,
+        nomorInvoice: itemToEdit.nomorInvoice,
+        nomorFP: itemToEdit.nomorFP,
+        nilaiDPP: itemToEdit.nilaiDPP,
+        nilaiPPN: itemToEdit.nilaiPPN,
+        keterangan: itemToEdit.keterangan,
       });
     } else {
       setFormData({
         id: undefined,
-        namaPengadaan: '',
         tanggal: '',
-        vendor: '',
-        ppn: 0.11,
-        nilaiProject: 0,
+        namaSupplier: '',
+        nomorPO: '',
+        nomorInvoice: '',
+        nomorFP: '',
+        nilaiDPP: 0,
+        nilaiPPN: 0,
+        keterangan: '',
       });
     }
   }, [itemToEdit, isOpen]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'nilaiProject' || name === 'ppn' ? parseFloat(value) || 0 : value,
+      [name]: name === 'nilaiDPP' || name === 'nilaiPPN' ? parseFloat(value) || 0 : value,
     }));
   };
 
@@ -93,20 +105,6 @@ const EntryPajakMasukanModal: React.FC<EntryPajakMasukanModalProps> = ({
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="namaPengadaan" className="block text-sm font-medium text-textSecondary mb-1">
-              Nama Pengadaan
-            </label>
-            <input
-              type="text"
-              id="namaPengadaan"
-              name="namaPengadaan"
-              value={formData.namaPengadaan}
-              onChange={handleChange}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
-              required
-            />
-          </div>
-          <div>
             <label htmlFor="tanggal" className="block text-sm font-medium text-textSecondary mb-1">
               Tanggal
             </label>
@@ -121,49 +119,103 @@ const EntryPajakMasukanModal: React.FC<EntryPajakMasukanModalProps> = ({
             />
           </div>
           <div>
-            <label htmlFor="vendor" className="block text-sm font-medium text-textSecondary mb-1">
-              Vendor
+            <label htmlFor="namaSupplier" className="block text-sm font-medium text-textSecondary mb-1">
+              Nama Supplier
             </label>
             <input
               type="text"
-              id="vendor"
-              name="vendor"
-              value={formData.vendor}
+              id="namaSupplier"
+              name="namaSupplier"
+              value={formData.namaSupplier}
               onChange={handleChange}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
               required
             />
           </div>
           <div>
-            <label htmlFor="ppn" className="block text-sm font-medium text-textSecondary mb-1">
-              PPN (%)
+            <label htmlFor="nomorPO" className="block text-sm font-medium text-textSecondary mb-1">
+              Nomor PO
             </label>
             <input
-              type="number"
-              id="ppn"
-              name="ppn"
-              value={formData.ppn * 100} // Display as percentage
-              onChange={(e) => setFormData(prev => ({ ...prev, ppn: parseFloat(e.target.value) / 100 || 0 }))}
+              type="text"
+              id="nomorPO"
+              name="nomorPO"
+              value={formData.nomorPO}
+              onChange={handleChange}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
-              min="0"
-              max="100"
-              step="0.01"
               required
             />
           </div>
           <div>
-            <label htmlFor="nilaiProject" className="block text-sm font-medium text-textSecondary mb-1">
-              Nilai Project (IDR)
+            <label htmlFor="nomorInvoice" className="block text-sm font-medium text-textSecondary mb-1">
+              Nomor Invoice
+            </label>
+            <input
+              type="text"
+              id="nomorInvoice"
+              name="nomorInvoice"
+              value={formData.nomorInvoice}
+              onChange={handleChange}
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="nomorFP" className="block text-sm font-medium text-textSecondary mb-1">
+              Nomor FP
+            </label>
+            <input
+              type="text"
+              id="nomorFP"
+              name="nomorFP"
+              value={formData.nomorFP}
+              onChange={handleChange}
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="nilaiDPP" className="block text-sm font-medium text-textSecondary mb-1">
+              Nilai DPP (IDR)
             </label>
             <input
               type="number"
-              id="nilaiProject"
-              name="nilaiProject"
-              value={formData.nilaiProject}
+              id="nilaiDPP"
+              name="nilaiDPP"
+              value={formData.nilaiDPP}
               onChange={handleChange}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
               min="0"
               required
+            />
+          </div>
+          <div>
+            <label htmlFor="nilaiPPN" className="block text-sm font-medium text-textSecondary mb-1">
+              Nilai PPN (IDR)
+            </label>
+            <input
+              type="number"
+              id="nilaiPPN"
+              name="nilaiPPN"
+              value={formData.nilaiPPN}
+              onChange={handleChange}
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
+              min="0"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="keterangan" className="block text-sm font-medium text-textSecondary mb-1">
+              Keterangan
+            </label>
+            <textarea
+              id="keterangan"
+              name="keterangan"
+              value={formData.keterangan}
+              onChange={handleChange}
+              rows={3}
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-text focus:ring-primary focus:border-primary transition-all duration-200"
+              placeholder="Masukkan keterangan (opsional)"
             />
           </div>
           <div className="flex justify-end space-x-3 pt-4 border-t border-border">

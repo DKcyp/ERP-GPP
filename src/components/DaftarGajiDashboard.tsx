@@ -26,6 +26,9 @@ const DaftarGajiDashboard: React.FC = () => {
     id: string;
     no: number;
     periode: string; // YYYY-MM
+    totalTunjanganProyek: string; // formatted Rp
+    gapokTeknisi: string; // formatted Rp
+    totalTahap: string; // formatted Rp
     total: string; // formatted Rp
     rows: GajiRow[];
   };
@@ -34,7 +37,10 @@ const DaftarGajiDashboard: React.FC = () => {
     { 
       id: '1', 
       no: 1, 
-      periode: '2025-08', 
+      periode: '2025-08',
+      totalTunjanganProyek: 'Rp 3.500.000',
+      gapokTeknisi: 'Rp 5.000.000',
+      totalTahap: 'Rp 8.800.000',
       total: 'Rp 12.500.000', 
       rows: [
         {
@@ -66,7 +72,10 @@ const DaftarGajiDashboard: React.FC = () => {
     { 
       id: '2', 
       no: 2, 
-      periode: '2025-07', 
+      periode: '2025-07',
+      totalTunjanganProyek: 'Rp 3.200.000',
+      gapokTeknisi: 'Rp 4.800.000',
+      totalTahap: 'Rp 8.500.000',
       total: 'Rp 11.300.000', 
       rows: [
         {
@@ -86,7 +95,10 @@ const DaftarGajiDashboard: React.FC = () => {
     { 
       id: '3', 
       no: 3, 
-      periode: '2025-06', 
+      periode: '2025-06',
+      totalTunjanganProyek: 'Rp 2.950.000',
+      gapokTeknisi: 'Rp 4.200.000',
+      totalTahap: 'Rp 7.400.000',
       total: 'Rp 10.950.000', 
       rows: [
         {
@@ -121,6 +133,9 @@ const DaftarGajiDashboard: React.FC = () => {
       id: (periods.length + 1).toString(),
       no: periods.length + 1,
       periode: period, // store YYYY-MM
+      totalTunjanganProyek: 'Rp 0',
+      gapokTeknisi: 'Rp 0',
+      totalTahap: 'Rp 0',
       total: formatRp(totalVal),
       rows,
     };
@@ -292,6 +307,39 @@ const DaftarGajiDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('totalTunjanganProyek')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Total Tunjangan Proyek</span>
+                      {sortField === 'totalTunjanganProyek' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('gapokTeknisi')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Gapok Teknisi</span>
+                      {sortField === 'gapokTeknisi' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('totalTahap')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Total Tahap 1,2,3,dst</span>
+                      {sortField === 'totalTahap' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('total')}
                   >
                     <div className="flex items-center space-x-1">
@@ -320,7 +368,10 @@ const DaftarGajiDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
                       {new Date(item.periode + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.total}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTunjanganProyek}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.gapokTeknisi}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTahap}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.total}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-3 text-sm">
                         <button

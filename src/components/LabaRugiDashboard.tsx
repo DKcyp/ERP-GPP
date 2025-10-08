@@ -370,14 +370,13 @@ const LabaRugiDashboard: React.FC = () => {
   // Generate columns based on selected months
   const generateColumns = () => {
     if (selectedMonths.length === 1) {
-      // Single month: Total, Selisih, Persen
+      // Single month: Total, Persen
       return [
         { key: 'total', label: 'Total' },
-        { key: 'selisih', label: 'Selisih' },
         { key: 'persen', label: 'Persen (%)' }
       ];
     } else {
-      // Multiple months: Bulan columns + Total, Selisih, Persen
+      // Multiple months: Bulan columns + Total, Persen
       const monthColumns = selectedMonths.map(month => {
         const monthObj = availableMonths.find(m => m.value === month);
         return {
@@ -388,7 +387,6 @@ const LabaRugiDashboard: React.FC = () => {
       return [
         ...monthColumns,
         { key: 'total', label: 'Total' },
-        { key: 'selisih', label: 'Selisih' },
         { key: 'persen', label: 'Persen (%)' }
       ];
     }
@@ -420,11 +418,10 @@ const LabaRugiDashboard: React.FC = () => {
     const monthlyTotal = selectedMonths.reduce((sum, month) => sum + (values[month] || 0), 0);
     values.total = monthlyTotal;
     
-    // Calculate selisih (difference from target - simplified)
-    values.selisih = values.total * 0.1; // 10% of total as example
-    
-    // Calculate percentage
-    values.persen = values.total > 0 ? (values.selisih / values.total) * 100 : 0;
+    // Calculate percentage based on total (simplified: percentage of grand total)
+    // In real implementation, this would be percentage of revenue or other base
+    const grandTotal = 100000000; // Example grand total for percentage calculation
+    values.persen = grandTotal > 0 ? (values.total / grandTotal) * 100 : 0;
     
     return values;
   };
@@ -1175,8 +1172,8 @@ const LabaRugiDashboard: React.FC = () => {
             </div>
             <div className="text-xs text-gray-500">
               {selectedMonths.length === 1 
-                ? 'Tampilan: Total, Selisih, Persen'
-                : 'Tampilan: Bulan, Total, Selisih, Persen'
+                ? 'Tampilan: Total, Persen'
+                : 'Tampilan: Bulan, Total, Persen'
               }
             </div>
           </div>

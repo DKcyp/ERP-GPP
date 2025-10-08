@@ -55,6 +55,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<DashboardTimesheetItem | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
 
   // Sample data matching TimesheetPegawaiDashboard structure
@@ -266,20 +267,30 @@ const ApprovalTimesheetDashboard: React.FC = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = sortedData.slice(startIndex, endIndex);
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const handleApprove = (id: string) => {
-    setTimesheetPegawaiData((prevData) =>
-      prevData.map((item) =>
-        item.id === id ? { ...item, statusApproval: "Approved" } : item
-      )
-    );
+  const handleApproveClick = (item: DashboardTimesheetItem) => {
+    setSelectedItem(item);
+    setSelectedItemId(item.id);
+    setShowApprovalModal(true);
   };
 
-  const handleReject = (id: string) => {
+  const handleApprove = () => {
+    if (selectedItemId) {
+      setTimesheetPegawaiData((prevData) =>
+        prevData.map((item) =>
+          item.id === selectedItemId ? { ...item, statusApproval: "Approved" } : item
+        )
+      );
+      setShowApprovalModal(false);
+      setSelectedItem(null);
+      setSelectedItemId(null);
+    }
+  };
+
+  const handleRejectClick = (id: string) => {
     setSelectedItemId(id);
     setShowRejectModal(true);
   };
@@ -672,14 +683,14 @@ const ApprovalTimesheetDashboard: React.FC = () => {
                             <button
                               className="px-2 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700"
                               title="Approve"
-                              onClick={() => handleApprove(item.id)}
+                              onClick={() => handleApproveClick(item)}
                             >
                               Approve
                             </button>
                             <button
                               className="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700"
                               title="Reject"
-                              onClick={() => handleReject(item.id)}
+                              onClick={() => handleRejectClick(item.id)}
                             >
                               Reject
                             </button>
@@ -746,8 +757,196 @@ const ApprovalTimesheetDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* No modals needed for approval timesheet dashboard */}
+      {/* Approval Modal with Timesheet Details */}
+      {showApprovalModal && selectedItem && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Tambah Timesheet Barang/Pegawai
+              </h3>
+            </div>
 
+            {/* Modal Body */}
+            <div className="px-6 py-4">
+              {/* Header Info */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    No SO
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedItem.noSO}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    No SO Turunan
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedItem.noSoTurunan}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nama Proyek
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedItem.namaProyek}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nilai Timesheet
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedItem.nilaiTimesheet}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    MOB
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedItem.mob}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    DEMOB
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedItem.demob}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              {/* List Pegawai */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    List Pegawai
+                  </h4>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Nama
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Kualifikasi
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Zona
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Durasi
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Actual
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Rate
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Start Kerja
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Finish Kerja
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Overtime
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Upload
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      <tr>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.namaPegawai}
+                        </td>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.kualifikasi.join(", ")}
+                        </td>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.zona}
+                        </td>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.durasi}
+                        </td>
+                        <td className="px-3 py-2 text-sm text-gray-900">0</td>
+                        <td className="px-3 py-2 text-sm text-gray-900">0</td>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.mob}
+                        </td>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.demob}
+                        </td>
+                        <td className="px-3 py-2 text-sm text-gray-900">
+                          {selectedItem.overtime}
+                        </td>
+                        <td className="px-3 py-2 text-sm">
+                          <span className="text-blue-600 underline cursor-pointer hover:text-blue-800">
+                            timesheet_report.pdf
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowApprovalModal(false);
+                  setSelectedItem(null);
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleApprove}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm mx-auto">
