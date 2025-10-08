@@ -1910,7 +1910,7 @@ export const accountingMenu: MenuSection[] = [
   },
   {
     title: "Accounting",
-    icon: "Scale", // Icon for general accounting section
+    icon: "Calculator", // Icon for general accounting section
     subSections: [
       {
         title: "Barang",

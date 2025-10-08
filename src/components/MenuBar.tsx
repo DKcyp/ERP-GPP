@@ -90,21 +90,23 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
       <div className="w-full">
         {/* Desktop Menu Bar */}
         <div className="hidden md:flex items-center justify-start px-3 py-1.5 space-x-1.5">
-          {/* Main Dashboard */}
-          <button
-            onClick={handleMainDashboardClick}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md min-w-0 ${
-              isMainDashboard
-                ? 'bg-primary text-white shadow-primary/30 ring-2 ring-blue-200/50'
-                : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border hover:border-primary/50'
-            }`}
-          >
-            <div className={`p-0.5 rounded-md ${isMainDashboard ? 'bg-white/20' : 'bg-blue-100'}`}>
-              <LucideIcons.Home className="h-3 w-3" />
-            </div>
-            <span className="whitespace-nowrap truncate max-w-[12rem]">Dashboard</span>
-            {isMainDashboard && <Zap className="h-2 w-2 text-yellow-300" />}
-          </button>
+          {/* Main Dashboard - Only show for non-accounting roles */}
+          {user?.role !== 'accounting' && (
+            <button
+              onClick={handleMainDashboardClick}
+              className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl font-medium text-xs transition-all duration-300 hover:scale-105 transform shadow-sm hover:shadow-md min-w-0 ${
+                isMainDashboard
+                  ? 'bg-primary text-white shadow-primary/30 ring-2 ring-blue-200/50'
+                  : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border hover:border-primary/50'
+              }`}
+            >
+              <div className={`p-0.5 rounded-md ${isMainDashboard ? 'bg-white/20' : 'bg-blue-100'}`}>
+                <LucideIcons.Home className="h-3 w-3" />
+              </div>
+              <span className="whitespace-nowrap truncate max-w-[12rem]">Dashboard</span>
+              {isMainDashboard && <Zap className="h-2 w-2 text-yellow-300" />}
+            </button>
+          )}
 
           {/* Menu Section Items */}
           {menuSections.filter(section => section.directPath !== `/${user?.role}/dashboard`).map((section: MenuSection) => (
@@ -232,19 +234,22 @@ const MenuBar: React.FC<MenuBarProps> = ({ currentPage, setCurrentPage }) => {
         {/* Mobile Menu */}
         <div className="md:hidden bg-surface px-3 py-2 border-t border-border">
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={handleMainDashboardClick}
-              className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 transform shadow-sm ${
-                isMainDashboard
-                  ? 'bg-primary text-white shadow-primary/30'
-                  : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border'
-              }`}
-            >
-              <div className={`p-0.5 rounded ${isMainDashboard ? 'bg-white/20' : 'bg-blue-100/80'}`}>
-                <LucideIcons.Home className="h-2.5 w-2.5" />
-              </div>
-              <span>Dashboard</span>
-            </button>
+            {/* Main Dashboard - Only show for non-accounting roles */}
+            {user?.role !== 'accounting' && (
+              <button
+                onClick={handleMainDashboardClick}
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 transform shadow-sm ${
+                  isMainDashboard
+                    ? 'bg-primary text-white shadow-primary/30'
+                    : 'text-text bg-gray-100 hover:bg-gray-200 hover:text-primary border border-border'
+                }`}
+              >
+                <div className={`p-0.5 rounded ${isMainDashboard ? 'bg-white/20' : 'bg-blue-100/80'}`}>
+                  <LucideIcons.Home className="h-2.5 w-2.5" />
+                </div>
+                <span>Dashboard</span>
+              </button>
+            )}
 
             {menuSections.filter(section => section.title !== 'Main Dashboard').map((section) => (
               <button
