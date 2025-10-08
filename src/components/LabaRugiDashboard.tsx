@@ -27,7 +27,7 @@ const LabaRugiDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMonths, setSelectedMonths] = useState<string[]>(["2025-07"]); // Default: Juli 2025
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [levelFilter, setLevelFilter] = useState<"all" | "induk">("all"); // Filter level: all atau induk
+  const [levelFilter, setLevelFilter] = useState<"all" | "level1" | "level2">("all"); // Filter level: all, level1, atau level2
 
   // Form state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -273,7 +273,12 @@ const LabaRugiDashboard: React.FC = () => {
   // Filtered data based on search term (uraian) and level
   const filteredData = data.filter((item) => {
     const matchesSearch = item.uraian.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = levelFilter === "all" || (levelFilter === "induk" && item.level === 0);
+    let matchesLevel = true;
+    if (levelFilter === "level1") {
+      matchesLevel = item.level === 0;
+    } else if (levelFilter === "level2") {
+      matchesLevel = item.level === 1;
+    }
     return matchesSearch && matchesLevel;
   });
 
@@ -991,7 +996,12 @@ const LabaRugiDashboard: React.FC = () => {
 
   const filteredPLRows = plRows.filter((r) => {
     const matchesSearch = r.label.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = levelFilter === "all" || (levelFilter === "induk" && r.level === 0);
+    let matchesLevel = true;
+    if (levelFilter === "level1") {
+      matchesLevel = r.level === 0;
+    } else if (levelFilter === "level2") {
+      matchesLevel = r.level === 1;
+    }
     return matchesSearch && matchesLevel;
   });
 
@@ -1050,11 +1060,12 @@ const LabaRugiDashboard: React.FC = () => {
             {/* Filter Level */}
             <select
               value={levelFilter}
-              onChange={(e) => setLevelFilter(e.target.value as "all" | "induk")}
+              onChange={(e) => setLevelFilter(e.target.value as "all" | "level1" | "level2")}
               className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700"
             >
               <option value="all">All Level</option>
-              <option value="induk">Level Induk</option>
+              <option value="level1">Level 1</option>
+              <option value="level2">Level 2</option>
             </select>
           </div>
 
