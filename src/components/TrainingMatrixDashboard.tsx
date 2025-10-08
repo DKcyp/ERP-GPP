@@ -402,12 +402,6 @@ const TrainingMatrixDashboard: React.FC = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Posisi / Competency
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
                     Certificate (count)
                   </th>
                 </tr>
@@ -432,15 +426,14 @@ const TrainingMatrixDashboard: React.FC = () => {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {grp.nama}
-                          {anyExpired && (
-                            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              <AlertTriangle className="h-3 w-3 mr-1" /> Ada Expired
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {first?.posisi || "-"}
+                          <div class="flex items-center">
+                            {grp.nama}
+                            {anyExpired && (
+                              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                <AlertTriangle className="h-3 w-3 mr-1" /> Ada Expired
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                           {grp.details.length} item

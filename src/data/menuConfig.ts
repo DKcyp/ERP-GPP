@@ -1162,6 +1162,12 @@ export const pengadaanMenu: MenuSection[] = [
     items: [],
     directPath: "/pengadaan/penerimaan",
   },
+  {
+    title: "Budget Kantor",
+    icon: "Wallet",
+    items: [],
+    directPath: "/pengadaan/budget-kantor",
+  },
   createGeneralMenu("pengadaan"),
 ];
 
@@ -2057,6 +2063,28 @@ export const accountingMenu: MenuSection[] = [
             title: "Approval Voucher",
             icon: "Ticket",
             path: "/accounting/approval/voucher",
+          },
+        ],
+      },
+      {
+        title: "Budget Kantor",
+        icon: "Wallet",
+        items: [
+          {
+            title: "Budget Kantor",
+            icon: "Wallet",
+            path: "/accounting/budget-kantor",
+          },
+        ],
+      },
+      {
+        title: "Grafik",
+        icon: "BarChart3",
+        items: [
+          {
+            title: "Report",
+            icon: "TrendingUp",
+            path: "/accounting/grafik/report",
           },
         ],
       },

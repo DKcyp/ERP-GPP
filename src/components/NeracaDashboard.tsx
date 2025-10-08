@@ -23,6 +23,7 @@ interface NeracaEntry {
 
 type BalanceRow = {
   label: string;
+  coa?: string; // Kode COA
   july: number;
   august: number;
   isBold?: boolean;
@@ -49,32 +50,32 @@ const NeracaDashboard: React.FC = () => {
   };
 
   const asetRows: BalanceRow[] = [
-    { id: "kas", label: "Kas", july: 174895077, august: 174895077, level: 0 },
-    { id: "kas-besar", label: "Kas Besar", july: 150000000, august: 150000000, level: 1, parentId: "kas" },
-    { id: "kas-besar-rupiah", label: "Kas Besar Rupiah", july: 100000000, august: 100000000, level: 2, parentId: "kas-besar" },
-    { id: "kas-besar-usd", label: "Kas Besar USD", july: 50000000, august: 50000000, level: 2, parentId: "kas-besar" },
-    { id: "kas-besar-rupiah-jakarta", label: "Kas Besar Rupiah Jakarta", july: 60000000, august: 60000000, level: 3, parentId: "kas-besar-rupiah" },
-    { id: "kas-besar-rupiah-surabaya", label: "Kas Besar Rupiah Surabaya", july: 40000000, august: 40000000, level: 3, parentId: "kas-besar-rupiah" },
-    { id: "kas-kecil", label: "Kas Kecil", july: 24895077, august: 24895077, level: 1, parentId: "kas" },
-    { id: "kas-kecil-operasional", label: "Kas Kecil Operasional", july: 15000000, august: 15000000, level: 2, parentId: "kas-kecil" },
-    { id: "kas-kecil-darurat", label: "Kas Kecil Darurat", july: 9895077, august: 9895077, level: 2, parentId: "kas-kecil" },
-    { id: "bank", label: "Bank", july: 910444129, august: 910444129, level: 0 },
-    { id: "bni", label: "BNI - REK 5520140008", july: 250000000, august: 250000000, level: 1, parentId: "bank" },
-    { id: "bni-giro", label: "BNI Giro", july: 150000000, august: 150000000, level: 2, parentId: "bni" },
-    { id: "bni-tabungan", label: "BNI Tabungan", july: 100000000, august: 100000000, level: 2, parentId: "bni" },
-    { id: "bri", label: "BRI - REK 0026-01-001159-30-3", july: 180000000, august: 180000000, level: 1, parentId: "bank" },
-    { id: "mandiri-giro", label: "BANK MANDIRI (GIRO) - REK 140-00-1417676-3", july: 320000000, august: 320000000, level: 1, parentId: "bank" },
-    { id: "mandiri", label: "BANK MANDIRI - REK 140-00-1400-666-6222", july: 160444129, august: 160444129, level: 1, parentId: "bank" },
-    { id: "mandiri-escrow", label: "MANDIRI ESCROW 178000401315", july: 0, august: 0, level: 1, parentId: "bank" },
-    { id: "piutang", label: "Piutang", july: 5964450100, august: 5964450100, level: 0 },
-    { id: "piutang-usaha", label: "Piutang Usaha", july: 5785285132, august: 5785285132, level: 1, parentId: "piutang" },
-    { id: "piutang-usaha-lokal", label: "Piutang Usaha Lokal", july: 4000000000, august: 4000000000, level: 2, parentId: "piutang-usaha" },
-    { id: "piutang-usaha-ekspor", label: "Piutang Usaha Ekspor", july: 1785285132, august: 1785285132, level: 2, parentId: "piutang-usaha" },
-    { id: "piutang-usaha-lokal-jakarta", label: "Piutang Usaha Lokal Jakarta", july: 2500000000, august: 2500000000, level: 3, parentId: "piutang-usaha-lokal" },
-    { id: "piutang-usaha-lokal-surabaya", label: "Piutang Usaha Lokal Surabaya", july: 1500000000, august: 1500000000, level: 3, parentId: "piutang-usaha-lokal" },
-    { id: "piutang-direksi", label: "Piutang Direksi", july: 0, august: 0, level: 1, parentId: "piutang" },
-    { id: "piutang-karyawan", label: "Piutang Karyawan", july: 179164968, august: 179164968, level: 1, parentId: "piutang" },
-    { id: "piutang-lainnya", label: "Piutang Lainnya", july: 0, august: 0, level: 1, parentId: "piutang" },
+    { id: "kas", label: "Kas", coa: "1.1010-00", july: 174895077, august: 174895077, level: 0 },
+    { id: "kas-besar", label: "Kas Besar", coa: "1.1010-01", july: 150000000, august: 150000000, level: 1, parentId: "kas" },
+    { id: "kas-besar-rupiah", label: "Kas Besar Rupiah", coa: "1.1010-02", july: 100000000, august: 100000000, level: 2, parentId: "kas-besar" },
+    { id: "kas-besar-usd", label: "Kas Besar USD", coa: "1.1010-03", july: 50000000, august: 50000000, level: 2, parentId: "kas-besar" },
+    { id: "kas-besar-rupiah-jakarta", label: "Kas Besar Rupiah Jakarta", coa: "1.1010-04", july: 60000000, august: 60000000, level: 3, parentId: "kas-besar-rupiah" },
+    { id: "kas-besar-rupiah-surabaya", label: "Kas Besar Rupiah Surabaya", coa: "1.1010-05", july: 40000000, august: 40000000, level: 3, parentId: "kas-besar-rupiah" },
+    { id: "kas-kecil", label: "Kas Kecil", coa: "1.1010-06", july: 24895077, august: 24895077, level: 1, parentId: "kas" },
+    { id: "kas-kecil-operasional", label: "Kas Kecil Operasional", coa: "1.1010-07", july: 15000000, august: 15000000, level: 2, parentId: "kas-kecil" },
+    { id: "kas-kecil-darurat", label: "Kas Kecil Darurat", coa: "1.1010-08", july: 9895077, august: 9895077, level: 2, parentId: "kas-kecil" },
+    { id: "bank", label: "Bank", coa: "1.1020-00", july: 910444129, august: 910444129, level: 0 },
+    { id: "bni", label: "BNI - REK 5520140008", coa: "1.1020-01", july: 250000000, august: 250000000, level: 1, parentId: "bank" },
+    { id: "bni-giro", label: "BNI Giro", coa: "1.1020-02", july: 150000000, august: 150000000, level: 2, parentId: "bni" },
+    { id: "bni-tabungan", label: "BNI Tabungan", coa: "1.1020-03", july: 100000000, august: 100000000, level: 2, parentId: "bni" },
+    { id: "bri", label: "BRI - REK 0026-01-001159-30-3", coa: "1.1020-04", july: 180000000, august: 180000000, level: 1, parentId: "bank" },
+    { id: "mandiri-giro", label: "BANK MANDIRI (GIRO) - REK 140-00-1417676-3", coa: "1.1020-05", july: 320000000, august: 320000000, level: 1, parentId: "bank" },
+    { id: "mandiri", label: "BANK MANDIRI - REK 140-00-1400-666-6222", coa: "1.1020-06", july: 160444129, august: 160444129, level: 1, parentId: "bank" },
+    { id: "mandiri-escrow", label: "MANDIRI ESCROW 178000401315", coa: "1.1020-07", july: 0, august: 0, level: 1, parentId: "bank" },
+    { id: "piutang", label: "Piutang", coa: "1.1030-00", july: 5964450100, august: 5964450100, level: 0 },
+    { id: "piutang-usaha", label: "Piutang Usaha", coa: "1.1030-01", july: 5785285132, august: 5785285132, level: 1, parentId: "piutang" },
+    { id: "piutang-usaha-lokal", label: "Piutang Usaha Lokal", coa: "1.1030-02", july: 4000000000, august: 4000000000, level: 2, parentId: "piutang-usaha" },
+    { id: "piutang-usaha-ekspor", label: "Piutang Usaha Ekspor", coa: "1.1030-03", july: 1785285132, august: 1785285132, level: 2, parentId: "piutang-usaha" },
+    { id: "piutang-usaha-lokal-jakarta", label: "Piutang Usaha Lokal Jakarta", coa: "1.1030-04", july: 2500000000, august: 2500000000, level: 3, parentId: "piutang-usaha-lokal" },
+    { id: "piutang-usaha-lokal-surabaya", label: "Piutang Usaha Lokal Surabaya", coa: "1.1030-05", july: 1500000000, august: 1500000000, level: 3, parentId: "piutang-usaha-lokal" },
+    { id: "piutang-direksi", label: "Piutang Direksi", coa: "1.1030-06", july: 0, august: 0, level: 1, parentId: "piutang" },
+    { id: "piutang-karyawan", label: "Piutang Karyawan", coa: "1.1030-07", july: 179164968, august: 179164968, level: 1, parentId: "piutang" },
+    { id: "piutang-lainnya", label: "Piutang Lainnya", coa: "1.1030-08", july: 0, august: 0, level: 1, parentId: "piutang" },
     {
       id: "total-aset-lancar",
       label: "Total Aset Lancar",
@@ -83,7 +84,7 @@ const NeracaDashboard: React.FC = () => {
       isBold: true,
       level: 0
     },
-    { id: "investasi", label: "Investasi", july: 20500000000, august: 20500000000, level: 0 },
+    { id: "investasi", label: "Investasi", coa: "1.1080-00", july: 20500000000, august: 20500000000, level: 0 },
     {
       id: "total-investasi",
       label: "Total Investasi",
@@ -92,9 +93,9 @@ const NeracaDashboard: React.FC = () => {
       isBold: true,
       level: 0
     },
-    { id: "aset-tetap", label: "Aset Tetap", july: 30391897894, august: 30391897894, level: 0 },
-    { id: "tanah-bangunan", label: "Tanah & Bangunan", july: 9514985504, august: 9514985504, level: 1, parentId: "aset-tetap" },
-    { id: "peralatan-proyek", label: "Peralatan Proyek", july: 20876912390, august: 20876912390, level: 1, parentId: "aset-tetap" },
+    { id: "aset-tetap", label: "Aset Tetap", coa: "1.1090-00", july: 30391897894, august: 30391897894, level: 0 },
+    { id: "tanah-bangunan", label: "Tanah & Bangunan", coa: "1.1090-01", july: 9514985504, august: 9514985504, level: 1, parentId: "aset-tetap" },
+    { id: "peralatan-proyek", label: "Peralatan Proyek", coa: "1.1090-02", july: 20876912390, august: 20876912390, level: 1, parentId: "aset-tetap" },
     {
       id: "total-aset-tetap",
       label: "Total Aset Tetap",
@@ -115,19 +116,19 @@ const NeracaDashboard: React.FC = () => {
   ];
 
   const passivaRows: BalanceRow[] = [
-    { id: "kewajiban", label: "Kewajiban", july: 18338641050, august: 18338641050, level: 0 },
-    { id: "hutang-uang-muka", label: "Hutang Uang Muka Pembelian", july: 0, august: 0, level: 1, parentId: "kewajiban" },
-    { id: "hutang-usaha", label: "Hutang Usaha", july: 14927029616, august: 14927029616, level: 1, parentId: "kewajiban" },
-    { id: "hutang-usaha-lokal", label: "Hutang Usaha Lokal", july: 10000000000, august: 10000000000, level: 2, parentId: "hutang-usaha" },
-    { id: "hutang-usaha-impor", label: "Hutang Usaha Impor", july: 4927029616, august: 4927029616, level: 2, parentId: "hutang-usaha" },
-    { id: "hutang-usaha-lokal-supplier-a", label: "Hutang Usaha Lokal Supplier A", july: 6000000000, august: 6000000000, level: 3, parentId: "hutang-usaha-lokal" },
-    { id: "hutang-usaha-lokal-supplier-b", label: "Hutang Usaha Lokal Supplier B", july: 4000000000, august: 4000000000, level: 3, parentId: "hutang-usaha-lokal" },
-    { id: "hutang-karyawan", label: "Hutang Karyawan", july: 248444775, august: 248444775, level: 1, parentId: "kewajiban" },
-    { id: "hutang-gaji", label: "Hutang Gaji", july: 150000000, august: 150000000, level: 2, parentId: "hutang-karyawan" },
-    { id: "hutang-tunjangan", label: "Hutang Tunjangan", july: 98444775, august: 98444775, level: 2, parentId: "hutang-karyawan" },
-    { id: "hutang-direksi", label: "Hutang Direksi", july: 0, august: 0, level: 1, parentId: "kewajiban" },
-    { id: "hutang-pihak-3", label: "Hutang Kepada Pihak ke-3", july: 11760000, august: 11760000, level: 1, parentId: "kewajiban" },
-    { id: "hutang-bank", label: "Hutang Bank", july: 0, august: 0, level: 1, parentId: "kewajiban" },
+    { id: "kewajiban", label: "Kewajiban", coa: "2.1010-00", july: 18338641050, august: 18338641050, level: 0 },
+    { id: "hutang-uang-muka", label: "Hutang Uang Muka Pembelian", coa: "2.1010-01", july: 0, august: 0, level: 1, parentId: "kewajiban" },
+    { id: "hutang-usaha", label: "Hutang Usaha", coa: "2.1010-02", july: 14927029616, august: 14927029616, level: 1, parentId: "kewajiban" },
+    { id: "hutang-usaha-lokal", label: "Hutang Usaha Lokal", coa: "2.1010-03", july: 10000000000, august: 10000000000, level: 2, parentId: "hutang-usaha" },
+    { id: "hutang-usaha-impor", label: "Hutang Usaha Impor", coa: "2.1010-04", july: 4927029616, august: 4927029616, level: 2, parentId: "hutang-usaha" },
+    { id: "hutang-usaha-lokal-supplier-a", label: "Hutang Usaha Lokal Supplier A", coa: "2.1010-05", july: 6000000000, august: 6000000000, level: 3, parentId: "hutang-usaha-lokal" },
+    { id: "hutang-usaha-lokal-supplier-b", label: "Hutang Usaha Lokal Supplier B", coa: "2.1010-06", july: 4000000000, august: 4000000000, level: 3, parentId: "hutang-usaha-lokal" },
+    { id: "hutang-karyawan", label: "Hutang Karyawan", coa: "2.1010-07", july: 248444775, august: 248444775, level: 1, parentId: "kewajiban" },
+    { id: "hutang-gaji", label: "Hutang Gaji", coa: "2.1010-08", july: 150000000, august: 150000000, level: 2, parentId: "hutang-karyawan" },
+    { id: "hutang-tunjangan", label: "Hutang Tunjangan", coa: "2.1010-09", july: 98444775, august: 98444775, level: 2, parentId: "hutang-karyawan" },
+    { id: "hutang-direksi", label: "Hutang Direksi", coa: "2.1010-10", july: 0, august: 0, level: 1, parentId: "kewajiban" },
+    { id: "hutang-pihak-3", label: "Hutang Kepada Pihak ke-3", coa: "2.1010-11", july: 11760000, august: 11760000, level: 1, parentId: "kewajiban" },
+    { id: "hutang-bank", label: "Hutang Bank", coa: "2.1010-12", july: 0, august: 0, level: 1, parentId: "kewajiban" },
     {
       id: "total-kewajiban",
       label: "Total Kewajiban",
@@ -136,19 +137,19 @@ const NeracaDashboard: React.FC = () => {
       isBold: true,
       level: 0
     },
-    { id: "modal", label: "Modal", july: 45828370732, august: 45828370732, level: 0 },
-    { id: "modal-dasar", label: "Modal Dasar", july: 15000000000, august: 15000000000, level: 1, parentId: "modal" },
-    { id: "modal-disetor", label: "Modal Disetor", july: 12000000000, august: 12000000000, level: 2, parentId: "modal-dasar" },
-    { id: "modal-belum-disetor", label: "Modal Belum Disetor", july: 3000000000, august: 3000000000, level: 2, parentId: "modal-dasar" },
-    { id: "laba-ditahan", label: "Laba Ditahan", july: 25209466205, august: 25209466205, level: 1, parentId: "modal" },
-    { id: "laba-ditahan-2023", label: "Laba Ditahan 2023", july: 15000000000, august: 15000000000, level: 2, parentId: "laba-ditahan" },
-    { id: "laba-ditahan-2024", label: "Laba Ditahan 2024", july: 10209466205, august: 10209466205, level: 2, parentId: "laba-ditahan" },
-    { id: "laba-tahun-berjalan", label: "Laba Tahun Berjalan", july: 5618904527, august: 5618904527, level: 1, parentId: "modal" },
-    { id: "laba-q1", label: "Laba Q1", july: 1500000000, august: 1500000000, level: 2, parentId: "laba-tahun-berjalan" },
-    { id: "laba-q2", label: "Laba Q2", july: 1800000000, august: 1800000000, level: 2, parentId: "laba-tahun-berjalan" },
-    { id: "laba-q3", label: "Laba Q3", july: 1318904527, august: 1318904527, level: 2, parentId: "laba-tahun-berjalan" },
-    { id: "laba-q4", label: "Laba Q4", july: 1000000000, august: 1000000000, level: 2, parentId: "laba-tahun-berjalan" },
-    { id: "deviden", label: "Deviden", july: 0, august: 0, level: 1, parentId: "modal" },
+    { id: "modal", label: "Modal", coa: "3.1010-00", july: 45828370732, august: 45828370732, level: 0 },
+    { id: "modal-dasar", label: "Modal Dasar", coa: "3.1010-01", july: 15000000000, august: 15000000000, level: 1, parentId: "modal" },
+    { id: "modal-disetor", label: "Modal Disetor", coa: "3.1010-02", july: 12000000000, august: 12000000000, level: 2, parentId: "modal-dasar" },
+    { id: "modal-belum-disetor", label: "Modal Belum Disetor", coa: "3.1010-03", july: 3000000000, august: 3000000000, level: 2, parentId: "modal-dasar" },
+    { id: "laba-ditahan", label: "Laba Ditahan", coa: "3.1010-04", july: 25209466205, august: 25209466205, level: 1, parentId: "modal" },
+    { id: "laba-ditahan-2023", label: "Laba Ditahan 2023", coa: "3.1010-05", july: 15000000000, august: 15000000000, level: 2, parentId: "laba-ditahan" },
+    { id: "laba-ditahan-2024", label: "Laba Ditahan 2024", coa: "3.1010-06", july: 10209466205, august: 10209466205, level: 2, parentId: "laba-ditahan" },
+    { id: "laba-tahun-berjalan", label: "Laba Tahun Berjalan", coa: "3.1010-07", july: 5618904527, august: 5618904527, level: 1, parentId: "modal" },
+    { id: "laba-q1", label: "Laba Q1", coa: "3.1010-08", july: 1500000000, august: 1500000000, level: 2, parentId: "laba-tahun-berjalan" },
+    { id: "laba-q2", label: "Laba Q2", coa: "3.1010-09", july: 1800000000, august: 1800000000, level: 2, parentId: "laba-tahun-berjalan" },
+    { id: "laba-q3", label: "Laba Q3", coa: "3.1010-10", july: 1318904527, august: 1318904527, level: 2, parentId: "laba-tahun-berjalan" },
+    { id: "laba-q4", label: "Laba Q4", coa: "3.1010-11", july: 1000000000, august: 1000000000, level: 2, parentId: "laba-tahun-berjalan" },
+    { id: "deviden", label: "Deviden", coa: "3.1010-12", july: 0, august: 0, level: 1, parentId: "modal" },
     {
       id: "total-modal",
       label: "Total Modal",
@@ -306,34 +307,40 @@ const NeracaDashboard: React.FC = () => {
                 <tr className="bg-gray-50">
                   <th
                     className="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-r border-gray-200"
-                    colSpan={3}
+                    colSpan={4}
                   >
                     ASET
                   </th>
                   <th
                     className="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-l border-gray-200"
-                    colSpan={3}
+                    colSpan={4}
                   >
                     PASSIVA
                   </th>
                 </tr>
                 <tr className="bg-gray-50">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200 w-28">
+                    Kode Akun
+                  </th>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200">
                     Deskripsi
                   </th>
-                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-200">
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-200 w-32">
                     July
                   </th>
-                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-300">
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-300 w-32">
                     August
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-l border-gray-300">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-l border-gray-300 w-28">
+                    Kode Akun
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200">
                     Deskripsi
                   </th>
-                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-200">
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 border-r border-gray-200 w-32">
                     July
                   </th>
-                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 w-32">
                     August
                   </th>
                 </tr>
@@ -341,6 +348,13 @@ const NeracaDashboard: React.FC = () => {
               <tbody>
                 {pairedRows.map(({ left, right, key }) => (
                   <tr key={key} className="hover:bg-gray-50">
+                    <td
+                      className={`px-4 py-2 text-left border-r border-gray-200 text-xs w-28 ${
+                        left?.isBold ? "font-semibold" : ""
+                      } ${left?.isTotal ? "bg-yellow-100" : ""} text-gray-600`}
+                    >
+                      {left?.coa || ""}
+                    </td>
                     <td
                       className={`px-4 py-2 border-r border-gray-200 ${
                         left?.isBold ? "font-semibold" : ""
@@ -359,21 +373,28 @@ const NeracaDashboard: React.FC = () => {
                       ) : ""}
                     </td>
                     <td
-                      className={`px-4 py-2 text-right border-r border-gray-200 ${
+                      className={`px-4 py-2 text-right border-r border-gray-200 w-32 ${
                         left?.isBold ? "font-semibold" : ""
                       } ${left?.isTotal ? "bg-yellow-100" : ""}`}
                     >
                       {left ? formatNumber(left.july) : ""}
                     </td>
                     <td
-                      className={`px-4 py-2 text-right border-r border-gray-300 ${
+                      className={`px-4 py-2 text-right border-r border-gray-300 w-32 ${
                         left?.isBold ? "font-semibold" : ""
                       } ${left?.isTotal ? "bg-yellow-100" : ""}`}
                     >
                       {left ? formatNumber(left.august) : ""}
                     </td>
                     <td
-                      className={`px-4 py-2 border-l border-gray-300 ${
+                      className={`px-4 py-2 text-left border-l border-gray-300 text-xs w-28 ${
+                        right?.isBold ? "font-semibold" : ""
+                      } ${right?.isTotal ? "bg-yellow-100" : ""} text-gray-600`}
+                    >
+                      {right?.coa || ""}
+                    </td>
+                    <td
+                      className={`px-4 py-2 border-r border-gray-200 ${
                         right?.isBold ? "font-semibold" : ""
                       } ${right?.isTotal ? "bg-yellow-100 uppercase" : ""} ${
                         right?.level === 0 ? "text-gray-900 font-medium" :
@@ -390,14 +411,14 @@ const NeracaDashboard: React.FC = () => {
                       ) : ""}
                     </td>
                     <td
-                      className={`px-4 py-2 text-right border-r border-gray-200 ${
+                      className={`px-4 py-2 text-right border-r border-gray-200 w-32 ${
                         right?.isBold ? "font-semibold" : ""
                       } ${right?.isTotal ? "bg-yellow-100" : ""}`}
                     >
                       {right ? formatNumber(right.july) : ""}
                     </td>
                     <td
-                      className={`px-4 py-2 text-right ${
+                      className={`px-4 py-2 text-right w-32 ${
                         right?.isBold ? "font-semibold" : ""
                       } ${right?.isTotal ? "bg-yellow-100" : ""}`}
                     >

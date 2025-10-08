@@ -391,6 +391,7 @@ const LabaRugiDashboard: React.FC = () => {
   type PLRow = {
     id: string;
     label: string;
+    coa?: string; // Kode Akun
     level?: number; // indentation level
     isHeader?: boolean; // section header like PENDAPATAN
     isTotal?: boolean; // total rows
@@ -425,6 +426,7 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "hdr-pendapatan",
       label: "PENDAPATAN",
+      coa: "4.1010-00",
       isHeader: true,
       level: 0,
       values: generateRowValues(0),
@@ -432,30 +434,35 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "pdpt-1",
       label: "Pendapatan Penjualan Material",
+      coa: "4.1010-01",
       level: 1,
       values: generateRowValues(5000000),
     },
     {
       id: "pdpt-2",
       label: "Pendapatan Jasa Inspeksi",
+      coa: "4.1010-02",
       level: 1,
       values: generateRowValues(3000000),
     },
     {
       id: "pdpt-3",
       label: "Pendapatan Jasa Inspeksi RAT",
+      coa: "4.1010-03",
       level: 1,
       values: generateRowValues(2000000),
     },
     {
       id: "pdpt-4",
       label: "Pendapatan Jasa Non Inspeksi",
+      coa: "4.1010-04",
       level: 1,
       values: generateRowValues(1500000),
     },
     {
       id: "pdpt-5",
       label: "Pendapatan Jasa Non Inspeksi RAT",
+      coa: "4.1010-05",
       level: 1,
       values: generateRowValues(1000000),
     },
@@ -471,6 +478,7 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "hdr-bap",
       label: "BIAYA ATAS PENDAPATAN",
+      coa: "5.1010-00",
       isHeader: true,
       level: 0,
       values: generateRowValues(0),
@@ -478,102 +486,119 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "bap-1",
       label: "Tunjangan Proyek Karyawan Tetap & Kontrak",
+      coa: "5.1010-01",
       level: 1,
       values: generateRowValues(-2000000),
     },
     {
       id: "bap-2",
       label: "Biaya Material",
+      coa: "5.1010-02",
       level: 1,
       values: generateRowValues(-1500000),
     },
     {
       id: "bap-3",
       label: "Biaya Perlengkapan Project",
+      coa: "5.1010-03",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-4",
       label: "Biaya Transportasi Proyek",
+      coa: "5.1010-04",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-5",
       label: "Biaya Penginapan Proyek",
+      coa: "5.1010-05",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-6",
       label: "Biaya Sewa proyek",
+      coa: "5.1010-06",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-7",
       label: "Biaya Pengiriman Proyek",
+      coa: "5.1010-07",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-8",
       label: "Biaya Rumah Tangga Proyek",
+      coa: "5.1010-08",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-9",
       label: "Biaya Administrasi Proyek",
+      coa: "5.1010-09",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-10",
       label: "Biaya Perbaikan Peralatan Proyek",
+      coa: "5.1010-10",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-11",
       label: "Biaya Training Proyek",
+      coa: "5.1010-11",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-12",
       label: "Biaya Pengujian Proyek",
+      coa: "5.1010-12",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-13",
       label: "Biaya Prosdure Proyek",
+      coa: "5.1010-13",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-14",
       label: "Biaya Kalibrasi",
+      coa: "5.1010-14",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-15",
       label: "Biaya Komisi",
+      coa: "5.1010-15",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-16",
       label: "Biaya Proyek",
+      coa: "5.1010-16",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bap-17",
       label: "Biaya Sparepart Proyek",
+      coa: "5.1010-17",
       level: 1,
       values: generateRowValues(0),
     },
@@ -589,6 +614,7 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "hdr-bau",
       label: "BIAYA ADMINISTRASI & UMUM",
+      coa: "6.1010-00",
       isHeader: true,
       level: 0,
       values: generateRowValues(0),
@@ -596,246 +622,287 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "bau-1",
       label: "Biaya Gaji",
+      coa: "6.1010-01",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-2",
       label: "Biaya BPJS",
+      coa: "6.1010-02",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-3",
       label: "Tunjangan Raya",
+      coa: "6.1010-03",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-4",
       label: "Biaya Denda",
+      coa: "6.1010-04",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-5",
       label: "biaya Reimbusable",
+      coa: "6.1010-05",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-6",
       label: "Biaya Sewa",
+      coa: "6.1010-06",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-7",
       label: "Biaya Asuransi",
+      coa: "6.1010-07",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-8",
       label: "Biaya Utilitiy",
+      coa: "6.1010-08",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-9",
       label: "Biaya Pulsa",
+      coa: "6.1010-09",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-10",
       label: "Biaya Transportasi Kantor",
+      coa: "6.1010-10",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-11",
       label: "Biaya ATK Kantor",
+      coa: "6.1010-11",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-12",
       label: "Biaya Konsultan",
+      coa: "6.1010-12",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-13",
       label: "Biaya Iklan & Promosi & Entertainment",
+      coa: "6.1010-13",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-14",
       label: "Biaya Akomodasi",
+      coa: "6.1010-14",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-15",
       label: "Biaya Perjalanan Dinas",
+      coa: "6.1010-15",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-16",
       label: "Biaya BOD",
+      coa: "6.1010-16",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-17",
       label: "Biaya Garansi",
+      coa: "6.1010-17",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-18",
       label: "Biaya Member",
+      coa: "6.1010-18",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-19",
       label: "Biaya HSE",
+      coa: "6.1010-19",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-20",
       label: "Biaya Kegiatan",
+      coa: "6.1010-20",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-21",
       label: "Biaya Pemeliharaan Kantor",
+      coa: "6.1010-21",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-22",
       label: "Biaya Perbaikan",
+      coa: "6.1010-22",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-23",
       label: "Biaya Spare Part",
+      coa: "6.1010-23",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-24",
       label: "Biaya Pajak",
+      coa: "6.1010-24",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-25",
       label: "Biaya Training dan Pengembangan",
+      coa: "6.1010-25",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-26",
       label: "Biaya Pengiriman",
+      coa: "6.1010-26",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-27",
       label: "Biaya Sertifikasi",
+      coa: "6.1010-27",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-28",
       label: "Sumbangan & Zakat",
+      coa: "6.1010-28",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-29",
       label: "Biaya Pantry",
+      coa: "6.1010-29",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-30",
       label: "Biaya MCU Teknisi",
+      coa: "6.1010-30",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-31",
       label: "Biaya Training Teknisi",
+      coa: "6.1010-31",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-32",
       label: "Biaya Lainnya",
+      coa: "6.1010-32",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-33",
       label: "Biaya Perlengkapan Kantor",
+      coa: "6.1010-33",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-34",
       label: "Biaya SIBperasional SIB",
+      coa: "6.1010-34",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-35",
       label: "Biaya Project",
+      coa: "6.1010-35",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-36",
       label: "Biaya Perijinan",
+      coa: "6.1010-36",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-37",
       label: "Biaya MCU Staff & Management",
+      coa: "6.1010-37",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-38",
       label: "Biaya di luar usaha",
+      coa: "6.1010-38",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-39",
       label: "Biaya Outsourcing",
+      coa: "6.1010-39",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-40",
       label: "Biaya Internship",
+      coa: "6.1010-40",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "bau-41",
       label: "Biaya Penyusutan",
+      coa: "6.1010-41",
       level: 1,
       values: generateRowValues(0),
     },
@@ -851,6 +918,7 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "hdr-plu",
       label: "PENDAPATAN LUAR USAHA",
+      coa: "7.1010-00",
       isHeader: true,
       level: 0,
       values: generateRowValues(0),
@@ -858,12 +926,14 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "plu-1",
       label: "Pendapatan Bunga Bank",
+      coa: "7.1010-01",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "plu-2",
       label: "Pendapatan Lainnya",
+      coa: "7.1010-02",
       level: 1,
       values: generateRowValues(0),
     },
@@ -879,18 +949,21 @@ const LabaRugiDashboard: React.FC = () => {
     {
       id: "glu-1",
       label: "Gain / Loss Dispossal Asset",
+      coa: "8.1010-01",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "blu-1",
       label: "Biaya Administrasi Bank",
+      coa: "8.1010-02",
       level: 1,
       values: generateRowValues(0),
     },
     {
       id: "rlsk-1",
       label: "Rugi Laba Selisih Kurs",
+      coa: "8.1010-03",
       level: 1,
       values: generateRowValues(0),
     },
@@ -1003,6 +1076,9 @@ const LabaRugiDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200 w-28">
+                    Kode Akun
+                  </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200 w-[380px]">
                     Uraian
                   </th>
@@ -1028,6 +1104,9 @@ const LabaRugiDashboard: React.FC = () => {
                       key={row.id}
                       className={`${rowClasses} hover:bg-gray-50`}
                     >
+                      <td className="px-4 py-2 text-xs text-gray-600 border-r border-gray-100 w-28">
+                        {row.coa || ""}
+                      </td>
                       <td className="px-4 py-2 text-sm text-gray-800 border-r border-gray-100">
                         <span style={{ paddingLeft: (row.level || 0) * 16 }}>
                           {row.label}

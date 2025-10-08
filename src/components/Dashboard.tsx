@@ -64,6 +64,7 @@ import PurchasingDashboard from "./PurchasingDashboard";
 import InvoiceDashboard from "./InvoiceDashboard";
 import GudangDashboard from "./GudangDashboard";
 import DaftarSeleksiSupplierBiddingDashboard from "./DaftarSeleksiSupplierBiddingDashboard";
+import BudgetKantorDashboard from "./BudgetKantorDashboard";
 import ApprovalTiketDashboard from "./ApprovalTiketDashboard";
 import ApprovalInvoiceDashboard from "./ApprovalInvoiceDashboard";
 import ApprovalPenggajianDashboard from "./ApprovalPenggajianDashboard";
@@ -118,6 +119,7 @@ import CollectionDashboardCashIn from "./CollectionDashboardCashIn";
 import FinanceTandaTerimaDokumeniDashboard from "./FinanceTandaTerimaDokumeniDashboard";
 import FinanceTandaTerimaDokumenPembelianDashboard from "./FinanceTandaTerimaDokumenPembelianDashboard";
 import JurnalManualDashboard from "./JurnalManualDashboard";
+import GrafikLabaRugiDashboard from "./GrafikLabaRugiDashboard";
 import JurnalRasioKeuanganDashboard from "./JurnalRasioKeuanganDashboard";
 import AssetDashboard from "./AssetDashboard";
 import TrialBalanceDashboard from "./TrialBalanceDashboard";
@@ -781,6 +783,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/pengadaan/penerimaan") {
       return <PenerimaanBarangDashboard />;
+    }
+    if (currentPage === "/pengadaan/budget-kantor") {
+      return <BudgetKantorDashboard />;
     }
     if (currentPage === "/pengadaan/po/approval_pr") {
       return <ListPRDashboard />;
@@ -2170,6 +2175,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/accounting/approval/reimburse") {
       return <FinanceApprovalReimburseDashboard />;
+    }
+    if (currentPage === "/accounting/budget-kantor") {
+      return <BudgetKantorDashboard />;
+    }
+    if (currentPage === "/accounting/grafik/report") {
+      return <GrafikLabaRugiDashboard />;
     }
     if (currentPage === "/accounting/approval/voucher") {
       return <FinanceApprovalVoucherDashboard />;
