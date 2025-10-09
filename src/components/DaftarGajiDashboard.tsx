@@ -28,7 +28,9 @@ const DaftarGajiDashboard: React.FC = () => {
     periode: string; // YYYY-MM
     totalTunjanganProyek: string; // formatted Rp
     gapokTeknisi: string; // formatted Rp
-    totalTahap: string; // formatted Rp
+    totalTahap1: string; // formatted Rp
+    totalTahap2: string; // formatted Rp
+    totalTahap3: string; // formatted Rp
     total: string; // formatted Rp
     rows: GajiRow[];
   };
@@ -40,7 +42,9 @@ const DaftarGajiDashboard: React.FC = () => {
       periode: '2025-08',
       totalTunjanganProyek: 'Rp 3.500.000',
       gapokTeknisi: 'Rp 5.000.000',
-      totalTahap: 'Rp 8.800.000',
+      totalTahap1: 'Rp 4.200.000',
+      totalTahap2: 'Rp 4.200.000',
+      totalTahap3: 'Rp 400.000',
       total: 'Rp 12.500.000', 
       rows: [
         {
@@ -75,7 +79,9 @@ const DaftarGajiDashboard: React.FC = () => {
       periode: '2025-07',
       totalTunjanganProyek: 'Rp 3.200.000',
       gapokTeknisi: 'Rp 4.800.000',
-      totalTahap: 'Rp 8.500.000',
+      totalTahap1: 'Rp 2.125.000',
+      totalTahap2: 'Rp 2.125.000',
+      totalTahap3: 'Rp 4.250.000',
       total: 'Rp 11.300.000', 
       rows: [
         {
@@ -98,7 +104,9 @@ const DaftarGajiDashboard: React.FC = () => {
       periode: '2025-06',
       totalTunjanganProyek: 'Rp 2.950.000',
       gapokTeknisi: 'Rp 4.200.000',
-      totalTahap: 'Rp 7.400.000',
+      totalTahap1: 'Rp 1.850.000',
+      totalTahap2: 'Rp 1.850.000',
+      totalTahap3: 'Rp 3.700.000',
       total: 'Rp 10.950.000', 
       rows: [
         {
@@ -135,7 +143,9 @@ const DaftarGajiDashboard: React.FC = () => {
       periode: period, // store YYYY-MM
       totalTunjanganProyek: 'Rp 0',
       gapokTeknisi: 'Rp 0',
-      totalTahap: 'Rp 0',
+      totalTahap1: 'Rp 0',
+      totalTahap2: 'Rp 0',
+      totalTahap3: 'Rp 0',
       total: formatRp(totalVal),
       rows,
     };
@@ -329,11 +339,33 @@ const DaftarGajiDashboard: React.FC = () => {
                   </th>
                   <th 
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('totalTahap')}
+                    onClick={() => handleSort('totalTahap1')}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Total Tahap 1,2,3,dst</span>
-                      {sortField === 'totalTahap' && (
+                      <span>Total Tahap 1</span>
+                      {sortField === 'totalTahap1' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('totalTahap2')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Total Tahap 2</span>
+                      {sortField === 'totalTahap2' && (
+                        <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                      )}
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('totalTahap3')}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>Total Tahap 3</span>
+                      {sortField === 'totalTahap3' && (
                         <ArrowUp className={`h-3 w-3 transition-transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                       )}
                     </div>
@@ -370,7 +402,9 @@ const DaftarGajiDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTunjanganProyek}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.gapokTeknisi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTahap}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTahap1}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTahap2}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.totalTahap3}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{item.total}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-3 text-sm">
