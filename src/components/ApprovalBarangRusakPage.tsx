@@ -1,5 +1,5 @@
 import React from "react";
-import BarangDibuangDashboard from "../../components/BarangDibuangDashboard";
+import BarangDibuangDashboard from "./BarangDibuangDashboard";
 
 const ApprovalBarangRusakPage: React.FC = () => {
   return (

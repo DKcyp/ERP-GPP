@@ -33,7 +33,13 @@ interface ProsesProduksiData {
   fileName?: string;
 }
 
-const ProsesProduksiDashboard: React.FC = () => {
+interface ProsesProduksiDashboardProps {
+  role?: string; // Make role optional if it's not always passed
+}
+
+const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
+  role,
+}) => {
   const auth = useAuth() as any;
   const user = auth?.user as { username: string; role: string } | undefined;
   const [searchSO, setSearchSO] = useState("");
@@ -57,6 +63,7 @@ const ProsesProduksiDashboard: React.FC = () => {
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
+  // Temporary comment to trigger re-evaluation
   // Sample data matching the image
   const [produksiData, setProduksiData] = useState<ProsesProduksiData[]>([
     {

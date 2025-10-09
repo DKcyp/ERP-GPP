@@ -377,7 +377,6 @@ import GeneralKendaraanPengajuanDriver from "./GeneralKendaraanPengajuanDriver";
 import GeneralKendaraanLogbookDriver from "./GeneralKendaraanLogbookDriver";
 import GeneralKendaraanApprovalDriver from "./GeneralKendaraanApprovalDriver";
 
-import { Calendar } from "lucide-react";
 import PembagianAPDRecordDashboard from "./PembagianAPDRecordDashboard";
 import PerundanganK3LDashboard from "./PerundanganK3LDashboard";
 import DaftarIndukRekamanInternalDashboard from "./DaftarIndukRekamanInternalDashboard";
@@ -400,7 +399,7 @@ import MonitoringNilaiPOPage from "../pages/marketing/MonitoringNilaiPOPage";
 import MasterAllowancePage from "../pages/hrd/MasterAllowancePage";
 import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
 import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
-import ApprovalBarangRusakPage from "../pages/qhse/approval/ApprovalBarangRusakPage";
+import ApprovalBarangRusakPage from "./ApprovalBarangRusakPage";
 
 interface DashboardProps {
   currentPage: string;
@@ -1832,6 +1831,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/management/voucher-reimburse/approval-voucher") {
       return <ApprovalVoucherDashboardManajement />;
+    }
+    if (currentPage === "/management/approval/barang-rusak") {
+      return <ApprovalBarangRusakPage />;
+    }
+    if (currentPage === "/management/approval/timesheet") {
+      return <ApprovalTimesheetDashboard />;
     }
     // QHSE Routes
     if (currentPage === "/qhse/dashboard") {

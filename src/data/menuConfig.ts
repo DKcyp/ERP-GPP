@@ -1677,52 +1677,61 @@ export const managementMenu: MenuSection[] = [
     directPath: "/management/monitoring/marketing",
   },
   {
-    title: "Approve Kontrak",
-    icon: "FileSignature", // Using FileSignature for contract approval
-    items: [],
-    directPath: "/management/approve-kontrak",
-  },
-  {
-    title: "Approve gaji",
-    icon: "Wallet", // Using Wallet for payroll
-    items: [],
-    directPath: "/management/penggajian",
-  },
-  {
-    title: "Approval Training", // New menu item
-    icon: "CheckCircle", // Icon for approval
-    items: [],
-    directPath: "/management/training", // Path to Proses Training page
-  },
-  {
-    title: "Approve SPK",
-    icon: "CheckCircle",
-    items: [],
-    directPath: "/hrd/spk/approve",
-  },
-  {
-    title: "Approve PO Barang",
-    icon: "Package",
-    items: [],
-    directPath: "/management/po/barang",
-  },
-  {
-    title: "Approve PO Jasa",
-    icon: "Wrench",
-    items: [],
-    directPath: "/management/po/jasa",
-  },
-  {
     title: "Kompetensi Perusahaan",
     icon: "Award",
     items: [],
     directPath: "/management/kompetensi-perusahaan",
   },
   {
-    title: "Approval Voucher",
-    icon: "CheckCircle",
-    items: [],
-    directPath: "/management/voucher-reimburse/approval-voucher",
+    title: "Approve",
+    icon: "CheckSquare",
+    items: [
+      {
+        title: "Approve Kontrak",
+        icon: "FileSignature",
+        path: "/management/approve-kontrak",
+      },
+      {
+        title: "Approve Gaji",
+        icon: "Wallet",
+        path: "/management/penggajian",
+      },
+      {
+        title: "Approve Training",
+        icon: "GraduationCap",
+        path: "/management/training",
+      },
+      {
+        title: "Approve SPK",
+        icon: "FileText",
+        path: "/hrd/spk/approve",
+      },
+      {
+        title: "Approve PO Barang",
+        icon: "Package",
+        path: "/management/po/barang",
+      },
+      {
+        title: "Approve PO Jasa",
+        icon: "Wrench",
+        path: "/management/po/jasa",
+      },
+      {
+        title: "Approve Voucher",
+        icon: "Receipt",
+        path: "/management/voucher-reimburse/approval-voucher",
+      },
+      {
+        title: "Approve Barang Rusak",
+        icon: "Tool",
+        path: "/management/approval/barang-rusak",
+      },
+      {
+        title: "Approve Timesheet",
+        icon: "Clock",
+        path: "/management/approval/timesheet",
+      },
+    ],
   },
 ];
 
