@@ -23,6 +23,7 @@ interface BarangDibuangDashboardProps {
   showEditButton?: boolean;
   showDeleteButton?: boolean;
   showApproveRejectButtons?: boolean;
+  title?: string; // Add optional title prop
 }
 
 const BarangDibuangDashboard: React.FC<BarangDibuangDashboardProps> = ({
@@ -30,6 +31,7 @@ const BarangDibuangDashboard: React.FC<BarangDibuangDashboardProps> = ({
   showEditButton = true,
   showDeleteButton = true,
   showApproveRejectButtons = false,
+  title = "Barang Scrap", // Use the new title prop with a default value
 }) => {
   const [barangDibuangItems, setBarangDibuangItems] = useState<
     Array<{
@@ -177,7 +179,7 @@ const BarangDibuangDashboard: React.FC<BarangDibuangDashboardProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                Barang Scrap
+                {title}
               </h1>
               <nav className="text-sm text-gray-600">
                 <span className="hover:text-blue-600 cursor-pointer transition-colors">

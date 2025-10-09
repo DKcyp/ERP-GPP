@@ -8,6 +8,7 @@ const ApprovalBarangRusakPage: React.FC = () => {
       showEditButton={false}
       showDeleteButton={false}
       showApproveRejectButtons={true}
+      title="Approval Barang Rusak"
     />
   );
 };

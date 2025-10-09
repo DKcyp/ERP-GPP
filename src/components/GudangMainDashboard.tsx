@@ -121,8 +121,8 @@ const GudangMainDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Chart and Detail Biaya Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chart and Summary Cards Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Bar Chart */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Monthly Stock Overview</h3>
@@ -149,60 +149,57 @@ const GudangMainDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Summary Cards and Detail Biaya */}
-          <div className="lg:col-span-1 flex flex-col space-y-6">
-            {/* Summary Cards */}
-            <div className="space-y-4">
-              <div className="bg-blue-600 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium opacity-80">Total Biaya</p>
-                  <p className="text-4xl font-bold">310</p>
-                </div>
-              </div>
-              <div className="bg-green-600 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium opacity-80">Bulan Ini</p>
-                  <p className="text-4xl font-bold">210</p>
-                </div>
-              </div>
-              <div className="bg-red-600 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium opacity-80">Bulan Lalu</p>
-                  <p className="text-4xl font-bold">210</p>
-                </div>
+          {/* Summary Cards */}
+          <div className="lg:col-span-1 flex flex-col space-y-4">
+            <div className="bg-blue-600 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium opacity-80">Total Biaya</p>
+                <p className="text-4xl font-bold">310</p>
               </div>
             </div>
+            <div className="bg-green-600 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium opacity-80">Bulan Ini</p>
+                <p className="text-4xl font-bold">210</p>
+              </div>
+            </div>
+            <div className="bg-red-600 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium opacity-80">Bulan Lalu</p>
+                <p className="text-4xl font-bold">210</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            {/* Detail Biaya Table */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 flex-1">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Detail Biaya</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Bulan
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total Biaya
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Selisih
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {detailBiayaData.map((item, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.bulan}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.totalBiaya}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.selisih}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        {/* Detail Biaya Table - Moved below Monthly Stock Overview */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Detail Biaya</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Bulan
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Biaya
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Selisih
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {detailBiayaData.map((item, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.bulan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.totalBiaya}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.selisih}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

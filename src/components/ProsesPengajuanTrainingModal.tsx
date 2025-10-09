@@ -690,14 +690,6 @@ const ProsesPengajuanTrainingModal: React.FC<
               </>
             )}
           </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/25 transition-all duration-200 font-medium flex items-center space-x-2 text-sm"
-          >
-            <X className="h-3.5 w-3.5" />
-            <span>Reject</span>
-          </button>
         </div>
       </div>
     </div>

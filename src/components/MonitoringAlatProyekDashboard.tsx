@@ -1,24 +1,44 @@
 import React, { useState } from 'react';
-import { Clock, Search, CalendarDays, FileSpreadsheet, FileText, FileBarChart } from 'lucide-react';
+import { Clock, Search, CalendarDays, FileSpreadsheet, FileText, FileBarChart, Edit2 } from 'lucide-react';
 
 const MonitoringAlatProyekDashboard: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('Semua');
-    const alatProyekData = [
-    { no: 1, noSO: 'SO0001', soTurunan: 'SO0001.1', namaAlat: 'Barang 001', mob: '20-01-2025', demob: '29-01-2025', tanggalHarusKembali: '30-01-2025', status: 'Di Proyek' },
-    { no: 2, noSO: 'SO0002', soTurunan: 'SO0002.1', namaAlat: 'Barang 002', mob: '15-01-2025', demob: '24-01-2025', tanggalHarusKembali: '25-01-2025', status: 'Kembali' },
-    { no: 3, noSO: 'SO0003', soTurunan: 'SO0003.1', namaAlat: 'Barang 003', mob: '12-01-2025', demob: '21-01-2025', tanggalHarusKembali: '22-01-2025', status: 'Harus Kembali' },
-    { no: 4, noSO: 'SO0004', soTurunan: 'SO0004.1', namaAlat: 'Barang 004', mob: '18-01-2025', demob: '27-01-2025', tanggalHarusKembali: '28-01-2025', status: 'Di Proyek' },
-    { no: 5, noSO: 'SO0005', soTurunan: 'SO0005.1', namaAlat: 'Barang 005', mob: '10-01-2025', demob: '19-01-2025', tanggalHarusKembali: '20-01-2025', status: 'Kembali' },
-    { no: 6, noSO: 'SO0006', soTurunan: 'SO0006.1', namaAlat: 'Barang 006', mob: '08-01-2025', demob: '17-01-2025', tanggalHarusKembali: '18-01-2025', status: 'Harus Kembali' },
-    { no: 7, noSO: 'SO0007', soTurunan: 'SO0007.1', namaAlat: 'Barang 007', mob: '25-01-2025', demob: '31-01-2025', tanggalHarusKembali: '01-02-2025', status: 'Di Proyek' },
-  ];
+  const [searchNamaAlat, setSearchNamaAlat] = useState('');
+  const [alatProyekData, setAlatProyekData] = useState([
+    { no: 1, noSO: 'SO0001', soTurunan: 'SO0001.1', namaAlat: 'Barang 001', mob: '20-01-2025', demob: '29-01-2025', tanggalKembali: '30-01-2025', keterangan: 'Barang dalam kondisi baik', status: 'Di Proyek' },
+    { no: 2, noSO: 'SO0002', soTurunan: 'SO0002.1', namaAlat: 'Barang 002', mob: '15-01-2025', demob: '24-01-2025', tanggalKembali: '25-01-2025', keterangan: 'Sudah dikembalikan', status: 'Kembali' },
+    { no: 3, noSO: 'SO0003', soTurunan: 'SO0003.1', namaAlat: 'Barang 003', mob: '12-01-2025', demob: '21-01-2025', tanggalKembali: '22-01-2025', keterangan: 'Perlu segera dikembalikan', status: 'Harus Kembali' },
+    { no: 4, noSO: 'SO0004', soTurunan: 'SO0004.1', namaAlat: 'Barang 004', mob: '18-01-2025', demob: '27-01-2025', tanggalKembali: '28-01-2025', keterangan: 'Masih digunakan', status: 'Di Proyek' },
+    { no: 5, noSO: 'SO0005', soTurunan: 'SO0005.1', namaAlat: 'Barang 005', mob: '10-01-2025', demob: '19-01-2025', tanggalKembali: '20-01-2025', keterangan: 'Kembali tepat waktu', status: 'Kembali' },
+    { no: 6, noSO: 'SO0006', soTurunan: 'SO0006.1', namaAlat: 'Barang 006', mob: '08-01-2025', demob: '17-01-2025', tanggalKembali: '18-01-2025', keterangan: 'Terlambat kembali', status: 'Harus Kembali' },
+    { no: 7, noSO: 'SO0007', soTurunan: 'SO0007.1', namaAlat: 'Barang 007', mob: '25-01-2025', demob: '31-01-2025', tanggalKembali: '01-02-2025', keterangan: 'Sedang dalam penggunaan', status: 'Di Proyek' },
+  ]);
+  const [editingKeterangan, setEditingKeterangan] = useState<number | null>(null);
+  const [tempKeterangan, setTempKeterangan] = useState('');
 
   const filteredData = alatProyekData.filter(item => {
-    if (filterStatus === 'Semua') {
-      return true;
-    }
-    return item.status === filterStatus;
+    const matchStatus = filterStatus === 'Semua' || item.status === filterStatus;
+    const matchNamaAlat = item.namaAlat.toLowerCase().includes(searchNamaAlat.toLowerCase());
+    return matchStatus && matchNamaAlat;
   });
+
+  const handleEditKeterangan = (no: number, currentKeterangan: string) => {
+    setEditingKeterangan(no);
+    setTempKeterangan(currentKeterangan);
+  };
+
+  const handleSaveKeterangan = (no: number) => {
+    setAlatProyekData(prev => prev.map(item => 
+      item.no === no ? { ...item, keterangan: tempKeterangan } : item
+    ));
+    setEditingKeterangan(null);
+    setTempKeterangan('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingKeterangan(null);
+    setTempKeterangan('');
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -84,6 +104,8 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
               <input
                 type="text"
                 id="cariNamaAlat"
+                value={searchNamaAlat}
+                onChange={(e) => setSearchNamaAlat(e.target.value)}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 placeholder="Alat a"
               />
@@ -182,8 +204,10 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MOB</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DEMOB</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Harus Kembali</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Kembali</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -195,9 +219,46 @@ const MonitoringAlatProyekDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.namaAlat}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.mob}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.demob}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalHarusKembali}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggalKembali}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {editingKeterangan === item.no ? (
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={tempKeterangan}
+                            onChange={(e) => setTempKeterangan(e.target.value)}
+                            className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 w-full"
+                            placeholder="Masukkan keterangan"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => handleSaveKeterangan(item.no)}
+                            className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="px-2 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-xs"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="truncate max-w-xs block">{item.keterangan}</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {getStatusBadge(item.status)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <button
+                        onClick={() => handleEditKeterangan(item.no, item.keterangan)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition-colors"
+                        title="Edit Keterangan"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
