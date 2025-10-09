@@ -213,8 +213,8 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No Invoice</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No PO</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No Invoice</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No RFI</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Nama Supplier</th>
                   <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Tanggal Penerimaan</th>
@@ -229,8 +229,8 @@ const PenerimaanBarangMasukDashboard: React.FC = () => {
                 {items.map((item) => (
                   <tr key={item.no} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.no}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.noInvoice}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.noPo}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.noInvoice}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium text-blue-600">{item.noRFI}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.namaSupplier}</td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.tanggalPenerimaan}</td>
