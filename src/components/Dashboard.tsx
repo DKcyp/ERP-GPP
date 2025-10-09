@@ -400,6 +400,7 @@ import MonitoringNilaiPOPage from "../pages/marketing/MonitoringNilaiPOPage";
 import MasterAllowancePage from "../pages/hrd/MasterAllowancePage";
 import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
 import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
+import ApprovalBarangRusakPage from "../pages/qhse/approval/ApprovalBarangRusakPage";
 
 interface DashboardProps {
   currentPage: string;
@@ -2104,7 +2105,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     if (currentPage === "/qhse/legalitas-perusahaan") {
       return <LegalitasPerusahaanDashboard />;
     }
-
+    if (currentPage === "/qhse/approval/barang-rusak") {
+      return <ApprovalBarangRusakPage />;
+    }
     // Accounting Routes
     if (currentPage === "/accounting/dashboard") {
       return <AccountingMainDashboard />;

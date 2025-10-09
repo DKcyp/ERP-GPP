@@ -137,15 +137,20 @@ const DaftarGajiDashboard: React.FC = () => {
       const bersih = toNumber(r.gajiBersih) || Math.max(toNumber(r.totalIncome) - toNumber(r.totalDeduct) - toNumber(r.potonganLain), 0);
       return sum + bersih;
     }, 0);
+    const sumTunjangan = rows.reduce((s, r) => s + (toNumber(r.totalTunjanganProyek || '0')), 0);
+    const sumGapok = rows.reduce((s, r) => s + (toNumber(r.gapokTeknisi || '0')), 0);
+    const sumTahap1 = rows.reduce((s, r) => s + (toNumber(r.tahap1 || '0')), 0);
+    const sumTahap2 = rows.reduce((s, r) => s + (toNumber(r.tahap2 || '0')), 0);
+    const sumTahap3 = rows.reduce((s, r) => s + (toNumber(r.tahap3 || '0')), 0);
     const newItem: PeriodPayroll = {
       id: (periods.length + 1).toString(),
       no: periods.length + 1,
       periode: period, // store YYYY-MM
-      totalTunjanganProyek: 'Rp 0',
-      gapokTeknisi: 'Rp 0',
-      totalTahap1: 'Rp 0',
-      totalTahap2: 'Rp 0',
-      totalTahap3: 'Rp 0',
+      totalTunjanganProyek: formatRp(sumTunjangan),
+      gapokTeknisi: formatRp(sumGapok),
+      totalTahap1: formatRp(sumTahap1),
+      totalTahap2: formatRp(sumTahap2),
+      totalTahap3: formatRp(sumTahap3),
       total: formatRp(totalVal),
       rows,
     };
@@ -192,6 +197,16 @@ const DaftarGajiDashboard: React.FC = () => {
       av = a.periode; bv = b.periode;
     } else if (sortField === 'total') {
       av = toNumber(a.total); bv = toNumber(b.total);
+    } else if (sortField === 'totalTunjanganProyek') {
+      av = toNumber(a.totalTunjanganProyek); bv = toNumber(b.totalTunjanganProyek);
+    } else if (sortField === 'gapokTeknisi') {
+      av = toNumber(a.gapokTeknisi); bv = toNumber(b.gapokTeknisi);
+    } else if (sortField === 'totalTahap1') {
+      av = toNumber(a.totalTahap1); bv = toNumber(b.totalTahap1);
+    } else if (sortField === 'totalTahap2') {
+      av = toNumber(a.totalTahap2); bv = toNumber(b.totalTahap2);
+    } else if (sortField === 'totalTahap3') {
+      av = toNumber(a.totalTahap3); bv = toNumber(b.totalTahap3);
     }
 
     if (typeof av === 'string' && typeof bv === 'string') {

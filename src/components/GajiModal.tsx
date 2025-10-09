@@ -16,6 +16,8 @@ export interface GajiRow {
   totalIncome: string; // formatted Rp
   totalDeduct: string; // formatted Rp
   potonganLain: string; // formatted Rp
+  totalTunjanganProyek?: string; // formatted Rp
+  gapokTeknisi?: string; // formatted Rp
   gajiBersih: string; // formatted Rp
   // Optional stage breakdowns
   tahap1?: string; // formatted Rp
@@ -102,7 +104,6 @@ const GajiModal: React.FC<GajiModalProps> = ({
   }, [isOpen]);
 
   // Helpers: format Rupiah and parsing
-  const toNumber = (rp: string) => parseFloat(rp.replace(/[^\d]/g, "")) || 0;
   const formatRp = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
 
   const formatCurrencyInput = (value: string) => {
@@ -125,6 +126,8 @@ const GajiModal: React.FC<GajiModalProps> = ({
       totalIncome: formatRp(0),
       totalDeduct: formatRp(0),
       potonganLain: formatRp(0),
+      totalTunjanganProyek: formatRp(0),
+      gapokTeknisi: formatRp(0),
       gajiBersih: formatRp(0),
       tahap1: formatRp(0),
       tahap2: formatRp(0),
@@ -269,14 +272,14 @@ const GajiModal: React.FC<GajiModalProps> = ({
                   onScroll={handleTopScroll}
                   className="overflow-x-auto"
                 >
-                  <div className="min-w-[1400px] h-4" />
+                  <div className="min-w-[1600px] h-4" />
                 </div>
                 <div
                   ref={bottomScrollRef}
                   onScroll={handleBottomScroll}
                   className="overflow-x-auto"
                 >
-                  <table className="min-w-[1400px]">
+                  <table className="min-w-[1600px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                       <tr>
                         <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
@@ -298,23 +301,27 @@ const GajiModal: React.FC<GajiModalProps> = ({
                           Potongan lain lain
                         </th>
                         <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                          Total Tunjangan Proyek
+                        </th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                          Gapok Teknisi
+                        </th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
                           Gaji bersih
                         </th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                          Tahap 1
+                        </th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                          Tahap 2
+                        </th>
+                        <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                          Tahap 3
+                        </th>
                         {showStages && (
-                          <>
-                            <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                              Tahap 1
-                            </th>
-                            <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                              Tahap 2
-                            </th>
-                            <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                              Tahap 3
-                            </th>
-                            <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
-                              Outstanding
-                            </th>
-                          </>
+                          <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                            Outstanding
+                          </th>
                         )}
                         {showStages && (
                           <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
@@ -382,62 +389,30 @@ const GajiModal: React.FC<GajiModalProps> = ({
                               placeholder="Rp 0"
                             />
                           </td>
-                          {showStages && (
-                            <>
-                              <td className="px-4 py-2 text-sm text-gray-900 text-right">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={r.tahap1 ?? "Rp 0"}
-                                  onChange={(e) =>
-                                    updateRow(idx, "tahap1", e.target.value)
-                                  }
-                                  className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Rp 0"
-                                />
-                              </td>
-                              <td className="px-4 py-2 text-sm text-gray-900 text-right">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={r.tahap2 ?? "Rp 0"}
-                                  onChange={(e) =>
-                                    updateRow(idx, "tahap2", e.target.value)
-                                  }
-                                  className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Rp 0"
-                                />
-                              </td>
-                              <td className="px-4 py-2 text-sm text-gray-900 text-right">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={r.tahap3 ?? "Rp 0"}
-                                  onChange={(e) =>
-                                    updateRow(idx, "tahap3", e.target.value)
-                                  }
-                                  className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Rp 0"
-                                />
-                              </td>
-                              <td className="px-4 py-2 text-sm text-gray-900 text-right">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={r.outstanding ?? "Rp 0"}
-                                  onChange={(e) =>
-                                    updateRow(
-                                      idx,
-                                      "outstanding",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Rp 0"
-                                />
-                              </td>
-                            </>
-                          )}
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.totalTunjanganProyek ?? "Rp 0"}
+                              onChange={(e) =>
+                                updateRow(idx, "totalTunjanganProyek", e.target.value)
+                              }
+                              className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.gapokTeknisi ?? "Rp 0"}
+                              onChange={(e) =>
+                                updateRow(idx, "gapokTeknisi", e.target.value)
+                              }
+                              className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
                           <td className="px-4 py-2 text-sm text-gray-900 text-right">
                             <input
                               type="text"
@@ -450,6 +425,60 @@ const GajiModal: React.FC<GajiModalProps> = ({
                               placeholder="Rp 0"
                             />
                           </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.tahap1 ?? "Rp 0"}
+                              onChange={(e) =>
+                                updateRow(idx, "tahap1", e.target.value)
+                              }
+                              className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.tahap2 ?? "Rp 0"}
+                              onChange={(e) =>
+                                updateRow(idx, "tahap2", e.target.value)
+                              }
+                              className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={r.tahap3 ?? "Rp 0"}
+                              onChange={(e) =>
+                                updateRow(idx, "tahap3", e.target.value)
+                              }
+                              className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rp 0"
+                            />
+                          </td>
+                          {showStages && (
+                            <td className="px-4 py-2 text-sm text-gray-900 text-right">
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                value={r.outstanding ?? "Rp 0"}
+                                onChange={(e) =>
+                                  updateRow(
+                                    idx,
+                                    "outstanding",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-40 text-right px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Rp 0"
+                              />
+                            </td>
+                          )}
                           {showStages && (
                             <td className="px-4 py-2 text-sm text-center">
                               <button
@@ -467,7 +496,7 @@ const GajiModal: React.FC<GajiModalProps> = ({
                       {rows.length === 0 && (
                         <tr>
                           <td
-                            colSpan={showStages ? 11 : 6}
+                            colSpan={showStages ? 14 : 12}
                             className="px-4 py-6 text-center text-sm text-gray-500"
                           >
                             Tidak ada data

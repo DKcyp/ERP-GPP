@@ -17,6 +17,7 @@ import {
   ArrowUp,
   CheckCircle,
   FileUp,
+  XCircle,
 } from "lucide-react";
 
 // Updated interface for the dashboard's training data
@@ -48,6 +49,10 @@ const ProsesPengajuanTrainingDashboard: React.FC<
   const [isRealisasiModalOpen, setIsRealisasiModalOpen] = useState(false); // New state for Realisasi modal
   const [selectedTrainingForRealisasi, setSelectedTrainingForRealisasi] =
     useState<ProsesPengajuanTraining | null>(null); // To pass data to Realisasi modal
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false); // New state for Reject modal
+  const [selectedTrainingForReject, setSelectedTrainingForReject] =
+    useState<ProsesPengajuanTraining | null>(null); // To pass data to Reject modal
+  const [rejectionReason, setRejectionReason] = useState(""); // State for rejection reason
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -144,6 +149,37 @@ const ProsesPengajuanTrainingDashboard: React.FC<
     alert(
       `Dokumen realisasi untuk No Training ${data.noTraining} berhasil diunggah!`
     );
+  };
+
+  // Handler for opening Reject modal
+  const handleRejectClick = (training: ProsesPengajuanTraining) => {
+    setSelectedTrainingForReject(training);
+    setIsRejectModalOpen(true);
+  };
+
+  // Handler for confirming rejection
+  const handleConfirmReject = () => {
+    if (selectedTrainingForReject && rejectionReason.trim() !== "") {
+      console.log(
+        `Training ${selectedTrainingForReject.namaPersonil} - ${selectedTrainingForReject.jenisPelatihan} ditolak dengan alasan: ${rejectionReason}`
+      );
+      // Here you would typically send the rejection to a backend API
+      alert(
+        `Training ${selectedTrainingForReject.namaPersonil} - ${selectedTrainingForReject.jenisPelatihan} berhasil ditolak!`
+      );
+      setIsRejectModalOpen(false);
+      setSelectedTrainingForReject(null);
+      setRejectionReason("");
+    } else if (rejectionReason.trim() === "") {
+      alert("Alasan penolakan tidak boleh kosong.");
+    }
+  };
+
+  // Handler for closing Reject modal
+  const handleCloseRejectModal = () => {
+    setIsRejectModalOpen(false);
+    setSelectedTrainingForReject(null);
+    setRejectionReason("");
   };
 
   // Filter data based on search criteria
@@ -456,7 +492,7 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
                         {/* Conditional rendering for action buttons based on role */}
-                        {role === "management" || role === "hrd" ? ( // If role is management OR hrd, show Approve and Realisasi
+                        {role === "management" || role === "hrd" ? ( // If role is management OR hrd, show Approve, Reject and Realisasi
                           <>
                             <button
                               onClick={() => setIsModalOpen(true)} // This would typically open an approval modal
@@ -464,6 +500,13 @@ const ProsesPengajuanTrainingDashboard: React.FC<
                               title="Approve"
                             >
                               <CheckCircle className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleRejectClick(item)}
+                              className="p-1.5 text-error hover:bg-error/10 rounded transition-all duration-200 hover:scale-110"
+                              title="Reject"
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
                             </button>
                             {role === "hrd" && ( // Only show Realisasi for HRD
                               <button
@@ -577,6 +620,46 @@ const ProsesPengajuanTrainingDashboard: React.FC<
           onUpload={handleRealisasiUpload}
           noTraining={`${selectedTrainingForRealisasi.namaPersonil} - ${selectedTrainingForRealisasi.jenisPelatihan}`}
         />
+      )}
+
+      {/* Reject Modal */}
+      {isRejectModalOpen && selectedTrainingForReject && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              Alasan Penolakan Training
+            </h3>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                <span className="font-medium">Nama Personil:</span> {selectedTrainingForReject.namaPersonil}
+              </p>
+              <p className="text-sm text-gray-600 mb-4">
+                <span className="font-medium">Jenis Pelatihan:</span> {selectedTrainingForReject.jenisPelatihan}
+              </p>
+            </div>
+            <textarea
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
+              rows={4}
+              placeholder="Masukkan alasan penolakan..."
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+            ></textarea>
+            <div className="flex justify-end space-x-3 mt-4">
+              <button
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+                onClick={handleCloseRejectModal}
+              >
+                Batal
+              </button>
+              <button
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                onClick={handleConfirmReject}
+              >
+                Tolak
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

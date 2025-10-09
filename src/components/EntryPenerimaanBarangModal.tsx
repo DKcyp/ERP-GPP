@@ -194,39 +194,6 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
         <div className="p-5 space-y-5">
           {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label
-                htmlFor="noInvoice"
-                className="block text-xs font-medium text-gray-700 mb-1"
-              >
-                No Invoice
-              </label>
-              <input
-                type="text"
-                id="noInvoice"
-                className={`px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${
-                  isReadOnly ? "bg-gray-50" : "bg-white"
-                }`}
-                defaultValue={headerData?.noInvoice ?? "INV-60"}
-                readOnly={isReadOnly}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="noRFI"
-                className="block text-xs font-medium text-gray-700 mb-1"
-              >
-                No RFI
-              </label>
-              <input
-                type="text"
-                id="noRFI"
-                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full bg-gray-50 text-xs font-medium text-blue-600"
-                value={headerForm.noRFI}
-                placeholder="Auto Generated"
-                readOnly
-              />
-            </div>
             <div className="relative">
               <label
                 htmlFor="noPo"
@@ -287,6 +254,39 @@ const EntryPenerimaanBarangModal: React.FC<EntryPenerimaanBarangModalProps> = ({
                 className="px-3 py-1.5 border border-gray-300 rounded-lg w-full bg-gray-50 text-xs"
                 value={headerForm.namaSupplier}
                 placeholder="Akan terisi otomatis saat memilih No PO"
+                readOnly
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="noInvoice"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                No Invoice
+              </label>
+              <input
+                type="text"
+                id="noInvoice"
+                className={`px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs ${
+                  isReadOnly ? "bg-gray-50" : "bg-white"
+                }`}
+                defaultValue={headerData?.noInvoice ?? "INV-60"}
+                readOnly={isReadOnly}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="noRFI"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                No RFI
+              </label>
+              <input
+                type="text"
+                id="noRFI"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg w-full bg-gray-50 text-xs font-medium text-blue-600"
+                value={headerForm.noRFI}
+                placeholder="Auto Generated"
                 readOnly
               />
             </div>

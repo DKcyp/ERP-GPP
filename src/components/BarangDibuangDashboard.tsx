@@ -1,36 +1,121 @@
-import React, { useState } from 'react';
-import { Clock, FileText, FileBarChart, FileSpreadsheet, Eye, Edit, Trash2, CalendarDays, AlertTriangle, Plus } from 'lucide-react';
-import EntryBarangDibuangModal, { BarangDibuangItemInput } from './EntryBarangDibuangModal';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import React, { useState } from "react";
+import {
+  Clock,
+  FileText,
+  FileBarChart,
+  FileSpreadsheet,
+  Eye,
+  Edit,
+  Trash2,
+  CalendarDays,
+  AlertTriangle,
+  Plus,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import EntryBarangDibuangModal, {
+  BarangDibuangItemInput,
+} from "./EntryBarangDibuangModal";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-const BarangDibuangDashboard: React.FC = () => {
-  const [barangDibuangItems, setBarangDibuangItems] = useState<Array<{
-    no: number;
-    kodeBarang: string;
-    namaBarang: string;
-    kategori: string;
-    satuan: string;
-    sumber: string;
-    tanggalDibuang: string;
-    catatan: string;
-    jumlah?: number;
-  }>>([
-    { no: 1, kodeBarang: 'BRG001', namaBarang: 'Body Shiled', kategori: 'APD', satuan: 'Unit', sumber: 'Karantina', tanggalDibuang: '01-02-2025', catatan: 'Tidak dapat diperbaiki' },
-    { no: 2, kodeBarang: 'BRG003', namaBarang: 'Sepatu Boot', kategori: 'APD', satuan: 'Unit', sumber: 'Timesheet', tanggalDibuang: '02-02-2025', catatan: 'Tidak dapat diperbaiki' },
-    { no: 3, kodeBarang: 'BRG002', namaBarang: 'Helm Proyek', kategori: 'APD', satuan: 'Unit', sumber: 'Pengembalian Barang', tanggalDibuang: '02-02-2025', catatan: 'Retak tidak aman' },
+interface BarangDibuangDashboardProps {
+  showAddButton?: boolean;
+  showEditButton?: boolean;
+  showDeleteButton?: boolean;
+  showApproveRejectButtons?: boolean;
+}
+
+const BarangDibuangDashboard: React.FC<BarangDibuangDashboardProps> = ({
+  showAddButton = true,
+  showEditButton = true,
+  showDeleteButton = true,
+  showApproveRejectButtons = false,
+}) => {
+  const [barangDibuangItems, setBarangDibuangItems] = useState<
+    Array<{
+      no: number;
+      kodeBarang: string;
+      namaBarang: string;
+      kategori: string;
+      satuan: string;
+      sumber: string;
+      tanggalDibuang: string;
+      catatan: string;
+      jumlah?: number;
+    }>
+  >([
+    {
+      no: 1,
+      kodeBarang: "BRG001",
+      namaBarang: "Body Shiled",
+      kategori: "APD",
+      satuan: "Unit",
+      sumber: "Karantina",
+      tanggalDibuang: "01-02-2025",
+      catatan: "Tidak dapat diperbaiki",
+    },
+    {
+      no: 2,
+      kodeBarang: "BRG003",
+      namaBarang: "Sepatu Boot",
+      kategori: "APD",
+      satuan: "Unit",
+      sumber: "Timesheet",
+      tanggalDibuang: "02-02-2025",
+      catatan: "Tidak dapat diperbaiki",
+    },
+    {
+      no: 3,
+      kodeBarang: "BRG002",
+      namaBarang: "Helm Proyek",
+      kategori: "APD",
+      satuan: "Unit",
+      sumber: "Pengembalian Barang",
+      tanggalDibuang: "02-02-2025",
+      catatan: "Retak tidak aman",
+    },
     // Sample items to trigger warning badge
-    { no: 4, kodeBarang: 'CHM001', namaBarang: 'Solvent X', kategori: 'Chemical', satuan: 'Liter', sumber: 'Karantina', tanggalDibuang: '03-02-2025', catatan: 'Melebihi tanggal kadaluarsa' },
-    { no: 5, kodeBarang: 'B3001', namaBarang: 'Baterai Industri', kategori: 'B3', satuan: 'Unit', sumber: 'Pengembalian Barang', tanggalDibuang: '04-02-2025', catatan: 'Kerusakan berat' },
+    {
+      no: 4,
+      kodeBarang: "CHM001",
+      namaBarang: "Solvent X",
+      kategori: "Chemical",
+      satuan: "Liter",
+      sumber: "Karantina",
+      tanggalDibuang: "03-02-2025",
+      catatan: "Melebihi tanggal kadaluarsa",
+    },
+    {
+      no: 5,
+      kodeBarang: "B3001",
+      namaBarang: "Baterai Industri",
+      kategori: "B3",
+      satuan: "Unit",
+      sumber: "Pengembalian Barang",
+      tanggalDibuang: "04-02-2025",
+      catatan: "Kerusakan berat",
+    },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'view' | 'edit'>('create');
-  const [initialData, setInitialData] = useState<Partial<BarangDibuangItemInput> | undefined>(undefined);
+  const [modalMode, setModalMode] = useState<"create" | "view" | "edit">(
+    "create"
+  );
+  const [initialData, setInitialData] = useState<
+    Partial<BarangDibuangItemInput> | undefined
+  >(undefined);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<typeof barangDibuangItems[number] | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<
+    (typeof barangDibuangItems)[number] | null
+  >(null);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [itemToReject, setItemToReject] = useState<
+    (typeof barangDibuangItems)[number] | null
+  >(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const formatToDDMMYYYY = (yyyyMmDd: string) => {
-    const [y, m, d] = yyyyMmDd.split('-');
+    const [y, m, d] = yyyyMmDd.split("-");
     if (!y || !m || !d) return yyyyMmDd;
     return `${d}-${m}-${y}`;
   };
@@ -45,25 +130,44 @@ const BarangDibuangDashboard: React.FC = () => {
       satuan: data.satuan,
       sumber: data.sumber,
       tanggalDibuang: formatToDDMMYYYY(data.tanggalDibuang),
-      catatan: data.catatan || '-',
+      catatan: data.catatan || "-",
       jumlah: data.jumlah ?? 1,
     };
-    setBarangDibuangItems(prev => [
+    setBarangDibuangItems((prev) => [
       newItem,
-      ...prev.map(p => ({ ...p, no: p.no + 1 })),
+      ...prev.map((p) => ({ ...p, no: p.no + 1 })),
     ]);
   };
 
   const parseToYYYYMMDD = (ddMmYy: string) => {
     // expects dd-mm-yyyy
-    const [d, m, y] = ddMmYy.split('-');
+    const [d, m, y] = ddMmYy.split("-");
     if (!y || !m || !d) return ddMmYy;
     return `${y}-${m}-${d}`;
   };
 
   const isB3Category = (kategori: string) => {
-    const key = (kategori || '').toLowerCase();
-    return key === 'chemical' || key === 'b3';
+    const key = (kategori || "").toLowerCase();
+    return key === "chemical" || key === "b3";
+  };
+
+  const handleApprove = (item: (typeof barangDibuangItems)[number]) => {
+    console.log("Approved:", item);
+    // Implement your approval logic here
+    setBarangDibuangItems((prev) => prev.filter((p) => p.no !== item.no));
+  };
+
+  const handleReject = () => {
+    if (itemToReject) {
+      console.log("Rejected:", itemToReject, "Reason:", rejectReason);
+      // Implement your rejection logic here with rejectReason
+      setBarangDibuangItems((prev) =>
+        prev.filter((p) => p.no !== itemToReject.no)
+      );
+      setIsRejectModalOpen(false);
+      setRejectReason("");
+      setItemToReject(null);
+    }
   };
 
   return (
@@ -73,19 +177,23 @@ const BarangDibuangDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 tracking-wide mb-2">
-                BARANG DIBUANG
+                Barang Scrap
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Gudang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Gudang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Pengembalian Barang</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Pengembalian Barang
+                </span>
                 <span className="mx-2">›</span>
-                <span className="text-blue-600 font-medium">Barang Dibuang</span>
+                <span className="text-blue-600 font-medium">Barang Scrap</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {new Date().toLocaleString('id-ID')}</span>
+              <span>Last updated: {new Date().toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -95,7 +203,12 @@ const BarangDibuangDashboard: React.FC = () => {
           {/* Filter Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="relative">
-              <label htmlFor="kodeBarang" className="block text-xs font-medium text-gray-700 mb-1">Cari Kode Barang</label>
+              <label
+                htmlFor="kodeBarang"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                Cari Kode Barang
+              </label>
               <input
                 type="text"
                 id="kodeBarang"
@@ -104,7 +217,12 @@ const BarangDibuangDashboard: React.FC = () => {
               />
             </div>
             <div className="relative">
-              <label htmlFor="namaBarang" className="block text-xs font-medium text-gray-700 mb-1">Cari Nama Barang</label>
+              <label
+                htmlFor="namaBarang"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                Cari Nama Barang
+              </label>
               <input
                 type="text"
                 id="namaBarang"
@@ -113,7 +231,12 @@ const BarangDibuangDashboard: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="sumberBarang" className="block text-xs font-medium text-gray-700 mb-1">Pilih Sumber Barang</label>
+              <label
+                htmlFor="sumberBarang"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                Pilih Sumber Barang
+              </label>
               <select
                 id="sumberBarang"
                 className="px-3 py-1.5 border border-gray-300 rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
@@ -128,7 +251,12 @@ const BarangDibuangDashboard: React.FC = () => {
           {/* Periode and Search/Tambah Buttons */}
           <div className="flex items-end space-x-2 mb-4">
             <div className="relative flex-1">
-              <label htmlFor="periodeStart" className="block text-xs font-medium text-gray-700 mb-1">Periode</label>
+              <label
+                htmlFor="periodeStart"
+                className="block text-xs font-medium text-gray-700 mb-1"
+              >
+                Periode
+              </label>
               <div className="flex items-center space-x-2">
                 <div className="relative w-1/2">
                   <input
@@ -154,13 +282,15 @@ const BarangDibuangDashboard: React.FC = () => {
             <button className="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-xs shadow-sm">
               Search
             </button>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 text-xs shadow-sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tambah</span>
-            </button>
+            {showAddButton && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 text-xs shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tambah</span>
+              </button>
+            )}
           </div>
 
           {/* Export Buttons */}
@@ -202,26 +332,59 @@ const BarangDibuangDashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200 text-xs">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">No</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Kode Barang</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Warning</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Sumber</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Tanggal Dibuang</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Catatan</th>
-                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Kode Barang
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Barang
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Kategori
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Warning
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Satuan
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Jumlah
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Sumber
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Tanggal Dibuang
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Catatan
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {barangDibuangItems.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.no}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.kodeBarang}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.namaBarang}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.kategori}</td>
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.no}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.kodeBarang}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.namaBarang}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.kategori}
+                    </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
                       {isB3Category(item.kategori) ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-yellow-100 text-yellow-800 text-[10px] font-medium border border-yellow-200">
@@ -232,18 +395,28 @@ const BarangDibuangDashboard: React.FC = () => {
                         <span className="text-gray-400">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.satuan}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.jumlah ?? 1}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.sumber}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.tanggalDibuang}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{item.catatan}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.satuan}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.jumlah ?? 1}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.sumber}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.tanggalDibuang}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {item.catatan}
+                    </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs font-medium">
                       <div className="flex items-center gap-1.5">
                         <button
                           className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-xs shadow-sm"
                           title="Lihat"
                           onClick={() => {
-                            setModalMode('view');
+                            setModalMode("view");
                             setInitialData({
                               kodeBarang: item.kodeBarang,
                               namaBarang: item.namaBarang,
@@ -251,7 +424,9 @@ const BarangDibuangDashboard: React.FC = () => {
                               satuan: item.satuan,
                               jumlah: item.jumlah ?? 1,
                               sumber: item.sumber,
-                              tanggalDibuang: parseToYYYYMMDD(item.tanggalDibuang),
+                              tanggalDibuang: parseToYYYYMMDD(
+                                item.tanggalDibuang
+                              ),
                               catatan: item.catatan,
                             });
                             setIsModalOpen(true);
@@ -259,36 +434,63 @@ const BarangDibuangDashboard: React.FC = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button
-                          className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 text-xs shadow-sm"
-                          title="Edit"
-                          onClick={() => {
-                            setModalMode('edit');
-                            setInitialData({
-                              kodeBarang: item.kodeBarang,
-                              namaBarang: item.namaBarang,
-                              kategori: item.kategori,
-                              satuan: item.satuan,
-                              jumlah: item.jumlah ?? 1,
-                              sumber: item.sumber,
-                              tanggalDibuang: parseToYYYYMMDD(item.tanggalDibuang),
-                              catatan: item.catatan,
-                            });
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs shadow-sm"
-                          title="Hapus"
-                          onClick={() => {
-                            setItemToDelete(item);
-                            setIsDeleteOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {showEditButton && (
+                          <button
+                            className="p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 text-xs shadow-sm"
+                            title="Edit"
+                            onClick={() => {
+                              setModalMode("edit");
+                              setInitialData({
+                                kodeBarang: item.kodeBarang,
+                                namaBarang: item.namaBarang,
+                                kategori: item.kategori,
+                                satuan: item.satuan,
+                                jumlah: item.jumlah ?? 1,
+                                sumber: item.sumber,
+                                tanggalDibuang: parseToYYYYMMDD(
+                                  item.tanggalDibuang
+                                ),
+                                catatan: item.catatan,
+                              });
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        )}
+                        {showDeleteButton && (
+                          <button
+                            className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs shadow-sm"
+                            title="Hapus"
+                            onClick={() => {
+                              setItemToDelete(item);
+                              setIsDeleteOpen(true);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                        {showApproveRejectButtons && (
+                          <>
+                            <button
+                              className="p-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-xs shadow-sm"
+                              title="Approve"
+                              onClick={() => handleApprove(item)}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-xs shadow-sm"
+                              title="Reject"
+                              onClick={() => {
+                                setItemToReject(item);
+                                setIsRejectModalOpen(true);
+                              }}
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -300,7 +502,8 @@ const BarangDibuangDashboard: React.FC = () => {
           {/* Pagination */}
           <div className="flex justify-between items-center mt-4">
             <div className="text-xs text-gray-600">
-              Showing 1 to {barangDibuangItems.length} of {barangDibuangItems.length} entries
+              Showing 1 to {barangDibuangItems.length} of{" "}
+              {barangDibuangItems.length} entries
             </div>
             <div className="flex items-center space-x-1.5">
               <button className="px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-xs">
@@ -330,13 +533,64 @@ const BarangDibuangDashboard: React.FC = () => {
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={() => {
           if (itemToDelete) {
-            setBarangDibuangItems(prev => prev.filter(p => p.no !== itemToDelete.no).map((p, idx) => ({ ...p, no: idx + 1 })));
+            setBarangDibuangItems((prev) =>
+              prev
+                .filter((p) => p.no !== itemToDelete.no)
+                .map((p, idx) => ({ ...p, no: idx + 1 }))
+            );
           }
         }}
-        title="Konfirmasi Hapus Barang Dibuang"
+        title="Konfirmasi Hapus Barang Scrap"
         message="Apakah Anda yakin ingin menghapus data ini?"
-        itemName={itemToDelete ? `${itemToDelete.kodeBarang} - ${itemToDelete.namaBarang}` : undefined}
+        itemName={
+          itemToDelete
+            ? `${itemToDelete.kodeBarang} - ${itemToDelete.namaBarang}`
+            : undefined
+        }
       />
+
+      {/* Reject Modal */}
+      {isRejectModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Tolak Barang Rusak
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Anda akan menolak item ini:{" "}
+              <span className="font-medium">
+                {itemToReject?.kodeBarang} - {itemToReject?.namaBarang}
+              </span>
+              . Mohon berikan keterangan penolakan.
+            </p>
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded-md text-sm mb-4"
+              rows={4}
+              placeholder="Keterangan penolakan..."
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            ></textarea>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => {
+                  setIsRejectModalOpen(false);
+                  setRejectReason("");
+                  setItemToReject(null);
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200 text-sm"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleReject}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 text-sm"
+              >
+                Tolak
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto px-6 py-4 text-center text-sm text-gray-500 flex justify-between items-center">

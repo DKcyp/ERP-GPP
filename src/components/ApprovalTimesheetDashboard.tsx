@@ -764,7 +764,7 @@ const ApprovalTimesheetDashboard: React.FC = () => {
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
-                Tambah Timesheet Barang/Pegawai
+                Approve Timesheet Pegawai
               </h3>
             </div>
 
@@ -937,9 +937,9 @@ const ApprovalTimesheetDashboard: React.FC = () => {
               </button>
               <button
                 onClick={handleApprove}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
               >
-                Simpan
+                Approve
               </button>
             </div>
           </div>

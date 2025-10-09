@@ -1484,7 +1484,7 @@ export const gudangMenu: MenuSection[] = [
         path: "/gudang/barang-rusak/dashboard",
       },
       {
-        title: "Barang Dibuang",
+        title: "Barang Scrap",
         icon: "Trash",
         path: "/gudang/pengembalian-barang/dibuang",
       },
@@ -1885,6 +1885,17 @@ export const qhseMenu: MenuSection[] = [
         title: "Daftar Induk Dokumen Eksternal",
         icon: "FileCheck",
         path: "/qhse/daftar-induk-dokumen-eksternal",
+      },
+    ],
+  },
+  {
+    title: "Approval",
+    icon: "CheckSquare",
+    items: [
+      {
+        title: "Approval Barang Rusak",
+        icon: "Tool",
+        path: "/qhse/approval/barang-rusak",
       },
     ],
   },
