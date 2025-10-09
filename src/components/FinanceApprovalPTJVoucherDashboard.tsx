@@ -5,8 +5,10 @@ import {
   FileText,
   FileSpreadsheet,
   FileDown,
-  ThumbsUp,
-  ThumbsDown,
+  Check,
+  X,
+  Send,
+  ShieldCheck,
 } from "lucide-react";
 import PertanggungJawabanEntryModal from "./PertanggungJawabanEntryModal"; // Import the new modal
 import { VoucherEntry, PTJDetailItem } from "../types"; // Only import VoucherEntry
@@ -23,7 +25,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
-    "approve" | "reject" | null
+    "approve" | "reject" | "posting" | "verify" | null
   >(null);
   const [selectedEntry, setSelectedEntry] = useState<VoucherEntry | null>(null);
   const [rejectionNote, setRejectionNote] = useState<string>(""); // New state for rejection note
@@ -162,7 +164,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
   const openConfirmation = (
     entry: VoucherEntry,
-    action: "approve" | "reject"
+    action: "approve" | "reject" | "posting" | "verify"
   ) => {
     setSelectedEntry(entry);
     setConfirmAction(action);
@@ -175,15 +177,26 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
         alert("Catatan penolakan tidak boleh kosong.");
         return;
       }
-      console.log(
-        `${confirmAction.charAt(0).toUpperCase() + confirmAction.slice(1)}d:`,
-        selectedEntry.noVoucher
-      );
-      if (confirmAction === "reject") {
-        console.log("Rejection Note:", rejectionNote);
-        // Here you would send the rejectionNote along with the reject action
+      
+      if (confirmAction === "posting") {
+        console.log("Posting voucher:", selectedEntry.noVoucher);
+        alert(`Voucher ${selectedEntry.noVoucher} berhasil di-posting!`);
+        // Here you would put your actual posting logic
+      } else if (confirmAction === "verify") {
+        console.log("Verify Kasir voucher:", selectedEntry.noVoucher);
+        alert(`Voucher ${selectedEntry.noVoucher} berhasil diverifikasi oleh Kasir!`);
+        // Here you would put your actual verify kasir logic
+      } else {
+        console.log(
+          `${confirmAction.charAt(0).toUpperCase() + confirmAction.slice(1)}d:`,
+          selectedEntry.noVoucher
+        );
+        if (confirmAction === "reject") {
+          console.log("Rejection Note:", rejectionNote);
+          // Here you would send the rejectionNote along with the reject action
+        }
       }
-      // Here you would put your actual approve/reject logic
+      // Here you would put your actual approve/reject/posting logic
     }
     closeConfirmation();
   };
@@ -452,14 +465,28 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
                           className="p-1 text-success hover:text-success/80 transition-colors duration-200"
                           title="Approve"
                         >
-                          <ThumbsUp className="h-4 w-4" />
+                          <Check className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => openConfirmation(entry, "reject")}
                           className="p-1 text-error hover:text-error/80 transition-colors duration-200"
                           title="Reject"
                         >
-                          <ThumbsDown className="h-4 w-4" />
+                          <X className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => openConfirmation(entry, "posting")}
+                          className="p-1 text-primary hover:text-primary/80 transition-colors duration-200"
+                          title="Posting"
+                        >
+                          <Send className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => openConfirmation(entry, "verify")}
+                          className="p-1 text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                          title="Verify Kasir"
+                        >
+                          <ShieldCheck className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -510,12 +537,30 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
         title={
           confirmAction === "approve"
             ? "Konfirmasi Approval"
-            : "Konfirmasi Penolakan"
+            : confirmAction === "reject"
+            ? "Konfirmasi Penolakan"
+            : confirmAction === "posting"
+            ? "Konfirmasi Posting"
+            : "Konfirmasi Verify Kasir"
         }
-        message={`Apakah Anda yakin ingin ${
-          confirmAction === "approve" ? "menyetujui" : "menolak"
-        } pertanggung jawaban untuk voucher ${selectedEntry?.noVoucher}?`}
-        confirmText={confirmAction === "approve" ? "Approve" : "Reject"}
+        message={
+          confirmAction === "posting"
+            ? `Apakah Anda yakin ingin melakukan posting untuk voucher ${selectedEntry?.noVoucher}?`
+            : confirmAction === "verify"
+            ? `Apakah Anda yakin ingin memverifikasi voucher ${selectedEntry?.noVoucher} oleh Kasir?`
+            : `Apakah Anda yakin ingin ${
+                confirmAction === "approve" ? "menyetujui" : "menolak"
+              } pertanggung jawaban untuk voucher ${selectedEntry?.noVoucher}?`
+        }
+        confirmText={
+          confirmAction === "approve"
+            ? "Approve"
+            : confirmAction === "reject"
+            ? "Reject"
+            : confirmAction === "posting"
+            ? "Posting"
+            : "Verify"
+        }
         showNoteInput={confirmAction === "reject"} // Conditionally show note input
         note={rejectionNote}
         onNoteChange={setRejectionNote}

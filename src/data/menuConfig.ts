@@ -1697,6 +1697,11 @@ export const managementMenu: MenuSection[] = [
         path: "/management/penggajian",
       },
       {
+        title: "Approval Pendebetan",
+        icon: "MinusCircle",
+        path: "/management/approval-pendebetan",
+      },
+      {
         title: "Approve Training",
         icon: "GraduationCap",
         path: "/management/training",

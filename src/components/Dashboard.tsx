@@ -45,6 +45,7 @@ import MasterUMRDashboard from "./MasterUMRDashboard";
 import MasterKualifikasiDashboard from "./MasterKualifikasiDashboard";
 import DaftarGajiDashboard from "./DaftarGajiDashboard";
 import PotonganGajiDashboard from "./PotonganGajiDashboard";
+import PendebtanDashboard from "./PendebtanDashboard";
 import HistoryPeminjamanDashboard from "./HistoryPeminjamanDashboard";
 import DaftarPeminjamKaryawanDashboard from "./DaftarPeminjamKaryawanDashboard";
 import AbsensiTeknisiDashboard from "./AbsensiTeknisiDashboard";
@@ -983,7 +984,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       return <PotonganLainDashboard />;
     }
     if (currentPage === "/hrd/gaji/pendebetan") {
-      return <PendebetanDashboard />;
+      return <PendebtanDashboard />;
     }
     if (currentPage === "/hrd/gaji/payslip") {
       return <PayslipDashboard />;
@@ -1819,6 +1820,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/management/penggajian") {
       return <PengajianActiveDashboard role="management" />;
+    }
+    if (currentPage === "/management/approval-pendebetan") {
+      return <PendebtanDashboard />;
     }
     if (currentPage === "/management/training") {
       return <ProsesPengajuanTrainingDashboard role="management" />;
