@@ -5,7 +5,7 @@ type PembayaranRow = {
   id: number;
   tanggal: string; // yyyy-mm-dd
   vendor: string;
-  noPo: string; 
+  noPpd: string; 
   metode: "Kas" | "Bank" | "";
   sumberDetail: string; // Nama Kas atau Bank yang dipilih
   dpp: number;
@@ -18,20 +18,20 @@ type PembayaranRow = {
 const FinancePembayaranHutangDashboard: React.FC = () => {
   const today = new Date();
   const [rows, setRows] = useState<PembayaranRow[]>([
-    { id: 1, tanggal: "2025-09-08", vendor: "PT Jaya", noPo: "PO-001", metode: "Bank", sumberDetail: "BCA 123456", dpp: 10000000, ppn: 1100000, total: 11100000, noBuktiBayar: "BB-202509-0001" },
+    { id: 1, tanggal: "2025-09-08", vendor: "PT Jaya", noPpd: "PPD-001", metode: "Bank", sumberDetail: "BCA 123456", dpp: 10000000, ppn: 1100000, total: 11100000, noBuktiBayar: "BB-202509-0001" },
   ]);
   const [search, setSearch] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PembayaranRow | null>(null);
 
-  const filtered = useMemo(() => rows.filter(r => [r.noPo, r.vendor, r.noBuktiBayar].join(" ").toLowerCase().includes(search.toLowerCase())), [rows, search]);
+  const filtered = useMemo(() => rows.filter(r => [r.noPpd, r.vendor, r.noBuktiBayar].join(" ").toLowerCase().includes(search.toLowerCase())), [rows, search]);
 
-  // Data PO dengan vendor dan PPN
+  // Data PPD dengan vendor dan PPN
   const purchaseOrdersData = {
-    'PO-001': { vendor: 'PT Jaya Abadi', ppn: 1100000 },
-    'PO-002': { vendor: 'CV Mitra Sejahtera', ppn: 2200000 },
-    'PO-003': { vendor: 'PT Sukses Mandiri', ppn: 1650000 },
-    'PO-004': { vendor: 'UD Berkah Jaya', ppn: 3300000 }
+    'PPD-001': { vendor: 'PT Jaya Abadi', ppn: 1100000 },
+    'PPD-002': { vendor: 'CV Mitra Sejahtera', ppn: 2200000 },
+    'PPD-003': { vendor: 'PT Sukses Mandiri', ppn: 1650000 },
+    'PPD-004': { vendor: 'UD Berkah Jaya', ppn: 3300000 }
   };
   
   const [purchaseOrders] = useState(Object.keys(purchaseOrdersData));
@@ -60,7 +60,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
       id: 0, 
       tanggal: new Date().toISOString().split('T')[0], 
       vendor: '', 
-      noPo: '', 
+      noPpd: '', 
       metode: '',
       sumberDetail: '',
       dpp: 0, 
@@ -135,7 +135,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Cari</label>
               <div className="relative">
-                <input value={search} onChange={e => setSearch(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-9" placeholder="Vendor/No. PO/No Bukti Bayar" />
+                <input value={search} onChange={e => setSearch(e.target.value)} className="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm pr-9" placeholder="Vendor/No. PPD/No Bukti Bayar" />
                 <Search className="h-4 w-4 text-gray-400 absolute right-2 top-1/2 -translate-y-1/2" />
               </div>
             </div>
@@ -157,7 +157,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tanggal</th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Vendor</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">No. PO</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">No. PPD</th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Metode</th>
                   <th className="px-4 py-2 text-right text-xs font-semibold text-gray-600">DPP</th>
                   <th className="px-4 py-2 text-right text-xs font-semibold text-gray-600">PPN</th>
@@ -171,7 +171,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                   <tr key={row.id}>
                     <td className="px-4 py-2 text-sm">{new Date(row.tanggal).toLocaleDateString('id-ID')}</td>
                     <td className="px-4 py-2 text-sm">{row.vendor}</td>
-                    <td className="px-4 py-2 text-sm">{row.noPo}</td>
+                    <td className="px-4 py-2 text-sm">{row.noPpd}</td>
                     <td className="px-4 py-2 text-sm">{row.metode}</td>
                     <td className="px-4 py-2 text-sm text-right">Rp {row.dpp.toLocaleString('id-ID')}</td>
                     <td className="px-4 py-2 text-sm text-right">Rp {row.ppn.toLocaleString('id-ID')}</td>
@@ -211,29 +211,29 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                     onChange={e => setEditing({ ...editing, vendor: e.target.value })} 
                     className="w-full border rounded px-2 py-1.5 text-sm bg-gray-100" 
                     readOnly
-                    placeholder="Pilih PO untuk auto-fill vendor"
+                    placeholder="Pilih PPD untuk auto-fill vendor"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">No. PO</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">No. PPD</label>
                   <select 
-                    value={editing.noPo} 
+                    value={editing.noPpd} 
                     onChange={e => {
-                      const selectedPO = e.target.value;
-                      const poData = purchaseOrdersData[selectedPO as keyof typeof purchaseOrdersData];
+                      const selectedPPD = e.target.value;
+                      const ppdData = purchaseOrdersData[selectedPPD as keyof typeof purchaseOrdersData];
                       
                       setEditing({ 
                         ...editing, 
-                        noPo: selectedPO,
-                        vendor: poData ? poData.vendor : '',
-                        ppn: poData ? poData.ppn : 0
+                        noPpd: selectedPPD,
+                        vendor: ppdData ? ppdData.vendor : '',
+                        ppn: ppdData ? ppdData.ppn : 0
                       });
                     }} 
                     className="w-full border rounded px-2 py-1.5 text-sm appearance-none bg-white"
                   >
-                    <option value="">Pilih No. PO</option>
-                    {purchaseOrders.map(po => (
-                      <option key={po} value={po}>{po}</option>
+                    <option value="">Pilih No. PPD</option>
+                    {purchaseOrders.map(ppd => (
+                      <option key={ppd} value={ppd}>{ppd}</option>
                     ))}
                   </select>
                 </div>
@@ -268,7 +268,7 @@ const FinancePembayaranHutangDashboard: React.FC = () => {
                     onChange={e => setEditing({ ...editing, ppn: parseFloat(e.target.value)||0 })} 
                     className="w-full border rounded px-2 py-1.5 text-sm bg-gray-100" 
                     readOnly
-                    placeholder="Pilih PO untuk auto-fill PPN"
+                    placeholder="Pilih PPD untuk auto-fill PPN"
                   />
                 </div>
                 <div className="md:col-span-2">

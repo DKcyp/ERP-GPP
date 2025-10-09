@@ -92,6 +92,15 @@ interface TicketRow {
   managerTerkait?: string;
   managerFinance?: string;
   direkturOPS?: string;
+
+  // Payment Info (Kasir)
+  tanggalPembayaran?: string;
+  bank?: string;
+  noBKK?: string;
+  statusPembayaran?: "Pending" | "Close";
+  
+  // Editable Nominal
+  nominalCustom?: number; // Nominal yang bisa diedit manual
 }
 
 const FinanceApprovalTicketDashboard: React.FC = () => {
@@ -109,8 +118,14 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
   const [filterPrioritas] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [editingPayment, setEditingPayment] = useState<number | null>(null);
+  const [tempTanggalPembayaran, setTempTanggalPembayaran] = useState("");
+  const [tempBank, setTempBank] = useState("");
+  const [editingNominal, setEditingNominal] = useState<number | null>(null);
+  const [tempNominal, setTempNominal] = useState<number>(0);
 
   const kategoriOptions = ["Hotel", "Travel", "Pesawat"];
+  const bankOptions = ["BCA", "Mandiri", "BNI", "BRI", "CIMB Niaga", "Permata", "Danamon"];
 
   const [rows, setRows] = useState<TicketRow[]>([
     {
@@ -395,15 +410,86 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
   // Calculate total nominal for filtered tickets
   const totalNominal = useMemo(() => {
     return filtered.reduce((total, row) => {
-      const nominal =
+      // Gunakan nominalCustom jika ada, jika tidak hitung dari harga
+      const nominal = row.nominalCustom || (
         (row.hargaBerangkat || 0) +
         (row.hargaPulang || 0) +
         (row.hargaBerangkatTravel || 0) +
         (row.hargaPulangTravel || 0) +
-        (row.hargaTotalHotel || 0);
+        (row.hargaTotalHotel || 0)
+      );
       return total + nominal;
     }, 0);
   }, [filtered]);
+
+  const handleEditPayment = (ticket: TicketRow) => {
+    setEditingPayment(ticket.id);
+    setTempTanggalPembayaran(ticket.tanggalPembayaran || "");
+    setTempBank(ticket.bank || "");
+  };
+
+  const handleSavePayment = (ticketId: number) => {
+    // Generate No BKK automatically
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const noBKK = `BKK-${year}-${month}-${String(ticketId).padStart(3, '0')}`;
+
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === ticketId
+          ? {
+              ...r,
+              tanggalPembayaran: tempTanggalPembayaran,
+              bank: tempBank,
+              noBKK: noBKK,
+              statusPembayaran: "Close",
+            }
+          : r
+      )
+    );
+    setEditingPayment(null);
+    setTempTanggalPembayaran("");
+    setTempBank("");
+  };
+
+  const handleCancelPayment = () => {
+    setEditingPayment(null);
+    setTempTanggalPembayaran("");
+    setTempBank("");
+  };
+
+  const handleEditNominal = (ticket: TicketRow) => {
+    const currentNominal = ticket.nominalCustom || (
+      (ticket.hargaBerangkat || 0) +
+      (ticket.hargaPulang || 0) +
+      (ticket.hargaBerangkatTravel || 0) +
+      (ticket.hargaPulangTravel || 0) +
+      (ticket.hargaTotalHotel || 0)
+    );
+    setEditingNominal(ticket.id);
+    setTempNominal(currentNominal);
+  };
+
+  const handleSaveNominal = (ticketId: number) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === ticketId
+          ? {
+              ...r,
+              nominalCustom: tempNominal,
+            }
+          : r
+      )
+    );
+    setEditingNominal(null);
+    setTempNominal(0);
+  };
+
+  const handleCancelNominal = () => {
+    setEditingNominal(null);
+    setTempNominal(0);
+  };
 
   const exportExcel = () => alert("Export Excel belum diimplementasikan");
   const exportPDF = () => alert("Export PDF belum diimplementasikan");
@@ -672,6 +758,18 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Status
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Tgl Pembayaran
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Bank
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    No BKK
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Status Pembayaran
+                  </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
                     Aksi
                   </th>
@@ -679,12 +777,14 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filtered.map((row, index) => {
-                  const nominal =
+                  // Gunakan nominalCustom jika ada, jika tidak hitung dari harga
+                  const nominal = row.nominalCustom || (
                     (row.hargaBerangkat || 0) +
                     (row.hargaPulang || 0) +
                     (row.hargaBerangkatTravel || 0) +
                     (row.hargaPulangTravel || 0) +
-                    (row.hargaTotalHotel || 0);
+                    (row.hargaTotalHotel || 0)
+                  );
                   const tujuan =
                     (row.tujuanBerangkat && row.tujuanPulang
                       ? `Dari: ${row.tujuanBerangkat} - Ke: ${row.tujuanPulang}`
@@ -722,9 +822,19 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {row.kategori.join(", ")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">{`Rp ${nominal.toLocaleString(
-                        "id-ID"
-                      )}`}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                        {editingNominal === row.id ? (
+                          <input
+                            type="number"
+                            value={tempNominal}
+                            onChange={(e) => setTempNominal(parseFloat(e.target.value) || 0)}
+                            className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500 w-full text-right"
+                            placeholder="Nominal"
+                          />
+                        ) : (
+                          <span>{`Rp ${nominal.toLocaleString("id-ID")}`}</span>
+                        )}
+                      </td>
                       <td
                         className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
                         title={keterangan}
@@ -738,14 +848,116 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                       >
                         {row.status}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {editingPayment === row.id ? (
+                          <input
+                            type="date"
+                            value={tempTanggalPembayaran}
+                            onChange={(e) => setTempTanggalPembayaran(e.target.value)}
+                            className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500 w-full"
+                          />
+                        ) : (
+                          <span>{row.tanggalPembayaran ? new Date(row.tanggalPembayaran).toLocaleDateString('id-ID') : '-'}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {editingPayment === row.id ? (
+                          <select
+                            value={tempBank}
+                            onChange={(e) => setTempBank(e.target.value)}
+                            className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-green-500 focus:border-green-500 w-full"
+                          >
+                            <option value="">Pilih Bank</option>
+                            {bankOptions.map((bank) => (
+                              <option key={bank} value={bank}>
+                                {bank}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span>{row.bank || '-'}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                        {row.noBKK || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {row.statusPembayaran === 'Close' ? (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Close
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            Pending
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <button
-                          onClick={() => handleViewDetail(row)}
-                          className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50 transition-colors duration-150"
-                          title="View Detail"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center justify-center space-x-2">
+                          <button
+                            onClick={() => handleViewDetail(row)}
+                            className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50 transition-colors duration-150"
+                            title="View Detail"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          
+                          {/* Edit Nominal */}
+                          {editingNominal === row.id ? (
+                            <>
+                              <button
+                                onClick={() => handleSaveNominal(row.id)}
+                                className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs"
+                                title="Save Nominal"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={handleCancelNominal}
+                                className="px-2 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-xs"
+                                title="Cancel"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => handleEditNominal(row)}
+                              className="px-2 py-1 bg-purple-500 text-white rounded-md hover:bg-purple-600 text-xs"
+                              title="Edit Nominal"
+                            >
+                              Edit Nominal
+                            </button>
+                          )}
+                          
+                          {/* Input Pembayaran */}
+                          {editingPayment === row.id ? (
+                            <>
+                              <button
+                                onClick={() => handleSavePayment(row.id)}
+                                className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={handleCancelPayment}
+                                className="px-2 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-xs"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : row.statusPembayaran === 'Close' ? (
+                            <span className="text-xs text-gray-500 italic">Sudah dibayar</span>
+                          ) : (
+                            <button
+                              onClick={() => handleEditPayment(row)}
+                              className="px-2 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-xs"
+                              title="Input Pembayaran"
+                            >
+                              Input
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -758,7 +970,7 @@ const FinanceApprovalTicketDashboard: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right text-lg">
                     {`Rp ${totalNominal.toLocaleString("id-ID")}`}
                   </td>
-                  <td colSpan={3} className="px-6 py-4"></td>
+                  <td colSpan={7} className="px-6 py-4"></td>
                 </tr>
               </tbody>
             </table>
