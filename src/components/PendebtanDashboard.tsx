@@ -147,6 +147,23 @@ const PendebtanDashboard: React.FC = () => {
     }).format(amount);
   };
 
+  const exportPDF = () => {
+    // Google Drive file ID dari URL: 1ig-u5Og6tAbyyhxzj9ohj4UHxWimGDMn
+    const fileId = '1ig-u5Og6tAbyyhxzj9ohj4UHxWimGDMn';
+    const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    
+    // Buka link download di tab baru
+    window.open(downloadUrl, '_blank');
+    
+    // Alternative: Download langsung tanpa membuka tab baru
+    // const link = document.createElement('a');
+    // link.href = downloadUrl;
+    // link.download = 'Pendebetan_Gaji.pdf';
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Approved':
@@ -171,7 +188,6 @@ const PendebtanDashboard: React.FC = () => {
   };
 
   const exportExcel = () => alert('Export Excel belum diimplementasikan');
-  const exportPDF = () => alert('Export PDF belum diimplementasikan');
 
   return (
     <div className="min-h-screen bg-gray-50">
