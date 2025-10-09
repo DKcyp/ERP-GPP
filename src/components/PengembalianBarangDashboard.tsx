@@ -1,12 +1,35 @@
-import React from 'react';
-import { Clock, Search, FileText, FileBarChart, FileSpreadsheet, CheckCircle, Edit, Package, CalendarDays } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, Search, FileText, FileBarChart, FileSpreadsheet, CheckCircle, Edit, Package, CalendarDays, Eye, X } from 'lucide-react';
+
+interface DetailPergerakan {
+  tanggal: string;
+  jenis: string;
+  referensi: string;
+  qty: number;
+  saldo: number;
+  keterangan: string;
+}
 
 const PengembalianBarangDashboard: React.FC = () => {
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+
   const pengembalianBarangItems = [
     { no: 1, noPengembalian: 'PB001', noSO: 'SO001', soTurunan: 'SO001.12', tanggalPengembalian: '20-03-2025', gudangAsal: 'Gudang A', status: 'Pending' },
     { no: 2, noPengembalian: 'PB002', noSO: 'SO002', soTurunan: 'SO002.12', tanggalPengembalian: '21-03-2025', gudangAsal: 'Gudang B', status: 'Belum Diproses' },
     { no: 3, noPengembalian: 'PB003', noSO: 'SO003', soTurunan: 'SO003.32', tanggalPengembalian: '22-03-2025', gudangAsal: 'Gudang C', status: 'Barang Diterima' },
   ];
+
+  const detailPergerakanStock: DetailPergerakan[] = [
+    { tanggal: '2025-01-20', jenis: 'Masuk', referensi: 'PO-2025-001', qty: 200, saldo: 550, keterangan: 'Pembelian dari Supplier A' },
+    { tanggal: '2025-01-20', jenis: 'Keluar', referensi: 'SO-2025-001', qty: 150, saldo: 350, keterangan: 'Pengiriman ke Proyek Gedung A' },
+    { tanggal: '2025-01-19', jenis: 'Keluar', referensi: 'SO-2025-002', qty: 100, saldo: 50, keterangan: 'Pengiriman ke Proyek Renovasi' },
+  ];
+
+  const handleDetailClick = (item: any) => {
+    setSelectedItem(item);
+    setIsDetailModalOpen(true);
+  };
 
   const getStatusClasses = (status: string) => {
     switch (status) {
@@ -203,6 +226,13 @@ const PengembalianBarangDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => handleDetailClick(item)}
+                          className="flex items-center space-x-1 px-3 py-1 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors duration-200 text-xs shadow-md"
+                        >
+                          <Eye className="h-4 w-4" />
+                          <span>Detail</span>
+                        </button>
                         {item.status === 'Pending' && (
                           <button className="flex items-center space-x-1 px-3 py-1 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-xs shadow-md">
                             <CheckCircle className="h-4 w-4" />
@@ -255,6 +285,70 @@ const PengembalianBarangDashboard: React.FC = () => {
           Crafted with <span className="text-red-500">❤️</span> by Saugi
         </span>
       </footer>
+
+      {/* Detail Modal */}
+      {isDetailModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Detail Pergerakan Stock</h2>
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referensi</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">QTY</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {detailPergerakanStock.map((detail, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{detail.tanggal}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            detail.jenis === 'Masuk' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {detail.jenis}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{detail.referensi}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">{detail.qty}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">{detail.saldo}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{detail.keterangan}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="px-6 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors duration-200 text-sm shadow-md"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

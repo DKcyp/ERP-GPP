@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import ActionConfirmationModal from "./ActionConfirmationModal";
-import DetailBarangModal from './DetailBarangModal'; // Import the new modal
+import DetailBarangModal from "./DetailBarangModal"; // Import the new modal
 import {
   Search,
   FileSpreadsheet,
@@ -73,11 +73,16 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  const [modalState, setModalState] = useState<{isOpen: boolean, type: 'approve' | 'reject' | null, item: TimesheetBarang | null}>({isOpen: false, type: null, item: null});
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    type: "approve" | "reject" | null;
+    item: TimesheetBarang | null;
+  }>({ isOpen: false, type: null, item: null });
 
   // Detail Barang Modal state
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedItemForDetail, setSelectedItemForDetail] = useState<TimesheetBarang | null>(null);
+  const [selectedItemForDetail, setSelectedItemForDetail] =
+    useState<TimesheetBarang | null>(null);
 
   // Add Timesheet Barang modal state and form
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -140,9 +145,14 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
       kondisiBarang: "Baik",
       status: "Approve by Gudang",
       barangItems: [
-        { id: 'b1', namaBarang: 'Besi Beton 10mm', jumlah: 50, dikembalikan: 50 },
-        { id: 'b2', namaBarang: 'Paku Beton', jumlah: 2, dikembalikan: 2 },
-      ]
+        {
+          id: "b1",
+          namaBarang: "Besi Beton 10mm",
+          jumlah: 50,
+          dikembalikan: 50,
+        },
+        { id: "b2", namaBarang: "Paku Beton", jumlah: 2, dikembalikan: 2 },
+      ],
     },
     {
       id: "2",
@@ -157,9 +167,14 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
       kondisiBarang: "Baik",
       status: "Approve by Gudang",
       barangItems: [
-        { id: 'b3', namaBarang: 'Semen Tiga Roda', jumlah: 100, dikembalikan: 98 },
-        { id: 'b4', namaBarang: 'Pasir Lumajang', jumlah: 5, dikembalikan: 5 },
-      ]
+        {
+          id: "b3",
+          namaBarang: "Semen Tiga Roda",
+          jumlah: 100,
+          dikembalikan: 98,
+        },
+        { id: "b4", namaBarang: "Pasir Lumajang", jumlah: 5, dikembalikan: 5 },
+      ],
     },
     {
       id: "3",
@@ -293,14 +308,24 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
     }
   };
 
-  const handleActionClick = (type: 'approve' | 'reject', item: TimesheetBarang) => {
+  const handleActionClick = (
+    type: "approve" | "reject",
+    item: TimesheetBarang
+  ) => {
     setModalState({ isOpen: true, type, item });
   };
 
   const handleConfirmAction = () => {
     if (modalState.item && modalState.type) {
-      const newStatus = modalState.type === 'approve' ? 'Approve by Gudang' : 'Rejected';
-      setTimesheetBarangData(currentData => currentData.map(item => item.id === modalState.item!.id ? {...item, status: newStatus} : item));
+      const newStatus =
+        modalState.type === "approve" ? "Approve by Gudang" : "Rejected";
+      setTimesheetBarangData((currentData) =>
+        currentData.map((item) =>
+          item.id === modalState.item!.id
+            ? { ...item, status: newStatus }
+            : item
+        )
+      );
     }
     setModalState({ isOpen: false, type: null, item: null });
   };
@@ -565,12 +590,14 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
           {/* Tambah + Export Buttons */}
           <div className="flex justify-between items-center mb-6">
             <div>
-              {!approvalMode && <button
-                onClick={handleOpenAddModal}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
-              >
-                Tambah
-              </button>}
+              {!approvalMode && (
+                <button
+                  onClick={handleOpenAddModal}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+                >
+                  Tambah
+                </button>
+              )}
             </div>
             <div className="flex space-x-2">
               <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center space-x-1">
@@ -697,7 +724,9 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                     </th>
                   )}
                   {approvalMode && (
-                    <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Approval</th>
+                    <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                      Approval
+                    </th>
                   )}
                 </tr>
               </thead>
@@ -762,25 +791,48 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                     {!approvalMode && (
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
-                          <button className="p-1 text-gray-500 hover:text-blue-600"><Eye size={16} /></button>
-                          <button className="p-1 text-gray-500 hover:text-yellow-600"><Edit size={16} /></button>
-                          <button onClick={() => handleDeleteClick(item)} className="p-1 text-gray-500 hover:text-red-600"><Trash2 size={16} /></button>
+                          <button className="p-1 text-gray-500 hover:text-blue-600">
+                            <Eye size={16} />
+                          </button>
+                          <button className="p-1 text-gray-500 hover:text-yellow-600">
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item)}
+                            className="p-1 text-gray-500 hover:text-red-600"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     )}
                     {approvalMode && (
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-2">
-                          <button 
+                          <button
                             onClick={() => {
                               setSelectedItemForDetail(item);
                               setIsDetailModalOpen(true);
                             }}
-                            className="p-1 text-gray-500 hover:text-blue-600" title="Lihat Detail">
-                              <Eye size={16} />
+                            className="p-1 text-gray-500 hover:text-blue-600"
+                            title="Lihat Detail"
+                          >
+                            <Eye size={16} />
                           </button>
-                          <button onClick={() => handleActionClick('approve', item)} className="p-1 text-gray-500 hover:text-green-600" title="Approve"><CheckCircle size={16} /></button>
-                          <button onClick={() => handleActionClick('reject', item)} className="p-1 text-gray-500 hover:text-red-600" title="Reject"><XCircle size={16} /></button>
+                          <button
+                            onClick={() => handleActionClick("approve", item)}
+                            className="p-1 text-gray-500 hover:text-green-600"
+                            title="Approve"
+                          >
+                            <CheckCircle size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleActionClick("reject", item)}
+                            className="p-1 text-gray-500 hover:text-red-600"
+                            title="Reject"
+                          >
+                            <XCircle size={16} />
+                          </button>
                         </div>
                       </td>
                     )}
@@ -833,28 +885,32 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
         </div>
       </div>
 
-      <ActionConfirmationModal 
+      <ActionConfirmationModal
         isOpen={modalState.isOpen}
-        onClose={() => setModalState({isOpen: false, type: null, item: null})}
+        onClose={() => setModalState({ isOpen: false, type: null, item: null })}
         onConfirm={handleConfirmAction}
-        title={modalState.type === 'approve' ? 'Approve Timesheet' : 'Reject Timesheet'}
+        title={
+          modalState.type === "approve"
+            ? "Approve Timesheet"
+            : "Reject Timesheet"
+        }
         message={`Are you sure you want to ${modalState.type} this timesheet?`}
-        actionType={modalState.type || 'approve'}
-        confirmText={modalState.type === 'approve' ? 'Approve' : 'Reject'}
+        actionType={modalState.type || "approve"}
+        confirmText={modalState.type === "approve" ? "Approve" : "Reject"}
       />
 
-      <ConfirmDeleteModal 
+      <ConfirmDeleteModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.noSO}
       />
 
-      <DetailBarangModal 
+      <DetailBarangModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
         items={selectedItemForDetail?.barangItems || []}
-        noSO={selectedItemForDetail?.noSO || ''}
+        noSO={selectedItemForDetail?.noSO || ""}
       />
 
       {/* Add Timesheet Barang Modal */}
@@ -903,11 +959,15 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">No Manifest</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  No Manifest
+                </label>
                 <input
                   type="text"
                   value={addForm.noManifest}
-                  onChange={(e) => setAddForm((f) => ({ ...f, noManifest: e.target.value }))}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, noManifest: e.target.value }))
+                  }
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
                   placeholder="MN-001"
                 />
@@ -926,10 +986,14 @@ const TimesheetBarangDashboard: React.FC<TimesheetBarangDashboardProps> = ({
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Detail Barang</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Detail Barang
+                </label>
                 <textarea
                   value={addForm.detailBarang}
-                  onChange={(e) => setAddForm((f) => ({ ...f, detailBarang: e.target.value }))}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, detailBarang: e.target.value }))
+                  }
                   rows={3}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-cyan-500 focus:border-cyan-500"
                   placeholder="Deskripsikan rincian barang..."

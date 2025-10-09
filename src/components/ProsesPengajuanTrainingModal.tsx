@@ -1,11 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { X, Calendar, Save, Loader2 } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Calendar, Save, Loader2, Plus, Trash2, UploadCloud } from "lucide-react";
 import { ProsesPengajuanTrainingFormData } from "../types";
 
 interface ProsesPengajuanTrainingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: ProsesPengajuanTrainingFormData) => void;
+}
+
+// Options for dropdowns
+const soOptions = ["SO001", "SO002", "SO003", "SO004", "SO005"];
+const soTurunanOptions = ["SO001.12", "SO002.05", "SO003.07", "SO004.10", "SO005.15"];
+const karyawanOptions = ["Ahmad Fauzi", "Siti Nurhaliza", "Budi Santoso", "Rina Setiawati", "Dedi Kurniawan"];
+const jenisTrainingOptions = ["New Training", "Re-Training"];
+
+interface EmployeeRow {
+  id: string;
+  kodePegawai: string;
+  namaPegawai: string;
+  departemen: string;
+  nip: string;
+  tanggalLahir: string;
+  kualifikasi: string;
 }
 
 const ProsesPengajuanTrainingModal: React.FC<
@@ -17,10 +33,30 @@ const ProsesPengajuanTrainingModal: React.FC<
     lokasiPelatihan: "",
     tanggalPelaksanaan: "",
     pid: "TIDAK",
+    noSO: "",
+    soTurunan: "",
+    noTraining: "",
+    karyawan: "",
+    dataPegawai: [],
+    tanggalPelatihanStart: "",
+    tanggalPelatihanEnd: "",
+    jenisTraining: "New Training",
+    budget: "",
+    keterangan: "",
+    lampiran: [],
   });
 
   const [errors, setErrors] = useState<Partial<ProsesPengajuanTrainingFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [newEmployeeRow, setNewEmployeeRow] = useState<Omit<EmployeeRow, 'id'>>({
+    kodePegawai: "",
+    namaPegawai: "",
+    departemen: "",
+    nip: "",
+    tanggalLahir: "",
+    kualifikasi: "",
+  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -51,12 +87,75 @@ const ProsesPengajuanTrainingModal: React.FC<
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof ProsesPengajuanTrainingFormData, value: string) => {
+  const handleInputChange = (field: keyof ProsesPengajuanTrainingFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  // Removed legacy handlers for employee rows and file uploads
+  // Employee row handlers
+  const handleNewEmployeeRowChange = (field: keyof Omit<EmployeeRow, 'id'>, value: string) => {
+    setNewEmployeeRow((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddEmployee = () => {
+    if (!newEmployeeRow.kodePegawai || !newEmployeeRow.namaPegawai) {
+      return;
+    }
+    const newEmployee: EmployeeRow = {
+      id: Date.now().toString(),
+      ...newEmployeeRow,
+    };
+    setFormData((prev) => ({
+      ...prev,
+      dataPegawai: [...(prev.dataPegawai || []), newEmployee],
+    }));
+    setNewEmployeeRow({
+      kodePegawai: "",
+      namaPegawai: "",
+      departemen: "",
+      nip: "",
+      tanggalLahir: "",
+      kualifikasi: "",
+    });
+  };
+
+  const handleRemoveEmployee = (id: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      dataPegawai: (prev.dataPegawai || []).filter((emp) => emp.id !== id),
+    }));
+  };
+
+  // File upload handlers
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setFormData((prev) => ({
+        ...prev,
+        lampiran: [...(prev.lampiran || []), ...newFiles],
+      }));
+    }
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setFormData((prev) => ({
+        ...prev,
+        lampiran: [...(prev.lampiran || []), ...newFiles],
+      }));
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      lampiran: (prev.lampiran || []).filter((_, i) => i !== index),
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

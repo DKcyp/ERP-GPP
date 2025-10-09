@@ -78,6 +78,17 @@ export interface ProsesPengajuanTrainingFormData {
   lokasiPelatihan: string;
   tanggalPelaksanaan: string; // ISO date
   pid: "PID" | "TIDAK";
+  noSO?: string;
+  soTurunan?: string;
+  noTraining?: string;
+  karyawan?: string;
+  dataPegawai?: any[];
+  tanggalPelatihanStart?: string;
+  tanggalPelatihanEnd?: string;
+  jenisTraining?: "New Training" | "Re-Training";
+  budget?: string;
+  keterangan?: string;
+  lampiran?: File[];
 }
 
 // New type for Realisasi Document Upload form data

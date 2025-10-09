@@ -20,7 +20,6 @@ type Row = {
   namaProyek: string;
   tanggalPenyerahan: string;
   status: string;
-  nilaiTimesheet?: string;
   mob?: string;
   demob?: string;
 };
@@ -34,7 +33,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       namaProyek: "Pembangunan Gedung A",
       tanggalPenyerahan: "10-03-2025",
       status: "Pending",
-      nilaiTimesheet: "Rp 12.000.000",
       mob: "01-03-2025",
       demob: "10-03-2025",
     },
@@ -45,7 +43,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       namaProyek: "Renovasi Kantor B",
       tanggalPenyerahan: "15-03-2025",
       status: "Belum Diproses",
-      nilaiTimesheet: "Rp 8.500.000",
       mob: "03-03-2025",
       demob: "15-03-2025",
     },
@@ -56,7 +53,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       namaProyek: "Pengadaan Infrastruktur",
       tanggalPenyerahan: "20-03-2025",
       status: "Barang Diterima",
-      nilaiTimesheet: "Rp 5.000.000",
       mob: "05-03-2025",
       demob: "20-03-2025",
     },
@@ -67,7 +63,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       namaProyek: "Pengadaan Infrastruktur",
       tanggalPenyerahan: "20-02-2025",
       status: "-",
-      nilaiTimesheet: "Rp 0",
       mob: "",
       demob: "",
     },
@@ -78,7 +73,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       namaProyek: "Pengadaan Infrastruktur",
       tanggalPenyerahan: "20-02-2025",
       status: "-",
-      nilaiTimesheet: "Rp 0",
       mob: "",
       demob: "",
     },
@@ -94,7 +88,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       noSO: "",
       noSOTurunan: "",
       namaProyek: "",
-      nilaiTimesheet: "",
       mob: "",
       demob: "",
       pegawai: [],
@@ -108,7 +101,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
       noSO: r.noSO,
       noSOTurunan: r.noSOTurunan,
       namaProyek: r.namaProyek,
-      nilaiTimesheet: r.nilaiTimesheet || "",
       mob: r.mob || "",
       demob: r.demob || "",
       pegawai: [],
@@ -317,9 +309,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
                     Nama Proyek
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nilai Timesheet
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     MOB
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -344,9 +333,6 @@ const TimesheetBarangGudangDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.namaProyek}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.nilaiTimesheet}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.mob}
