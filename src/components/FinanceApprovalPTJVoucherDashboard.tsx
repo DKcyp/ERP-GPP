@@ -45,6 +45,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       nominal: "Rp 20,000,000",
       keterangan: "Tugas Luar Kota",
       ptjNominal: "Rp 5,000,000",
+      statusPosting: "Sudah Posting",
       ptjDetails: [
         { deskripsi: "Transport", nominal: 3000000 },
         { deskripsi: "Makan", nominal: 2000000 },
@@ -64,6 +65,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       nominal: "Rp 25,000,000",
       keterangan: "Tugas Luar Kota",
       ptjNominal: "Rp 12,000,000",
+      statusPosting: "Belum Posting",
       ptjDetails: [
         { deskripsi: "Hotel", nominal: 7000000 },
         { deskripsi: "BBM", nominal: 5000000 },
@@ -83,6 +85,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       nominal: "Rp 15,000,000",
       keterangan: "Perjalanan Dinas ke Site",
       ptjNominal: "Rp 0",
+      statusPosting: "Sudah Posting",
       ptjDetails: [],
     },
     {
@@ -98,6 +101,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       tglLaporanExpense: "07-03-2025",
       nominal: "Rp 30,000,000",
       keterangan: "Pelatihan Internal",
+      statusPosting: "Belum Posting",
     },
     {
       no: 5,
@@ -112,6 +116,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       tglLaporanExpense: "12-03-2025",
       nominal: "Rp 22,000,000",
       keterangan: "Proyek Audit K3",
+      statusPosting: "Sudah Posting",
     },
     {
       no: 6,
@@ -126,6 +131,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       tglLaporanExpense: "17-03-2025",
       nominal: "Rp 18,500,000",
       keterangan: "Pemeliharaan Rutin",
+      statusPosting: "Belum Posting",
     },
   ];
 
@@ -399,8 +405,8 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left">PTJ</th>
                   <th className="px-3 py-2 text-left">Sisa</th>
                   <th className="px-3 py-2 text-left">Keterangan</th>
-                  <th className="px-3 py-2 text-left">Aksi</th>{" "}
-                  {/* New Action Column Header */}
+                  <th className="px-3 py-2 text-left">Status Posting</th>
+                  <th className="px-3 py-2 text-left">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -457,6 +463,17 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
                     </td>
                     <td className="px-3 py-2 text-xs text-text">
                       {entry.keterangan}
+                    </td>
+                    <td className="px-3 py-2 text-xs">
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          entry.statusPosting === "Sudah Posting"
+                            ? "bg-success/10 text-success border border-success/20"
+                            : "bg-warning/10 text-warning border border-warning/20"
+                        }`}
+                      >
+                        {entry.statusPosting || "Belum Posting"}
+                      </span>
                     </td>
                     <td className="px-3 py-2 text-xs text-text">
                       <div className="flex items-center gap-2">
