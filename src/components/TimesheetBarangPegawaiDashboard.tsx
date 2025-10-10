@@ -149,10 +149,11 @@ const TimesheetBarangPegawaiDashboard: React.FC<
   const [mobTo, setMobTo] = useState<string>("");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PegawaiData | null>(null);
-  const [actionType, setActionType] = useState<"approve" | "reject" | "">("");
+  const [actionType, setActionType] = useState<"approve" | "reject" | "adminOps" | "managerOps" | "remarks" | "">("");
   const [rejectReason, setRejectReason] = useState<string>(""); // New state for rejection reason
   const [demobFrom, setDemobFrom] = useState<string>("");
   const [demobTo, setDemobTo] = useState<string>("");
+  const [remarksText, setRemarksText] = useState<string>(""); // New state for remarks
 
   const parseDdMmYyyy = (s: string): number | null => {
     if (!s) return null;
@@ -368,6 +369,25 @@ const TimesheetBarangPegawaiDashboard: React.FC<
     setIsConfirmModalOpen(true);
   };
 
+  const handleAdminOpsApprove = (item: PegawaiData) => {
+    setSelectedItem(item);
+    setActionType("adminOps");
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleManagerOpsApprove = (item: PegawaiData) => {
+    setSelectedItem(item);
+    setActionType("managerOps");
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleRemarksUpdate = (item: PegawaiData) => {
+    setSelectedItem(item);
+    setActionType("remarks");
+    setRemarksText(item.remarks || ""); // Pre-fill with existing remarks
+    setIsConfirmModalOpen(true);
+  };
+
   const confirmAction = () => {
     if (selectedItem && actionType) {
       setPegawaiData((prevData) =>
@@ -376,9 +396,16 @@ const TimesheetBarangPegawaiDashboard: React.FC<
             ? {
                 ...item,
                 statusApproval:
-                  actionType === "approve" ? "Approved" : "Rejected",
+                  actionType === "approve" ? "Approved" : 
+                  actionType === "reject" ? "Rejected" : item.statusApproval,
+                statusAdminOps:
+                  actionType === "adminOps" ? "Approved" : item.statusAdminOps,
+                statusManagerOps:
+                  actionType === "managerOps" ? "Approved" : item.statusManagerOps,
+                remarks:
+                  actionType === "remarks" ? remarksText : item.remarks,
                 rejectReason:
-                  actionType === "reject" ? rejectReason : undefined,
+                  actionType === "reject" ? rejectReason : item.rejectReason,
               }
             : item
         )
@@ -392,6 +419,7 @@ const TimesheetBarangPegawaiDashboard: React.FC<
     setSelectedItem(null);
     setActionType("");
     setRejectReason(""); // Clear reject reason on close
+    setRemarksText(""); // Clear remarks on close
   };
 
   return (
@@ -727,31 +755,58 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                     </td>
                     {role !== "procon" && (
                       <td className="px-4 py-3 text-sm text-gray-900">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleDetailClick(item)}
-                            className="flex items-center space-x-1 px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
-                            title="Lihat Detail"
-                          >
-                            <Eye className="h-4 w-4" />
-                            <span className="text-xs">Detail</span>
-                          </button>
-                          {item.statusApproval === "Pending" && (
-                            <>
-                              <button
-                                onClick={() => handleApprove(item)}
-                                className="flex items-center space-x-1 text-green-600 hover:text-green-800 transition-colors"
-                              >
-                                <Check className="h-4 w-4" />
-                              </button>
-                              <button
-                                onClick={() => handleReject(item)}
-                                className="flex items-center space-x-1 text-red-600 hover:text-red-800 transition-colors"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            </>
-                          )}
+                        <div className="flex flex-col space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleDetailClick(item)}
+                              className="flex items-center space-x-1 px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                              title="Lihat Detail"
+                            >
+                              <Eye className="h-4 w-4" />
+                              <span className="text-xs">Detail</span>
+                            </button>
+                            {item.statusApproval === "Pending" && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(item)}
+                                  className="flex items-center space-x-1 text-green-600 hover:text-green-800 transition-colors"
+                                  title="Approve"
+                                >
+                                  <Check className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleReject(item)}
+                                  className="flex items-center space-x-1 text-red-600 hover:text-red-800 transition-colors"
+                                  title="Reject"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            <button
+                              onClick={() => handleAdminOpsApprove(item)}
+                              className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200 rounded transition-colors"
+                              title="Approve Admin Ops"
+                            >
+                              Admin Ops
+                            </button>
+                            <button
+                              onClick={() => handleManagerOpsApprove(item)}
+                              className="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded transition-colors"
+                              title="Approve Manager Ops"
+                            >
+                              Manager Ops
+                            </button>
+                            <button
+                              onClick={() => handleRemarksUpdate(item)}
+                              className="px-2 py-1 text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200 rounded transition-colors"
+                              title="Update Remarks"
+                            >
+                              Remarks
+                            </button>
+                          </div>
                         </div>
                       </td>
                     )}
@@ -798,15 +853,43 @@ const TimesheetBarangPegawaiDashboard: React.FC<
 
       {isConfirmModalOpen && selectedItem && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full text-center">
             <h3 className="text-lg font-bold mb-4">
-              Confirm {actionType === "approve" ? "Approval" : "Rejection"}
+              {actionType === "approve" && "Confirm Approval"}
+              {actionType === "reject" && "Confirm Rejection"}
+              {actionType === "adminOps" && "Approve Admin Ops"}
+              {actionType === "managerOps" && "Approve Manager Ops"}
+              {actionType === "remarks" && "Update Remarks"}
             </h3>
             <p className="mb-6">
-              Are you sure you want to {actionType} timesheet for{" "}
-              <span className="font-semibold">{selectedItem.namaPegawai}</span>{" "}
-              (SO:
-              <span className="font-semibold">{selectedItem.noSO}</span>)?
+              {actionType === "adminOps" && (
+                <>
+                  Approve Admin Ops untuk timesheet{" "}
+                  <span className="font-semibold">{selectedItem.namaPegawai}</span>{" "}
+                  (SO: <span className="font-semibold">{selectedItem.noSO}</span>)?
+                </>
+              )}
+              {actionType === "managerOps" && (
+                <>
+                  Approve Manager Ops untuk timesheet{" "}
+                  <span className="font-semibold">{selectedItem.namaPegawai}</span>{" "}
+                  (SO: <span className="font-semibold">{selectedItem.noSO}</span>)?
+                </>
+              )}
+              {actionType === "remarks" && (
+                <>
+                  Update remarks untuk timesheet{" "}
+                  <span className="font-semibold">{selectedItem.namaPegawai}</span>{" "}
+                  (SO: <span className="font-semibold">{selectedItem.noSO}</span>)?
+                </>
+              )}
+              {(actionType === "approve" || actionType === "reject") && (
+                <>
+                  Are you sure you want to {actionType} timesheet for{" "}
+                  <span className="font-semibold">{selectedItem.namaPegawai}</span>{" "}
+                  (SO: <span className="font-semibold">{selectedItem.noSO}</span>)?
+                </>
+              )}
             </p>
             {actionType === "reject" && (
               <div className="mb-4">
@@ -826,16 +909,44 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                 ></textarea>
               </div>
             )}
+            {actionType === "remarks" && (
+              <div className="mb-4">
+                <label
+                  htmlFor="remarksText"
+                  className="block text-sm font-medium text-gray-700 text-left mb-1"
+                >
+                  Remarks:
+                </label>
+                <textarea
+                  id="remarksText"
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
+                  value={remarksText}
+                  onChange={(e) => setRemarksText(e.target.value)}
+                  placeholder="Enter remarks..."
+                ></textarea>
+              </div>
+            )}
             <div className="flex justify-center space-x-4">
               <button
                 onClick={confirmAction}
                 className={`px-4 py-2 rounded-lg font-medium ${
                   actionType === "approve"
                     ? "bg-green-600 hover:bg-green-700 text-white"
-                    : "bg-red-600 hover:bg-red-700 text-white"
+                    : actionType === "reject"
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : actionType === "adminOps"
+                    ? "bg-purple-600 hover:bg-purple-700 text-white"
+                    : actionType === "managerOps"
+                    ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    : "bg-amber-600 hover:bg-amber-700 text-white"
                 }`}
               >
-                Yes, {actionType === "approve" ? "Approve" : "Reject"}
+                {actionType === "approve" && "Yes, Approve"}
+                {actionType === "reject" && "Yes, Reject"}
+                {actionType === "adminOps" && "Approve Admin Ops"}
+                {actionType === "managerOps" && "Approve Manager Ops"}
+                {actionType === "remarks" && "Update Remarks"}
               </button>
               <button
                 onClick={closeConfirmModal}

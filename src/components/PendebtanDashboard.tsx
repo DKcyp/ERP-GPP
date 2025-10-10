@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Check, X, Clock, FileSpreadsheet, FileDown, Plus, ChevronDown, ChevronRight, Edit, Trash2 } from 'lucide-react';
+import { Search, Check, X, Clock, FileSpreadsheet, FileDown, Plus, ChevronDown, ChevronRight, Edit, Trash2, Printer } from 'lucide-react';
 import ConfirmationModal from './ConfirmationModal';
 import PendebtanModal from './PendebtanModal';
 
@@ -526,6 +526,13 @@ const PendebtanDashboard: React.FC = () => {
                               {period.status === 'Approved' ? 'Sudah disetujui' : 'Ditolak'}
                             </span>
                           )}
+                          <button
+                            onClick={exportPDF}
+                            className="p-1 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded transition-colors duration-200"
+                            title="Print/Download PDF"
+                          >
+                            <Printer className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>

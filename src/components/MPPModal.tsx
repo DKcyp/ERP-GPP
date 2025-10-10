@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Loader2, Plus, Trash2 } from 'lucide-react';
+import { X, Save, Loader2, Trash2 } from 'lucide-react';
 
 interface Kontrak {
   id: string;
   no: number;
-  noSO: string;
-  namaClient: string;
-  tanggalAwal: string;
-  tanggalAkhir: string;
-  nilaiKontrak: string;
-  sudahDitagihkan: string;
-  sisaPenagihan: string;
-  estimasiPenagihan: string;
-  delayPenagihan: string;
+  namaOrang: string;
+  kualifikasi: string;
+  projectName: string;
+  mob: string;
+  demob: string;
+  durasi: string;
 }
 
 interface MPPEntry {
@@ -65,33 +62,42 @@ const MPPModal: React.FC<MPPModalProps> = ({
       setEntries([]);
       setIsLoading(false);
     } else {
-      // Initialize with one empty entry
-      setEntries([
-        {
-          id: 1,
-          namaOrang: '',
-          kualifikasi: '',
-          projectName: kontrak?.namaClient || '',
-          mob: '',
-          demob: '',
-          durasi: '',
-        },
-      ]);
+      // Initialize with data from kontrak (auto-filled)
+      if (kontrak) {
+        // Helper function to convert DD-MM-YYYY to YYYY-MM-DD
+        const convertDateFormat = (dateStr: string): string => {
+          if (!dateStr || dateStr === '-') return '';
+          const [day, month, year] = dateStr.split('-');
+          return `${year}-${month}-${day}`;
+        };
+
+        setEntries([
+          {
+            id: 1,
+            namaOrang: kontrak.namaOrang || '',
+            kualifikasi: kontrak.kualifikasi || '',
+            projectName: kontrak.projectName || '',
+            mob: convertDateFormat(kontrak.mob) || '',
+            demob: convertDateFormat(kontrak.demob) || '',
+            durasi: kontrak.durasi || '',
+          },
+        ]);
+      } else {
+        // Fallback to empty entry if no kontrak data
+        setEntries([
+          {
+            id: 1,
+            namaOrang: '',
+            kualifikasi: '',
+            projectName: '',
+            mob: '',
+            demob: '',
+            durasi: '',
+          },
+        ]);
+      }
     }
   }, [isOpen, kontrak]);
-
-  const addEntry = () => {
-    const newEntry: MPPEntry = {
-      id: entries.length > 0 ? Math.max(...entries.map((e) => e.id)) + 1 : 1,
-      namaOrang: '',
-      kualifikasi: '',
-      projectName: kontrak?.namaClient || '',
-      mob: '',
-      demob: '',
-      durasi: '',
-    };
-    setEntries([...entries, newEntry]);
-  };
 
   const removeEntry = (id: number) => {
     if (entries.length > 1) {
@@ -204,7 +210,7 @@ const MPPModal: React.FC<MPPModalProps> = ({
             </h2>
             {kontrak && (
               <p className="text-sm text-gray-600 mt-1">
-                No SO: <span className="font-semibold">{kontrak.noSO}</span> - {kontrak.namaClient}
+                Project: <span className="font-semibold">{kontrak.projectName}</span>
               </p>
             )}
           </div>
@@ -219,18 +225,6 @@ const MPPModal: React.FC<MPPModalProps> = ({
         {/* Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {/* Add Entry Button */}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={addEntry}
-                className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Tambah Orang
-              </button>
-            </div>
-
             {/* Entries Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="overflow-x-auto">

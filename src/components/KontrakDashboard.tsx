@@ -26,15 +26,12 @@ import {
 interface Kontrak {
   id: string;
   no: number;
-  noSO: string;
-  namaClient: string;
-  tanggalAwal: string;
-  tanggalAkhir: string;
-  nilaiKontrak: string;
-  sudahDitagihkan: string;
-  sisaPenagihan: string;
-  estimasiPenagihan: string;
-  delayPenagihan: string;
+  namaOrang: string;
+  kualifikasi: string;
+  projectName: string;
+  mob: string;
+  demob: string;
+  durasi: string;
 }
 
 const KontrakDashboard: React.FC = () => {
@@ -63,72 +60,87 @@ const KontrakDashboard: React.FC = () => {
   const [isMPPModalOpen, setIsMPPModalOpen] = useState(false);
   const [selectedKontrakForMPP, setSelectedKontrakForMPP] = useState<Kontrak | null>(null);
 
-  // Sample data matching the image
+  // Sample data with new structure
   const [kontrakData, setKontrakData] = useState<Kontrak[]>([
     {
       id: "1",
       no: 1,
-      noSO: "SO001",
-      namaClient: "PT. Jakarta Tank Terminal",
-      tanggalAwal: "01-01-2025",
-      tanggalAkhir: "01-06-2025",
-      nilaiKontrak: "Rp. 200.000.000",
-      sudahDitagihkan: "Rp. 150.000.000",
-      sisaPenagihan: "Rp. 50.000.000",
-      estimasiPenagihan: "Rp. 40.000.000",
-      delayPenagihan: "150 Hari",
+      namaOrang: "Ahmad Fauzi",
+      kualifikasi: "Senior Engineer",
+      projectName: "Jakarta Tank Terminal Project",
+      mob: "01-01-2025",
+      demob: "01-06-2025",
+      durasi: "5 Bulan",
     },
     {
       id: "2",
       no: 2,
-      noSO: "SO002",
-      namaClient: "PT. Surabaya Shipping Lines",
-      tanggalAwal: "15-02-2025",
-      tanggalAkhir: "15-08-2025",
-      nilaiKontrak: "Rp. 500.000.000",
-      sudahDitagihkan: "Rp. 300.000.000",
-      sisaPenagihan: "Rp. 200.000.000",
-      estimasiPenagihan: "Rp. 60.000.000",
-      delayPenagihan: "180 Hari",
+      namaOrang: "Siti Nurhaliza",
+      kualifikasi: "Project Manager",
+      projectName: "Surabaya Shipping Lines",
+      mob: "15-02-2025",
+      demob: "15-08-2025",
+      durasi: "6 Bulan",
     },
     {
       id: "3",
       no: 3,
-      noSO: "SO003",
-      namaClient: "PT. Bandung Logistics",
-      tanggalAwal: "01-03-2025",
-      tanggalAkhir: "01-09-2025",
-      nilaiKontrak: "Rp. 300.000.000",
-      sudahDitagihkan: "Rp. 200.000.000",
-      sisaPenagihan: "Rp. 100.000.000",
-      estimasiPenagihan: "Rp. 45.000.000",
-      delayPenagihan: "180 Hari",
+      namaOrang: "Budi Santoso",
+      kualifikasi: "Technical Lead",
+      projectName: "Bandung Logistics System",
+      mob: "01-03-2025",
+      demob: "01-09-2025",
+      durasi: "6 Bulan",
     },
     {
       id: "4",
       no: 4,
-      noSO: "SO004",
-      namaClient: "PT. Medan Cargo Express",
-      tanggalAwal: "10-04-2025",
-      tanggalAkhir: "10-10-2025",
-      nilaiKontrak: "Rp. 700.000.000",
-      sudahDitagihkan: "Rp. 500.000.000",
-      sisaPenagihan: "Rp. 200.000.000",
-      estimasiPenagihan: "Rp. 30.000.000",
-      delayPenagihan: "180 Hari",
+      namaOrang: "Dewi Anggraini",
+      kualifikasi: "Site Supervisor",
+      projectName: "Medan Cargo Express",
+      mob: "10-04-2025",
+      demob: "10-10-2025",
+      durasi: "6 Bulan",
     },
     {
       id: "5",
       no: 5,
-      noSO: "SO005",
-      namaClient: "PT. Semarang Port Services",
-      tanggalAwal: "01-05-2025",
-      tanggalAkhir: "01-11-2025",
-      nilaiKontrak: "Rp. 600.000.000",
-      sudahDitagihkan: "Rp. 400.000.000",
-      sisaPenagihan: "Rp. 200.000.000",
-      estimasiPenagihan: "Rp. 50.000.000",
-      delayPenagihan: "180 Hari",
+      namaOrang: "Rudi Hermawan",
+      kualifikasi: "QA Engineer",
+      projectName: "Semarang Port Services",
+      mob: "01-05-2025",
+      demob: "01-11-2025",
+      durasi: "6 Bulan",
+    },
+    {
+      id: "6",
+      no: 6,
+      namaOrang: "Rina Setiawati",
+      kualifikasi: "Safety Officer",
+      projectName: "Makassar Infrastructure",
+      mob: "15-06-2025",
+      demob: "15-12-2025",
+      durasi: "6 Bulan",
+    },
+    {
+      id: "7",
+      no: 7,
+      namaOrang: "Wahyudi Hidayat",
+      kualifikasi: "Electrical Engineer",
+      projectName: "Palembang Power Plant",
+      mob: "01-07-2025",
+      demob: "01-01-2026",
+      durasi: "6 Bulan",
+    },
+    {
+      id: "8",
+      no: 8,
+      namaOrang: "Siti Aminah",
+      kualifikasi: "Civil Engineer",
+      projectName: "Balikpapan Bridge Construction",
+      mob: "20-08-2025",
+      demob: "20-02-2026",
+      durasi: "6 Bulan",
     },
   ]);
 
@@ -141,14 +153,15 @@ const KontrakDashboard: React.FC = () => {
     const newKontrak: Kontrak = {
       id: (kontrakData.length + 1).toString(),
       no: kontrakData.length + 1,
-      noSO: `SO${String(kontrakData.length + 1).padStart(3, "0")}`,
-      namaClient: formData.namaClient,
-      tanggalAwal: new Date(formData.tanggalAwal).toLocaleDateString("id-ID", {
+      namaOrang: formData.namaClient || "New Person",
+      kualifikasi: "Staff",
+      projectName: "New Project",
+      mob: new Date(formData.tanggalAwal).toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
       }),
-      tanggalAkhir: new Date(formData.tanggalAkhir).toLocaleDateString(
+      demob: new Date(formData.tanggalAkhir).toLocaleDateString(
         "id-ID",
         {
           day: "2-digit",
@@ -156,11 +169,7 @@ const KontrakDashboard: React.FC = () => {
           year: "numeric",
         }
       ),
-      nilaiKontrak: formData.nilaiKontrak,
-      sudahDitagihkan: formData.sudahDitagihkan || "Rp. 0",
-      sisaPenagihan: formData.sisaPenagihan || "Rp. 0",
-      estimasiPenagihan: formData.estimasiPenagihan || "Rp. 0",
-      delayPenagihan: formData.delayPenagihan || "0 Hari",
+      durasi: "6 Bulan",
     };
 
     setKontrakData((prev) => [
@@ -192,14 +201,14 @@ const KontrakDashboard: React.FC = () => {
 
   // Filter data based on search criteria
   const filteredData = kontrakData.filter((item) => {
-    const matchesNoSO = item.noSO
+    const matchesNamaOrang = item.namaOrang
       .toLowerCase()
       .includes(searchNoSO.toLowerCase());
-    const matchesNamaClient = item.namaClient
+    const matchesProject = item.projectName
       .toLowerCase()
       .includes(searchNamaClient.toLowerCase());
 
-    return matchesNoSO && matchesNamaClient;
+    return matchesNamaOrang && matchesProject;
   });
 
   // Sort data
@@ -230,36 +239,7 @@ const KontrakDashboard: React.FC = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  // Calculate totals
-  const totals = kontrakData.reduce(
-    (acc, item) => {
-      const nilaiKontrak =
-        parseFloat(item.nilaiKontrak.replace(/[^\d]/g, "")) || 0;
-      const sudahDitagihkan =
-        parseFloat(item.sudahDitagihkan.replace(/[^\d]/g, "")) || 0;
-      const sisaPenagihan =
-        parseFloat(item.sisaPenagihan.replace(/[^\d]/g, "")) || 0;
-      const estimasiPenagihan =
-        parseFloat(item.estimasiPenagihan.replace(/[^\d]/g, "")) || 0;
-
-      return {
-        nilaiKontrak: acc.nilaiKontrak + nilaiKontrak,
-        sudahDitagihkan: acc.sudahDitagihkan + sudahDitagihkan,
-        sisaPenagihan: acc.sisaPenagihan + sisaPenagihan,
-        estimasiPenagihan: acc.estimasiPenagihan + estimasiPenagihan,
-      };
-    },
-    {
-      nilaiKontrak: 0,
-      sudahDitagihkan: 0,
-      sisaPenagihan: 0,
-      estimasiPenagihan: 0,
-    }
-  );
-
-  const formatCurrency = (amount: number) => {
-    return `Rp. ${amount.toLocaleString("id-ID")}`;
-  };
+  // No totals calculation needed for new structure
 
   // Handle Approve Kontrak button click
   const handleApproveKontrakClick = (kontrakId: string) => {
@@ -317,31 +297,31 @@ const KontrakDashboard: React.FC = () => {
           <div className="space-y-4 mb-6">
             {/* Inputs Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Search No SO */}
+              {/* Search Nama Orang */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari No SO
+                  Cari Nama Orang
                 </label>
                 <input
                   type="text"
                   value={searchNoSO}
                   onChange={(e) => setSearchNoSO(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                  placeholder="SO001"
+                  placeholder="Ahmad Fauzi"
                 />
               </div>
 
-              {/* Search Nama Client */}
+              {/* Search Project Name */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Nama Client
+                  Cari Project Name
                 </label>
                 <input
                   type="text"
                   value={searchNamaClient}
                   onChange={(e) => setSearchNamaClient(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                  placeholder="Jhon Doe"
+                  placeholder="Jakarta Tank Terminal"
                 />
               </div>
 
@@ -457,11 +437,11 @@ const KontrakDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("noSO")}
+                    onClick={() => handleSort("namaOrang")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>No SO</span>
-                      {sortField === "noSO" && (
+                      <span>Nama Orang</span>
+                      {sortField === "namaOrang" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -472,11 +452,11 @@ const KontrakDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("namaClient")}
+                    onClick={() => handleSort("kualifikasi")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Nama Client</span>
-                      {sortField === "namaClient" && (
+                      <span>Kualifikasi</span>
+                      {sortField === "kualifikasi" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -486,22 +466,16 @@ const KontrakDashboard: React.FC = () => {
                     </div>
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Tanggal Awal
+                    Project Name
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Tanggal Akhir
+                    MOB
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Nilai Kontrak
+                    DEMOB
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Sudah Ditagihkan
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Sisa Penagihan
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Estimasi Penagihan
+                    Durasi
                   </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Aksi
@@ -528,28 +502,22 @@ const KontrakDashboard: React.FC = () => {
                       {item.no}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                      {item.noSO}
+                      {item.namaOrang}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
-                      {item.namaClient}
+                      {item.kualifikasi}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      {item.tanggalAwal}
+                      {item.projectName}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      {item.tanggalAkhir}
+                      {item.mob}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.demob}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                      {item.nilaiKontrak}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {item.sudahDitagihkan}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {item.sisaPenagihan}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {item.estimasiPenagihan}
+                      {item.durasi}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
@@ -566,23 +534,10 @@ const KontrakDashboard: React.FC = () => {
 
                 {/* Total Row */}
                 <tr className="bg-gray-100 font-semibold border-t-2 border-gray-300">
-                  <td className="px-4 py-3 text-sm text-gray-900" colSpan={5}>
-                    Total
+                  <td className="px-4 py-3 text-sm text-gray-900" colSpan={7}>
+                    Total Records: {kontrakData.length}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {formatCurrency(totals.nilaiKontrak)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {formatCurrency(totals.sudahDitagihkan)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {formatCurrency(totals.sisaPenagihan)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {formatCurrency(totals.estimasiPenagihan)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900"></td>{" "}
-                  {/* Empty cell for Aksi column in total row */}
+                  <td className="px-4 py-3 text-sm text-gray-900"></td>
                 </tr>
               </tbody>
             </table>
@@ -659,7 +614,7 @@ const KontrakDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaClient}
+        itemName={itemToDelete?.namaOrang}
       />
 
       {/* Approval Action Modal for Kontrak */}
