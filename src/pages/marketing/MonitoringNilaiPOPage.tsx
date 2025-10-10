@@ -2,51 +2,23 @@ import React, { useState, useMemo } from "react";
 import { Search, Pencil, Trash2, PlusCircle, Upload, X, FileText } from "lucide-react";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 
-interface SalesOrder {
-  soNumber: string;
-  project: string;
-  pekerjaan: string;
-  pengembalianNilaiKontrak: string;
-  reminder: string;
-}
-
-const salesOrderData: SalesOrder[] = [
-  {
-    soNumber: "SO-001",
-    project: "Project Alpha",
-    pekerjaan: "Development Phase 1",
-    pengembalianNilaiKontrak: "Rp 15.000.000",
-    reminder: "Due in 45 days",
-  },
-  {
-    soNumber: "SO-002",
-    project: "Project Beta",
-    pekerjaan: "Deployment & Testing",
-    pengembalianNilaiKontrak: "Rp 8.000.000",
-    reminder: "Due in 10 days",
-  },
-  {
-    soNumber: "SO-003",
-    project: "Project Gamma",
-    pekerjaan: "Maintenance & Support",
-    pengembalianNilaiKontrak: "Rp 20.000.000",
-    reminder: "On schedule",
-  },
-];
 
 interface POItem {
   id: string;
   so: string;
   project: string;
   pekerjaan: string;
+  siteLokasi: string;
   noWbs: string; // Changed from noUbs to noWbs
   wo: string; // Renamed from noWbsWo
   pr: string;
   ro: string;
   poSap: string; // Combined PO and SAP
   cro: string;
+  tanggalRelease: string;
   commencementStartDate: string;
   commencementFinishDate: string;
+  jumlahNilaiSO?: string;
   absorv?: string; // Will be calculated automatically
   pengembalianNilaiKontrak?: string;
   reminder?: string;
@@ -63,14 +35,17 @@ const initialData: POItem[] = [
     so: "SO-001",
     project: "Project A",
     pekerjaan: "Pekerjaan 1",
+    siteLokasi: "Jakarta",
     noWbs: "WBS-001",
     wo: "WO-001",
     pr: "PR-001",
     ro: "RO-001",
     poSap: "PO-001 / SAP-001",
     cro: "CRO-001",
+    tanggalRelease: "2022-12-15",
     commencementStartDate: "2023-01-01",
     commencementFinishDate: "2024-12-31",
+    jumlahNilaiSO: "Rp 1.800.000.000",
     absorv: "Rp 2.500.000.000",
     pengembalianNilaiKontrak: "Rp 15.000.000",
     reminder: "-",
@@ -80,14 +55,17 @@ const initialData: POItem[] = [
     so: "SO-002",
     project: "Project B",
     pekerjaan: "Pekerjaan 2",
+    siteLokasi: "Surabaya",
     noWbs: "WBS-002",
     wo: "WO-002",
     pr: "PR-002",
     ro: "RO-002",
     poSap: "PO-002 / SAP-002",
     cro: "CRO-002",
+    tanggalRelease: "2023-03-20",
     commencementStartDate: "2023-04-01",
     commencementFinishDate: "2024-06-30",
+    jumlahNilaiSO: "Rp 2.300.000.000",
     absorv: "Rp 2.500.000.000",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "-",
@@ -97,14 +75,17 @@ const initialData: POItem[] = [
     so: "SO-003",
     project: "Project C",
     pekerjaan: "Pekerjaan 3",
+    siteLokasi: "Bandung",
     noWbs: "WBS-003",
     wo: "WO-003",
     pr: "PR-003",
     ro: "RO-003",
     poSap: "PO-003 / SAP-003",
     cro: "CRO-003",
+    tanggalRelease: "2023-06-10",
     commencementStartDate: "2023-07-01",
     commencementFinishDate: "2024-09-30",
+    jumlahNilaiSO: "Rp 1.950.000.000",
     absorv: "Rp 2.500.000.000",
     pengembalianNilaiKontrak: "Rp 20.000.000",
     reminder: "-",
@@ -114,14 +95,17 @@ const initialData: POItem[] = [
     so: "SO-004",
     project: "Project D",
     pekerjaan: "Pekerjaan 4",
+    siteLokasi: "Semarang",
     noWbs: "WBS-004",
     wo: "WO-004",
     pr: "PR-004",
     ro: "RO-004",
     poSap: "PO-004 / SAP-004",
     cro: "CRO-004",
+    tanggalRelease: "2023-09-15",
     commencementStartDate: "2023-10-01",
     commencementFinishDate: "2024-03-31",
+    jumlahNilaiSO: "Rp 1.650.000.000",
     absorv: "Rp 1.800.000.000",
     pengembalianNilaiKontrak: "Rp 8.000.000",
     reminder: "Upcoming",
@@ -131,14 +115,17 @@ const initialData: POItem[] = [
     so: "SO-005",
     project: "Project E",
     pekerjaan: "Pekerjaan 5",
+    siteLokasi: "Yogyakarta",
     noWbs: "WBS-005",
     wo: "WO-005",
     pr: "PR-005",
     ro: "RO-005",
     poSap: "PO-005 / SAP-005",
     cro: "CRO-005",
+    tanggalRelease: "2023-12-20",
     commencementStartDate: "2024-01-01",
     commencementFinishDate: "2024-03-31",
+    jumlahNilaiSO: "Rp 2.100.000.000",
     absorv: "Rp 3.200.000.000",
     pengembalianNilaiKontrak: "Rp 7.500.000",
     reminder: "Due in 5 days",
@@ -154,14 +141,6 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
-  // Function to calculate absorv automatically from pengembalian nilai kontrak
-  const calculateAbsorv = (pengembalianNilaiKontrak: string): string => {
-    if (!pengembalianNilaiKontrak) return "Rp 0";
-    
-    // Since we don't have nilai kontrak, absorv will be calculated differently
-    // For now, return a default currency value or calculate based on business logic
-    return "Rp 2.500.000.000";
-  };
 
   // Function to calculate reminder based on commencement finish date
   const calculateReminder = (commencementFinishDate: string): string => {
@@ -303,14 +282,17 @@ const MonitoringNilaiPOPage: React.FC = () => {
         so: currentPO.so,
         project: currentPO.project,
         pekerjaan: currentPO.pekerjaan,
+        siteLokasi: currentPO.siteLokasi || "",
         noWbs: currentPO.noWbs || "",
         wo: currentPO.wo || "",
         pr: currentPO.pr || "",
         ro: currentPO.ro || "",
         poSap: currentPO.poSap,
         cro: currentPO.cro || "",
+        tanggalRelease: currentPO.tanggalRelease || "",
         commencementStartDate: currentPO.commencementStartDate || "",
         commencementFinishDate: currentPO.commencementFinishDate || "",
+        jumlahNilaiSO: currentPO.jumlahNilaiSO || "",
         absorv: currentPO.absorv || "",
         pengembalianNilaiKontrak: currentPO.pengembalianNilaiKontrak || "",
         poAttachment: currentPO.poAttachment,
@@ -362,6 +344,9 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   Pekerjaan
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SITE/Lokasi
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   No. WBS
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -379,11 +364,17 @@ const MonitoringNilaiPOPage: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CRO
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal Release
+                </th>
                 <th
                   colSpan={2}
                   className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   Commencement Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Jumlah Nilai SO
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Absorv
@@ -408,12 +399,15 @@ const MonitoringNilaiPOPage: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Start
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Finish
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
@@ -431,6 +425,9 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.pekerjaan}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.siteLokasi}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.noWbs}
@@ -451,10 +448,16 @@ const MonitoringNilaiPOPage: React.FC = () => {
                     {item.cro}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.tanggalRelease}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.commencementStartDate}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.commencementFinishDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
+                    {item.jumlahNilaiSO || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
                     {item.absorv || "-"}
@@ -501,42 +504,15 @@ const MonitoringNilaiPOPage: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Nomor SO
                 </label>
-                <select
+                <input
+                  type="text"
                   value={currentPO.so || ""}
-                  onChange={(e) => {
-                    const selectedSo = salesOrderData.find(
-                      (so) => so.soNumber === e.target.value
-                    );
-                    if (selectedSo) {
-                      const newPengembalianNilaiKontrak = selectedSo.pengembalianNilaiKontrak;
-                      setCurrentPO({
-                        ...currentPO,
-                        so: selectedSo.soNumber,
-                        project: selectedSo.project,
-                        pekerjaan: selectedSo.pekerjaan,
-                        absorv: calculateAbsorv(newPengembalianNilaiKontrak),
-                        pengembalianNilaiKontrak: newPengembalianNilaiKontrak,
-                      });
-                    } else {
-                      setCurrentPO({
-                        ...currentPO,
-                        so: e.target.value,
-                        project: "",
-                        pekerjaan: "",
-                        absorv: "",
-                        pengembalianNilaiKontrak: "",
-                      });
-                    }
-                  }}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, so: e.target.value })
+                  }
+                  placeholder="Masukkan nomor SO (contoh: SO-001)"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                >
-                  <option value="">Pilih Nomor SO</option>
-                  {salesOrderData.map((so) => (
-                    <option key={so.soNumber} value={so.soNumber}>
-                      {so.soNumber}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -548,8 +524,8 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   onChange={(e) =>
                     setCurrentPO({ ...currentPO, project: e.target.value })
                   }
+                  placeholder="Masukkan nama project"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  readOnly
                 />
               </div>
               <div>
@@ -562,8 +538,22 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   onChange={(e) =>
                     setCurrentPO({ ...currentPO, pekerjaan: e.target.value })
                   }
+                  placeholder="Masukkan jenis pekerjaan"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  SITE/Lokasi
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.siteLokasi || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, siteLokasi: e.target.value })
+                  }
+                  placeholder="Masukkan lokasi site (contoh: Jakarta)"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
               </div>
               <div>
@@ -646,6 +636,19 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
+                  Tanggal Release
+                </label>
+                <input
+                  type="date"
+                  value={currentPO.tanggalRelease || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, tanggalRelease: e.target.value })
+                  }
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
                   Commencement Start Date
                 </label>
                 <input
@@ -678,13 +681,30 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
+                  Jumlah Nilai SO
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.jumlahNilaiSO || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, jumlahNilaiSO: e.target.value })
+                  }
+                  placeholder="Contoh: Rp 1.800.000.000"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
                   Absorv
                 </label>
                 <input
                   type="text"
                   value={currentPO.absorv || ""}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100"
-                  readOnly
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, absorv: e.target.value })
+                  }
+                  placeholder="Contoh: Rp 2.500.000.000"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
               </div>
               <div>
