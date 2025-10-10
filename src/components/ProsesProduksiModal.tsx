@@ -675,6 +675,54 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                 />
               </div>
 
+              {/* No PO SAP */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  No PO SAP
+                </label>
+                <input
+                  type="text"
+                  value={formData.noPOSAP || ""}
+                  onChange={(e) =>
+                    handleInputChange("noPOSAP", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  placeholder="Masukkan No PO SAP"
+                />
+              </div>
+
+              {/* RO */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  RO
+                </label>
+                <input
+                  type="text"
+                  value={formData.ro || ""}
+                  onChange={(e) =>
+                    handleInputChange("ro", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  placeholder="Masukkan RO"
+                />
+              </div>
+
+              {/* CRO */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  CRO
+                </label>
+                <input
+                  type="text"
+                  value={formData.cro || ""}
+                  onChange={(e) =>
+                    handleInputChange("cro", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  placeholder="Masukkan CRO"
+                />
+              </div>
+
               {/* Tgl Approval Report */}
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">

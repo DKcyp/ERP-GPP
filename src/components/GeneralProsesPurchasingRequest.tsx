@@ -200,7 +200,7 @@ const GeneralProsesPurchasingRequest: React.FC = () => {
                     <div className="flex items-center">Jenis <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center">No. Sistem ACTS <ChevronDown className="ml-1 h-3 w-3" /></div>
+                    <div className="flex items-center">No PR <ChevronDown className="ml-1 h-3 w-3" /></div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center">Tanggal Pengajuan <ChevronDown className="ml-1 h-3 w-3" /></div>

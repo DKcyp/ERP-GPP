@@ -18,9 +18,12 @@ interface BarangItem {
   id: number;
   kodeBarang: string;
   namaBarang: string;
-  stokSebenarnya: number | "";
+  stokSistem: number; // Qty dari sistem
+  stokFisik: number | ""; // Qty fisik yang diinput gudang
+  selisih: number; // Otomatis calculate
   keterangan: string;
-  serialNumber: string; // New field for Serial Number
+  serialNumber: string;
+  file?: File | null; // File attachment per item
 }
 
 const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
@@ -62,9 +65,12 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
         id: nextItemId,
         kodeBarang: "",
         namaBarang: "",
-        stokSebenarnya: "",
+        stokSistem: 0,
+        stokFisik: "",
+        selisih: 0,
         keterangan: "",
-        serialNumber: "", // Initialize new field
+        serialNumber: "",
+        file: null,
       },
     ]);
     setNextItemId(nextItemId + 1);
@@ -83,15 +89,32 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
       prevItems.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
-          // Dummy logic for namaBarang based on kodeBarang
+          // Dummy logic for namaBarang and stokSistem based on kodeBarang
           if (field === "kodeBarang") {
-            updatedItem.namaBarang =
-              value === "KB001"
-                ? "Barang A"
-                : value === "KB002"
-                ? "Barang B"
-                : "";
+            if (value === "KB001") {
+              updatedItem.namaBarang = "Barang A";
+              updatedItem.stokSistem = 100; // Dummy stock from system
+            } else if (value === "KB002") {
+              updatedItem.namaBarang = "Barang B";
+              updatedItem.stokSistem = 50; // Dummy stock from system
+            } else {
+              updatedItem.namaBarang = "";
+              updatedItem.stokSistem = 0;
+            }
           }
+          
+          // Auto-calculate selisih when stokFisik changes
+          if (field === "stokFisik") {
+            const fisik = typeof value === "number" ? value : 0;
+            updatedItem.selisih = fisik - updatedItem.stokSistem;
+          }
+          
+          // Recalculate selisih if stokSistem changes
+          if (field === "kodeBarang") {
+            const fisik = typeof updatedItem.stokFisik === "number" ? updatedItem.stokFisik : 0;
+            updatedItem.selisih = fisik - updatedItem.stokSistem;
+          }
+          
           return updatedItem;
         }
         return item;
@@ -314,13 +337,19 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                       Serial Number
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stok Sebenarnya
+                      Qty Stok Sistem
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Qty Stok Fisik
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Selisih
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Keterangan
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Attachment
+                      Upload Foto/Dokumen
                     </th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Aksi
@@ -369,26 +398,47 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                           }
                         />
                       </td>
+                      {/* Qty Stok Sistem - Read Only */}
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="number"
-                            className="border border-gray-300 rounded-lg px-2 py-1 w-2/3"
-                            value={item.stokSebenarnya}
-                            onChange={(e) =>
-                              handleBarangChange(
-                                item.id,
-                                "stokSebenarnya",
-                                parseFloat(e.target.value) || ""
-                              )
-                            }
-                          />
-                          <select className="border border-gray-300 rounded-lg px-1 py-1 w-1/3">
-                            <option>Pcs</option>
-                            <option>Kg</option>
-                          </select>
-                        </div>
+                        <input
+                          type="number"
+                          className="border border-gray-300 rounded-lg px-2 py-1 w-full bg-gray-50 cursor-not-allowed text-center font-semibold"
+                          value={item.stokSistem}
+                          readOnly
+                        />
                       </td>
+                      {/* Qty Stok Fisik - Input by Gudang */}
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <input
+                          type="number"
+                          className="border border-gray-300 rounded-lg px-2 py-1 w-full"
+                          value={item.stokFisik}
+                          onChange={(e) =>
+                            handleBarangChange(
+                              item.id,
+                              "stokFisik",
+                              parseFloat(e.target.value) || ""
+                            )
+                          }
+                          placeholder="0"
+                        />
+                      </td>
+                      {/* Selisih - Auto Calculate */}
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <input
+                          type="number"
+                          className={`border border-gray-300 rounded-lg px-2 py-1 w-full text-center font-bold cursor-not-allowed ${
+                            item.selisih > 0
+                              ? "bg-green-50 text-green-700"
+                              : item.selisih < 0
+                              ? "bg-red-50 text-red-700"
+                              : "bg-gray-50 text-gray-700"
+                          }`}
+                          value={item.selisih}
+                          readOnly
+                        />
+                      </td>
+                      {/* Keterangan */}
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         <input
                           type="text"
@@ -401,12 +451,20 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                               e.target.value
                             )
                           }
+                          placeholder="Opsional"
                         />
                       </td>
+                      {/* Upload Foto/Dokumen */}
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         <input
                           type="file"
-                          className="border border-gray-300 rounded-lg px-2 py-1 w-full"
+                          accept="image/*,.pdf,.doc,.docx"
+                          className="border border-gray-300 rounded-lg px-2 py-1 w-full text-xs"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleBarangChange(item.id, "file", e.target.files[0]);
+                            }
+                          }}
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm font-medium">

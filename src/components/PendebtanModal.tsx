@@ -7,6 +7,7 @@ interface MasterPegawai {
   bank: string;
   rekening: string;
   departemen: string;
+  gajiDefault?: number; // Optional default salary
 }
 
 interface PendebtanModalProps {
@@ -88,7 +89,7 @@ const PendebtanModal: React.FC<PendebtanModalProps> = ({
       namaPegawai: pegawai.nama,
       bank: pegawai.bank,
       rekening: pegawai.rekening,
-      nominal: 0,
+      nominal: pegawai.gajiDefault || 5000000, // Use default salary from master data or 5,000,000
       departemen: pegawai.departemen,
       keterangan: keterangan,
     }));
@@ -257,7 +258,7 @@ const PendebtanModal: React.FC<PendebtanModalProps> = ({
                             <input
                               type="text"
                               inputMode="numeric"
-                              value={emp.nominal > 0 ? formatCurrency(emp.nominal) : ''}
+                              value={formatCurrency(emp.nominal)}
                               onChange={(e) =>
                                 updateEmployee(idx, 'nominal', e.target.value)
                               }

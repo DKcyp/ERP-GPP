@@ -7,7 +7,6 @@ import {
   FileDown,
   Check,
   X,
-  Send,
   ShieldCheck,
 } from "lucide-react";
 import PertanggungJawabanEntryModal from "./PertanggungJawabanEntryModal"; // Import the new modal
@@ -25,7 +24,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
-    "approve" | "reject" | "posting" | "verify" | null
+    "approve" | "reject" | "verify" | null
   >(null);
   const [selectedEntry, setSelectedEntry] = useState<VoucherEntry | null>(null);
   const [rejectionNote, setRejectionNote] = useState<string>(""); // New state for rejection note
@@ -170,7 +169,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
 
   const openConfirmation = (
     entry: VoucherEntry,
-    action: "approve" | "reject" | "posting" | "verify"
+    action: "approve" | "reject" | "verify"
   ) => {
     setSelectedEntry(entry);
     setConfirmAction(action);
@@ -184,11 +183,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
         return;
       }
       
-      if (confirmAction === "posting") {
-        console.log("Posting voucher:", selectedEntry.noVoucher);
-        alert(`Voucher ${selectedEntry.noVoucher} berhasil di-posting!`);
-        // Here you would put your actual posting logic
-      } else if (confirmAction === "verify") {
+      if (confirmAction === "verify") {
         console.log("Verify Kasir voucher:", selectedEntry.noVoucher);
         alert(`Voucher ${selectedEntry.noVoucher} berhasil diverifikasi oleh Kasir!`);
         // Here you would put your actual verify kasir logic
@@ -492,13 +487,6 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
                           <X className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => openConfirmation(entry, "posting")}
-                          className="p-1 text-primary hover:text-primary/80 transition-colors duration-200"
-                          title="Posting"
-                        >
-                          <Send className="h-4 w-4" />
-                        </button>
-                        <button
                           onClick={() => openConfirmation(entry, "verify")}
                           className="p-1 text-purple-600 hover:text-purple-800 transition-colors duration-200"
                           title="Verify Kasir"
@@ -556,14 +544,10 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             ? "Konfirmasi Approval"
             : confirmAction === "reject"
             ? "Konfirmasi Penolakan"
-            : confirmAction === "posting"
-            ? "Konfirmasi Posting"
             : "Konfirmasi Verify Kasir"
         }
         message={
-          confirmAction === "posting"
-            ? `Apakah Anda yakin ingin melakukan posting untuk voucher ${selectedEntry?.noVoucher}?`
-            : confirmAction === "verify"
+          confirmAction === "verify"
             ? `Apakah Anda yakin ingin memverifikasi voucher ${selectedEntry?.noVoucher} oleh Kasir?`
             : `Apakah Anda yakin ingin ${
                 confirmAction === "approve" ? "menyetujui" : "menolak"
@@ -574,8 +558,6 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
             ? "Approve"
             : confirmAction === "reject"
             ? "Reject"
-            : confirmAction === "posting"
-            ? "Posting"
             : "Verify"
         }
         showNoteInput={confirmAction === "reject"} // Conditionally show note input

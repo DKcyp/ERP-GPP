@@ -213,25 +213,6 @@ const EntryPurchasingRequestModal: React.FC<
             </select>
           </div>
 
-          {/* No. Sistem ACTS */}
-          <div>
-            <label
-              htmlFor="noSistemACTS"
-              className="block text-sm font-medium text-textSecondary mb-1"
-            >
-              No. Sistem ACTS
-            </label>
-            <input
-              type="text"
-              id="noSistemACTS"
-              name="noSistemACTS"
-              value={formData.noSistemACTS}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-border rounded-md focus:ring-2 focus:ring-secondary focus:border-transparent bg-surface text-text text-sm"
-              placeholder="PPE-GBP/2025/XX/XXX"
-            />
-          </div>
-
           {/* No PBG */}
           <div>
             <label

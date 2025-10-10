@@ -21,16 +21,16 @@ interface PendebtanPeriod {
   status: 'Pending' | 'Approved' | 'Rejected';
 }
 
-// Master data pegawai dengan bank dan rekening
+// Master data pegawai dengan bank, rekening, dan gaji default
 const masterPegawai = [
-  { nama: 'Ahmad Fauzi', bank: 'BCA', rekening: '1234567890', departemen: 'Engineering' },
-  { nama: 'Siti Nurhaliza', bank: 'Mandiri', rekening: '9876543210', departemen: 'Finance' },
-  { nama: 'Budi Santoso', bank: 'BNI', rekening: '5555666677', departemen: 'Operations' },
-  { nama: 'Dewi Anggraini', bank: 'BRI', rekening: '1111222233', departemen: 'Marketing' },
-  { nama: 'Rudi Hermawan', bank: 'BCA', rekening: '9999888877', departemen: 'IT' },
-  { nama: 'Rina Setiawati', bank: 'Mandiri', rekening: '4444555566', departemen: 'HR' },
-  { nama: 'Wahyudi Hidayat', bank: 'BNI', rekening: '7777888899', departemen: 'Engineering' },
-  { nama: 'Siti Aminah', bank: 'BRI', rekening: '3333444455', departemen: 'Finance' },
+  { nama: 'Ahmad Fauzi', bank: 'BCA', rekening: '1234567890', departemen: 'Engineering', gajiDefault: 5000000 },
+  { nama: 'Siti Nurhaliza', bank: 'Mandiri', rekening: '9876543210', departemen: 'Finance', gajiDefault: 4500000 },
+  { nama: 'Budi Santoso', bank: 'BNI', rekening: '5555666677', departemen: 'Operations', gajiDefault: 4800000 },
+  { nama: 'Dewi Anggraini', bank: 'BRI', rekening: '1111222233', departemen: 'Marketing', gajiDefault: 5200000 },
+  { nama: 'Rudi Hermawan', bank: 'BCA', rekening: '9999888877', departemen: 'IT', gajiDefault: 6000000 },
+  { nama: 'Rina Setiawati', bank: 'Mandiri', rekening: '4444555566', departemen: 'HR', gajiDefault: 4500000 },
+  { nama: 'Wahyudi Hidayat', bank: 'BNI', rekening: '7777888899', departemen: 'Engineering', gajiDefault: 5000000 },
+  { nama: 'Siti Aminah', bank: 'BRI', rekening: '3333444455', departemen: 'Finance', gajiDefault: 4000000 },
 ];
 
 const PendebtanDashboard: React.FC = () => {
