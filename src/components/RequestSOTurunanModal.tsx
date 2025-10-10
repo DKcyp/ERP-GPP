@@ -29,6 +29,7 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Partial<SOTurunanFormData>>({});
+  const [pipingOption, setPipingOption] = useState<string>("");
   // Ringkasan pekerjaan (jenis pekerjaan vs jumlah)
   const [pekerjaanRingkas, setPekerjaanRingkas] = useState<
     Array<{ jenisPekerjaan: string; jumlah: string }>
@@ -165,6 +166,13 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
     "Project Based",
     "Maintenance",
     "Consulting",
+    "RBI",
+  ];
+  
+  const pipingOptions = [
+    "Piping Pendek",
+    "Piping Middle",
+    "Piping Panjang",
   ];
   const clientOptions = [
     "PT Adem Ayem",
@@ -259,7 +267,12 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
               </label>
               <select
                 value={formData.jenisPekerjaan}
-                onChange={(e) => setField("jenisPekerjaan", e.target.value)}
+                onChange={(e) => {
+                  setField("jenisPekerjaan", e.target.value);
+                  if (e.target.value !== "RBI") {
+                    setPipingOption("");
+                  }
+                }}
                 className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Pilih Jenis Pekerjaan</option>
@@ -270,6 +283,27 @@ const RequestSOTurunanModal: React.FC<RequestSOTurunanModalProps> = ({
                 ))}
               </select>
             </div>
+
+            {/* Piping Option (conditional - only show when RBI is selected) */}
+            {formData.jenisPekerjaan === "RBI" && (
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  Piping <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={pipingOption}
+                  onChange={(e) => setPipingOption(e.target.value)}
+                  className="w-full px-2 py-2 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Pilih Piping</option>
+                  {pipingOptions.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Tanggal MOB */}
             <div>
