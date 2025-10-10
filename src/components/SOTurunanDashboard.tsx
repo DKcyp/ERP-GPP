@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import SOTurunanModal, { SOTurunanFormData } from "./SOTurunanModal";
 import RequestSOTurunanModal from "./RequestSOTurunanModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { Plus, FileSpreadsheet, FileText, File } from "lucide-react";
+import { Plus, FileSpreadsheet, FileText, File, AlertTriangle } from "lucide-react";
 
 interface SOTurunan {
   id: string;
@@ -19,6 +19,7 @@ interface SOTurunan {
   delayPenagihan: string; // e.g., "229 Hari"
   status: "Menunggu Review" | "Approve" | "Reject";
   statusDitagihkan: "Sudah Ditagihkan" | "Belum Ditagihkan";
+  statusReport?: string;
 }
 
 interface SOTurunanDashboardProps {
@@ -59,6 +60,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       delayPenagihan: "229 Hari",
       status: "Menunggu Review",
       statusDitagihkan: "Belum Ditagihkan",
+      statusReport: "On Progress",
     },
     {
       id: "2",
@@ -75,6 +77,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       delayPenagihan: "229 Hari",
       status: "Approve",
       statusDitagihkan: "Sudah Ditagihkan",
+      statusReport: "Completed",
     },
     {
       id: "3",
@@ -91,6 +94,7 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       delayPenagihan: "233 Hari",
       status: "Reject",
       statusDitagihkan: "Belum Ditagihkan",
+      statusReport: "Pending",
     },
     {
       id: "4",
@@ -105,8 +109,26 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
       nilaiProduksi: "Rp 100.000.000",
       actualPenagihan: "Rp 85.000.000",
       delayPenagihan: "252 Hari",
-      status: "Menunggu Review",
+      status: "Approve",
       statusDitagihkan: "Sudah Ditagihkan",
+      statusReport: "", // Team sudah pulang tapi report belum ada
+    },
+    {
+      id: "5",
+      no: 5,
+      noSO: "SO005",
+      soTurunan: "SO005.33",
+      namaProyek: "Proyek Pertamina",
+      mob: "15-12-2024",
+      demob: "15-01-2025",
+      nilaiKontrak: "Rp 200.000.000",
+      hpp: "Rp 100.000.000",
+      nilaiProduksi: "Rp 180.000.000",
+      actualPenagihan: "Rp 160.000.000",
+      delayPenagihan: "180 Hari",
+      status: "Approve",
+      statusDitagihkan: "Belum Ditagihkan",
+      statusReport: "", // Team sudah pulang tapi report belum ada
     },
   ]);
 
@@ -214,6 +236,15 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
 
     return matchesNoSO && matchesNamaProject;
   });
+
+  // Calculate missing reports (team sudah pulang tapi report belum ada)
+  const missingReports = useMemo(() => {
+    return filteredData.filter(
+      (item) =>
+        item.status === "Approve" && // Timesheet sudah approve (team sudah pulang)
+        (!item.statusReport || item.statusReport.trim() === "") // Status report belum ada
+    );
+  }, [filteredData]);
 
   // Sort data
   const sortedData = [...filteredData]; // No sorting for now as handleSort is removed
@@ -399,6 +430,66 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
           </div>
         </div>
 
+        {/* Alert Dashboard - Missing Reports */}
+        {missingReports.length > 0 && (
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg border-2 border-amber-300 p-6">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center animate-pulse">
+                  <AlertTriangle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-bold text-amber-900">
+                    ⚠️ Peringatan: Report Belum Dibuat
+                  </h3>
+                  <span className="px-3 py-1 bg-amber-500 text-white rounded-full text-sm font-bold">
+                    {missingReports.length} Project
+                  </span>
+                </div>
+                <p className="text-sm text-amber-800 mb-4">
+                  Terdapat <strong>{missingReports.length} project</strong> yang timesheetnya sudah di-approve (team sudah pulang) tetapi <strong>Status Report belum dibuat</strong>. Segera lengkapi laporan untuk project berikut:
+                </p>
+                <div className="bg-white rounded-lg border border-amber-200 overflow-hidden">
+                  <div className="max-h-48 overflow-y-auto">
+                    <table className="w-full text-xs">
+                      <thead className="bg-amber-100 border-b border-amber-200 sticky top-0">
+                        <tr>
+                          <th className="px-3 py-2 text-left font-semibold text-amber-900">No SO</th>
+                          <th className="px-3 py-2 text-left font-semibold text-amber-900">SO Turunan</th>
+                          <th className="px-3 py-2 text-left font-semibold text-amber-900">Nama Proyek</th>
+                          <th className="px-3 py-2 text-left font-semibold text-amber-900">DEMOB</th>
+                          <th className="px-3 py-2 text-left font-semibold text-amber-900">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-amber-100">
+                        {missingReports.map((item) => (
+                          <tr key={item.id} className="hover:bg-amber-50 transition-colors">
+                            <td className="px-3 py-2 text-gray-900 font-medium">{item.noSO}</td>
+                            <td className="px-3 py-2 text-gray-900">{item.soTurunan}</td>
+                            <td className="px-3 py-2 text-gray-900 font-medium">{item.namaProyek}</td>
+                            <td className="px-3 py-2 text-gray-600">{item.demob}</td>
+                            <td className="px-3 py-2">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                Belum Ada Report
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center space-x-2 text-xs text-amber-700">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="font-medium">Harap segera melengkapi Status Report untuk project yang sudah selesai.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
@@ -436,10 +527,13 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                     Delay Penagihan
                   </th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">
-                    Status
+                    Status Marketing
                   </th>
                   <th className="px-2 py-2 text-left font-medium text-gray-700">
                     Status Ditagihkan
+                  </th>
+                  <th className="px-2 py-2 text-left font-medium text-gray-700">
+                    Status Report
                   </th>
                   <th className="px-2 py-2 text-center font-medium text-gray-700">
                     Aksi
@@ -501,6 +595,9 @@ const SOTurunanDashboard: React.FC<SOTurunanDashboardProps> = ({ role }) => {
                       >
                         {item.statusDitagihkan}
                       </span>
+                    </td>
+                    <td className="px-2 py-2 text-xs text-gray-600">
+                      {item.statusReport || "-"}
                     </td>
                     <td className="px-2 py-2 text-center">
                       {role === "operational" && item.status !== "Approve" && (

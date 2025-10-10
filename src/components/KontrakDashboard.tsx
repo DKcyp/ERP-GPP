@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import KontrakModal, { KontrakFormData } from "./KontrakModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import ApprovalActionModal from "./ApprovalActionModal"; // Import ApprovalActionModal
+import MPPModal from "./MPPModal";
 import { ApprovalActionData } from "../types"; // Assuming you have this type defined
 import {
   Search,
@@ -19,6 +20,7 @@ import {
   ChevronRight,
   ArrowUp,
   Check, // Import Check icon for approve
+  Users,
 } from "lucide-react";
 
 interface Kontrak {
@@ -56,6 +58,10 @@ const KontrakDashboard: React.FC = () => {
   const [approvalActionType, setApprovalActionType] = useState<
     "approve" | "reject" | null
   >(null);
+
+  // State for MPP Modal
+  const [isMPPModalOpen, setIsMPPModalOpen] = useState(false);
+  const [selectedKontrakForMPP, setSelectedKontrakForMPP] = useState<Kontrak | null>(null);
 
   // Sample data matching the image
   const [kontrakData, setKontrakData] = useState<Kontrak[]>([
@@ -272,6 +278,18 @@ const KontrakDashboard: React.FC = () => {
     setApprovalActionType(null);
   };
 
+  // Handle MPP Modal
+  const handleMPPClick = (kontrak: Kontrak) => {
+    setSelectedKontrakForMPP(kontrak);
+    setIsMPPModalOpen(true);
+  };
+
+  const handleMPPSave = (data: any) => {
+    console.log("MPP Data Saved:", data);
+    setIsMPPModalOpen(false);
+    setSelectedKontrakForMPP(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Title - Moved to the top */}
@@ -485,6 +503,9 @@ const KontrakDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Estimasi Penagihan
                   </th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -529,6 +550,16 @@ const KontrakDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
                       {item.estimasiPenagihan}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleMPPClick(item)}
+                        className="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded transition-colors"
+                        title="MPP"
+                      >
+                        <Users className="h-3.5 w-3.5 mr-1" />
+                        MPP
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -638,6 +669,17 @@ const KontrakDashboard: React.FC = () => {
         onConfirm={handleApprovalConfirm}
         invoiceId={selectedKontrakIdForApproval} // Renamed to invoiceId in modal, but used for kontrakId here
         actionType={approvalActionType}
+      />
+
+      {/* MPP Modal */}
+      <MPPModal
+        isOpen={isMPPModalOpen}
+        onClose={() => {
+          setIsMPPModalOpen(false);
+          setSelectedKontrakForMPP(null);
+        }}
+        onSave={handleMPPSave}
+        kontrak={selectedKontrakForMPP}
       />
     </div>
   );

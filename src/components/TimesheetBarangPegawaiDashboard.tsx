@@ -39,6 +39,9 @@ interface PegawaiData {
   zona: string;
   nilaiTimesheet: string;
   statusApproval: string;
+  statusAdminOps?: string;
+  statusManagerOps?: string;
+  remarks?: string;
   rejectReason?: string; // New field for rejection reason
 }
 
@@ -79,6 +82,9 @@ const samplePegawaiData: PegawaiData[] = [
     zona: "Jakarta",
     nilaiTimesheet: "Rp 12.000.000",
     statusApproval: "Approved",
+    statusAdminOps: "Approved",
+    statusManagerOps: "Approved",
+    remarks: "Semua dokumen lengkap",
   },
   {
     id: "2",
@@ -95,6 +101,9 @@ const samplePegawaiData: PegawaiData[] = [
     zona: "Surabaya",
     nilaiTimesheet: "Rp 8.500.000",
     statusApproval: "Pending",
+    statusAdminOps: "Pending",
+    statusManagerOps: "Pending",
+    remarks: "",
   },
   {
     id: "3",
@@ -111,6 +120,9 @@ const samplePegawaiData: PegawaiData[] = [
     zona: "Bandung",
     nilaiTimesheet: "Rp 15.000.000",
     statusApproval: "Rejected",
+    statusAdminOps: "Rejected",
+    statusManagerOps: "Rejected",
+    remarks: "Dokumen tidak lengkap",
   },
 ];
 
@@ -127,7 +139,9 @@ const TimesheetBarangPegawaiDashboard: React.FC<
   const [search, setSearch] = useState("");
   const [selectedPegawai, setSelectedPegawai] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingData, setEditingData] = useState<TimesheetFormData | null>(null);
+  const [editingData, setEditingData] = useState<TimesheetFormData | null>(
+    null
+  );
   const [animateRows, setAnimateRows] = useState(false);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -603,6 +617,15 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Status Approval
                   </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Admin Ops
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Manager Ops
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Remarks
+                  </th>
                   {role !== "procon" && (
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                       Actions
@@ -681,6 +704,27 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                         {item.statusApproval}
                       </span>
                     </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColorPegawai(
+                          item.statusAdminOps || "Pending"
+                        )}`}
+                      >
+                        {item.statusAdminOps || "Pending"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusColorPegawai(
+                          item.statusManagerOps || "Pending"
+                        )}`}
+                      >
+                        {item.statusManagerOps || "Pending"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {item.remarks || "-"}
+                    </td>
                     {role !== "procon" && (
                       <td className="px-4 py-3 text-sm text-gray-900">
                         <div className="flex items-center space-x-2">
@@ -714,6 +758,29 @@ const TimesheetBarangPegawaiDashboard: React.FC<
                   </tr>
                 ))}
               </tbody>
+              {/* Total Row */}
+              <tfoot>
+                <tr className="bg-gradient-to-r from-blue-50 to-gray-50 border-t-2 border-blue-200">
+                  <td
+                    colSpan={11}
+                    className="px-4 py-3 text-sm font-bold text-gray-900 text-right"
+                  >
+                    TOTAL NILAI TIMESHEET:
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-900 text-left">
+                    {(() => {
+                      const total = currentPegawaiData.reduce((sum, item) => {
+                        const nominal = parseFloat(
+                          item.nilaiTimesheet.replace(/[^\d]/g, "") || "0"
+                        );
+                        return sum + nominal;
+                      }, 0);
+                      return `Rp ${total.toLocaleString("id-ID")}`;
+                    })()}
+                  </td>
+                  <td colSpan={5} className="px-4 py-3"></td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>
