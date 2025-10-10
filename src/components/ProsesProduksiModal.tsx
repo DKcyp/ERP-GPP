@@ -23,6 +23,9 @@ export interface ProsesProduksiFormData {
   statusReport: "Approved" | "Revisi";
   noKontrak?: string;
   noReportTerakhir?: string;
+  noPOSAP?: string;
+  ro?: string;
+  cro?: string;
   // Optional file attachment (object URL, client-side only)
   fileUrl?: string;
   fileName?: string;
@@ -50,6 +53,9 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
     statusReport: "Approved",
     noKontrak: "",
     noReportTerakhir: "001-00/GBP/UT/I/2025",
+    noPOSAP: "",
+    ro: "",
+    cro: "",
     fileUrl: undefined,
     fileName: undefined,
   });

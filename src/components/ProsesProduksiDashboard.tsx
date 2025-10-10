@@ -29,6 +29,9 @@ interface ProsesProduksiData {
   tanggalApprovalBAST?: string;
   tanggalFinalApproval?: string;
   tglSubmitPI?: string;
+  noPOSAP?: string;
+  ro?: string;
+  cro?: string;
   fileUrl?: string;
   fileName?: string;
 }
@@ -81,6 +84,9 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       tanggalApprovalTeknisi: "23-02-2025",
       tanggalApprovalBAST: "26-02-2025",
       tglSubmitPI: "01-02-2025",
+      noPOSAP: "PO-2025-001",
+      ro: "RO-2025-001",
+      cro: "CRO-2025-001",
     },
     {
       id: "2",
@@ -97,6 +103,9 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       tanggalApprovalTeknisi: "-",
       tanggalApprovalBAST: "-",
       tglSubmitPI: "10-01-2025",
+      noPOSAP: "PO-2025-002",
+      ro: "RO-2025-002",
+      cro: "-",
     },
     {
       id: "3",
@@ -113,6 +122,9 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       tanggalApprovalTeknisi: "03-03-2025",
       tanggalApprovalBAST: "07-03-2025",
       tglSubmitPI: "15-01-2025",
+      noPOSAP: "PO-2025-003",
+      ro: "RO-2025-003",
+      cro: "CRO-2025-003",
     },
     {
       id: "4",
@@ -129,6 +141,9 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       tanggalApprovalTeknisi: "-",
       tanggalApprovalBAST: "-",
       tglSubmitPI: "-",
+      noPOSAP: "-",
+      ro: "-",
+      cro: "-",
     },
   ]);
 
@@ -588,6 +603,15 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
                     Tanggal Submit PI
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    No PO SAP
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    RO
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    CRO
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Nilai Produksi
                   </th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
@@ -639,6 +663,15 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
                     </td>
                     <td className="px-3 py-2 text-gray-600">
                       {item.tglSubmitPI || "-"}
+                    </td>
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.noPOSAP || "-"}
+                    </td>
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.ro || "-"}
+                    </td>
+                    <td className="px-3 py-2 text-gray-600">
+                      {item.cro || "-"}
                     </td>
                     <td className="px-3 py-2 text-gray-900 font-medium">
                       {item.nilaiProduksi}
