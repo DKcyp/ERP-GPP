@@ -31,6 +31,9 @@ export interface ProsesProduksiFormData {
   fileName?: string;
   // Optional metode pengerjaan rows (synced with local rows state)
   metodePengerjaan?: Array<{ jenisPekerjaan: string; jumlah: string }>;
+  // New fields requested: Alur Dokumen & Status Dokumen
+  alurDokumen?: string;
+  statusDokumen?: string;
 }
 
 const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
@@ -58,6 +61,8 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
     cro: "",
     fileUrl: undefined,
     fileName: undefined,
+    alurDokumen: "",
+    statusDokumen: "",
   });
 
   const [errors, setErrors] = useState<Partial<ProsesProduksiFormData>>({});
@@ -82,6 +87,46 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
     "Proyek D",
     "Proyek E",
   ];
+
+  // Alur Dokumen & dynamic Status Dokumen options
+  const alurDokumenOptions = [
+    "Project PHE ONWJ",
+    "Project Medco Gresik",
+    "Pertamina Hulu Mahakam",
+  ];
+  const statusByAlur: Record<string, string[]> = {
+    "Project PHE ONWJ": [
+      "SUBMIT & AFTER REVISI REPORT",
+      "PREPARE TIDMS",
+      "SCAN DAN BURNING FILM",
+      "BAP",
+      "BAP AFTER REVISI",
+      "PREPARE & SUBMIT PI",
+      "PREPARE SP3",
+      "PREPARE INVOICE",
+    ],
+    "Project Medco Gresik": [
+      "SUBMIT REPORT",
+      "VERIFIKASI REPORT BA",
+      "PI SUBMISSION",
+      "PROSES INVOICE",
+      "LOKET TERM",
+      "PLAN SO MINUS",
+    ],
+    "Pertamina Hulu Mahakam": [
+      "Approval SES, BAST & SP3",
+      "SUBMIT DRAFT PBR",
+      "REVIEW REPORT",
+      "APPROVAL PBR",
+      "SUBMIT BAST & SP3 VENDOR LIST",
+      "REQUEST NO INV/KWI/FP",
+      "SUBMIT COMPILED INVOICE TO LIKET PHM FOR VERIFICATION",
+      "LOKET PHM",
+    ],
+  };
+  const currentStatusOptions = formData.alurDokumen
+    ? statusByAlur[formData.alurDokumen] || []
+    : [];
 
   // Options to mirror SOTurunanModal
   const jenisPekerjaanOptions = [
@@ -270,6 +315,10 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
       newErrors.nilaiProduksi = "Nilai Produksi wajib diisi";
     }
 
+    // Optional: if you want to enforce selection, uncomment below
+    // if (!formData.alurDokumen) newErrors.alurDokumen = "Alur Dokumen wajib dipilih";
+    // if (!formData.statusDokumen) newErrors.statusDokumen = "Status Dokumen wajib dipilih";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -300,6 +349,14 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
         fieldsToClear.forEach((f) => (clone[f] = undefined));
         return clone;
       });
+      return;
+    }
+
+    if (field === "alurDokumen") {
+      // when alur changes, reset statusDokumen
+      setFormData((prev) => ({ ...prev, alurDokumen: value, statusDokumen: "" }));
+      // Clear related errors
+      setErrors((prev) => ({ ...prev, alurDokumen: undefined, statusDokumen: undefined }));
       return;
     }
 
@@ -403,6 +460,8 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
       noReportTerakhir: "001-00/GBP/UT/I/2025",
       fileUrl: undefined,
       fileName: undefined,
+      alurDokumen: "",
+      statusDokumen: "",
     });
     setMetodePengerjaanRows([{ jenisPekerjaan: "", jumlah: "" }]);
     setErrors({});
@@ -641,6 +700,55 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   <option value="Approved">Approved</option>
                   <option value="Revisi">Revisi</option>
                 </select>
+              </div>
+
+              {/* Alur Dokumen */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Alur Dokumen
+                </label>
+                <select
+                  value={formData.alurDokumen || ""}
+                  onChange={(e) => handleInputChange("alurDokumen", e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
+                    (errors as any).alurDokumen ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
+                >
+                  <option value="">Pilih Alur Dokumen</option>
+                  {alurDokumenOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                {(errors as any).alurDokumen && (
+                  <p className="mt-1 text-xs text-red-600">{(errors as any).alurDokumen}</p>
+                )}
+              </div>
+
+              {/* Status Dokumen (dynamic based on Alur Dokumen) */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Status Dokumen
+                </label>
+                <select
+                  value={formData.statusDokumen || ""}
+                  onChange={(e) => handleInputChange("statusDokumen", e.target.value)}
+                  disabled={!formData.alurDokumen}
+                  className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
+                    (errors as any).statusDokumen ? "border-red-300 bg-red-50" : "border-gray-200"
+                  }`}
+                >
+                  <option value="">{formData.alurDokumen ? "Pilih Status Dokumen" : "Pilih Alur Dokumen terlebih dahulu"}</option>
+                  {currentStatusOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                {(errors as any).statusDokumen && (
+                  <p className="mt-1 text-xs text-red-600">{(errors as any).statusDokumen}</p>
+                )}
               </div>
 
               {/* No Kontrak */}

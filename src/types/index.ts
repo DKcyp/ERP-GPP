@@ -19,6 +19,7 @@ export interface VoucherEntry {
   ptjNominal?: string; // e.g. "Rp 5,000,000"
   statusPosting?: string; // e.g. "Sudah Posting" or "Belum Posting"
   ptjDetails?: PTJDetailItem[];
+  noBKK?: string; // No Bukti Kas/Bank (appears when status is Close)
 }
 
 export interface ReimburseDetailItem {

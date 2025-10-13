@@ -221,6 +221,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
         : undefined,
       fileUrl: formData.fileUrl,
       fileName: formData.fileName,
+      alurDokumen: formData.alurDokumen || "",
+      statusDokumen: formData.statusDokumen || "",
     };
 
     if (editItem) {

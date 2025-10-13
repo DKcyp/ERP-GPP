@@ -49,6 +49,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
         { deskripsi: "Transport", nominal: 3000000 },
         { deskripsi: "Makan", nominal: 2000000 },
       ],
+      noBKK: "BKK-2025-0001",
     },
     {
       no: 2,
@@ -86,6 +87,7 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
       ptjNominal: "Rp 0",
       statusPosting: "Sudah Posting",
       ptjDetails: [],
+      noBKK: "BKK-2025-0005",
     },
     {
       no: 4,
@@ -400,7 +402,8 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
                   <th className="px-3 py-2 text-left">PTJ</th>
                   <th className="px-3 py-2 text-left">Sisa</th>
                   <th className="px-3 py-2 text-left">Keterangan</th>
-                  <th className="px-3 py-2 text-left">Status Posting</th>
+                  <th className="px-3 py-2 text-left">Status</th>
+                  <th className="px-3 py-2 text-left">No BKK</th>
                   <th className="px-3 py-2 text-left">Aksi</th>
                 </tr>
               </thead>
@@ -460,15 +463,23 @@ const FinanceApprovalPTJVoucherDashboard: React.FC = () => {
                       {entry.keterangan}
                     </td>
                     <td className="px-3 py-2 text-xs">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          entry.statusPosting === "Sudah Posting"
-                            ? "bg-success/10 text-success border border-success/20"
-                            : "bg-warning/10 text-warning border border-warning/20"
-                        }`}
-                      >
-                        {entry.statusPosting || "Belum Posting"}
-                      </span>
+                      {(() => {
+                        const isClose = !!entry.noBKK;
+                        return (
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              isClose
+                                ? "bg-success/10 text-success border border-success/20"
+                                : "bg-warning/10 text-warning border border-warning/20"
+                            }`}
+                          >
+                            {isClose ? "Close" : "Open"}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                    <td className="px-3 py-2 text-xs text-text">
+                      {entry.noBKK ?? "-"}
                     </td>
                     <td className="px-3 py-2 text-xs text-text">
                       <div className="flex items-center gap-2">
