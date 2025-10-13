@@ -9,9 +9,23 @@ import {
   FileUp,
 } from "lucide-react";
 
+interface StockOpnameItem {
+  no: number;
+  periodeTahun: number;
+  periodeBulan: string;
+  gudang: string;
+  tanggalOpname: string;
+  waktuOpname: string;
+  jumlahItem: number;
+  status: string;
+  namaPegawai: string;
+}
+
 interface EntryStockOpnameModalProps {
   isOpen: boolean;
   onClose: () => void;
+  mode?: "add" | "edit" | "detail";
+  selectedItem?: StockOpnameItem | null;
 }
 
 interface BarangItem {
@@ -29,7 +43,10 @@ interface BarangItem {
 const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
   isOpen,
   onClose,
+  mode = "add",
+  selectedItem = null,
 }) => {
+  const isReadOnly = mode === "detail";
   const [periodeTahun, setPeriodeTahun] = useState("2025");
   const [periodeBulan, setPeriodeBulan] = useState("Januari");
   const [tanggalOpname, setTanggalOpname] = useState("");
@@ -43,20 +60,76 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      // Set current time when modal opens
-      const now = new Date();
-      setWaktuOpname(
-        now.toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-      );
-      // Reset other fields if needed, or load existing data
-      setBarangItems([]); // Start with an empty list of items
-      setNextItemId(1);
+      if (selectedItem && (mode === "edit" || mode === "detail")) {
+        // Load data dari selectedItem
+        setPeriodeTahun(selectedItem.periodeTahun.toString());
+        setPeriodeBulan(selectedItem.periodeBulan);
+        setTanggalOpname(selectedItem.tanggalOpname.split("-").reverse().join("-")); // Convert DD-MM-YYYY to YYYY-MM-DD
+        setWaktuOpname(selectedItem.waktuOpname);
+        setGudang(selectedItem.gudang);
+        setNamaPegawai(selectedItem.namaPegawai);
+        
+        // Load dummy barang items untuk detail/edit
+        const dummyBarangItems: BarangItem[] = [
+          {
+            id: 1,
+            kodeBarang: "KB001",
+            namaBarang: "Barang A",
+            serialNumber: "SN-001-2025",
+            stokSistem: 100,
+            stokFisik: 98,
+            selisih: -2,
+            keterangan: "Selisih karena kerusakan",
+            file: null,
+          },
+          {
+            id: 2,
+            kodeBarang: "KB002",
+            namaBarang: "Barang B",
+            serialNumber: "SN-002-2025",
+            stokSistem: 50,
+            stokFisik: 52,
+            selisih: 2,
+            keterangan: "Kelebihan stok",
+            file: null,
+          },
+          {
+            id: 3,
+            kodeBarang: "KB001",
+            namaBarang: "Barang A",
+            serialNumber: "SN-003-2025",
+            stokSistem: 100,
+            stokFisik: 100,
+            selisih: 0,
+            keterangan: "",
+            file: null,
+          },
+        ];
+        
+        setBarangItems(dummyBarangItems);
+        setNextItemId(4);
+      } else {
+        // Mode add - reset fields
+        const now = new Date();
+        setWaktuOpname(
+          now.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })
+        );
+        setPeriodeTahun("2025");
+        setPeriodeBulan("Januari");
+        setTanggalOpname("");
+        setGudang("Gudang Proyek A");
+        setNamaPegawai("Mulyono");
+        setKeterangan("");
+        setFile(null);
+        setBarangItems([]);
+        setNextItemId(1);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, mode, selectedItem]);
 
   const handleAddBarang = () => {
     setBarangItems([
@@ -150,7 +223,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 animate-fade-in">
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">
-            Entry Stock Opname
+            {mode === "detail" ? "Detail Stock Opname" : mode === "edit" ? "Edit Stock Opname" : "Entry Stock Opname"}
           </h2>
           <button
             onClick={onClose}
@@ -174,6 +247,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={periodeTahun}
                 onChange={(e) => setPeriodeTahun(e.target.value)}
+                disabled={isReadOnly}
               >
                 <option>2025</option>
                 <option>2024</option>
@@ -192,6 +266,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={periodeBulan}
                 onChange={(e) => setPeriodeBulan(e.target.value)}
+                disabled={isReadOnly}
               >
                 <option>Januari</option>
                 <option>Februari</option>
@@ -220,6 +295,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={tanggalOpname}
                 onChange={(e) => setTanggalOpname(e.target.value)}
+                disabled={isReadOnly}
               />
               <CalendarDays className="absolute left-3 top-1/2 transform translate-y-1/4 text-gray-400 h-5 w-5" />
             </div>
@@ -251,6 +327,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={gudang}
                 onChange={(e) => setGudang(e.target.value)}
+                disabled={isReadOnly}
               >
                 <option>Gudang Proyek A</option>
                 <option>Gudang Proyek B</option>
@@ -271,6 +348,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 value={namaPegawai}
                 onChange={(e) => setNamaPegawai(e.target.value)}
                 placeholder="Masukkan nama pegawai"
+                disabled={isReadOnly}
               />
             </div>
             <div className="col-span-1 md:col-span-1">
@@ -286,37 +364,40 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                 className="px-4 py-2 border border-gray-300 rounded-xl w-full focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={keterangan}
                 onChange={(e) => setKeterangan(e.target.value)}
+                disabled={isReadOnly}
               ></textarea>
             </div>
           </div>
 
           {/* Import Section */}
-          <div className="mt-6">
-            <label
-              htmlFor="importFile"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Import Data Stok Opname
-            </label>
-            <div className="flex items-center space-x-3">
+          {!isReadOnly && (
+            <div className="mt-6">
               <label
                 htmlFor="importFile"
-                className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm flex items-center space-x-2 shadow-md"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                <FileUp className="h-4 w-4" />
-                <span>Choose File</span>
+                Import Data Stok Opname
               </label>
-              <input
-                type="file"
-                id="importFile"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <span className="text-gray-600 text-sm">
-                {file ? file.name : "No file chosen"}
-              </span>
+              <div className="flex items-center space-x-3">
+                <label
+                  htmlFor="importFile"
+                  className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-200 text-sm flex items-center space-x-2 shadow-md"
+                >
+                  <FileUp className="h-4 w-4" />
+                  <span>Choose File</span>
+                </label>
+                <input
+                  type="file"
+                  id="importFile"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <span className="text-gray-600 text-sm">
+                  {file ? file.name : "No file chosen"}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Barang Items Table */}
           <div className="mt-8">
@@ -370,6 +451,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                               e.target.value
                             )
                           }
+                          disabled={isReadOnly}
                         >
                           <option value="">Pilih Kode Barang</option>
                           <option value="KB001">KB001</option>
@@ -396,6 +478,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                               e.target.value
                             )
                           }
+                          disabled={isReadOnly}
                         />
                       </td>
                       {/* Qty Stok Sistem - Read Only */}
@@ -421,6 +504,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                             )
                           }
                           placeholder="0"
+                          disabled={isReadOnly}
                         />
                       </td>
                       {/* Selisih - Auto Calculate */}
@@ -452,6 +536,7 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                             )
                           }
                           placeholder="Opsional"
+                          disabled={isReadOnly}
                         />
                       </td>
                       {/* Upload Foto/Dokumen */}
@@ -465,28 +550,33 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
                               handleBarangChange(item.id, "file", e.target.files[0]);
                             }
                           }}
+                          disabled={isReadOnly}
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleRemoveBarang(item.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
+                        {!isReadOnly && (
+                          <button
+                            onClick={() => handleRemoveBarang(item.id)}
+                            className="text-red-600 hover:text-red-800 transition-colors"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <button
-              onClick={handleAddBarang}
-              className="mt-4 flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-200 text-sm shadow-md"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Barang</span>
-            </button>
+            {!isReadOnly && (
+              <button
+                onClick={handleAddBarang}
+                className="mt-4 flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-200 text-sm shadow-md"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Barang</span>
+              </button>
+            )}
           </div>
         </div>
         <div className="flex justify-end space-x-4 p-6 border-t border-gray-200">
@@ -494,15 +584,17 @@ const EntryStockOpnameModal: React.FC<EntryStockOpnameModalProps> = ({
             onClick={onClose}
             className="px-6 py-2 bg-gray-300 text-gray-800 rounded-xl hover:bg-gray-400 transition-colors duration-200 text-sm shadow-md"
           >
-            Close
+            {isReadOnly ? "Tutup" : "Close"}
           </button>
-          <button
-            onClick={handleSave}
-            className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-sm shadow-md flex items-center space-x-2"
-          >
-            <Save className="h-4 w-4" />
-            <span>Simpan</span>
-          </button>
+          {!isReadOnly && (
+            <button
+              onClick={handleSave}
+              className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 text-sm shadow-md flex items-center space-x-2"
+            >
+              <Save className="h-4 w-4" />
+              <span>Simpan</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

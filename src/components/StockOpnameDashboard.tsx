@@ -14,11 +14,28 @@ import {
   CalendarDays,
 } from "lucide-react";
 import EntryStockOpnameModal from "./EntryStockOpnameModal"; // Import the new modal
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
+
+interface StockOpnameItem {
+  no: number;
+  periodeTahun: number;
+  periodeBulan: string;
+  gudang: string;
+  tanggalOpname: string;
+  waktuOpname: string;
+  jumlahItem: number;
+  status: string;
+  namaPegawai: string;
+}
 
 const StockOpnameDashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit" | "detail">("add");
+  const [selectedItem, setSelectedItem] = useState<StockOpnameItem | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<StockOpnameItem | null>(null);
 
-  const stockOpnameItems = [
+  const [stockOpnameItems, setStockOpnameItems] = useState<StockOpnameItem[]>([
     {
       no: 1,
       periodeTahun: 2025,
@@ -41,7 +58,50 @@ const StockOpnameDashboard: React.FC = () => {
       status: "Proses",
       namaPegawai: "Siti Aminah",
     },
-  ];
+  ]);
+
+  // Handler untuk tombol Detail
+  const handleDetail = (item: StockOpnameItem) => {
+    setSelectedItem(item);
+    setModalMode("detail");
+    setIsModalOpen(true);
+  };
+
+  // Handler untuk tombol Edit
+  const handleEdit = (item: StockOpnameItem) => {
+    setSelectedItem(item);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
+
+  // Handler untuk tombol Hapus
+  const handleDelete = (item: StockOpnameItem) => {
+    setItemToDelete(item);
+    setShowDeleteConfirm(true);
+  };
+
+  // Konfirmasi hapus
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      setStockOpnameItems(stockOpnameItems.filter((item) => item.no !== itemToDelete.no));
+      setShowDeleteConfirm(false);
+      setItemToDelete(null);
+    }
+  };
+
+  // Handler untuk tombol Tambah
+  const handleAdd = () => {
+    setSelectedItem(null);
+    setModalMode("add");
+    setIsModalOpen(true);
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+    setModalMode("add");
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -131,7 +191,7 @@ const StockOpnameDashboard: React.FC = () => {
             </div>
             <div className="flex justify-end items-end">
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleAdd}
                 className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-200 text-sm shadow-md"
               >
                 <Plus className="h-4 w-4" />
@@ -286,16 +346,28 @@ const StockOpnameDashboard: React.FC = () => {
                       {getStatusBadge(item.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-800 transition-colors">
+                      <button 
+                        onClick={() => handleDetail(item)}
+                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        title="Detail"
+                      >
                         <Eye className="h-5 w-5" />
                       </button>
-                      <button className="text-green-600 hover:text-green-800 transition-colors">
+                      <button 
+                        onClick={() => handleEdit(item)}
+                        className="text-green-600 hover:text-green-800 transition-colors"
+                        title="Edit"
+                      >
                         <Edit className="h-5 w-5" />
                       </button>
-                      <button className="text-red-600 hover:text-red-800 transition-colors">
+                      <button 
+                        onClick={() => handleDelete(item)}
+                        className="text-red-600 hover:text-red-800 transition-colors"
+                        title="Hapus"
+                      >
                         <Trash2 className="h-5 w-5" />
                       </button>
-                      <button className="text-purple-600 hover:text-purple-800 transition-colors">
+                      <button className="text-purple-600 hover:text-purple-800 transition-colors" title="Print">
                         <Printer className="h-5 w-5" />
                       </button>
                     </td>
@@ -335,8 +407,20 @@ const StockOpnameDashboard: React.FC = () => {
 
       <EntryStockOpnameModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
+        mode={modalMode}
+        selectedItem={selectedItem}
       />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && itemToDelete && (
+        <ConfirmDeleteModal
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={confirmDelete}
+          itemName={`Stock Opname ${itemToDelete.gudang} - ${itemToDelete.periodeBulan} ${itemToDelete.periodeTahun}`}
+        />
+      )}
     </div>
   );
 };

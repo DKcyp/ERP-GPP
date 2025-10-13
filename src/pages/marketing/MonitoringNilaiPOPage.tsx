@@ -1,17 +1,23 @@
 import React, { useState, useMemo } from "react";
-import { Search, Pencil, Trash2, PlusCircle, Upload, X, FileText } from "lucide-react";
+import { Search, Pencil, Trash2, PlusCircle, Upload, X, FileText, Plus } from "lucide-react";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 
+
+interface ServiceOrderItem {
+  id: number;
+  description: string;
+  qty: number;
+  hargaUnit: number;
+  hargaTotal: number;
+  noWbs: string;
+}
 
 interface POItem {
   id: string;
   so: string;
   project: string;
   pekerjaan: string;
-  description?: string;
-  qty?: number;
-  hargaUnit?: number;
-  hargaTotal?: number;
+  serviceOrders?: ServiceOrderItem[];
   siteLokasi: string;
   noWbs: string; // Changed from noUbs to noWbs
   wo: string; // Renamed from noWbsWo
@@ -144,6 +150,8 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrderItem[]>([]);
+  const [nextSOId, setNextSOId] = useState(1);
 
   // Function to calculate Harga Total and Jumlah Nilai SO
   const calculateHargaTotal = (qty: number, hargaUnit: number): number => {
@@ -152,6 +160,64 @@ const MonitoringNilaiPOPage: React.FC = () => {
 
   const formatRupiah = (value: number): string => {
     return `Rp ${value.toLocaleString('id-ID')}`;
+  };
+
+  // Calculate total Jumlah Nilai SO from all service orders
+  const calculateTotalJumlahNilaiSO = (orders: ServiceOrderItem[]): number => {
+    return orders.reduce((total, order) => total + order.hargaTotal, 0);
+  };
+
+  // Add new service order row
+  const handleAddServiceOrder = () => {
+    setServiceOrders([
+      ...serviceOrders,
+      {
+        id: nextSOId,
+        description: "",
+        qty: 0,
+        hargaUnit: 0,
+        hargaTotal: 0,
+        noWbs: "",
+      },
+    ]);
+    setNextSOId(nextSOId + 1);
+  };
+
+  // Remove service order row
+  const handleRemoveServiceOrder = (id: number) => {
+    const updatedOrders = serviceOrders.filter((order) => order.id !== id);
+    setServiceOrders(updatedOrders);
+    const totalNilaiSO = calculateTotalJumlahNilaiSO(updatedOrders);
+    setCurrentPO({ ...currentPO, jumlahNilaiSO: formatRupiah(totalNilaiSO) });
+  };
+
+  // Update service order field
+  const handleUpdateServiceOrder = (
+    id: number,
+    field: keyof ServiceOrderItem,
+    value: string | number
+  ) => {
+    const updatedOrders = serviceOrders.map((order) => {
+      if (order.id === id) {
+        const updatedOrder = { ...order, [field]: value };
+        
+        // Auto-calculate hargaTotal when qty or hargaUnit changes
+        if (field === "qty" || field === "hargaUnit") {
+          const qty = field === "qty" ? (value as number) : order.qty;
+          const hargaUnit = field === "hargaUnit" ? (value as number) : order.hargaUnit;
+          updatedOrder.hargaTotal = calculateHargaTotal(qty, hargaUnit);
+        }
+        
+        return updatedOrder;
+      }
+      return order;
+    });
+    
+    setServiceOrders(updatedOrders);
+    
+    // Update total Jumlah Nilai SO
+    const totalNilaiSO = calculateTotalJumlahNilaiSO(updatedOrders);
+    setCurrentPO({ ...currentPO, jumlahNilaiSO: formatRupiah(totalNilaiSO) });
   };
 
 
@@ -559,92 +625,138 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
               </div>
+              {/* Service Order Table */}
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  value={currentPO.description || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, description: e.target.value })
-                  }
-                  placeholder="Masukkan deskripsi pekerjaan"
-                  rows={3}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  QTY
-                </label>
-                <input
-                  type="number"
-                  value={currentPO.qty || ""}
-                  onChange={(e) => {
-                    const qty = parseFloat(e.target.value) || 0;
-                    const hargaUnit = currentPO.hargaUnit || 0;
-                    const hargaTotal = calculateHargaTotal(qty, hargaUnit);
-                    setCurrentPO({ 
-                      ...currentPO, 
-                      qty,
-                      hargaTotal,
-                      jumlahNilaiSO: formatRupiah(hargaTotal)
-                    });
-                  }}
-                  placeholder="Masukkan jumlah"
-                  min="0"
-                  step="0.01"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Harga Unit
-                </label>
-                <input
-                  type="number"
-                  value={currentPO.hargaUnit || ""}
-                  onChange={(e) => {
-                    const hargaUnit = parseFloat(e.target.value) || 0;
-                    const qty = currentPO.qty || 0;
-                    const hargaTotal = calculateHargaTotal(qty, hargaUnit);
-                    setCurrentPO({ 
-                      ...currentPO, 
-                      hargaUnit,
-                      hargaTotal,
-                      jumlahNilaiSO: formatRupiah(hargaTotal)
-                    });
-                  }}
-                  placeholder="Masukkan harga per unit"
-                  min="0"
-                  step="0.01"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Harga Total
-                </label>
-                <input
-                  type="text"
-                  value={currentPO.hargaTotal ? formatRupiah(currentPO.hargaTotal) : "Rp 0"}
-                  readOnly
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100 text-gray-700 font-semibold"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  No. WBS
-                </label>
-                <input
-                  type="text"
-                  value={currentPO.noWbs || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, noWbs: e.target.value })
-                  }
-                  placeholder="Masukkan No. WBS"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Service Order Details
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddServiceOrder}
+                    className="flex items-center space-x-1 px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Tambah Baris</span>
+                  </button>
+                </div>
+                <div className="border border-gray-300 rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">No</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Description</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">QTY</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Unit</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Total</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">No. WBS</th>
+                        <th className="px-3 py-2 text-center text-xs font-medium text-gray-700">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {serviceOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="px-3 py-4 text-center text-sm text-gray-500">
+                            Belum ada data. Klik "Tambah Baris" untuk menambah.
+                          </td>
+                        </tr>
+                      ) : (
+                        serviceOrders.map((order, index) => (
+                          <tr key={order.id} className="hover:bg-gray-50">
+                            <td className="px-3 py-2 text-sm text-gray-900">{index + 1}</td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="text"
+                                value={order.description}
+                                onChange={(e) =>
+                                  handleUpdateServiceOrder(order.id, "description", e.target.value)
+                                }
+                                placeholder="Deskripsi"
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="number"
+                                value={order.qty || ""}
+                                onChange={(e) =>
+                                  handleUpdateServiceOrder(
+                                    order.id,
+                                    "qty",
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                placeholder="0"
+                                min="0"
+                                step="0.01"
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="number"
+                                value={order.hargaUnit || ""}
+                                onChange={(e) =>
+                                  handleUpdateServiceOrder(
+                                    order.id,
+                                    "hargaUnit",
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                placeholder="0"
+                                min="0"
+                                step="0.01"
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="text"
+                                value={formatRupiah(order.hargaTotal)}
+                                readOnly
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-50 font-semibold"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="text"
+                                value={order.noWbs}
+                                onChange={(e) =>
+                                  handleUpdateServiceOrder(order.id, "noWbs", e.target.value)
+                                }
+                                placeholder="WBS"
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                              />
+                            </td>
+                            <td className="px-3 py-2 text-center">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveServiceOrder(order.id)}
+                                className="text-red-600 hover:text-red-800 transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Jumlah Nilai SO - Auto calculated */}
+                <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-blue-900">
+                      Jumlah Nilai SO (Total)
+                    </label>
+                    <div className="text-lg font-bold text-blue-900">
+                      {currentPO.jumlahNilaiSO || "Rp 0"}
+                    </div>
+                  </div>
+                  <p className="text-xs text-blue-700 mt-1">
+                    * Otomatis dihitung dari total semua Harga Total di tabel
+                  </p>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">

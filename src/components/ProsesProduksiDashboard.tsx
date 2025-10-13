@@ -4,6 +4,7 @@ import ProsesProduksiModal, {
   ProsesProduksiFormData,
 } from "./ProsesProduksiModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import StatusDokumenModal from "./StatusDokumenModal";
 import {
   FileSpreadsheet,
   FileText,
@@ -11,6 +12,7 @@ import {
   ArrowUp,
   ChevronDown,
   Plus,
+  RefreshCw,
 } from "lucide-react";
 
 interface ProsesProduksiData {
@@ -34,6 +36,8 @@ interface ProsesProduksiData {
   cro?: string;
   fileUrl?: string;
   fileName?: string;
+  alurDokumen: string;
+  statusDokumen: string;
 }
 
 interface ProsesProduksiDashboardProps {
@@ -65,6 +69,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
     null
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [itemToUpdateStatus, setItemToUpdateStatus] = useState<ProsesProduksiData | null>(null);
 
   // Temporary comment to trigger re-evaluation
   // Sample data matching the image
@@ -87,6 +93,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       noPOSAP: "PO-2025-001",
       ro: "RO-2025-001",
       cro: "CRO-2025-001",
+      alurDokumen: "Project PHE ONWJ",
+      statusDokumen: "PREPARE TIDMS",
     },
     {
       id: "2",
@@ -106,6 +114,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       noPOSAP: "PO-2025-002",
       ro: "RO-2025-002",
       cro: "-",
+      alurDokumen: "Project Medco Gresik",
+      statusDokumen: "VERIFIKASI REPORT BA",
     },
     {
       id: "3",
@@ -125,6 +135,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       noPOSAP: "PO-2025-003",
       ro: "RO-2025-003",
       cro: "CRO-2025-003",
+      alurDokumen: "Pertamina Hulu Mahakam",
+      statusDokumen: "REVIEW REPORT",
     },
     {
       id: "4",
@@ -144,6 +156,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       noPOSAP: "-",
       ro: "-",
       cro: "-",
+      alurDokumen: "Project PHE ONWJ",
+      statusDokumen: "SUBMIT & AFTER REVISI REPORT",
     },
   ]);
 
@@ -318,6 +332,24 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
   const handleViewFile = (item: ProsesProduksiData) => {
     if (item.fileUrl) {
       window.open(item.fileUrl, "_blank");
+    }
+  };
+
+  const handleStatusClick = (item: ProsesProduksiData) => {
+    setItemToUpdateStatus(item);
+    setStatusModalOpen(true);
+  };
+
+  const handleSaveStatus = (newStatus: string) => {
+    if (itemToUpdateStatus) {
+      setProduksiData((prev) =>
+        prev.map((p) =>
+          p.id === itemToUpdateStatus.id
+            ? { ...p, statusDokumen: newStatus }
+            : p
+        )
+      );
+      setItemToUpdateStatus(null);
     }
   };
 
@@ -617,6 +649,12 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
                   <th className="px-3 py-2 text-left font-semibold text-gray-700">
                     Status Report
                   </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    Alur Dokumen
+                  </th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-700">
+                    Status Dokumen
+                  </th>
                   <th className="px-3 py-2 text-center font-semibold text-gray-700">
                     Aksi
                   </th>
@@ -685,6 +723,14 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
                         {item.statusReport}
                       </span>
                     </td>
+                    <td className="px-3 py-2 text-gray-900 font-medium">
+                      {item.alurDokumen}
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                        {item.statusDokumen}
+                      </span>
+                    </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-1.5">
                         <button
@@ -693,6 +739,14 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
                           className="px-2 py-1 rounded-md transition-all duration-200 text-xs text-blue-700 bg-blue-50 hover:bg-blue-100"
                         >
                           Lihat
+                        </button>
+                        <button
+                          onClick={() => handleStatusClick(item)}
+                          title="Update Status Dokumen"
+                          className="px-2 py-1 rounded-md transition-all duration-200 text-xs text-purple-700 bg-purple-50 hover:bg-purple-100 flex items-center gap-1"
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                          Status
                         </button>
                         {user?.role === "operational" && (
                           <>
@@ -775,6 +829,17 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.namaProyek}
       />
+
+      {/* Status Dokumen Modal */}
+      {itemToUpdateStatus && (
+        <StatusDokumenModal
+          isOpen={statusModalOpen}
+          onClose={() => setStatusModalOpen(false)}
+          onSave={handleSaveStatus}
+          alurDokumen={itemToUpdateStatus.alurDokumen}
+          currentStatus={itemToUpdateStatus.statusDokumen}
+        />
+      )}
     </div>
   );
 };

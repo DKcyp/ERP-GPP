@@ -351,27 +351,9 @@ const MPPModal: React.FC<MPPModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-sm"
+            className="px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-all duration-200 font-medium text-sm"
           >
-            Batal
-          </button>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={isLoading || entries.length === 0}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Menyimpan...</span>
-              </>
-            ) : (
-              <>
-                <Save className="h-3.5 w-3.5" />
-                <span>Simpan MPP</span>
-              </>
-            )}
+            Tutup
           </button>
         </div>
       </div>
