@@ -9,6 +9,7 @@ interface AlatUkurItem {
   merk: string;
   type: string;
   serialNumber: string;
+  tahunPembelian: string;
   calibrationDate: string;
   validationDate: string;
   vendorCalibration: string;
@@ -63,6 +64,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Magnaflux',
       type: 'Y-7',
       serialNumber: 'MT001',
+      tahunPembelian: '2020',
       calibrationDate: '20 Jan 25',
       validationDate: '20 Jan 26',
       vendorCalibration: 'PT Kalibrasi Indonesia',
@@ -80,6 +82,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Sherwin',
       type: 'SKL-SP2',
       serialNumber: 'PT001',
+      tahunPembelian: '2019',
       calibrationDate: '15 Jan 25',
       validationDate: '15 Jan 26',
       vendorCalibration: 'PT Sucofindo',
@@ -97,6 +100,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Yxlon',
       type: 'Y.TU 320-D03',
       serialNumber: 'RT001',
+      tahunPembelian: '2021',
       calibrationDate: '23 Jan 25',
       validationDate: '23 Jan 26',
       vendorCalibration: 'PT Sucofindo',
@@ -114,6 +118,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'GE',
       type: 'DM5E',
       serialNumber: 'UT001',
+      tahunPembelian: '2018',
       calibrationDate: '10 Feb 25',
       validationDate: '10 Feb 26',
       vendorCalibration: 'PT Kalibrasi Indonesia',
@@ -131,6 +136,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Olympus',
       type: 'OmniScan MX2',
       serialNumber: 'ALL001',
+      tahunPembelian: '2022',
       calibrationDate: '04 Jan 25',
       validationDate: '04 Jan 26',
       vendorCalibration: 'PT Sucofindo',
@@ -148,6 +154,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Instron',
       type: '5982',
       serialNumber: 'LT001',
+      tahunPembelian: '2017',
       calibrationDate: '12 Dec 24',
       validationDate: '11 Dec 25',
       vendorCalibration: 'PT Kalibrasi Mandiri',
@@ -163,6 +170,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Mitutoyo',
       type: 'HM-124',
       serialNumber: 'MH001',
+      tahunPembelian: '2019',
       calibrationDate: '15 Jan 25',
       validationDate: '15 Jan 26',
       vendorCalibration: 'PT Sucofindo',
@@ -180,6 +188,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Instron',
       type: 'MH 20-30',
       serialNumber: 'INT001',
+      tahunPembelian: '2020',
       calibrationDate: '05 Jan 25',
       validationDate: '15 Jan 26',
       vendorCalibration: 'PT Sucofindo',
@@ -197,6 +206,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Olympus',
       type: 'Vanta Element',
       serialNumber: 'PMI001',
+      tahunPembelian: '2021',
       calibrationDate: '01 Nov 24',
       validationDate: '31 Oct 25',
       vendorCalibration: 'PT Kalibrasi Mandiri',
@@ -214,6 +224,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Lansmont',
       type: 'PDT-176E',
       serialNumber: 'DC001',
+      tahunPembelian: '2018',
       calibrationDate: '25 Sep 24',
       validationDate: '24 Sep 25',
       vendorCalibration: 'PT Kalibrasi Mandiri',
@@ -229,6 +240,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Zetec',
       type: 'MIZ-85',
       serialNumber: 'RF001',
+      tahunPembelian: '2023',
       calibrationDate: '19 Aug 25',
       validationDate: '18 Aug 26',
       vendorCalibration: 'PT Sucofindo',
@@ -246,6 +258,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Olympus',
       type: 'Nortec 600',
       serialNumber: 'EC001',
+      tahunPembelian: '2019',
       calibrationDate: '19 Sep 24',
       validationDate: '19 Sep 25',
       vendorCalibration: 'PT Kalibrasi Indonesia',
@@ -261,6 +274,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Olympus',
       type: 'IPLEX NX',
       serialNumber: 'BS001',
+      tahunPembelian: '2022',
       calibrationDate: '19 Aug 25',
       validationDate: '19 Aug 26',
       vendorCalibration: 'PT Sucofindo',
@@ -276,6 +290,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Mitutoyo',
       type: 'HV-120',
       serialNumber: 'HD001',
+      tahunPembelian: '2020',
       calibrationDate: '11 Dec 24',
       validationDate: '10 Oct 25',
       vendorCalibration: 'PT Kalibrasi Indonesia',
@@ -293,6 +308,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'FLIR',
       type: 'E75',
       serialNumber: 'IR001',
+      tahunPembelian: '2021',
       calibrationDate: '15 Jan 25',
       validationDate: '15 Jan 26',
       vendorCalibration: 'PT Sucofindo',
@@ -310,6 +326,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Graco',
       type: 'Ultra Max II 1595',
       serialNumber: 'PT001',
+      tahunPembelian: '2018',
       calibrationDate: '10 Feb 25',
       validationDate: '09 Feb 26',
       vendorCalibration: 'PT Kalibrasi Indonesia',
@@ -327,6 +344,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Haskel',
       type: 'DSF-122',
       serialNumber: 'HT001',
+      tahunPembelian: '2017',
       calibrationDate: '05 Mar 25',
       validationDate: '05 Mar 26',
       vendorCalibration: 'PT Kalibrasi Mandiri',
@@ -342,6 +360,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
       merk: 'Rice Lake',
       type: 'HT-5000',
       serialNumber: 'HY001',
+      tahunPembelian: '2019',
       calibrationDate: '20 Mar 25',
       validationDate: '20 Mar 26',
       vendorCalibration: 'PT Sucofindo',
@@ -801,6 +820,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merk</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial Number</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tahun Pembelian</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Calibration Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validation Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor Calibration</th>
@@ -825,6 +845,7 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item.serialNumber}</div>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tahunPembelian}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.calibrationDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.validationDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.vendorCalibration}</td>
@@ -983,6 +1004,18 @@ const QHSEDaftarAlatUkurDashboard: React.FC = () => {
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="44540"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tahun Pembelian</label>
+                    <input
+                      type="text"
+                      value={formData.tahunPembelian || ''}
+                      onChange={(e) => handleInputChange('tahunPembelian', e.target.value)}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                      placeholder="2024"
                     />
                   </div>
                   

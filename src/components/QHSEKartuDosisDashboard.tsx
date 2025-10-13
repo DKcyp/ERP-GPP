@@ -806,8 +806,13 @@ const QHSEKartuDosisDashboard: React.FC = () => {
                         <tbody>
                           {months.map((month) => (
                             <tr key={month}>
-                              <td className="border border-gray-300 px-3 py-2 font-medium">
-                                {month}
+                              <td className="border border-gray-300 px-2 py-1">
+                                <input
+                                  type="text"
+                                  defaultValue={month}
+                                  className="w-full px-2 py-1 text-center font-medium border-0 focus:ring-1 focus:ring-blue-500 rounded"
+                                  placeholder="Masukkan periode"
+                                />
                               </td>
                               {years.map((year) => {
                                 const value =

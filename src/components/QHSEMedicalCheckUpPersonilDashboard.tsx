@@ -11,6 +11,7 @@ import {
   XCircle,
   User,
   Building,
+  UserCheck,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
@@ -50,6 +51,11 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
   const [deleteItem, setDeleteItem] = useState<MCUPersonilItem | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [formData, setFormData] = useState<Partial<MCUPersonilItem>>({});
+  
+  // State for Reviewer User Modal
+  const [showReviewerModal, setShowReviewerModal] = useState(false);
+  const [reviewerItem, setReviewerItem] = useState<MCUPersonilItem | null>(null);
+  const [reviewerClient, setReviewerClient] = useState<string>("");
 
   // Sample data with calculated expiry days
   const [mcuData, setMCUData] = useState<MCUPersonilItem[]>([
@@ -62,7 +68,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       tanggalMCU: "2024-01-15",
       tanggalExpiredMCU: "2025-01-15",
       masaBerlakuMCUReviewUser: ["Medco Corridor", "PHE ONWJ"],
-      keteranganExpiredReviewUser: "Review User expired",
+      keteranganExpiredReviewUser: "Valid MCU 15-Jan-25",
       paketMCU: "Paket Lengkap",
       hasilMCU: "P1",
       statusMCU: "Valid",
@@ -84,7 +90,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       tanggalMCU: "2024-03-01",
       tanggalExpiredMCU: "2024-12-01",
       masaBerlakuMCUReviewUser: ["Medco Corridor", "PHE ONWJ"],
-      keteranganExpiredReviewUser: "Review User expired",
+      keteranganExpiredReviewUser: "Valid MCU 01-Des-24",
       paketMCU: "Paket Executive",
       hasilMCU: "P3",
       statusMCU: "Mendekati Expired",
@@ -106,7 +112,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       tanggalMCU: "2023-11-15",
       tanggalExpiredMCU: "2024-10-15",
       masaBerlakuMCUReviewUser: ["Office"],
-      keteranganExpiredReviewUser: "Review User expired",
+      keteranganExpiredReviewUser: "Valid MCU 15-Okt-24",
       paketMCU: "Paket Standard",
       hasilMCU: "P5",
       statusMCU: "Expired",
@@ -293,6 +299,24 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
 
   const handleInputChange = (field: keyof MCUPersonilItem, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Handler for Reviewer User buttons
+  const handleReviewerUser = (item: MCUPersonilItem, client: string) => {
+    setReviewerItem(item);
+    setReviewerClient(client);
+    setShowReviewerModal(true);
+  };
+
+  const handleConfirmReviewer = () => {
+    if (reviewerItem && reviewerClient) {
+      console.log(`Reviewer User - Client ${reviewerClient} untuk:`, reviewerItem.namaPersonil);
+      // TODO: Implement actual reviewer user logic here
+      // Example: Send to backend, update status, etc.
+      setShowReviewerModal(false);
+      setReviewerItem(null);
+      setReviewerClient("");
+    }
   };
 
   const handleSave = () => {
@@ -722,6 +746,27 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
+                          onClick={() => handleReviewerUser(item, "PHE")}
+                          className="px-2 py-1 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 rounded transition-colors"
+                          title="Reviewer User - Client PHE"
+                        >
+                          PHE
+                        </button>
+                        <button
+                          onClick={() => handleReviewerUser(item, "Medco")}
+                          className="px-2 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded transition-colors"
+                          title="Reviewer User - Client Medco"
+                        >
+                          Medco
+                        </button>
+                        <button
+                          onClick={() => handleReviewerUser(item, "PHM")}
+                          className="px-2 py-1 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-700 rounded transition-colors"
+                          title="Reviewer User - Client PHM"
+                        >
+                          PHM
+                        </button>
+                        <button
                           onClick={() => setDeleteItem(item)}
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
@@ -913,8 +958,11 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                         )
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                      placeholder="Masukkan keterangan jika review user expired"
+                      placeholder="Contoh: Valid MCU 12-Okt-25"
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      * Format: Valid MCU [Tanggal]-[Bulan]-[Tahun]
+                    </p>
                   </div>
                 </div>
 
@@ -1043,6 +1091,66 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
                   {editingItem ? "Update" : "Simpan"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reviewer User Confirmation Modal */}
+      {showReviewerModal && reviewerItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 fade-in-0 duration-300">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Konfirmasi Reviewer User
+                </h3>
+                <button
+                  onClick={() => setShowReviewerModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <UserCheck className="h-5 w-5 text-blue-600" />
+                    <span className="font-semibold text-blue-900">
+                      Client {reviewerClient}
+                    </span>
+                  </div>
+                  <div className="text-sm text-blue-800 space-y-1">
+                    <p><span className="font-medium">Nama:</span> {reviewerItem.namaPersonil}</p>
+                    <p><span className="font-medium">Posisi:</span> {reviewerItem.posisiJabatan}</p>
+                    <p><span className="font-medium">Provider MCU:</span> {reviewerItem.providerMCU}</p>
+                    <p><span className="font-medium">Tanggal MCU:</span> {reviewerItem.tanggalMCU}</p>
+                    <p><span className="font-medium">Expired MCU:</span> {reviewerItem.tanggalExpiredMCU}</p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-sm text-yellow-800">
+                    <span className="font-semibold">Perhatian:</span> Pastikan data MCU sudah sesuai sebelum melakukan review untuk Client {reviewerClient}.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowReviewerModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmReviewer}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Konfirmasi Review
                 </button>
               </div>
             </div>

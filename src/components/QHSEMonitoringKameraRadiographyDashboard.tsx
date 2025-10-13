@@ -42,6 +42,7 @@ interface MonitoringKameraData {
   serumberW4: number;
   lokasiPemanfaatan: string[];
   posisiKamera: string;
+  posisiKameraCustom?: string;
   posisiColor: string;
   progress: ProgressDetail;
 }
@@ -220,6 +221,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     serumberW4: 0,
     lokasiPemanfaatan: [""],
     posisiKamera: "",
+    posisiKameraCustom: "",
     posisiColor: "bg-blue-600 text-white",
     progress: {
       mainStatus: "Pengajuan",
@@ -493,6 +495,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       serumberW4: 0,
       lokasiPemanfaatan: [""],
       posisiKamera: "",
+      posisiKameraCustom: "",
       posisiColor: "bg-blue-600 text-white",
       progress: {
         mainStatus: "Pengajuan",
@@ -1000,10 +1003,15 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                           "PHE ONWJ": "bg-blue-600 text-white",
                           "MEDCO EPG": "bg-green-600 text-white",
                           "OFFICE": "bg-gray-600 text-white",
-                          "PROJECT": "bg-purple-600 text-white"
+                          "PROJECT": "bg-purple-600 text-white",
+                          "Lain-lain": "bg-orange-600 text-white"
                         };
                         handleInputChange('posisiKamera', e.target.value);
                         handleInputChange('posisiColor', colors[e.target.value as keyof typeof colors] || "bg-blue-600 text-white");
+                        // Clear custom input if not "Lain-lain"
+                        if (e.target.value !== "Lain-lain") {
+                          handleInputChange('posisiKameraCustom', '');
+                        }
                       }}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
@@ -1013,8 +1021,27 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                       <option value="MEDCO EPG">MEDCO EPG</option>
                       <option value="OFFICE">OFFICE</option>
                       <option value="PROJECT">PROJECT</option>
+                      <option value="Lain-lain">Lain-lain</option>
                     </select>
                   </div>
+                  
+                  {/* Custom Posisi Input - shown when "Lain-lain" is selected */}
+                  {formData.posisiKamera === "Lain-lain" && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Posisi Lainnya
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.posisiKameraCustom || ''}
+                        onChange={(e) => handleInputChange('posisiKameraCustom', e.target.value)}
+                        disabled={modalMode === 'view'}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                        placeholder="Masukkan posisi kamera lainnya"
+                      />
+                    </div>
+                  )}
+                  
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Progress Status
@@ -1060,16 +1087,6 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                       />
                       <span className="text-sm text-gray-700">Completed</span>
                     </label>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Preview Posisi
-                    </label>
-                    <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${formData.posisiColor}`}>
-                        {formData.posisiKamera || "Preview"}
-                      </span>
-                    </div>
                   </div>
                 </div>
 
