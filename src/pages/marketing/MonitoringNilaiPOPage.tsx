@@ -8,6 +8,10 @@ interface POItem {
   so: string;
   project: string;
   pekerjaan: string;
+  description?: string;
+  qty?: number;
+  hargaUnit?: number;
+  hargaTotal?: number;
   siteLokasi: string;
   noWbs: string; // Changed from noUbs to noWbs
   wo: string; // Renamed from noWbsWo
@@ -140,6 +144,15 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [poToDelete, setPoToDelete] = useState<POItem | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  // Function to calculate Harga Total and Jumlah Nilai SO
+  const calculateHargaTotal = (qty: number, hargaUnit: number): number => {
+    return qty * hargaUnit;
+  };
+
+  const formatRupiah = (value: number): string => {
+    return `Rp ${value.toLocaleString('id-ID')}`;
+  };
 
 
   // Function to calculate reminder based on commencement finish date
@@ -282,6 +295,10 @@ const MonitoringNilaiPOPage: React.FC = () => {
         so: currentPO.so,
         project: currentPO.project,
         pekerjaan: currentPO.pekerjaan,
+        description: currentPO.description || "",
+        qty: currentPO.qty || 0,
+        hargaUnit: currentPO.hargaUnit || 0,
+        hargaTotal: currentPO.hargaTotal || 0,
         siteLokasi: currentPO.siteLokasi || "",
         noWbs: currentPO.noWbs || "",
         wo: currentPO.wo || "",
@@ -542,18 +559,77 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
               </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  value={currentPO.description || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, description: e.target.value })
+                  }
+                  placeholder="Masukkan deskripsi pekerjaan"
+                  rows={3}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  SITE/Lokasi
+                  QTY
+                </label>
+                <input
+                  type="number"
+                  value={currentPO.qty || ""}
+                  onChange={(e) => {
+                    const qty = parseFloat(e.target.value) || 0;
+                    const hargaUnit = currentPO.hargaUnit || 0;
+                    const hargaTotal = calculateHargaTotal(qty, hargaUnit);
+                    setCurrentPO({ 
+                      ...currentPO, 
+                      qty,
+                      hargaTotal,
+                      jumlahNilaiSO: formatRupiah(hargaTotal)
+                    });
+                  }}
+                  placeholder="Masukkan jumlah"
+                  min="0"
+                  step="0.01"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Harga Unit
+                </label>
+                <input
+                  type="number"
+                  value={currentPO.hargaUnit || ""}
+                  onChange={(e) => {
+                    const hargaUnit = parseFloat(e.target.value) || 0;
+                    const qty = currentPO.qty || 0;
+                    const hargaTotal = calculateHargaTotal(qty, hargaUnit);
+                    setCurrentPO({ 
+                      ...currentPO, 
+                      hargaUnit,
+                      hargaTotal,
+                      jumlahNilaiSO: formatRupiah(hargaTotal)
+                    });
+                  }}
+                  placeholder="Masukkan harga per unit"
+                  min="0"
+                  step="0.01"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Harga Total
                 </label>
                 <input
                   type="text"
-                  value={currentPO.siteLokasi || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, siteLokasi: e.target.value })
-                  }
-                  placeholder="Masukkan lokasi site (contoh: Jakarta)"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={currentPO.hargaTotal ? formatRupiah(currentPO.hargaTotal) : "Rp 0"}
+                  readOnly
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100 text-gray-700 font-semibold"
                 />
               </div>
               <div>
@@ -566,6 +642,21 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   onChange={(e) =>
                     setCurrentPO({ ...currentPO, noWbs: e.target.value })
                   }
+                  placeholder="Masukkan No. WBS"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  SITE/Lokasi
+                </label>
+                <input
+                  type="text"
+                  value={currentPO.siteLokasi || ""}
+                  onChange={(e) =>
+                    setCurrentPO({ ...currentPO, siteLokasi: e.target.value })
+                  }
+                  placeholder="Masukkan lokasi site (contoh: Jakarta)"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
               </div>
@@ -681,16 +772,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Jumlah Nilai SO
+                  Jumlah Nilai SO <span className="text-xs text-gray-500">(Otomatis terisi)</span>
                 </label>
                 <input
                   type="text"
-                  value={currentPO.jumlahNilaiSO || ""}
-                  onChange={(e) =>
-                    setCurrentPO({ ...currentPO, jumlahNilaiSO: e.target.value })
-                  }
-                  placeholder="Contoh: Rp 1.800.000.000"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  value={currentPO.jumlahNilaiSO || "Rp 0"}
+                  readOnly
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-gray-100 text-gray-700 font-semibold"
                 />
               </div>
               <div>

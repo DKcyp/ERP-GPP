@@ -270,54 +270,43 @@ const MPPModal: React.FC<MPPModalProps> = ({
                           <input
                             type="text"
                             value={entry.namaOrang}
-                            onChange={(e) =>
-                              updateEntry(entry.id, 'namaOrang', e.target.value)
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
                             placeholder="Masukkan nama"
-                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="text"
                             value={entry.kualifikasi}
-                            onChange={(e) =>
-                              updateEntry(entry.id, 'kualifikasi', e.target.value)
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
                             placeholder="Contoh: Engineer, Supervisor"
-                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="text"
                             value={entry.projectName}
-                            onChange={(e) =>
-                              updateEntry(entry.id, 'projectName', e.target.value)
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
                             placeholder="Nama project"
-                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="date"
                             value={entry.mob}
-                            onChange={(e) => handleMobChange(entry.id, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                            required
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="date"
                             value={entry.demob}
-                            onChange={(e) => handleDemobChange(entry.id, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                            required
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
                           />
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-900 font-medium">
