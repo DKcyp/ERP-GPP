@@ -58,6 +58,7 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [animateRows, setAnimateRows] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit" | "view">("add");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -250,6 +251,49 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
 
   const handleEditClick = (item: ProsesProduksiData) => {
     setEditItem(item);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
+
+  const toIso = (d?: string) => {
+    if (!d || d === "-") return "";
+    // Expecting dd-mm-yyyy
+    const parts = d.split("-");
+    if (parts.length === 3) {
+      const [dd, mm, yyyy] = parts;
+      if (dd.length === 2 && mm.length === 2 && yyyy.length === 4) {
+        return `${yyyy}-${mm}-${dd}`;
+      }
+    }
+    return "";
+  };
+
+  const mapItemToForm = (item: ProsesProduksiData): Partial<ProsesProduksiFormData> => ({
+    noSOTurunan: item.soTurunan || "",
+    namaProyek: item.namaProyek || "",
+    mob: toIso(item.mob),
+    demob: toIso(item.demob),
+    tglPenerimaanReportTeknisi: toIso(item.tglPenerimaanReportTeknisi),
+    tglPenerimaanFinalReport: toIso(item.tglPenerimaanFinalReport),
+    tglApprovalReport: toIso(item.tanggalApprovalTeknisi || ""),
+    tglApprovalBAST: toIso(item.tanggalApprovalBAST || ""),
+    tglFinalApproval: toIso(item.tanggalFinalApproval || ""),
+    nilaiProduksi: item.nilaiProduksi || "",
+    statusReport: item.statusReport as any,
+    noKontrak: item.noPOSAP || "",
+    noReportTerakhir: item.noPOSAP || "",
+    noPOSAP: item.noPOSAP || "",
+    ro: item.ro || "",
+    cro: item.cro || "",
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    alurDokumen: item.alurDokumen || "",
+    statusDokumen: item.statusDokumen || "",
+  });
+
+  const handleViewClick = (item: ProsesProduksiData) => {
+    setEditItem(item);
+    setModalMode("view");
     setIsModalOpen(true);
   };
 
@@ -331,11 +375,7 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleViewFile = (item: ProsesProduksiData) => {
-    if (item.fileUrl) {
-      window.open(item.fileUrl, "_blank");
-    }
-  };
+  // Optional: keep file viewing elsewhere if needed
 
   const handleStatusClick = (item: ProsesProduksiData) => {
     setItemToUpdateStatus(item);
@@ -524,7 +564,7 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
           <div className="flex justify-end space-x-2 mb-4">
             {user?.role !== "procon" && (
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => { setModalMode("add"); setEditItem(null); setIsModalOpen(true); }}
                 className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -736,8 +776,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-center gap-1.5">
                         <button
-                          onClick={() => handleViewFile(item)}
-                          title={item.fileName || "Lihat File"}
+                          onClick={() => handleViewClick(item)}
+                          title="Lihat Detail"
                           className="px-2 py-1 rounded-md transition-all duration-200 text-xs text-blue-700 bg-blue-50 hover:bg-blue-100"
                         >
                           Lihat
@@ -822,6 +862,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddProsesProduksi}
+        initialData={editItem ? mapItemToForm(editItem) : undefined}
+        readOnly={modalMode === "view"}
       />
 
       {/* Delete Confirmation Modal */}

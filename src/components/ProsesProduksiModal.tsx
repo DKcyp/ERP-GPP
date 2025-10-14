@@ -6,6 +6,7 @@ interface ProsesProduksiModalProps {
   onClose: () => void;
   onSave: (data: ProsesProduksiFormData) => void;
   initialData?: Partial<ProsesProduksiFormData>;
+  readOnly?: boolean;
 }
 
 export interface ProsesProduksiFormData {
@@ -20,7 +21,7 @@ export interface ProsesProduksiFormData {
   tglApprovalBAST?: string;
   tglFinalApproval?: string;
   nilaiProduksi: string;
-  statusReport: "Approved" | "Revisi";
+  statusReport: "Approved" | "Revisi" | "Pending";
   noKontrak?: string;
   noReportTerakhir?: string;
   noPOSAP?: string;
@@ -41,6 +42,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
   onClose,
   onSave,
   initialData,
+  readOnly = false,
 }) => {
   const [formData, setFormData] = useState<ProsesProduksiFormData>({
     noSOTurunan: "",
@@ -265,7 +267,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Prefill when editing
+  // Prefill when editing / viewing
   useEffect(() => {
     if (isOpen && initialData) {
       setFormData((prev) => ({
@@ -354,9 +356,17 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
 
     if (field === "alurDokumen") {
       // when alur changes, reset statusDokumen
-      setFormData((prev) => ({ ...prev, alurDokumen: value, statusDokumen: "" }));
+      setFormData((prev) => ({
+        ...prev,
+        alurDokumen: value,
+        statusDokumen: "",
+      }));
       // Clear related errors
-      setErrors((prev) => ({ ...prev, alurDokumen: undefined, statusDokumen: undefined }));
+      setErrors((prev) => ({
+        ...prev,
+        alurDokumen: undefined,
+        statusDokumen: undefined,
+      }));
       return;
     }
 
@@ -476,6 +486,11 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
 
   if (!isOpen) return null;
 
+  console.log(
+    "ProsesProduksiModal is open. Mode:",
+    readOnly ? "view" : "edit/add"
+  );
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-300"
@@ -485,7 +500,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
           <h2 className="text-xl font-semibold text-gray-900">
-            Entry Proses Produksi
+            {readOnly ? "Detail Proses Produksi" : "Entry Proses Produksi"}
           </h2>
           <button
             onClick={onClose}
@@ -509,6 +524,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   onChange={(e) =>
                     handleInputChange("noSOTurunan", e.target.value)
                   }
+                  disabled={readOnly}
                   className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
                     errors.noSOTurunan
                       ? "border-red-300 bg-red-50"
@@ -539,6 +555,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   onChange={(e) =>
                     handleInputChange("namaProyek", e.target.value)
                   }
+                  disabled={readOnly}
                   className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
                     errors.namaProyek
                       ? "border-red-300 bg-red-50"
@@ -569,6 +586,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                     type="date"
                     value={formData.mob}
                     onChange={(e) => handleInputChange("mob", e.target.value)}
+                    disabled={readOnly}
                     className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
                       errors.mob
                         ? "border-red-300 bg-red-50"
@@ -592,6 +610,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                     type="date"
                     value={formData.demob}
                     onChange={(e) => handleInputChange("demob", e.target.value)}
+                    disabled={readOnly}
                     className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
                       errors.demob
                         ? "border-red-300 bg-red-50"
@@ -621,6 +640,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                         e.target.value
                       )
                     }
+                    disabled={readOnly}
                     className={`w-full px-3 py-2 pr-10 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
                       errors.tglPenerimaanReportTeknisi
                         ? "border-red-300 bg-red-50"
@@ -651,6 +671,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                         e.target.value
                       )
                     }
+                    disabled={readOnly}
                     className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
@@ -668,6 +689,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   onChange={(e) =>
                     handleInputChange("nilaiProduksi", e.target.value)
                   }
+                  disabled={readOnly}
                   className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
                     errors.nilaiProduksi
                       ? "border-red-300 bg-red-50"
@@ -692,13 +714,15 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   onChange={(e) =>
                     handleInputChange(
                       "statusReport",
-                      e.target.value as "Approved" | "Revisi"
+                      e.target.value as "Approved" | "Revisi" | "Pending"
                     )
                   }
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                 >
                   <option value="Approved">Approved</option>
                   <option value="Revisi">Revisi</option>
+                  <option value="Pending">Pending</option>
                 </select>
               </div>
 
@@ -709,9 +733,14 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                 </label>
                 <select
                   value={formData.alurDokumen || ""}
-                  onChange={(e) => handleInputChange("alurDokumen", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("alurDokumen", e.target.value)
+                  }
+                  disabled={readOnly}
                   className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
-                    (errors as any).alurDokumen ? "border-red-300 bg-red-50" : "border-gray-200"
+                    (errors as any).alurDokumen
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                 >
                   <option value="">Pilih Alur Dokumen</option>
@@ -722,7 +751,9 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   ))}
                 </select>
                 {(errors as any).alurDokumen && (
-                  <p className="mt-1 text-xs text-red-600">{(errors as any).alurDokumen}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {(errors as any).alurDokumen}
+                  </p>
                 )}
               </div>
 
@@ -733,13 +764,21 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                 </label>
                 <select
                   value={formData.statusDokumen || ""}
-                  onChange={(e) => handleInputChange("statusDokumen", e.target.value)}
-                  disabled={!formData.alurDokumen}
+                  onChange={(e) =>
+                    handleInputChange("statusDokumen", e.target.value)
+                  }
+                  disabled={!formData.alurDokumen || readOnly}
                   className={`w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
-                    (errors as any).statusDokumen ? "border-red-300 bg-red-50" : "border-gray-200"
+                    (errors as any).statusDokumen
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                 >
-                  <option value="">{formData.alurDokumen ? "Pilih Status Dokumen" : "Pilih Alur Dokumen terlebih dahulu"}</option>
+                  <option value="">
+                    {formData.alurDokumen
+                      ? "Pilih Status Dokumen"
+                      : "Pilih Alur Dokumen terlebih dahulu"}
+                  </option>
                   {currentStatusOptions.map((opt) => (
                     <option key={opt} value={opt}>
                       {opt}
@@ -747,7 +786,9 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   ))}
                 </select>
                 {(errors as any).statusDokumen && (
-                  <p className="mt-1 text-xs text-red-600">{(errors as any).statusDokumen}</p>
+                  <p className="mt-1 text-xs text-red-600">
+                    {(errors as any).statusDokumen}
+                  </p>
                 )}
               </div>
 
@@ -762,6 +803,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   onChange={(e) =>
                     handleInputChange("noKontrak", e.target.value)
                   }
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan nomor Report"
                 />
@@ -778,6 +820,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                   onChange={(e) =>
                     handleInputChange("noReportTerakhir", e.target.value)
                   }
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="001-00/GBP/UT/I/2025"
                 />
@@ -791,9 +834,8 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                 <input
                   type="text"
                   value={formData.noPOSAP || ""}
-                  onChange={(e) =>
-                    handleInputChange("noPOSAP", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("noPOSAP", e.target.value)}
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan No PO SAP"
                 />
@@ -807,9 +849,8 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                 <input
                   type="text"
                   value={formData.ro || ""}
-                  onChange={(e) =>
-                    handleInputChange("ro", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("ro", e.target.value)}
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan RO"
                 />
@@ -823,9 +864,8 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                 <input
                   type="text"
                   value={formData.cro || ""}
-                  onChange={(e) =>
-                    handleInputChange("cro", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("cro", e.target.value)}
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Masukkan CRO"
                 />
@@ -843,6 +883,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                     onChange={(e) =>
                       handleInputChange("tglApprovalReport", e.target.value)
                     }
+                    disabled={readOnly}
                     className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
@@ -861,6 +902,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                     onChange={(e) =>
                       handleInputChange("tglApprovalBAST", e.target.value)
                     }
+                    disabled={readOnly}
                     className="w-full px-3 py-2 pr-10 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
@@ -904,8 +946,10 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                       }));
                     }
                   }}
+                  disabled={readOnly}
                   className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                 />
+
                 {formData.fileUrl && (
                   <div className="mt-2 flex items-center gap-3 text-xs">
                     <a
@@ -1207,8 +1251,7 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
                                 onClick={() =>
                                   removeRow(setTenagaKerja, tenagaKerja)
                                 }
-                                className="px-2 py-1 bg-red-600 text-white rounded text-[10px] hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={tenagaKerja.length === 1}
+                                className="px-2 py-1 bg-red-600 text-white rounded text-[10px] hover:bg-red-700"
                               >
                                 Hapus
                               </button>
@@ -1222,35 +1265,41 @@ const ProsesProduksiModal: React.FC<ProsesProduksiModalProps> = ({
               )}
             </div>
           </form>
+
+          {/* Tabs end */}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 p-3 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="p-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-2">
           <button
-            type="button"
             onClick={onClose}
-            className="px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium text-xs"
+            className="px-3 py-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-100 transition-colors"
           >
-            Close
+            {readOnly ? "Tutup" : "Batal"}
           </button>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 transition-all duration-200 font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <Save className="h-3.5 w-3.5" />
-                <span>Save Changes</span>
-              </>
-            )}
-          </button>
+          {!readOnly && (
+            <button
+              onClick={(e) => {
+                handleSubmit(e as any);
+              }}
+              disabled={isLoading}
+              className={`px-3 py-1.5 text-xs rounded-md text-white flex items-center gap-1 ${
+                isLoading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Simpan</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

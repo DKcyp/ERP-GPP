@@ -15,6 +15,12 @@ import {
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
+interface ReviewUserEntry {
+  client: string;
+  reviewUser: string;
+  note: string; // Keterangan Expired Review User
+}
+
 interface MCUPersonilItem {
   id: string;
   no: string;
@@ -23,8 +29,6 @@ interface MCUPersonilItem {
   providerMCU: string;
   tanggalMCU: string;
   tanggalExpiredMCU: string;
-  masaBerlakuMCUReviewUser: string[]; // e.g., ["Medco Corridor", "PHE ONWJ"]
-  keteranganExpiredReviewUser?: string; // New field for expired review user description
   paketMCU: string; // Paket yang diambil
   hasilMCU: "P1" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7"; // Hasil dari MCU
   providerTambahan?: string;
@@ -37,6 +41,7 @@ interface MCUPersonilItem {
   daysUntilExpiry?: number;
   isExpiringSoon?: boolean;
   isReviewUserExpiring?: boolean;
+  reviewUsers?: ReviewUserEntry[];
 }
 
 const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
@@ -55,7 +60,9 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
   // State for Reviewer User Modal
   const [showReviewerModal, setShowReviewerModal] = useState(false);
   const [reviewerItem, setReviewerItem] = useState<MCUPersonilItem | null>(null);
-  const [reviewerClient, setReviewerClient] = useState<string>("");
+  const [newReviewClient, setNewReviewClient] = useState<string>("");
+  const [newReviewUser, setNewReviewUser] = useState<string>("");
+  const [newReviewNote, setNewReviewNote] = useState<string>("");
 
   // Sample data with calculated expiry days
   const [mcuData, setMCUData] = useState<MCUPersonilItem[]>([
@@ -67,8 +74,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       providerMCU: "RS Siloam",
       tanggalMCU: "2024-01-15",
       tanggalExpiredMCU: "2025-01-15",
-      masaBerlakuMCUReviewUser: ["Medco Corridor", "PHE ONWJ"],
-      keteranganExpiredReviewUser: "Valid MCU 15-Jan-25",
       paketMCU: "Paket Lengkap",
       hasilMCU: "P1",
       statusMCU: "Valid",
@@ -80,6 +85,10 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       daysUntilExpiry: 120,
       isExpiringSoon: false,
       isReviewUserExpiring: false,
+      reviewUsers: [
+        { client: "PHE", reviewUser: "Andi", note: "Valid MCU 15-Jan-25" },
+        { client: "Medco", reviewUser: "Budi", note: "Valid MCU 15-Jan-25" },
+      ],
     },
     {
       id: "2",
@@ -89,8 +98,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       providerMCU: "RS Hermina",
       tanggalMCU: "2024-03-01",
       tanggalExpiredMCU: "2024-12-01",
-      masaBerlakuMCUReviewUser: ["Medco Corridor", "PHE ONWJ"],
-      keteranganExpiredReviewUser: "Valid MCU 01-Des-24",
       paketMCU: "Paket Executive",
       hasilMCU: "P3",
       statusMCU: "Mendekati Expired",
@@ -102,6 +109,9 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       daysUntilExpiry: 45,
       isExpiringSoon: true,
       isReviewUserExpiring: false,
+      reviewUsers: [
+        { client: "PHE", reviewUser: "Rina", note: "Valid MCU 01-Des-24" },
+      ],
     },
     {
       id: "3",
@@ -111,8 +121,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       providerMCU: "RS Mayapada",
       tanggalMCU: "2023-11-15",
       tanggalExpiredMCU: "2024-10-15",
-      masaBerlakuMCUReviewUser: ["Office"],
-      keteranganExpiredReviewUser: "Valid MCU 15-Okt-24",
       paketMCU: "Paket Standard",
       hasilMCU: "P5",
       statusMCU: "Expired",
@@ -124,6 +132,7 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       daysUntilExpiry: -30,
       isExpiringSoon: false,
       isReviewUserExpiring: true,
+      reviewUsers: [],
     },
   ]);
 
@@ -272,8 +281,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
       providerMCU: "",
       tanggalMCU: "",
       tanggalExpiredMCU: "",
-      masaBerlakuMCUReviewUser: [],
-      keteranganExpiredReviewUser: "",
       paketMCU: "",
       hasilMCU: "P1",
       statusMCU: "Valid",
@@ -301,22 +308,68 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handler for Reviewer User buttons
-  const handleReviewerUser = (item: MCUPersonilItem, client: string) => {
+  // Handler for Review User modal
+  const handleReviewerUser = (item: MCUPersonilItem) => {
     setReviewerItem(item);
-    setReviewerClient(client);
+    setNewReviewClient("");
+    setNewReviewUser("");
+    setNewReviewNote("");
     setShowReviewerModal(true);
   };
 
-  const handleConfirmReviewer = () => {
-    if (reviewerItem && reviewerClient) {
-      console.log(`Reviewer User - Client ${reviewerClient} untuk:`, reviewerItem.namaPersonil);
-      // TODO: Implement actual reviewer user logic here
-      // Example: Send to backend, update status, etc.
-      setShowReviewerModal(false);
-      setReviewerItem(null);
-      setReviewerClient("");
-    }
+  const handleAddReview = () => {
+    if (!reviewerItem) return;
+    if (!newReviewClient || !newReviewUser || !newReviewNote) return;
+
+    const newEntry: ReviewUserEntry = {
+      client: newReviewClient,
+      reviewUser: newReviewUser,
+      note: newReviewNote,
+    };
+
+    setMCUData((prev) =>
+      prev.map((it) =>
+        it.id === reviewerItem.id
+          ? {
+              ...it,
+              reviewUsers: [...(it.reviewUsers || []), newEntry],
+            }
+          : it
+      )
+    );
+
+    // Update local modal state so table refreshes
+    setReviewerItem((prev) =>
+      prev
+        ? { ...prev, reviewUsers: [...(prev.reviewUsers || []), newEntry] }
+        : prev
+    );
+
+    setNewReviewClient("");
+    setNewReviewUser("");
+    setNewReviewNote("");
+  };
+
+  const handleDeleteReview = (index: number) => {
+    if (!reviewerItem) return;
+    setMCUData((prev) =>
+      prev.map((it) =>
+        it.id === reviewerItem.id
+          ? {
+              ...it,
+              reviewUsers: (it.reviewUsers || []).filter((_, i) => i !== index),
+            }
+          : it
+      )
+    );
+    setReviewerItem((prev) =>
+      prev
+        ? {
+            ...prev,
+            reviewUsers: (prev.reviewUsers || []).filter((_, i) => i !== index),
+          }
+        : prev
+    );
   };
 
   const handleSave = () => {
@@ -592,12 +645,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                     Expired MCU
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Review User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Keterangan Expired Review User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Paket MCU
                     <br />
                     <span className="text-xs normal-case text-gray-400">
@@ -677,12 +724,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.masaBerlakuMCUReviewUser.join(", ")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.keteranganExpiredReviewUser}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
                         {item.paketMCU}
@@ -746,25 +787,11 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleReviewerUser(item, "PHE")}
+                          onClick={() => handleReviewerUser(item)}
                           className="px-2 py-1 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 rounded transition-colors"
-                          title="Reviewer User - Client PHE"
+                          title="Review User"
                         >
-                          PHE
-                        </button>
-                        <button
-                          onClick={() => handleReviewerUser(item, "Medco")}
-                          className="px-2 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded transition-colors"
-                          title="Reviewer User - Client Medco"
-                        >
-                          Medco
-                        </button>
-                        <button
-                          onClick={() => handleReviewerUser(item, "PHM")}
-                          className="px-2 py-1 text-xs font-medium text-white bg-cyan-600 hover:bg-cyan-700 rounded transition-colors"
-                          title="Reviewer User - Client PHM"
-                        >
-                          PHM
+                          Review User
                         </button>
                         <button
                           onClick={() => setDeleteItem(item)}
@@ -923,49 +950,6 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Review User & Results */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Review User (K3S)
-                    </label>
-                    <input
-                      type="text"
-                      value={
-                        formData.masaBerlakuMCUReviewUser?.join(", ") || ""
-                      }
-                      onChange={(e) =>
-                        handleInputChange(
-                          "masaBerlakuMCUReviewUser",
-                          e.target.value.split(",").map((s) => s.trim())
-                        )
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                      placeholder="Cth: Medco Corridor, PHE ONWJ"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Keterangan Expired Review User
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.keteranganExpiredReviewUser || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "keteranganExpiredReviewUser",
-                          e.target.value
-                        )
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                      placeholder="Contoh: Valid MCU 12-Okt-25"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      * Format: Valid MCU [Tanggal]-[Bulan]-[Tahun]
-                    </p>
-                  </div>
-                </div>
-
                 {/* Status Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
@@ -1098,15 +1082,13 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Reviewer User Confirmation Modal */}
+      {/* Reviewer User Modal */}
       {showReviewerModal && reviewerItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md animate-in zoom-in-95 fade-in-0 duration-300">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl animate-in zoom-in-95 fade-in-0 duration-300">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Konfirmasi Reviewer User
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-900">Review User - {reviewerItem.namaPersonil}</h3>
                 <button
                   onClick={() => setShowReviewerModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -1115,42 +1097,92 @@ const QHSEMedicalCheckUpPersonilDashboard: React.FC = () => {
                 </button>
               </div>
 
-              <div className="space-y-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <UserCheck className="h-5 w-5 text-blue-600" />
-                    <span className="font-semibold text-blue-900">
-                      Client {reviewerClient}
-                    </span>
-                  </div>
-                  <div className="text-sm text-blue-800 space-y-1">
-                    <p><span className="font-medium">Nama:</span> {reviewerItem.namaPersonil}</p>
-                    <p><span className="font-medium">Posisi:</span> {reviewerItem.posisiJabatan}</p>
-                    <p><span className="font-medium">Provider MCU:</span> {reviewerItem.providerMCU}</p>
-                    <p><span className="font-medium">Tanggal MCU:</span> {reviewerItem.tanggalMCU}</p>
-                    <p><span className="font-medium">Expired MCU:</span> {reviewerItem.tanggalExpiredMCU}</p>
-                  </div>
+              {/* Form Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
+                  <input
+                    type="text"
+                    value={newReviewClient}
+                    onChange={(e) => setNewReviewClient(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Contoh: PHE, Medco, PHM"
+                  />
                 </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <p className="text-sm text-yellow-800">
-                    <span className="font-semibold">Perhatian:</span> Pastikan data MCU sudah sesuai sebelum melakukan review untuk Client {reviewerClient}.
-                  </p>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Review User</label>
+                  <input
+                    type="text"
+                    value={newReviewUser}
+                    onChange={(e) => setNewReviewUser(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Nama reviewer user"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan Expired Review User</label>
+                  <input
+                    type="text"
+                    value={newReviewNote}
+                    onChange={(e) => setNewReviewNote(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Contoh: Valid MCU 12-Okt-25"
+                  />
                 </div>
               </div>
+              <div className="flex justify-end mb-6">
+                <button
+                  onClick={handleAddReview}
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                >
+                  Tambah
+                </button>
+              </div>
 
+              {/* Table List */}
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Review User</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {(reviewerItem.reviewUsers || []).length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">Belum ada review user</td>
+                      </tr>
+                    ) : (
+                      (reviewerItem.reviewUsers || []).map((rv, idx) => (
+                        <tr key={idx} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{rv.client}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{rv.reviewUser}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{rv.note}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button
+                              onClick={() => handleDeleteReview(idx)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Hapus
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Modal Actions */}
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => setShowReviewerModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                 >
-                  Batal
-                </button>
-                <button
-                  onClick={handleConfirmReviewer}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Konfirmasi Review
+                  Tutup
                 </button>
               </div>
             </div>

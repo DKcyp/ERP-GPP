@@ -996,14 +996,10 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Posisi Kamera
                     </label>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "PHE ONWJ",
-                        "MEDCO EPG",
-                        "OFFICE",
-                        "PROJECT",
-                        "Lain-lain",
-                      ].map((opt) => {
+                    <select
+                      value={formData.posisiKamera}
+                      onChange={(e) => {
+                        const selectedValue = e.target.value;
                         const colors: Record<string, string> = {
                           "PHE ONWJ": "bg-blue-600 text-white",
                           "MEDCO EPG": "bg-green-600 text-white",
@@ -1011,31 +1007,24 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                           PROJECT: "bg-purple-600 text-white",
                           "Lain-lain": "bg-orange-600 text-white",
                         };
-                        const selected = formData.posisiKamera === opt;
-                        return (
-                          <button
-                            key={opt}
-                            type="button"
-                            onClick={() => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                posisiKamera: opt,
-                                posisiColor: colors[opt] || "bg-blue-600 text-white",
-                                posisiKameraCustom:
-                                  opt !== "Lain-lain" ? "" : prev.posisiKameraCustom || "",
-                              }));
-                            }}
-                            className={`px-3 py-1 rounded-md text-sm border transition ${
-                              selected
-                                ? "bg-blue-600 text-white border-blue-600"
-                                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                            }`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
+                        setFormData((prev) => ({
+                          ...prev,
+                          posisiKamera: selectedValue,
+                          posisiColor: colors[selectedValue] || "bg-blue-600 text-white",
+                          posisiKameraCustom:
+                            selectedValue !== "Lain-lain" ? "" : prev.posisiKameraCustom || "",
+                        }));
+                      }}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                    >
+                      <option value="">-- Pilih Posisi Kamera --</option>
+                      <option value="PHE ONWJ">PHE ONWJ</option>
+                      <option value="MEDCO EPG">MEDCO EPG</option>
+                      <option value="OFFICE">OFFICE</option>
+                      <option value="PROJECT">PROJECT</option>
+                      <option value="Lain-lain">Lain-lain</option>
+                    </select>
                   </div>
 
                   {/* Custom Posisi Input - shown when "Lain-lain" is selected */}

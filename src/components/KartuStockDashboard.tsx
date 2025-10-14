@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Search,
-  Filter,
   Download,
   TrendingDown,
   Package,
@@ -9,7 +8,6 @@ import {
   CheckCircle,
   Clock,
   Eye,
-  Calendar,
   ArrowUpRight,
   ArrowDownRight,
   Minus,
@@ -54,8 +52,10 @@ const KartuStockDashboard: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"overview" | "detail" | "add">("overview");
-  
+  const [viewMode, setViewMode] = useState<"overview" | "detail" | "add">(
+    "overview"
+  );
+
   // Data dummy untuk kartu stock
   const initialStockData: StockItem[] = [
     {
@@ -136,7 +136,7 @@ const KartuStockDashboard: React.FC = () => {
     },
   ];
 
-  const [stockData, setStockData] = useState<StockItem[]>(initialStockData);
+  const stockData: StockItem[] = initialStockData;
 
   // Data pergerakan stock
   const stockMovements: StockMovement[] = [
@@ -223,6 +223,8 @@ const KartuStockDashboard: React.FC = () => {
   const outOfStockItems = stockData.filter(
     (item) => item.status === "Out of Stock"
   ).length;
+
+  const selectedItemData = stockData.find((item) => item.id === selectedItem);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
@@ -349,7 +351,7 @@ const KartuStockDashboard: React.FC = () => {
             </div>
 
             <div className="flex space-x-3">
-              <button 
+              <button
                 onClick={() => setViewMode("add")}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl shadow-sm text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
               >
@@ -389,6 +391,7 @@ const KartuStockDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Lokasi
                   </th>
+                  {/*
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     No RFI
                   </th>
@@ -398,6 +401,7 @@ const KartuStockDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     No Penerimaan Manual
                   </th>
+                  */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Stok Awal
                   </th>
@@ -440,6 +444,7 @@ const KartuStockDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.lokasi}
                     </td>
+                    {/*
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.noRFI}
                     </td>
@@ -449,6 +454,7 @@ const KartuStockDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.nomorPenerimaanManual}
                     </td>
+                    */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.stokAwal} {item.satuan}
                     </td>
@@ -517,6 +523,22 @@ const KartuStockDashboard: React.FC = () => {
               </div>
 
               <div className="p-6">
+                {selectedItemData && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm text-gray-700">
+                    <div>
+                      <p className="font-medium">No RFI:</p>
+                      <p>{selectedItemData.noRFI}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">No Mutasi Barang:</p>
+                      <p>{selectedItemData.noMutasiBarang}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">No Penerimaan Manual:</p>
+                      <p>{selectedItemData.nomorPenerimaanManual}</p>
+                    </div>
+                  </div>
+                )}
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -626,9 +648,15 @@ const KartuStockDashboard: React.FC = () => {
                     </label>
                     <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                       <option value="">Pilih Kategori</option>
-                      <option value="Material Konstruksi">Material Konstruksi</option>
-                      <option value="Material Finishing">Material Finishing</option>
-                      <option value="Material Plumbing">Material Plumbing</option>
+                      <option value="Material Konstruksi">
+                        Material Konstruksi
+                      </option>
+                      <option value="Material Finishing">
+                        Material Finishing
+                      </option>
+                      <option value="Material Plumbing">
+                        Material Plumbing
+                      </option>
                     </select>
                   </div>
                   <div>
