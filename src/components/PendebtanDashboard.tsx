@@ -1,7 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Check, X, Clock, FileSpreadsheet, FileDown, Plus, ChevronDown, ChevronRight, Edit, Trash2, Printer } from 'lucide-react';
-import ConfirmationModal from './ConfirmationModal';
-import PendebtanModal from './PendebtanModal';
+import React, { useState, useMemo } from "react";
+import {
+  Search,
+  Check,
+  X,
+  Clock,
+  FileSpreadsheet,
+  FileDown,
+  Plus,
+  ChevronDown,
+  ChevronRight,
+  Edit,
+  Trash2,
+  Printer,
+} from "lucide-react";
+import ConfirmationModal from "./ConfirmationModal";
+import PendebtanModal from "./PendebtanModal";
 
 interface EmployeeDetail {
   id: number;
@@ -18,128 +31,185 @@ interface PendebtanPeriod {
   periode: string; // format: YYYY-MM
   total: number;
   employees: EmployeeDetail[];
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: "Pending" | "Approved" | "Rejected";
+  tanggalApprovePayroll: string | null;
+  tanggalApproveDirKeuangan: string | null;
+  tanggalApproveDirUtama: string | null;
 }
 
 // Master data pegawai dengan bank, rekening, dan gaji default
 const masterPegawai = [
-  { nama: 'Ahmad Fauzi', bank: 'BCA', rekening: '1234567890', departemen: 'Engineering', gajiDefault: 5000000 },
-  { nama: 'Siti Nurhaliza', bank: 'Mandiri', rekening: '9876543210', departemen: 'Finance', gajiDefault: 4500000 },
-  { nama: 'Budi Santoso', bank: 'BNI', rekening: '5555666677', departemen: 'Operations', gajiDefault: 4800000 },
-  { nama: 'Dewi Anggraini', bank: 'BRI', rekening: '1111222233', departemen: 'Marketing', gajiDefault: 5200000 },
-  { nama: 'Rudi Hermawan', bank: 'BCA', rekening: '9999888877', departemen: 'IT', gajiDefault: 6000000 },
-  { nama: 'Rina Setiawati', bank: 'Mandiri', rekening: '4444555566', departemen: 'HR', gajiDefault: 4500000 },
-  { nama: 'Wahyudi Hidayat', bank: 'BNI', rekening: '7777888899', departemen: 'Engineering', gajiDefault: 5000000 },
-  { nama: 'Siti Aminah', bank: 'BRI', rekening: '3333444455', departemen: 'Finance', gajiDefault: 4000000 },
+  {
+    nama: "Ahmad Fauzi",
+    bank: "BCA",
+    rekening: "1234567890",
+    departemen: "Engineering",
+    gajiDefault: 5000000,
+  },
+  {
+    nama: "Siti Nurhaliza",
+    bank: "Mandiri",
+    rekening: "9876543210",
+    departemen: "Finance",
+    gajiDefault: 4500000,
+  },
+  {
+    nama: "Budi Santoso",
+    bank: "BNI",
+    rekening: "5555666677",
+    departemen: "Operations",
+    gajiDefault: 4800000,
+  },
+  {
+    nama: "Dewi Anggraini",
+    bank: "BRI",
+    rekening: "1111222233",
+    departemen: "Marketing",
+    gajiDefault: 5200000,
+  },
+  {
+    nama: "Rudi Hermawan",
+    bank: "BCA",
+    rekening: "9999888877",
+    departemen: "IT",
+    gajiDefault: 6000000,
+  },
+  {
+    nama: "Rina Setiawati",
+    bank: "Mandiri",
+    rekening: "4444555566",
+    departemen: "HR",
+    gajiDefault: 4500000,
+  },
+  {
+    nama: "Wahyudi Hidayat",
+    bank: "BNI",
+    rekening: "7777888899",
+    departemen: "Engineering",
+    gajiDefault: 5000000,
+  },
+  {
+    nama: "Siti Aminah",
+    bank: "BRI",
+    rekening: "3333444455",
+    departemen: "Finance",
+    gajiDefault: 4000000,
+  },
 ];
 
 const PendebtanDashboard: React.FC = () => {
   const today = new Date();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<'approve' | 'reject' | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<PendebtanPeriod | null>(null);
-  const [rejectionNote, setRejectionNote] = useState<string>('');
+  const [confirmAction, setConfirmAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<PendebtanPeriod | null>(
+    null
+  );
+  const [rejectionNote, setRejectionNote] = useState<string>("");
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPeriod, setEditingPeriod] = useState<PendebtanPeriod | null>(null);
+  const [editingPeriod, setEditingPeriod] = useState<PendebtanPeriod | null>(
+    null
+  );
 
   // Data sample pendebetan per periode
   const [pendebtanData, setPendebtanData] = useState<PendebtanPeriod[]>([
     {
       id: 1,
-      periode: '2025-09',
+      periode: "2025-09",
       total: 25500000,
-      status: 'Pending',
+      status: "Pending",
       employees: [
         {
           id: 1,
-          namaPegawai: 'Ahmad Fauzi',
-          bank: 'BCA',
-          rekening: '1234567890',
+          namaPegawai: "Ahmad Fauzi",
+          bank: "BCA",
+          rekening: "1234567890",
           nominal: 5000000,
-          departemen: 'Engineering',
-          keterangan: 'Gaji September 2025',
+          departemen: "Engineering",
+          keterangan: "Gaji September 2025",
         },
         {
           id: 2,
-          namaPegawai: 'Siti Nurhaliza',
-          bank: 'Mandiri',
-          rekening: '9876543210',
+          namaPegawai: "Siti Nurhaliza",
+          bank: "Mandiri",
+          rekening: "9876543210",
           nominal: 4500000,
-          departemen: 'Finance',
-          keterangan: 'Gaji September 2025',
+          departemen: "Finance",
+          keterangan: "Gaji September 2025",
         },
         {
           id: 3,
-          namaPegawai: 'Budi Santoso',
-          bank: 'BNI',
-          rekening: '5555666677',
+          namaPegawai: "Budi Santoso",
+          bank: "BNI",
+          rekening: "5555666677",
           nominal: 4800000,
-          departemen: 'Operations',
-          keterangan: 'Gaji September 2025',
+          departemen: "Operations",
+          keterangan: "Gaji September 2025",
         },
         {
           id: 4,
-          namaPegawai: 'Dewi Anggraini',
-          bank: 'BRI',
-          rekening: '1111222233',
+          namaPegawai: "Dewi Anggraini",
+          bank: "BRI",
+          rekening: "1111222233",
           nominal: 5200000,
-          departemen: 'Marketing',
-          keterangan: 'Gaji September 2025',
+          departemen: "Marketing",
+          keterangan: "Gaji September 2025",
         },
         {
           id: 5,
-          namaPegawai: 'Rudi Hermawan',
-          bank: 'BCA',
-          rekening: '9999888877',
+          namaPegawai: "Rudi Hermawan",
+          bank: "BCA",
+          rekening: "9999888877",
           nominal: 6000000,
-          departemen: 'IT',
-          keterangan: 'Gaji September 2025',
+          departemen: "IT",
+          keterangan: "Gaji September 2025",
         },
       ],
     },
     {
       id: 2,
-      periode: '2025-08',
+      periode: "2025-08",
       total: 18300000,
-      status: 'Approved',
+      status: "Approved",
       employees: [
         {
           id: 6,
-          namaPegawai: 'Ahmad Fauzi',
-          bank: 'BCA',
-          rekening: '1234567890',
+          namaPegawai: "Ahmad Fauzi",
+          bank: "BCA",
+          rekening: "1234567890",
           nominal: 4800000,
-          departemen: 'Engineering',
-          keterangan: 'Gaji Agustus 2025',
+          departemen: "Engineering",
+          keterangan: "Gaji Agustus 2025",
         },
         {
           id: 7,
-          namaPegawai: 'Rina Setiawati',
-          bank: 'Mandiri',
-          rekening: '4444555566',
+          namaPegawai: "Rina Setiawati",
+          bank: "Mandiri",
+          rekening: "4444555566",
           nominal: 4500000,
-          departemen: 'HR',
-          keterangan: 'Gaji Agustus 2025',
+          departemen: "HR",
+          keterangan: "Gaji Agustus 2025",
         },
         {
           id: 8,
-          namaPegawai: 'Wahyudi Hidayat',
-          bank: 'BNI',
-          rekening: '7777888899',
+          namaPegawai: "Wahyudi Hidayat",
+          bank: "BNI",
+          rekening: "7777888899",
           nominal: 5000000,
-          departemen: 'Engineering',
-          keterangan: 'Gaji Agustus 2025',
+          departemen: "Engineering",
+          keterangan: "Gaji Agustus 2025",
         },
         {
           id: 9,
-          namaPegawai: 'Siti Aminah',
-          bank: 'BRI',
-          rekening: '3333444455',
+          namaPegawai: "Siti Aminah",
+          bank: "BRI",
+          rekening: "3333444455",
           nominal: 4000000,
-          departemen: 'Finance',
-          keterangan: 'Gaji Agustus 2025',
+          departemen: "Finance",
+          keterangan: "Gaji Agustus 2025",
         },
       ],
     },
@@ -148,10 +218,13 @@ const PendebtanDashboard: React.FC = () => {
   // Filter data berdasarkan search query
   const filteredData = useMemo(() => {
     return pendebtanData.filter((item) => {
-      const periodeStr = new Date(item.periode + '-01').toLocaleDateString('id-ID', {
-        month: 'long',
-        year: 'numeric',
-      });
+      const periodeStr = new Date(item.periode + "-01").toLocaleDateString(
+        "id-ID",
+        {
+          month: "long",
+          year: "numeric",
+        }
+      );
       return periodeStr.toLowerCase().includes(searchQuery.toLowerCase());
     });
   }, [pendebtanData, searchQuery]);
@@ -159,9 +232,11 @@ const PendebtanDashboard: React.FC = () => {
   // Calculate statistics
   const stats = useMemo(() => {
     return {
-      pending: pendebtanData.filter((item) => item.status === 'Pending').length,
-      approved: pendebtanData.filter((item) => item.status === 'Approved').length,
-      rejected: pendebtanData.filter((item) => item.status === 'Rejected').length,
+      pending: pendebtanData.filter((item) => item.status === "Pending").length,
+      approved: pendebtanData.filter((item) => item.status === "Approved")
+        .length,
+      rejected: pendebtanData.filter((item) => item.status === "Rejected")
+        .length,
       totalNominal: pendebtanData.reduce((sum, item) => sum + item.total, 0),
     };
   }, [pendebtanData]);
@@ -178,7 +253,10 @@ const PendebtanDashboard: React.FC = () => {
     });
   };
 
-  const openConfirmation = (period: PendebtanPeriod, action: 'approve' | 'reject') => {
+  const openConfirmation = (
+    period: PendebtanPeriod,
+    action: "approve" | "reject"
+  ) => {
     setSelectedPeriod(period);
     setConfirmAction(action);
     setIsConfirmModalOpen(true);
@@ -186,32 +264,45 @@ const PendebtanDashboard: React.FC = () => {
 
   const handleConfirm = () => {
     if (selectedPeriod && confirmAction) {
-      if (confirmAction === 'reject' && !rejectionNote) {
-        alert('Catatan penolakan tidak boleh kosong.');
+      if (confirmAction === "reject" && !rejectionNote) {
+        alert("Catatan penolakan tidak boleh kosong.");
         return;
       }
+
+      const formattedDate = new Date().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
 
       setPendebtanData((prev) =>
         prev.map((item) =>
           item.id === selectedPeriod.id
             ? {
                 ...item,
-                status: confirmAction === 'approve' ? 'Approved' : 'Rejected',
+                status: confirmAction === "approve" ? "Approved" : "Rejected",
+                ...(confirmAction === "approve" && {
+                  tanggalApprovePayroll: formattedDate,
+                  tanggalApproveDirKeuangan: formattedDate,
+                  tanggalApproveDirUtama: formattedDate,
+                }),
               }
             : item
         )
       );
 
-      const periodeStr = new Date(selectedPeriod.periode + '-01').toLocaleDateString('id-ID', {
-        month: 'long',
-        year: 'numeric',
+      const periodeStr = new Date(
+        selectedPeriod.periode + "-01"
+      ).toLocaleDateString("id-ID", {
+        month: "long",
+        year: "numeric",
       });
       console.log(
-        `${confirmAction === 'approve' ? 'Approved' : 'Rejected'}:`,
+        `${confirmAction === "approve" ? "Approved" : "Rejected"}:`,
         periodeStr
       );
-      if (confirmAction === 'reject') {
-        console.log('Rejection Note:', rejectionNote);
+      if (confirmAction === "reject") {
+        console.log("Rejection Note:", rejectionNote);
       }
     }
     closeConfirmation();
@@ -221,7 +312,7 @@ const PendebtanDashboard: React.FC = () => {
     setIsConfirmModalOpen(false);
     setSelectedPeriod(null);
     setConfirmAction(null);
-    setRejectionNote('');
+    setRejectionNote("");
   };
 
   const handleAddPendebetan = () => {
@@ -235,12 +326,21 @@ const PendebtanDashboard: React.FC = () => {
   };
 
   const handleDeletePeriod = (period: PendebtanPeriod) => {
-    if (window.confirm(`Hapus data pendebetan periode ${new Date(period.periode + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}?`)) {
+    if (
+      window.confirm(
+        `Hapus data pendebetan periode ${new Date(
+          period.periode + "-01"
+        ).toLocaleDateString("id-ID", { month: "long", year: "numeric" })}?`
+      )
+    ) {
       setPendebtanData((prev) => prev.filter((item) => item.id !== period.id));
     }
   };
 
-  const handleSavePendebetan = (data: { periode: string; employees: EmployeeDetail[] }) => {
+  const handleSavePendebetan = (data: {
+    periode: string;
+    employees: EmployeeDetail[];
+  }) => {
     if (editingPeriod) {
       // Edit existing
       setPendebtanData((prev) =>
@@ -250,7 +350,10 @@ const PendebtanDashboard: React.FC = () => {
                 ...item,
                 periode: data.periode,
                 employees: data.employees,
-                total: data.employees.reduce((sum, emp) => sum + emp.nominal, 0),
+                total: data.employees.reduce(
+                  (sum, emp) => sum + emp.nominal,
+                  0
+                ),
               }
             : item
         )
@@ -262,7 +365,10 @@ const PendebtanDashboard: React.FC = () => {
         periode: data.periode,
         total: data.employees.reduce((sum, emp) => sum + emp.nominal, 0),
         employees: data.employees,
-        status: 'Pending',
+        status: "Pending",
+        tanggalApprovePayroll: null,
+        tanggalApproveDirKeuangan: null,
+        tanggalApproveDirUtama: null,
       };
       setPendebtanData((prev) => [newPeriod, ...prev]);
     }
@@ -271,28 +377,28 @@ const PendebtanDashboard: React.FC = () => {
   };
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const exportPDF = () => {
-    const fileId = '1ig-u5Og6tAbyyhxzj9ohj4UHxWimGDMn';
+    const fileId = "1ig-u5Og6tAbyyhxzj9ohj4UHxWimGDMn";
     const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-    window.open(downloadUrl, '_blank');
+    window.open(downloadUrl, "_blank");
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Approved':
+      case "Approved":
         return (
           <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
             Approved
           </span>
         );
-      case 'Rejected':
+      case "Rejected":
         return (
           <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
             Rejected
@@ -307,7 +413,7 @@ const PendebtanDashboard: React.FC = () => {
     }
   };
 
-  const exportExcel = () => alert('Export Excel belum diimplementasikan');
+  const exportExcel = () => alert("Export Excel belum diimplementasikan");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -333,7 +439,7 @@ const PendebtanDashboard: React.FC = () => {
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {today.toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -349,7 +455,9 @@ const PendebtanDashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.pending}
+                </p>
               </div>
             </div>
           </div>
@@ -360,7 +468,9 @@ const PendebtanDashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Approved</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.approved}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.approved}
+                </p>
               </div>
             </div>
           </div>
@@ -371,7 +481,9 @@ const PendebtanDashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Rejected</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.rejected}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.rejected}
+                </p>
               </div>
             </div>
           </div>
@@ -381,7 +493,9 @@ const PendebtanDashboard: React.FC = () => {
                 <FileSpreadsheet className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Nominal</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Nominal
+                </p>
                 <p className="text-xl font-bold text-gray-900">
                   {formatCurrency(stats.totalNominal)}
                 </p>
@@ -454,6 +568,15 @@ const PendebtanDashboard: React.FC = () => {
                     Status
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Tgl. Payroll
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Tgl. Dir. Keuangan
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Tgl. Dir. Utama
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
@@ -477,10 +600,13 @@ const PendebtanDashboard: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {new Date(period.periode + '-01').toLocaleDateString('id-ID', {
-                          month: 'long',
-                          year: 'numeric',
-                        })}
+                        {new Date(period.periode + "-01").toLocaleDateString(
+                          "id-ID",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          }
+                        )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
                         {formatCurrency(period.total)}
@@ -489,18 +615,34 @@ const PendebtanDashboard: React.FC = () => {
                         {getStatusBadge(period.status)}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-center text-sm">
-                        <div className="flex items-center justify-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          {period.status === 'Pending' ? (
+                        {period.tanggalApprovePayroll || "-"}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm">
+                        {period.tanggalApproveDirKeuangan || "-"}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm">
+                        {period.tanggalApproveDirUtama || "-"}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm">
+                        <div
+                          className="flex items-center justify-center gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {period.status === "Pending" ? (
                             <>
                               <button
-                                onClick={() => openConfirmation(period, 'approve')}
+                                onClick={() =>
+                                  openConfirmation(period, "approve")
+                                }
                                 className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded transition-colors duration-200"
                                 title="Approve"
                               >
                                 <Check className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => openConfirmation(period, 'reject')}
+                                onClick={() =>
+                                  openConfirmation(period, "reject")
+                                }
                                 className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors duration-200"
                                 title="Reject"
                               >
@@ -523,7 +665,9 @@ const PendebtanDashboard: React.FC = () => {
                             </>
                           ) : (
                             <span className="text-xs text-gray-500 italic">
-                              {period.status === 'Approved' ? 'Sudah disetujui' : 'Ditolak'}
+                              {period.status === "Approved"
+                                ? "Sudah disetujui"
+                                : "Ditolak"}
                             </span>
                           )}
                           <button
@@ -567,7 +711,10 @@ const PendebtanDashboard: React.FC = () => {
                               </thead>
                               <tbody className="bg-white divide-y divide-gray-100">
                                 {period.employees.map((emp) => (
-                                  <tr key={emp.id} className="hover:bg-blue-50/30">
+                                  <tr
+                                    key={emp.id}
+                                    className="hover:bg-blue-50/30"
+                                  >
                                     <td className="px-4 py-2 text-sm text-gray-900">
                                       {emp.namaPegawai}
                                     </td>
@@ -625,22 +772,25 @@ const PendebtanDashboard: React.FC = () => {
         onClose={closeConfirmation}
         onConfirm={handleConfirm}
         title={
-          confirmAction === 'approve'
-            ? 'Konfirmasi Approval'
-            : 'Konfirmasi Penolakan'
+          confirmAction === "approve"
+            ? "Konfirmasi Approval"
+            : "Konfirmasi Penolakan"
         }
         message={`Apakah Anda yakin ingin ${
-          confirmAction === 'approve' ? 'menyetujui' : 'menolak'
+          confirmAction === "approve" ? "menyetujui" : "menolak"
         } pendebetan gaji periode ${
           selectedPeriod
-            ? new Date(selectedPeriod.periode + '-01').toLocaleDateString('id-ID', {
-                month: 'long',
-                year: 'numeric',
-              })
-            : ''
+            ? new Date(selectedPeriod.periode + "-01").toLocaleDateString(
+                "id-ID",
+                {
+                  month: "long",
+                  year: "numeric",
+                }
+              )
+            : ""
         }?`}
-        confirmText={confirmAction === 'approve' ? 'Approve' : 'Reject'}
-        showNoteInput={confirmAction === 'reject'}
+        confirmText={confirmAction === "approve" ? "Approve" : "Reject"}
+        showNoteInput={confirmAction === "reject"}
         note={rejectionNote}
         onNoteChange={setRejectionNote}
       />
