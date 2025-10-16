@@ -3,30 +3,19 @@ import KontrakModal, { KontrakFormData } from "./KontrakModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import ApprovalActionModal from "./ApprovalActionModal"; // Import ApprovalActionModal
 import MPPModal from "./MPPModal";
-import { ApprovalActionData } from "../types"; // Assuming you have this type defined
 import {
   Search,
-  Plus,
   FileSpreadsheet,
   FileText,
   File,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  Info,
-  ChevronLeft,
-  ChevronRight,
   ArrowUp,
-  Check, // Import Check icon for approve
   Users,
 } from "lucide-react";
 
 interface Kontrak {
   id: string;
   no: number;
-  namaOrang: string;
+  noKontrak: string; // Changed from namaOrang to noKontrak
   kualifikasi: string;
   projectName: string;
   mob: string;
@@ -35,7 +24,7 @@ interface Kontrak {
 }
 
 const KontrakDashboard: React.FC = () => {
-  const [searchNoSO, setSearchNoSO] = useState("");
+  const [searchNoKontrak, setSearchNoKontrak] = useState(""); // Renamed from searchNoSO
   const [searchNamaClient, setSearchNamaClient] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -58,14 +47,15 @@ const KontrakDashboard: React.FC = () => {
 
   // State for MPP Modal
   const [isMPPModalOpen, setIsMPPModalOpen] = useState(false);
-  const [selectedKontrakForMPP, setSelectedKontrakForMPP] = useState<Kontrak | null>(null);
+  const [selectedKontrakForMPP, setSelectedKontrakForMPP] =
+    useState<Kontrak | null>(null);
 
   // Sample data with new structure
   const [kontrakData, setKontrakData] = useState<Kontrak[]>([
     {
       id: "1",
       no: 1,
-      namaOrang: "Ahmad Fauzi",
+      noKontrak: "KONTRAK-001",
       kualifikasi: "Senior Engineer",
       projectName: "Jakarta Tank Terminal Project",
       mob: "01-01-2025",
@@ -75,7 +65,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "2",
       no: 2,
-      namaOrang: "Siti Nurhaliza",
+      noKontrak: "KONTRAK-002",
       kualifikasi: "Project Manager",
       projectName: "Surabaya Shipping Lines",
       mob: "15-02-2025",
@@ -85,7 +75,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "3",
       no: 3,
-      namaOrang: "Budi Santoso",
+      noKontrak: "KONTRAK-003",
       kualifikasi: "Technical Lead",
       projectName: "Bandung Logistics System",
       mob: "01-03-2025",
@@ -95,7 +85,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "4",
       no: 4,
-      namaOrang: "Dewi Anggraini",
+      noKontrak: "KONTRAK-004",
       kualifikasi: "Site Supervisor",
       projectName: "Medan Cargo Express",
       mob: "10-04-2025",
@@ -105,7 +95,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "5",
       no: 5,
-      namaOrang: "Rudi Hermawan",
+      noKontrak: "KONTRAK-005",
       kualifikasi: "QA Engineer",
       projectName: "Semarang Port Services",
       mob: "01-05-2025",
@@ -115,7 +105,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "6",
       no: 6,
-      namaOrang: "Rina Setiawati",
+      noKontrak: "KONTRAK-006",
       kualifikasi: "Safety Officer",
       projectName: "Makassar Infrastructure",
       mob: "15-06-2025",
@@ -125,7 +115,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "7",
       no: 7,
-      namaOrang: "Wahyudi Hidayat",
+      noKontrak: "KONTRAK-007",
       kualifikasi: "Electrical Engineer",
       projectName: "Palembang Power Plant",
       mob: "01-07-2025",
@@ -135,7 +125,7 @@ const KontrakDashboard: React.FC = () => {
     {
       id: "8",
       no: 8,
-      namaOrang: "Siti Aminah",
+      noKontrak: "KONTRAK-008",
       kualifikasi: "Civil Engineer",
       projectName: "Balikpapan Bridge Construction",
       mob: "20-08-2025",
@@ -153,7 +143,7 @@ const KontrakDashboard: React.FC = () => {
     const newKontrak: Kontrak = {
       id: (kontrakData.length + 1).toString(),
       no: kontrakData.length + 1,
-      namaOrang: formData.namaClient || "New Person",
+      noKontrak: formData.noKontrak || "New Kontrak",
       kualifikasi: "Staff",
       projectName: "New Project",
       mob: new Date(formData.tanggalAwal).toLocaleDateString("id-ID", {
@@ -161,14 +151,11 @@ const KontrakDashboard: React.FC = () => {
         month: "2-digit",
         year: "numeric",
       }),
-      demob: new Date(formData.tanggalAkhir).toLocaleDateString(
-        "id-ID",
-        {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }
-      ),
+      demob: new Date(formData.tanggalAkhir).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
       durasi: "6 Bulan",
     };
 
@@ -201,9 +188,9 @@ const KontrakDashboard: React.FC = () => {
 
   // Filter data based on search criteria
   const filteredData = kontrakData.filter((item) => {
-    const matchesNamaOrang = item.namaOrang
+    const matchesNamaOrang = item.noKontrak
       .toLowerCase()
-      .includes(searchNoSO.toLowerCase());
+      .includes(searchNoKontrak.toLowerCase());
     const matchesProject = item.projectName
       .toLowerCase()
       .includes(searchNamaClient.toLowerCase());
@@ -249,7 +236,7 @@ const KontrakDashboard: React.FC = () => {
   };
 
   // Handle confirmation from ApprovalActionModal
-  const handleApprovalConfirm = (data: ApprovalActionData) => {
+  const handleApprovalConfirm = (data: any) => {
     console.log("Kontrak Approved:", data);
     // Here you would typically update the status of the kontrak in your state or send to API
     // For demonstration, we'll just log it.
@@ -300,14 +287,14 @@ const KontrakDashboard: React.FC = () => {
               {/* Search Nama Orang */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cari Nama Orang
+                  Cari No. Kontrak
                 </label>
                 <input
                   type="text"
-                  value={searchNoSO}
-                  onChange={(e) => setSearchNoSO(e.target.value)}
+                  value={searchNoKontrak}
+                  onChange={(e) => setSearchNoKontrak(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                  placeholder="Ahmad Fauzi"
+                  placeholder="KONTRAK-001"
                 />
               </div>
 
@@ -437,11 +424,11 @@ const KontrakDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort("namaOrang")}
+                    onClick={() => handleSort("noKontrak")}
                   >
                     <div className="flex items-center space-x-1">
-                      <span>Nama Orang</span>
-                      {sortField === "namaOrang" && (
+                      <span>No Kontrak</span>
+                      {sortField === "noKontrak" && (
                         <ArrowUp
                           className={`h-3 w-3 transition-transform ${
                             sortDirection === "desc" ? "rotate-180" : ""
@@ -502,7 +489,7 @@ const KontrakDashboard: React.FC = () => {
                       {item.no}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                      {item.namaOrang}
+                      {item.noKontrak}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {item.kualifikasi}
@@ -614,7 +601,7 @@ const KontrakDashboard: React.FC = () => {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={itemToDelete?.namaOrang}
+        itemName={itemToDelete?.noKontrak}
       />
 
       {/* Approval Action Modal for Kontrak */}

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, Loader2, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, Save, Loader2, Trash2, Plus } from "lucide-react";
 
 interface Kontrak {
   id: string;
   no: number;
-  namaOrang: string;
+  noKontrak: string; // Updated from namaOrang to noKontrak
   kualifikasi: string;
   projectName: string;
   mob: string;
@@ -14,7 +14,7 @@ interface Kontrak {
 
 interface MPPEntry {
   id: number;
-  namaOrang: string;
+  noKontrak: string; // Updated from namaOrang to noKontrak
   kualifikasi: string;
   projectName: string;
   mob: string;
@@ -40,19 +40,19 @@ const MPPModal: React.FC<MPPModalProps> = ({
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -66,20 +66,20 @@ const MPPModal: React.FC<MPPModalProps> = ({
       if (kontrak) {
         // Helper function to convert DD-MM-YYYY to YYYY-MM-DD
         const convertDateFormat = (dateStr: string): string => {
-          if (!dateStr || dateStr === '-') return '';
-          const [day, month, year] = dateStr.split('-');
+          if (!dateStr || dateStr === "-") return "";
+          const [day, month, year] = dateStr.split("-");
           return `${year}-${month}-${day}`;
         };
 
         setEntries([
           {
             id: 1,
-            namaOrang: kontrak.namaOrang || '',
-            kualifikasi: kontrak.kualifikasi || '',
-            projectName: kontrak.projectName || '',
-            mob: convertDateFormat(kontrak.mob) || '',
-            demob: convertDateFormat(kontrak.demob) || '',
-            durasi: kontrak.durasi || '',
+            noKontrak: kontrak.noKontrak || "",
+            kualifikasi: kontrak.kualifikasi || "",
+            projectName: kontrak.projectName || "",
+            mob: convertDateFormat(kontrak.mob) || "",
+            demob: convertDateFormat(kontrak.demob) || "",
+            durasi: kontrak.durasi || "",
           },
         ]);
       } else {
@@ -87,20 +87,36 @@ const MPPModal: React.FC<MPPModalProps> = ({
         setEntries([
           {
             id: 1,
-            namaOrang: '',
-            kualifikasi: '',
-            projectName: '',
-            mob: '',
-            demob: '',
-            durasi: '',
+            noKontrak: "",
+            kualifikasi: "",
+            projectName: "",
+            mob: "",
+            demob: "",
+            durasi: "",
           },
         ]);
       }
     }
   }, [isOpen, kontrak]);
 
+  const addEmptyEntry = () => {
+    setEntries((prev) => [
+      ...prev,
+      {
+        id: Date.now(), // Unique ID for each entry
+        noKontrak: "",
+        kualifikasi: "",
+        projectName: "",
+        mob: "",
+        demob: "",
+        durasi: "",
+      },
+    ]);
+  };
+
   const removeEntry = (id: number) => {
-    if (entries.length > 1) {
+    if (entries.length > 0) {
+      // Allow removing even the last one if it's empty
       setEntries(entries.filter((entry) => entry.id !== id));
     }
   };
@@ -115,22 +131,22 @@ const MPPModal: React.FC<MPPModalProps> = ({
 
   // Calculate durasi when mob and demob change
   const calculateDurasi = (mob: string, demob: string): string => {
-    if (!mob || !demob) return '';
-    
+    if (!mob || !demob) return "";
+
     try {
       const mobDate = new Date(mob);
       const demobDate = new Date(demob);
-      
+
       if (mobDate && demobDate && demobDate >= mobDate) {
         const diffTime = Math.abs(demobDate.getTime() - mobDate.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return `${diffDays} Hari`;
       }
     } catch (error) {
-      return '';
+      return "";
     }
-    
-    return '';
+
+    return "";
   };
 
   const handleMobChange = (id: number, value: string) => {
@@ -138,9 +154,7 @@ const MPPModal: React.FC<MPPModalProps> = ({
     if (entry) {
       const durasi = calculateDurasi(value, entry.demob);
       setEntries(
-        entries.map((e) =>
-          e.id === id ? { ...e, mob: value, durasi } : e
-        )
+        entries.map((e) => (e.id === id ? { ...e, mob: value, durasi } : e))
       );
     }
   };
@@ -150,25 +164,23 @@ const MPPModal: React.FC<MPPModalProps> = ({
     if (entry) {
       const durasi = calculateDurasi(entry.mob, value);
       setEntries(
-        entries.map((e) =>
-          e.id === id ? { ...e, demob: value, durasi } : e
-        )
+        entries.map((e) => (e.id === id ? { ...e, demob: value, durasi } : e))
       );
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!kontrak) {
-      alert('Data kontrak tidak ditemukan');
+      alert("Data kontrak tidak ditemukan");
       return;
     }
 
     // Validate entries
     const invalidEntries = entries.filter(
       (entry) =>
-        !entry.namaOrang ||
+        !entry.noKontrak ||
         !entry.kualifikasi ||
         !entry.projectName ||
         !entry.mob ||
@@ -176,7 +188,7 @@ const MPPModal: React.FC<MPPModalProps> = ({
     );
 
     if (invalidEntries.length > 0) {
-      alert('Harap lengkapi semua field yang wajib diisi');
+      alert("Harap lengkapi semua field yang wajib diisi");
       return;
     }
 
@@ -210,7 +222,8 @@ const MPPModal: React.FC<MPPModalProps> = ({
             </h2>
             {kontrak && (
               <p className="text-sm text-gray-600 mt-1">
-                Project: <span className="font-semibold">{kontrak.projectName}</span>
+                Project:{" "}
+                <span className="font-semibold">{kontrak.projectName}</span>
               </p>
             )}
           </div>
@@ -224,7 +237,19 @@ const MPPModal: React.FC<MPPModalProps> = ({
 
         {/* Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-160px)]">
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <form id="mpp-form" onSubmit={handleSubmit} className="p-6 space-y-6">
+            {" "}
+            {/* Added id="mpp-form" */}
+            {/* Add Entry Button */}
+            <div className="flex justify-end mb-4">
+              <button
+                type="button"
+                onClick={addEmptyEntry}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Plus className="h-5 w-5 mr-2" /> Tambah Orang
+              </button>
+            </div>
             {/* Entries Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="overflow-x-auto">
@@ -235,7 +260,7 @@ const MPPModal: React.FC<MPPModalProps> = ({
                         No
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                        Nama Orang <span className="text-red-500">*</span>
+                        No. Kontrak <span className="text-red-500">*</span>
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
                         Kualifikasi <span className="text-red-500">*</span>
@@ -261,7 +286,7 @@ const MPPModal: React.FC<MPPModalProps> = ({
                     {entries.map((entry, idx) => (
                       <tr
                         key={entry.id}
-                        className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-25'}
+                        className={idx % 2 === 0 ? "bg-white" : "bg-gray-25"}
                       >
                         <td className="px-4 py-3 text-sm text-gray-900">
                           {idx + 1}
@@ -269,55 +294,77 @@ const MPPModal: React.FC<MPPModalProps> = ({
                         <td className="px-4 py-2">
                           <input
                             type="text"
-                            value={entry.namaOrang}
-                            readOnly
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
-                            placeholder="Masukkan nama"
+                            value={entry.noKontrak}
+                            onChange={(e) =>
+                              updateEntry(entry.id, "noKontrak", e.target.value)
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            placeholder="Masukkan No. Kontrak"
+                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="text"
                             value={entry.kualifikasi}
-                            readOnly
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
+                            onChange={(e) =>
+                              updateEntry(
+                                entry.id,
+                                "kualifikasi",
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             placeholder="Contoh: Engineer, Supervisor"
+                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="text"
                             value={entry.projectName}
-                            readOnly
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
+                            onChange={(e) =>
+                              updateEntry(
+                                entry.id,
+                                "projectName",
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             placeholder="Nama project"
+                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="date"
                             value={entry.mob}
-                            readOnly
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
+                            onChange={(e) =>
+                              handleMobChange(entry.id, e.target.value)
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            required
                           />
                         </td>
                         <td className="px-4 py-2">
                           <input
                             type="date"
                             value={entry.demob}
-                            readOnly
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 cursor-not-allowed"
+                            onChange={(e) =>
+                              handleDemobChange(entry.id, e.target.value)
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            required
                           />
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                          {entry.durasi || '-'}
+                          {entry.durasi || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
                           <button
                             type="button"
                             onClick={() => removeEntry(entry.id)}
-                            disabled={entries.length === 1}
-                            className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
                             title="Hapus"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -331,7 +378,7 @@ const MPPModal: React.FC<MPPModalProps> = ({
                           colSpan={8}
                           className="px-4 py-6 text-center text-sm text-gray-500"
                         >
-                          Belum ada data. Klik "Tambah Orang" untuk menambah.
+                          Klik "Tambah Orang" untuk menambah data MPP.
                         </td>
                       </tr>
                     )}
@@ -339,7 +386,6 @@ const MPPModal: React.FC<MPPModalProps> = ({
                 </table>
               </div>
             </div>
-
             <div className="text-xs text-gray-500 italic">
               <span className="text-red-500">*</span> Field wajib diisi
             </div>
@@ -354,6 +400,15 @@ const MPPModal: React.FC<MPPModalProps> = ({
             className="px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-all duration-200 font-medium text-sm"
           >
             Tutup
+          </button>
+          <button
+            type="submit"
+            form="mpp-form" // Link to the form
+            disabled={isLoading}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium text-sm flex items-center justify-center space-x-2"
+          >
+            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+            <span>{isLoading ? "Menyimpan..." : "Simpan MPP"}</span>
           </button>
         </div>
       </div>
