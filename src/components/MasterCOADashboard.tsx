@@ -1,34 +1,102 @@
-import React, { useState } from 'react';
-import { Clock, Search, PlusCircle, Edit, Trash2, Download } from 'lucide-react';
-import Modal from './Modal'; // Import the Modal component
-import ConfirmDeleteModal from './ConfirmDeleteModal'; // Import the ConfirmDeleteModal component
+import React, { useState } from "react";
+import {
+  Clock,
+  Search,
+  PlusCircle,
+  Edit,
+  Trash2,
+  Download,
+} from "lucide-react";
+import Modal from "./Modal"; // Import the Modal component
+import ConfirmDeleteModal from "./ConfirmDeleteModal"; // Import the ConfirmDeleteModal component
 
 interface COAItem {
   id: string;
   kodeCOA: string;
   namaCOA: string;
   kategori: string;
+  keterangan?: string; // New optional field for description
 }
 
 const MasterCOADashboard: React.FC = () => {
   const today = new Date();
 
   const [dummyData, setDummyData] = useState<COAItem[]>([
-    { id: '1', kodeCOA: '1101', namaCOA: 'Kas Besar', kategori: 'Aset Lancar' },
-    { id: '2', kodeCOA: '1102', namaCOA: 'Kas Kecil', kategori: 'Aset Lancar' },
-    { id: '3', kodeCOA: '1110', namaCOA: 'Bank BCA', kategori: 'Aset Lancar' },
-    { id: '4', kodeCOA: '1111', namaCOA: 'Bank Mandiri', kategori: 'Aset Lancar' },
-    { id: '5', kodeCOA: '1201', namaCOA: 'Piutang Usaha', kategori: 'Aset Lancar' },
-    { id: '6', kodeCOA: '1301', namaCOA: 'Persediaan Barang Dagang', kategori: 'Aset Lancar' },
-    { id: '7', kodeCOA: '2101', namaCOA: 'Utang Usaha', kategori: 'Liabilitas Jangka Pendek' },
-    { id: '8', kodeCOA: '2102', namaCOA: 'Utang Gaji', kategori: 'Liabilitas Jangka Pendek' },
-    { id: '9', kodeCOA: '3101', namaCOA: 'Modal Disetor', kategori: 'Ekuitas' },
-    { id: '10', kodeCOA: '4101', namaCOA: 'Pendapatan Penjualan', kategori: 'Pendapatan' },
+    {
+      id: "1",
+      kodeCOA: "1101",
+      namaCOA: "Kas Besar",
+      kategori: "Aset Lancar",
+      keterangan: "Uang tunai yang tersedia untuk operasional sehari-hari",
+    },
+    {
+      id: "2",
+      kodeCOA: "1102",
+      namaCOA: "Kas Kecil",
+      kategori: "Aset Lancar",
+      keterangan: "Dana kecil untuk pengeluaran mendadak",
+    },
+    {
+      id: "3",
+      kodeCOA: "1110",
+      namaCOA: "Bank BCA",
+      kategori: "Aset Lancar",
+      keterangan: "Rekening giro perusahaan di BCA",
+    },
+    {
+      id: "4",
+      kodeCOA: "1111",
+      namaCOA: "Bank Mandiri",
+      kategori: "Aset Lancar",
+      keterangan: "Rekening giro perusahaan di Mandiri",
+    },
+    {
+      id: "5",
+      kodeCOA: "1201",
+      namaCOA: "Piutang Usaha",
+      kategori: "Aset Lancar",
+      keterangan: "Tagihan dari pelanggan atas penjualan kredit",
+    },
+    {
+      id: "6",
+      kodeCOA: "1301",
+      namaCOA: "Persediaan Barang Dagang",
+      kategori: "Aset Lancar",
+      keterangan: "Barang yang siap dijual kembali",
+    },
+    {
+      id: "7",
+      kodeCOA: "2101",
+      namaCOA: "Utang Usaha",
+      kategori: "Liabilitas Jangka Pendek",
+      keterangan: "Kewajiban pembayaran kepada pemasok",
+    },
+    {
+      id: "8",
+      kodeCOA: "2102",
+      namaCOA: "Utang Gaji",
+      kategori: "Liabilitas Jangka Pendek",
+      keterangan: "Gaji karyawan yang belum dibayarkan",
+    },
+    {
+      id: "9",
+      kodeCOA: "3101",
+      namaCOA: "Modal Disetor",
+      kategori: "Ekuitas",
+      keterangan: "Modal awal yang disetorkan oleh pemilik",
+    },
+    {
+      id: "10",
+      kodeCOA: "4101",
+      namaCOA: "Pendapatan Penjualan",
+      kategori: "Pendapatan",
+      keterangan: "Pendapatan dari penjualan produk atau jasa",
+    },
   ]);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterKategori, setFilterKategori] = useState('');
-  const [showEntries, setShowEntries] = useState('10');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterKategori, setFilterKategori] = useState("");
+  const [showEntries, setShowEntries] = useState("10");
 
   // State for the generic COA Modal (Add/Edit)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +107,9 @@ const MasterCOADashboard: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [coaToDelete, setCoaToDelete] = useState<COAItem | null>(null);
 
-  const availableCategories = Array.from(new Set(dummyData.map(item => item.kategori)));
+  const availableCategories = Array.from(
+    new Set(dummyData.map((item) => item.kategori))
+  );
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}, Kategori: ${filterKategori}`);
@@ -48,12 +118,18 @@ const MasterCOADashboard: React.FC = () => {
 
   const handleAdd = () => {
     setIsEditing(false);
-    setEditingCOA({ id: '', kodeCOA: '', namaCOA: '', kategori: '' }); // Initialize with empty values, kategori is empty for placeholder
+    setEditingCOA({
+      id: "",
+      kodeCOA: "",
+      namaCOA: "",
+      kategori: "",
+      keterangan: "",
+    }); // Initialize with empty values, kategori is empty for placeholder
     setIsModalOpen(true);
   };
 
   const handleEdit = (id: string) => {
-    const coaToEdit = dummyData.find(item => item.id === id);
+    const coaToEdit = dummyData.find((item) => item.id === id);
     if (coaToEdit) {
       setIsEditing(true);
       setEditingCOA(coaToEdit);
@@ -67,10 +143,12 @@ const MasterCOADashboard: React.FC = () => {
     setIsEditing(false); // Reset editing state
   };
 
-  const handleFormInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleFormInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     if (editingCOA) {
-      setEditingCOA(prev => ({ ...prev!, [name]: value }));
+      setEditingCOA((prev) => ({ ...prev!, [name]: value }));
     }
   };
 
@@ -80,22 +158,32 @@ const MasterCOADashboard: React.FC = () => {
 
     if (isEditing) {
       // Update existing COA
-      setDummyData(prev =>
-        prev.map(item => (item.id === editingCOA.id ? editingCOA : item))
+      setDummyData((prev) =>
+        prev.map((item) =>
+          item.id === editingCOA.id
+            ? { ...editingCOA, keterangan: editingCOA.keterangan || "" }
+            : item
+        )
       );
       alert(`COA ${editingCOA.id} berhasil diperbarui.`);
     } else {
       // Add new COA
-      const newId = (Math.max(...dummyData.map(item => parseInt(item.id))) + 1).toString();
-      const coaToAdd = { ...editingCOA, id: newId };
-      setDummyData(prev => [...prev, coaToAdd]);
+      const newId = (
+        Math.max(...dummyData.map((item) => parseInt(item.id))) + 1
+      ).toString();
+      const coaToAdd = {
+        ...editingCOA,
+        id: newId,
+        keterangan: editingCOA.keterangan || "",
+      };
+      setDummyData((prev) => [...prev, coaToAdd]);
       alert(`COA Baru Ditambahkan: ${JSON.stringify(coaToAdd)}`);
     }
     handleCloseModal(); // Close modal after submission
   };
 
   const handleDelete = (id: string) => {
-    const coa = dummyData.find(item => item.id === id);
+    const coa = dummyData.find((item) => item.id === id);
     if (coa) {
       setCoaToDelete(coa);
       setIsDeleteModalOpen(true);
@@ -104,8 +192,10 @@ const MasterCOADashboard: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (coaToDelete) {
-      setDummyData(prev => prev.filter(item => item.id !== coaToDelete.id));
-      alert(`COA ${coaToDelete.kodeCOA} - ${coaToDelete.namaCOA} berhasil dihapus.`);
+      setDummyData((prev) => prev.filter((item) => item.id !== coaToDelete.id));
+      alert(
+        `COA ${coaToDelete.kodeCOA} - ${coaToDelete.namaCOA} berhasil dihapus.`
+      );
       setCoaToDelete(null); // Clear the item to delete
       setIsDeleteModalOpen(false); // Close the modal
     }
@@ -116,10 +206,12 @@ const MasterCOADashboard: React.FC = () => {
     // Implement export logic here
   };
 
-  const filteredData = dummyData.filter(item => {
-    const matchesSearch = item.kodeCOA.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          item.namaCOA.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesKategori = filterKategori === '' || item.kategori === filterKategori;
+  const filteredData = dummyData.filter((item) => {
+    const matchesSearch =
+      item.kodeCOA.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.namaCOA.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesKategori =
+      filterKategori === "" || item.kategori === filterKategori;
     return matchesSearch && matchesKategori;
   });
 
@@ -134,14 +226,16 @@ const MasterCOADashboard: React.FC = () => {
                 MASTER COA
               </h1>
               <nav className="text-sm text-gray-600">
-                <span className="hover:text-blue-600 cursor-pointer transition-colors">Accounting</span>
+                <span className="hover:text-blue-600 cursor-pointer transition-colors">
+                  Accounting
+                </span>
                 <span className="mx-2">›</span>
                 <span className="text-blue-600 font-medium">Master COA</span>
               </nav>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
               <Clock className="h-4 w-4" />
-              <span>Last updated: {today.toLocaleString('id-ID')}</span>
+              <span>Last updated: {today.toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -152,7 +246,12 @@ const MasterCOADashboard: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div>
-              <label htmlFor="searchQuery" className="block text-sm font-medium text-gray-700 mb-2">Cari Kode/Nama COA</label>
+              <label
+                htmlFor="searchQuery"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Cari Kode/Nama COA
+              </label>
               <div className="relative">
                 <input
                   type="text"
@@ -167,7 +266,12 @@ const MasterCOADashboard: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="filterKategori" className="block text-sm font-medium text-gray-700 mb-2">Filter Kategori</label>
+              <label
+                htmlFor="filterKategori"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Filter Kategori
+              </label>
               <div className="relative">
                 <select
                   id="filterKategori"
@@ -176,11 +280,14 @@ const MasterCOADashboard: React.FC = () => {
                   onChange={(e) => setFilterKategori(e.target.value)}
                 >
                   <option value="">Semua Kategori</option>
-                  {availableCategories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  {availableCategories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
-                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rotate-180" /> {/* Chevron down */}
+                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rotate-180" />{" "}
+                {/* Chevron down */}
               </div>
             </div>
           </div>
@@ -219,19 +326,19 @@ const MasterCOADashboard: React.FC = () => {
           </div>
           <div className="flex space-x-3">
             <button
-              onClick={() => handleExport('Excel')}
+              onClick={() => handleExport("Excel")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> Excel
             </button>
             <button
-              onClick={() => handleExport('CSV')}
+              onClick={() => handleExport("CSV")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> CSV
             </button>
             <button
-              onClick={() => handleExport('PDF')}
+              onClick={() => handleExport("PDF")}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
               <Download className="h-5 w-5 mr-2" /> PDF
@@ -245,23 +352,44 @@ const MasterCOADashboard: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Kode COA
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Nama COA
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Kategori
                   </th>
-                  <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Keterangan
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.map((coa) => (
-                  <tr key={coa.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={coa.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {coa.kodeCOA}
                     </td>
@@ -270,6 +398,9 @@ const MasterCOADashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {coa.kategori}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {coa.keterangan}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex justify-center space-x-2">
@@ -296,17 +427,24 @@ const MasterCOADashboard: React.FC = () => {
       </div>
 
       {/* Add/Edit COA Modal */}
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={isEditing ? "Edit COA" : "Tambah COA Baru"}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={isEditing ? "Edit COA" : "Tambah COA Baru"}
+      >
         <form onSubmit={handleSubmitForm} className="space-y-5">
           <div>
-            <label htmlFor="kodeCOA" className="block text-sm font-medium text-text mb-2">
+            <label
+              htmlFor="kodeCOA"
+              className="block text-sm font-medium text-text mb-2"
+            >
               Kode COA
             </label>
             <input
               type="text"
               id="kodeCOA"
               name="kodeCOA"
-              value={editingCOA?.kodeCOA || ''}
+              value={editingCOA?.kodeCOA || ""}
               onChange={handleFormInputChange}
               className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text"
               placeholder="Masukkan Kode COA"
@@ -314,14 +452,17 @@ const MasterCOADashboard: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="namaCOA" className="block text-sm font-medium text-text mb-2">
+            <label
+              htmlFor="namaCOA"
+              className="block text-sm font-medium text-text mb-2"
+            >
               Nama COA
             </label>
             <input
               type="text"
               id="namaCOA"
               name="namaCOA"
-              value={editingCOA?.namaCOA || ''}
+              value={editingCOA?.namaCOA || ""}
               onChange={handleFormInputChange}
               className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text"
               placeholder="Masukkan Nama COA"
@@ -329,22 +470,46 @@ const MasterCOADashboard: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="kategori" className="block text-sm font-medium text-text mb-2">
+            <label
+              htmlFor="kategori"
+              className="block text-sm font-medium text-text mb-2"
+            >
               Kategori
             </label>
             <select
               id="kategori"
               name="kategori"
-              value={editingCOA?.kategori || ''}
+              value={editingCOA?.kategori || ""}
               onChange={handleFormInputChange}
               className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text appearance-none"
               required
             >
-              <option value="" disabled>-- Pilih Kategori --</option>
-              {availableCategories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              <option value="" disabled>
+                -- Pilih Kategori --
+              </option>
+              {availableCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label
+              htmlFor="keterangan"
+              className="block text-sm font-medium text-text mb-2"
+            >
+              Keterangan
+            </label>
+            <textarea
+              id="keterangan"
+              name="keterangan"
+              value={editingCOA?.keterangan || ""}
+              onChange={handleFormInputChange}
+              className="block w-full border border-border rounded-lg px-4 py-2 focus:ring-primary focus:border-primary text-sm bg-surface text-text"
+              placeholder="Masukkan Keterangan (Opsional)"
+              rows={3}
+            ></textarea>
           </div>
           <div className="flex justify-end space-x-3 pt-4">
             <button
@@ -356,6 +521,7 @@ const MasterCOADashboard: React.FC = () => {
             </button>
             <button
               type="submit"
+              onClick={handleSubmitForm} // Ensure this is explicitly called for form submission
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
             >
               {isEditing ? (
@@ -377,7 +543,9 @@ const MasterCOADashboard: React.FC = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        itemName={coaToDelete ? `${coaToDelete.kodeCOA} - ${coaToDelete.namaCOA}` : ''}
+        itemName={
+          coaToDelete ? `${coaToDelete.kodeCOA} - ${coaToDelete.namaCOA}` : ""
+        }
       />
     </div>
   );

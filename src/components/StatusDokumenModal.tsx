@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, CheckCircle } from "lucide-react";
+import { StatusHistoryItem } from "./ProsesProduksiDashboard"; // Import StatusHistoryItem
 
 interface StatusDokumenModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface StatusDokumenModalProps {
   onSave: (status: string) => void;
   alurDokumen: string;
   currentStatus: string;
+  history: StatusHistoryItem[]; // New prop for status history
 }
 
 // Define status options for each alur dokumen
@@ -47,6 +49,7 @@ const StatusDokumenModal: React.FC<StatusDokumenModalProps> = ({
   onSave,
   alurDokumen,
   currentStatus,
+  history,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState(currentStatus);
 
@@ -85,8 +88,52 @@ const StatusDokumenModal: React.FC<StatusDokumenModalProps> = ({
               Alur Dokumen: <span className="font-bold">{alurDokumen}</span>
             </p>
             <p className="text-xs text-blue-700 mt-1">
-              Status Saat Ini: <span className="font-semibold">{currentStatus}</span>
+              Status Saat Ini:{" "}
+              <span className="font-semibold">{currentStatus}</span>
             </p>
+          </div>
+
+          {/* History Table */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              Riwayat Status
+            </h3>
+            {history.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                        Waktu
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                        Oleh
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {history.map((item, index) => (
+                      <tr key={index}>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                          {item.status}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                          {item.timestamp}
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                          {item.changedBy}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">Tidak ada riwayat status.</p>
+            )}
           </div>
 
           {/* Status Selection */}

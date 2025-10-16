@@ -15,6 +15,12 @@ import {
   RefreshCw,
 } from "lucide-react";
 
+interface StatusHistoryItem {
+  status: string;
+  timestamp: string;
+  changedBy: string;
+}
+
 interface ProsesProduksiData {
   id: string;
   no: number;
@@ -38,6 +44,7 @@ interface ProsesProduksiData {
   fileName?: string;
   alurDokumen: string;
   statusDokumen: string;
+  history: StatusHistoryItem[]; // New field to store status change history
 }
 
 interface ProsesProduksiDashboardProps {
@@ -71,7 +78,8 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [itemToUpdateStatus, setItemToUpdateStatus] = useState<ProsesProduksiData | null>(null);
+  const [itemToUpdateStatus, setItemToUpdateStatus] =
+    useState<ProsesProduksiData | null>(null);
 
   // Temporary comment to trigger re-evaluation
   // Sample data matching the image
@@ -96,6 +104,14 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       cro: "CRO-2025-001",
       alurDokumen: "Project PHE ONWJ",
       statusDokumen: "PREPARE TIDMS",
+      history: [
+        { status: "Dibuat", timestamp: "2025-01-30 10:00", changedBy: "Admin" },
+        {
+          status: "PREPARE TIDMS",
+          timestamp: "2025-02-01 11:30",
+          changedBy: "User1",
+        },
+      ],
     },
     {
       id: "2",
@@ -117,6 +133,14 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       cro: "-",
       alurDokumen: "Project Medco Gresik",
       statusDokumen: "VERIFIKASI REPORT BA",
+      history: [
+        { status: "Dibuat", timestamp: "2025-02-04 09:00", changedBy: "Admin" },
+        {
+          status: "VERIFIKASI REPORT BA",
+          timestamp: "2025-02-05 10:45",
+          changedBy: "User2",
+        },
+      ],
     },
     {
       id: "3",
@@ -138,6 +162,14 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       cro: "CRO-2025-003",
       alurDokumen: "Pertamina Hulu Mahakam",
       statusDokumen: "REVIEW REPORT",
+      history: [
+        { status: "Dibuat", timestamp: "2025-02-09 14:00", changedBy: "Admin" },
+        {
+          status: "REVIEW REPORT",
+          timestamp: "2025-03-02 09:30",
+          changedBy: "User3",
+        },
+      ],
     },
     {
       id: "4",
@@ -159,6 +191,14 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       cro: "-",
       alurDokumen: "Project PHE ONWJ",
       statusDokumen: "SUBMIT & AFTER REVISI REPORT",
+      history: [
+        { status: "Dibuat", timestamp: "2025-02-14 13:00", changedBy: "Admin" },
+        {
+          status: "SUBMIT & AFTER REVISI REPORT",
+          timestamp: "2025-03-07 14:00",
+          changedBy: "User4",
+        },
+      ],
     },
   ]);
 
@@ -224,6 +264,7 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       fileName: formData.fileName,
       alurDokumen: formData.alurDokumen || "",
       statusDokumen: formData.statusDokumen || "",
+      history: [], // Initialize history for new items
     };
 
     if (editItem) {
@@ -241,6 +282,7 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       no: produksiData.length + 1,
       noSO: `SO${String(Date.now()).slice(-3)}`,
       ...mapped,
+      history: [], // Initialize history for new items
     } as ProsesProduksiData;
 
     setProduksiData((prev) => [
@@ -268,7 +310,9 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
     return "";
   };
 
-  const mapItemToForm = (item: ProsesProduksiData): Partial<ProsesProduksiFormData> => ({
+  const mapItemToForm = (
+    item: ProsesProduksiData
+  ): Partial<ProsesProduksiFormData> => ({
     noSOTurunan: item.soTurunan || "",
     namaProyek: item.namaProyek || "",
     mob: toIso(item.mob),
@@ -384,10 +428,19 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
 
   const handleSaveStatus = (newStatus: string) => {
     if (itemToUpdateStatus) {
+      const newHistoryItem = {
+        status: newStatus,
+        timestamp: new Date().toLocaleString("id-ID"),
+        changedBy: user?.username || "Unknown",
+      };
       setProduksiData((prev) =>
         prev.map((p) =>
           p.id === itemToUpdateStatus.id
-            ? { ...p, statusDokumen: newStatus }
+            ? {
+                ...p,
+                statusDokumen: newStatus,
+                history: [...p.history, newHistoryItem],
+              }
             : p
         )
       );
@@ -564,7 +617,11 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
           <div className="flex justify-end space-x-2 mb-4">
             {user?.role !== "procon" && (
               <button
-                onClick={() => { setModalMode("add"); setEditItem(null); setIsModalOpen(true); }}
+                onClick={() => {
+                  setModalMode("add");
+                  setEditItem(null);
+                  setIsModalOpen(true);
+                }}
                 className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center space-x-1"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -882,6 +939,7 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
           onSave={handleSaveStatus}
           alurDokumen={itemToUpdateStatus.alurDokumen}
           currentStatus={itemToUpdateStatus.statusDokumen}
+          history={itemToUpdateStatus.history} // Pass the history prop
         />
       )}
     </div>
