@@ -11,7 +11,95 @@ import {
   XCircle,
   AlertCircle,
   DollarSign,
+  X,
+  ChevronDown, // New import
+  ChevronRight, // New import
 } from "lucide-react";
+
+interface SalaryDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  gajiStaff: number;
+  gajiDireksi: number;
+  gajiTeknisiReguler: number;
+  gajiFreelance: number;
+  totalGaji: number;
+}
+
+const SalaryDetailModal: React.FC<SalaryDetailModalProps> = ({
+  isOpen,
+  onClose,
+  gajiStaff,
+  gajiDireksi,
+  gajiTeknisiReguler,
+  gajiFreelance,
+  totalGaji,
+}) => {
+  const formatRupiah = (amount: number): string => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <div className="flex justify-between items-center p-6 border-b border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Detail Gaji Bulan Berjalan
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <div className="p-6 space-y-4">
+          <div className="flex justify-between items-center text-lg font-semibold text-gray-900 mb-4">
+            <span>Total Gaji:</span>
+            <span>{formatRupiah(totalGaji)}</span>
+          </div>
+          <div className="space-y-2 text-gray-700">
+            <div className="flex justify-between">
+              <span>Gaji Staff</span>
+              <span className="font-medium">{formatRupiah(gajiStaff)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Gaji Direksi</span>
+              <span className="font-medium">{formatRupiah(gajiDireksi)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Gaji Teknisi Reguler</span>
+              <span className="font-medium">
+                {formatRupiah(gajiTeknisiReguler)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Gaji Freelance</span>
+              <span className="font-medium">{formatRupiah(gajiFreelance)}</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end p-6 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-2 bg-gray-300 text-gray-800 rounded-xl hover:bg-gray-400 transition-colors duration-200"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface ProgramKerjaAktif {
   no: number;
@@ -62,6 +150,22 @@ interface ManpowerStandby {
   monthlyBaseSalary: number;
 }
 
+interface PendebetanItem {
+  no: number;
+  periode: string;
+  total: number;
+  details: PendebetanDetail[];
+}
+
+interface PendebetanDetail {
+  namaPegawai: string;
+  bank: string;
+  rekening: string;
+  nominal: number;
+  departemen: string;
+  keterangan: string;
+}
+
 interface HRDDashboardProps {
   setCurrentPage?: (page: string) => void;
 }
@@ -69,6 +173,10 @@ interface HRDDashboardProps {
 const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
   const [animateCards, setAnimateCards] = useState(false);
   const [animateChart, setAnimateChart] = useState(false);
+  const [isSalaryModalOpen, setIsSalaryModalOpen] = useState(false); // New state for modal
+  const [expandedPendebetanRow, setExpandedPendebetanRow] = useState<
+    number | null
+  >(null); // State for expanded row
 
   // Debug log to check if setCurrentPage is received
   console.log("HRDDashboard received setCurrentPage:", !!setCurrentPage);
@@ -208,6 +316,95 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
   const gajiDireksi = 500000000; // Placeholder value, adjust as needed
   const gajiTeknisiReguler = 800000000; // Placeholder value, adjust as needed
   const gajiFreelance = 300000000; // Placeholder value, adjust as needed
+
+  const pendebetanData: PendebetanItem[] = [
+    {
+      no: 1,
+      periode: "September 2025",
+      total: 25500000,
+      details: [
+        {
+          namaPegawai: "Ahmad Fauzi",
+          bank: "BCA",
+          rekening: "1234567890",
+          nominal: 5000000,
+          departemen: "Engineering",
+          keterangan: "Gaji September 2025",
+        },
+        {
+          namaPegawai: "Siti Nurhaliza",
+          bank: "Mandiri",
+          rekening: "9876543210",
+          nominal: 4500000,
+          departemen: "Finance",
+          keterangan: "Gaji September 2025",
+        },
+        {
+          namaPegawai: "Budi Santoso",
+          bank: "BNI",
+          rekening: "555566677",
+          nominal: 4800000,
+          departemen: "Operations",
+          keterangan: "Gaji September 2025",
+        },
+        {
+          namaPegawai: "Dewi Anggraini",
+          bank: "BRI",
+          rekening: "111122233",
+          nominal: 5200000,
+          departemen: "Marketing",
+          keterangan: "Gaji September 2025",
+        },
+        {
+          namaPegawai: "Rudi Hermawan",
+          bank: "BCA",
+          rekening: "999988877",
+          nominal: 6000000,
+          departemen: "IT",
+          keterangan: "Gaji September 2025",
+        },
+      ],
+    },
+    {
+      no: 2,
+      periode: "Agustus 2025",
+      total: 18300000,
+      details: [
+        {
+          namaPegawai: "Eko Prasetyo",
+          bank: "Mandiri",
+          rekening: "1122334455",
+          nominal: 4700000,
+          departemen: "Finance",
+          keterangan: "Gaji Agustus 2025",
+        },
+        {
+          namaPegawai: "Fina Lestari",
+          bank: "BCA",
+          rekening: "2233445566",
+          nominal: 3800000,
+          departemen: "Marketing",
+          keterangan: "Gaji Agustus 2025",
+        },
+        {
+          namaPegawai: "Gita Permata",
+          bank: "BRI",
+          rekening: "3344556677",
+          nominal: 4900000,
+          departemen: "Operations",
+          keterangan: "Gaji Agustus 2025",
+        },
+        {
+          namaPegawai: "Hadi Wijaya",
+          bank: "BNI",
+          rekening: "4455667788",
+          nominal: 4900000,
+          departemen: "Engineering",
+          keterangan: "Gaji Agustus 2025",
+        },
+      ],
+    },
+  ];
 
   const calculateTotalGajiBulanBerjalan = () => {
     return gajiStaff + gajiDireksi + gajiTeknisiReguler + gajiFreelance;
@@ -681,6 +878,148 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
           </div>
         </div>
 
+        {/* Pendebetan Section */}
+        <div className="mt-12">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h3 className="text-xl font-bold text-gray-900">Pendebetan</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-16">
+                      NO
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                      PERIODE
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">
+                      TOTAL
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {pendebetanData.map((item) => (
+                    <React.Fragment key={item.no}>
+                      <tr
+                        className="hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() =>
+                          setExpandedPendebetanRow(
+                            expandedPendebetanRow === item.no ? null : item.no
+                          )
+                        }
+                      >
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          <span className="inline-block w-4">
+                            {expandedPendebetanRow === item.no ? (
+                              <ChevronDown className="h-4 w-4 inline" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 inline" />
+                            )}
+                            {/* Dropdown arrow */}
+                          </span>
+                          {item.no}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.periode}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-right text-gray-900 font-bold">
+                          {formatRupiah(item.total)}
+                        </td>
+                      </tr>
+                      {expandedPendebetanRow === item.no && (
+                        <tr>
+                          <td colSpan={3} className="p-0">
+                            <div className="bg-gray-100 p-4">
+                              <h4 className="text-md font-semibold text-gray-800 mb-3">
+                                Detail Pendebetan {item.periode}
+                              </h4>
+                              <table className="w-full text-sm bg-white rounded-lg overflow-hidden">
+                                <thead className="bg-gray-200">
+                                  <tr>
+                                    <th className="px-4 py-2 text-left font-semibold text-gray-700">
+                                      Nama Pegawai
+                                    </th>
+                                    <th className="px-4 py-2 text-left font-semibold text-gray-700">
+                                      Bank
+                                    </th>
+                                    <th className="px-4 py-2 text-left font-semibold text-gray-700">
+                                      Rekening
+                                    </th>
+                                    <th className="px-4 py-2 text-right font-semibold text-gray-700">
+                                      Nominal
+                                    </th>
+                                    <th className="px-4 py-2 text-left font-semibold text-gray-700">
+                                      Departemen
+                                    </th>
+                                    <th className="px-4 py-2 text-left font-semibold text-gray-700">
+                                      Keterangan
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                  {item.details.map((detail, detailIndex) => (
+                                    <tr
+                                      key={detailIndex}
+                                      className={
+                                        detailIndex % 2 === 1
+                                          ? "bg-gray-50"
+                                          : ""
+                                      }
+                                    >
+                                      <td className="px-4 py-2 whitespace-nowrap">
+                                        {detail.namaPegawai}
+                                      </td>
+                                      <td className="px-4 py-2 whitespace-nowrap">
+                                        {detail.bank}
+                                      </td>
+                                      <td className="px-4 py-2 whitespace-nowrap">
+                                        {detail.rekening}
+                                      </td>
+                                      <td className="px-4 py-2 text-right whitespace-nowrap">
+                                        {formatRupiah(detail.nominal)}
+                                      </td>
+                                      <td className="px-4 py-2 whitespace-nowrap">
+                                        {detail.departemen}
+                                      </td>
+                                      <td className="px-4 py-2 whitespace-nowrap">
+                                        {detail.keterangan}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+                <tfoot className="bg-gray-100 border-t border-gray-200">
+                  <tr>
+                    <td
+                      colSpan={2}
+                      className="px-4 py-3 text-left text-base font-bold text-gray-900"
+                    >
+                      TOTAL:
+                    </td>
+                    <td className="px-4 py-3 text-right text-base font-bold text-gray-900">
+                      {formatRupiah(
+                        pendebetanData.reduce(
+                          (sum, item) => sum + item.total,
+                          0
+                        )
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
         {/* Performance Review Section */}
         <div className="mt-12">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -919,7 +1258,10 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
         {/* Quick Stats Section */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {/* Total Gaji Bulan Berjalan */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => setIsSalaryModalOpen(true)} // Open modal on click
+          >
             <div className="flex items-center space-x-3">
               <div className="p-3 bg-green-100 rounded-lg">
                 <DollarSign className="h-6 w-6 text-green-600" />
@@ -928,35 +1270,10 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
                 <p className="text-sm text-gray-600">
                   Total Gaji Bulan Berjalan
                 </p>
-                <p className="text-xl font-bold text-gray-900">
+                <p className="text-base font-bold text-gray-900">
                   {formatRupiah(calculateTotalGajiBulanBerjalan())}
                 </p>
-                <div className="mt-3 space-y-1 text-sm text-gray-700">
-                  <div className="flex justify-between">
-                    <span>Gaji Staff</span>
-                    <span className="font-semibold">
-                      {formatRupiah(gajiStaff)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Gaji Direksi</span>
-                    <span className="font-semibold">
-                      {formatRupiah(gajiDireksi)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Gaji Teknisi Reguler</span>
-                    <span className="font-semibold">
-                      {formatRupiah(gajiTeknisiReguler)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Gaji Freelance</span>
-                    <span className="font-semibold">
-                      {formatRupiah(gajiFreelance)}
-                    </span>
-                  </div>
-                </div>
+                {/* The detailed breakdown will now be in the modal */}
               </div>
             </div>
           </div>
@@ -1022,6 +1339,17 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
             <span className="text-blue-600">Enterprise Team</span>
           </p>
         </div>
+
+        {/* Salary Detail Modal */}
+        <SalaryDetailModal
+          isOpen={isSalaryModalOpen}
+          onClose={() => setIsSalaryModalOpen(false)}
+          gajiStaff={gajiStaff}
+          gajiDireksi={gajiDireksi}
+          gajiTeknisiReguler={gajiTeknisiReguler}
+          gajiFreelance={gajiFreelance}
+          totalGaji={calculateTotalGajiBulanBerjalan()}
+        />
       </div>
     </div>
   );

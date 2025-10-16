@@ -261,6 +261,7 @@ import QHSELogBookTKPKDashboard from "./QHSELogBookTKPKDashboard";
 import AccountingMainDashboard from "./AccountingMainDashboard";
 import MasterCOADashboard from "./MasterCOADashboard";
 import MasterJasaDashboard from "./MasterJasaDashboard";
+import MasterSatuan from "./MasterSatuan"; // Import the new MasterSatuan component
 import KasMasukDashboard from "./KasMasukDashboard";
 import KasKeluarDashboard from "./KasKeluarDashboard";
 import BankMasukDashboard from "./BankMasukDashboard";
@@ -2130,6 +2131,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/accounting/master/jasa") {
       return <MasterJasaDashboard />;
+    }
+    if (currentPage === "/accounting/master/satuan") {
+      return <MasterSatuan />;
     }
     if (currentPage === "/accounting/kas-masuk") {
       return <KasMasukDashboard />;

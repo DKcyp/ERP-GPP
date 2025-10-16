@@ -1,18 +1,16 @@
-import React from "react";
-import { X, AlertTriangle } from "lucide-react";
+import React, { useState } from "react";
+import { X, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (reason?: string) => void;
   title: string;
   message: string;
-  confirmText?: string;
-  cancelText?: string;
-  isLoading?: boolean;
-  showNoteInput?: boolean; // New prop for conditional note input
-  note?: string; // New prop for note value
-  onNoteChange?: (note: string) => void; // New prop for note change handler
+  confirmText: string;
+  cancelText: string;
+  isReject?: boolean; // If true, show reason input
+  confirmButtonColor?: string;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -21,72 +19,68 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   title,
   message,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
-  isLoading = false,
-  showNoteInput = false, // Default to false
-  note = "",
-  onNoteChange,
+  confirmText,
+  cancelText,
+  isReject = false,
+  confirmButtonColor = "bg-green-600 hover:bg-green-700",
 }) => {
+  const [rejectReason, setRejectReason] = useState("");
+
   if (!isOpen) return null;
 
+  const handleConfirm = () => {
+    onConfirm(isReject ? rejectReason : undefined);
+    setRejectReason(""); // Reset reason on close
+  };
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm animate-in fade-in-0 duration-300"
-      onClick={onClose}
-    >
-      <div
-        className="bg-surface rounded-xl shadow-2xl w-full max-w-md p-6 transform transition-all duration-300 ease-out scale-100 opacity-100"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-center pb-4 border-b border-border mb-4">
-          <h3 className="text-xl font-semibold text-text flex items-center">
-            <AlertTriangle className="h-6 w-6 text-yellow-500 mr-2" /> {title}
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-textSecondary hover:text-text transition-colors duration-200"
-            aria-label="Close modal"
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
-        <div className="text-textSecondary mb-6">
-          <p>{message}</p>
-          {showNoteInput && (
-            <div className="mt-4">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <p className="text-gray-700 mb-4">{message}</p>
+
+          {isReject && (
+            <div className="mb-4">
               <label
-                htmlFor="rejectionNote"
-                className="block text-sm font-medium text-text mb-2"
+                htmlFor="reject-reason"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Catatan Penolakan:
+                Alasan Penolakan:
               </label>
               <textarea
-                id="rejectionNote"
-                rows={4}
-                className="w-full px-3 py-2 border border-border rounded-lg shadow-sm focus:ring-primary focus:border-primary text-sm text-text bg-background"
-                placeholder="Masukkan catatan penolakan..."
-                value={note}
-                onChange={(e) => onNoteChange && onNoteChange(e.target.value)}
+                id="reject-reason"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Masukkan alasan penolakan..."
               ></textarea>
             </div>
           )}
-        </div>
-        <div className="flex justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200"
-            disabled={isLoading}
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            {isLoading ? "Processing..." : confirmText}
-          </button>
+
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200"
+            >
+              {cancelText}
+            </button>
+            <button
+              onClick={handleConfirm}
+              className={`px-4 py-2 text-white rounded-lg transition-colors duration-200 ${confirmButtonColor}`}
+            >
+              {confirmText}
+            </button>
+          </div>
         </div>
       </div>
     </div>

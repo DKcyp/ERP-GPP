@@ -355,6 +355,26 @@ const createGeneralMenu = (role: string): MenuSection => ({
         },
       ],
     },
+    ...(role === "qhse"
+      ? [
+          {
+            title: "ISO System",
+            icon: "ShieldCheck",
+            items: [
+              {
+                title: "Daftar Induk Dokumen Internal",
+                icon: "FileText",
+                path: `/qhse/daftar-induk-dokumen-internal`,
+              },
+              {
+                title: "Daftar Induk Dokumen Eksternal",
+                icon: "FileCheck",
+                path: `/qhse/daftar-induk-dokumen-eksternal`,
+              },
+            ],
+          },
+        ]
+      : []),
   ],
 });
 
@@ -776,6 +796,12 @@ export const operationalMenu: MenuSection[] = [
     icon: "Factory",
     items: [],
     directPath: "/operational/produksi/proses",
+  },
+  {
+    title: "Monitoring Nilai PO",
+    icon: "FileText",
+    items: [],
+    directPath: "/marketing/monitoring/nilai-po",
   },
   // {
   //   title: "PBG",
@@ -1977,6 +2003,11 @@ export const accountingMenu: MenuSection[] = [
             title: "Master Jasa",
             icon: "Briefcase",
             path: "/accounting/master/jasa",
+          },
+          {
+            title: "Master Satuan",
+            icon: "Scale", // Choose an appropriate icon
+            path: "/accounting/master/satuan",
           },
         ],
       },
