@@ -103,11 +103,11 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       ro: "RO-2025-001",
       cro: "CRO-2025-001",
       alurDokumen: "Project PHE ONWJ",
-      statusDokumen: "PREPARE TIDMS",
+      statusDokumen: "open GBP",
       history: [
         { status: "Dibuat", timestamp: "2025-01-30 10:00", changedBy: "Admin" },
         {
-          status: "PREPARE TIDMS",
+          status: "open GBP",
           timestamp: "2025-02-01 11:30",
           changedBy: "User1",
         },
@@ -132,11 +132,11 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       ro: "RO-2025-002",
       cro: "-",
       alurDokumen: "Project Medco Gresik",
-      statusDokumen: "VERIFIKASI REPORT BA",
+      statusDokumen: "Verifikasi Report BA (EWAN)",
       history: [
         { status: "Dibuat", timestamp: "2025-02-04 09:00", changedBy: "Admin" },
         {
-          status: "VERIFIKASI REPORT BA",
+          status: "Verifikasi Report BA (EWAN)",
           timestamp: "2025-02-05 10:45",
           changedBy: "User2",
         },
@@ -190,11 +190,11 @@ const ProsesProduksiDashboard: React.FC<ProsesProduksiDashboardProps> = ({
       ro: "-",
       cro: "-",
       alurDokumen: "Project PHE ONWJ",
-      statusDokumen: "SUBMIT & AFTER REVISI REPORT",
+      statusDokumen: "open GBP",
       history: [
         { status: "Dibuat", timestamp: "2025-02-14 13:00", changedBy: "Admin" },
         {
-          status: "SUBMIT & AFTER REVISI REPORT",
+          status: "open GBP",
           timestamp: "2025-03-07 14:00",
           changedBy: "User4",
         },

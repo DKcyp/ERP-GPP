@@ -4,73 +4,114 @@ import { Clock, FileSpreadsheet, FileDown, FileText } from "lucide-react";
 interface RasioData {
   kategori: string;
   deskripsi: string;
-  januari: number;
-  februari: number;
-  maret: number;
-  april: number;
-  mei: number;
-  juni: number;
+  monthlyValues: { month: string; value: number }[];
 }
 
 const JurnalRasioKeuanganDashboard: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState("2024");
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = (today.getMonth() + 1).toString().padStart(2, "0"); // "01" for Jan, "12" for Dec
+
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const [startDate, setStartDate] = useState(`${currentYear}-${currentMonth}`);
+  const [endDate, setEndDate] = useState(`${currentYear}-${currentMonth}`);
 
   const rasioData: RasioData[] = [
     {
       kategori: "Current Ratio (Aset Lancar / Hutang Lancar)",
       deskripsi:
         "Menunjukkan perbandingan aset lancar dengan hutang lancar\nSemakin tinggi semakin baik likuiditasnya",
-      januari: 1,
-      februari: 1,
-      maret: 1,
-      april: 1,
-      mei: 1,
-      juni: 1,
+      monthlyValues: [
+        { month: "01", value: 1 },
+        { month: "02", value: 1 },
+        { month: "03", value: 1 },
+        { month: "04", value: 1 },
+        { month: "05", value: 1 },
+        { month: "06", value: 1 },
+      ],
     },
     {
       kategori: "Working Capital / Modal Kerja (Aset Lancar - Hutang Lancar)",
       deskripsi:
         "Mengukur modal kerja bersih, perlu dibandingkan per tahun\nSemakin besar semakin baik",
-      januari: 6841572030,
-      februari: 6841572030,
-      maret: 6841572030,
-      april: 6841572030,
-      mei: 6841572030,
-      juni: 6841572030,
+      monthlyValues: [
+        { month: "01", value: 6841572030 },
+        { month: "02", value: 6841572030 },
+        { month: "03", value: 6841572030 },
+        { month: "04", value: 6841572030 },
+        { month: "05", value: 6841572030 },
+        { month: "06", value: 6841572030 },
+      ],
     },
     {
       kategori: "Assets-to-Equity Ratio (Total Assets / Modal)",
       deskripsi: "Mengukur total aset terhadap modal",
-      januari: 1,
-      februari: 1,
-      maret: 1,
-      april: 1,
-      mei: 1,
-      juni: 1,
+      monthlyValues: [
+        { month: "01", value: 1 },
+        { month: "02", value: 1 },
+        { month: "03", value: 1 },
+        { month: "04", value: 1 },
+        { month: "05", value: 1 },
+        { month: "06", value: 1 },
+      ],
     },
     {
       kategori: "Debt Ratio (Total Kewajiban / Total Assets)",
       deskripsi:
         "Mengukur besarnya dana yang berasal dari utang\nSemakin kecil rasionya, maka semakin aman (solvable)",
-      januari: 0,
-      februari: 0,
-      maret: 0,
-      april: 0,
-      mei: 0,
-      juni: 0,
+      monthlyValues: [
+        { month: "01", value: 0 },
+        { month: "02", value: 0 },
+        { month: "03", value: 0 },
+        { month: "04", value: 0 },
+        { month: "05", value: 0 },
+        { month: "06", value: 0 },
+      ],
     },
     {
       kategori: "Debt-to-Equity Ratio (Total Hutang/ Modal)",
       deskripsi:
         "Mengukur utang yang dimiliki dengan modal sendiri\nSemakin kecil utang akan semakin baik dan aman\nRasio wajar menurut pajak 1:4",
-      januari: 2,
-      februari: 2,
-      maret: 2,
-      april: 2,
-      mei: 2,
-      juni: 2,
+      monthlyValues: [
+        { month: "01", value: 2 },
+        { month: "02", value: 2 },
+        { month: "03", value: 2 },
+        { month: "04", value: 2 },
+        { month: "05", value: 2 },
+        { month: "06", value: 2 },
+      ],
     },
   ];
+
+  const monthNames: { [key: string]: string } = {
+    "01": "Januari",
+    "02": "Februari",
+    "03": "Maret",
+    "04": "April",
+    "05": "Mei",
+    "06": "Juni",
+    "07": "Juli",
+    "08": "Agustus",
+    "09": "September",
+    "10": "Oktober",
+    "11": "November",
+    "12": "Desember",
+  };
+
+  const getMonthIndex = (monthString: string) => {
+    const [, month] = monthString.split("-");
+    return parseInt(month, 10);
+  };
+
+  const filteredMonths = Object.keys(monthNames).filter((monthKey) => {
+    const startMonthIndex = getMonthIndex(startDate);
+    const endMonthIndex = getMonthIndex(endDate);
+    const currentMonthIndex = parseInt(monthKey, 10);
+
+    return (
+      currentMonthIndex >= startMonthIndex && currentMonthIndex <= endMonthIndex
+    );
+  });
 
   const formatNumber = (num: number) => {
     // Format sebagai mata uang Rupiah untuk angka besar
@@ -133,6 +174,30 @@ const JurnalRasioKeuanganDashboard: React.FC = () => {
                   <option value="2022">2022</option>
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dari Bulan
+                </label>
+                <input
+                  type="month"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sampai Bulan
+                </label>
+                <input
+                  type="month"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
             </div>
             <div className="flex space-x-3">
               <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200 text-sm shadow-md">
@@ -164,24 +229,14 @@ const JurnalRasioKeuanganDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-left text-sm font-bold uppercase tracking-wider border-r border-green-600">
                     RASIO KEUANGAN
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider border-r border-green-600">
-                    Januari
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider border-r border-green-600">
-                    Februari
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider border-r border-green-600">
-                    Maret
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider border-r border-green-600">
-                    April
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider border-r border-green-600">
-                    Mei
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider">
-                    Juni
-                  </th>
+                  {filteredMonths.map((monthKey) => (
+                    <th
+                      key={monthKey}
+                      className="px-4 py-3 text-center text-sm font-bold uppercase tracking-wider border-r border-green-600"
+                    >
+                      {monthNames[monthKey]}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -202,34 +257,21 @@ const JurnalRasioKeuanganDashboard: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
-                      {item.januari >= 1000000
-                        ? formatNumber(item.januari)
-                        : item.januari}
-                    </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
-                      {item.februari >= 1000000
-                        ? formatNumber(item.februari)
-                        : item.februari}
-                    </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
-                      {item.maret >= 1000000
-                        ? formatNumber(item.maret)
-                        : item.maret}
-                    </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
-                      {item.april >= 1000000
-                        ? formatNumber(item.april)
-                        : item.april}
-                    </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap">
-                      {item.mei >= 1000000 ? formatNumber(item.mei) : item.mei}
-                    </td>
-                    <td className="px-4 py-4 text-center text-sm font-medium text-gray-900 whitespace-nowrap">
-                      {item.juni >= 1000000
-                        ? formatNumber(item.juni)
-                        : item.juni}
-                    </td>
+                    {filteredMonths.map((monthKey) => {
+                      const monthValue = item.monthlyValues.find(
+                        (mv) => mv.month === monthKey
+                      );
+                      return (
+                        <td
+                          key={monthKey}
+                          className="px-4 py-4 text-center text-sm font-medium text-gray-900 border-r border-gray-200 whitespace-nowrap"
+                        >
+                          {monthValue && monthValue.value >= 1000000
+                            ? formatNumber(monthValue.value)
+                            : monthValue?.value || 0}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

@@ -736,6 +736,12 @@ export const operationalMenu: MenuSection[] = [
     directPath: "/operational/dashboard",
   },
   {
+    title: "Master Alur Dokumen",
+    icon: "FileStack",
+    items: [],
+    directPath: "/operational/master/alur-dokumen",
+  },
+  {
     title: "Kontrak",
     icon: "FileSignature",
     items: [],

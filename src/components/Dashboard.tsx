@@ -176,7 +176,6 @@ import GeneralPengajuanTicketDashboard from "./GeneralPengajuanTicketDashboard";
 import FinanceApprovalTicketDashboard from "./FinanceApprovalTicketDashboard"; // NEW: Finance Approval Ticket
 import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD List Training
 import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
-import PendebetanDashboard from "./PendebetanDashboard";
 import PayslipDashboard from "./PayslipDashboard";
 import MasterIncomeDashboard from "./MasterIncomeDashboard";
 import MasterDeductDashboard from "./MasterDeductDashboard";
@@ -402,6 +401,8 @@ import MasterAllowancePage from "../pages/hrd/MasterAllowancePage";
 import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
 import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
 import ApprovalBarangRusakPage from "./ApprovalBarangRusakPage";
+
+import MasterAlurDokumenDashboard from "./MasterAlurDokumenDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1523,7 +1524,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       return <SOTurunanDashboard role="operational3" />;
     }
     if (currentPage === "/operational/monitoring/nilai-po") {
-      return <MonitoringNilaiPOPage role="operational" />;
+      return <MonitoringNilaiPOPage />;
     }
     if (currentPage === "/operational/man-power/man-power") {
       return <ManPowerDashboard />;
@@ -1566,6 +1567,10 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/operational/pbg/dashboard") {
       return <PBGDashboard />;
+    }
+    // NEW Operational Master Routes
+    if (currentPage === "/operational/master/alur-dokumen") {
+      return <MasterAlurDokumenDashboard />;
     }
     // Operational General Routes
     if (currentPage === "/operational/general/kpi/dashboard") {
