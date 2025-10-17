@@ -1,7 +1,16 @@
 import React, { useState, useMemo } from "react";
-import { Search, Pencil, Trash2, PlusCircle, Upload, X, FileText, Plus } from "lucide-react";
+import {
+  Search,
+  Pencil,
+  Trash2,
+  PlusCircle,
+  Upload,
+  X,
+  FileText,
+  Plus,
+} from "lucide-react";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
-
+import { useAuth } from "../../context/AuthContext"; // Import useAuth
 
 interface ServiceOrderItem {
   id: number;
@@ -142,6 +151,7 @@ const initialData: POItem[] = [
   },
 ];
 const MonitoringNilaiPOPage: React.FC = () => {
+  const { user } = useAuth(); // Access user role
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState<POItem[]>(initialData);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
@@ -159,7 +169,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
   };
 
   const formatRupiah = (value: number): string => {
-    return `Rp ${value.toLocaleString('id-ID')}`;
+    return `Rp ${value.toLocaleString("id-ID")}`;
   };
 
   // Calculate total Jumlah Nilai SO from all service orders
@@ -200,26 +210,26 @@ const MonitoringNilaiPOPage: React.FC = () => {
     const updatedOrders = serviceOrders.map((order) => {
       if (order.id === id) {
         const updatedOrder = { ...order, [field]: value };
-        
+
         // Auto-calculate hargaTotal when qty or hargaUnit changes
         if (field === "qty" || field === "hargaUnit") {
           const qty = field === "qty" ? (value as number) : order.qty;
-          const hargaUnit = field === "hargaUnit" ? (value as number) : order.hargaUnit;
+          const hargaUnit =
+            field === "hargaUnit" ? (value as number) : order.hargaUnit;
           updatedOrder.hargaTotal = calculateHargaTotal(qty, hargaUnit);
         }
-        
+
         return updatedOrder;
       }
       return order;
     });
-    
+
     setServiceOrders(updatedOrders);
-    
+
     // Update total Jumlah Nilai SO
     const totalNilaiSO = calculateTotalJumlahNilaiSO(updatedOrders);
     setCurrentPO({ ...currentPO, jumlahNilaiSO: formatRupiah(totalNilaiSO) });
   };
-
 
   // Function to calculate reminder based on commencement finish date
   const calculateReminder = (commencementFinishDate: string): string => {
@@ -283,39 +293,41 @@ const MonitoringNilaiPOPage: React.FC = () => {
     if (file) {
       // Validate file type (PDF, DOC, DOCX, XLS, XLSX, JPG, PNG)
       const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'image/jpeg',
-        'image/png'
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "image/jpeg",
+        "image/png",
       ];
-      
+
       if (!allowedTypes.includes(file.type)) {
-        alert('Format file tidak didukung. Harap upload PDF, DOC, DOCX, XLS, XLSX, JPG, atau PNG.');
+        alert(
+          "Format file tidak didukung. Harap upload PDF, DOC, DOCX, XLS, XLSX, JPG, atau PNG."
+        );
         return;
       }
-      
+
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Ukuran file terlalu besar. Maksimal 10MB.');
+        alert("Ukuran file terlalu besar. Maksimal 10MB.");
         return;
       }
-      
+
       setUploadedFile(file);
-      
+
       // Create attachment info
-      const fileSize = (file.size / 1024).toFixed(2) + ' KB';
+      const fileSize = (file.size / 1024).toFixed(2) + " KB";
       if (file.size > 1024 * 1024) {
-        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
         setCurrentPO({
           ...currentPO,
           poAttachment: {
             fileName: file.name,
             fileSize: fileSizeMB,
-            uploadDate: new Date().toISOString().split('T')[0]
-          }
+            uploadDate: new Date().toISOString().split("T")[0],
+          },
         });
       } else {
         setCurrentPO({
@@ -323,8 +335,8 @@ const MonitoringNilaiPOPage: React.FC = () => {
           poAttachment: {
             fileName: file.name,
             fileSize: fileSize,
-            uploadDate: new Date().toISOString().split('T')[0]
-          }
+            uploadDate: new Date().toISOString().split("T")[0],
+          },
         });
       }
     }
@@ -334,7 +346,7 @@ const MonitoringNilaiPOPage: React.FC = () => {
     setUploadedFile(null);
     setCurrentPO({
       ...currentPO,
-      poAttachment: undefined
+      poAttachment: undefined,
     });
   };
 
@@ -404,13 +416,15 @@ const MonitoringNilaiPOPage: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleAddPO}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-          >
-            <PlusCircle className="h-4 w-4" />
-            Tambah PO
-          </button>
+          {user?.role !== "operational" && (
+            <button
+              onClick={handleAddPO}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <PlusCircle className="h-4 w-4" />
+              Tambah PO
+            </button>
+          )}
         </div>
 
         <div className="overflow-x-auto">
@@ -554,18 +568,22 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEditPO(item)}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeletePO(item)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {user?.role !== "operational" && (
+                        <button
+                          onClick={() => handleEditPO(item)}
+                          className="text-indigo-600 hover:text-indigo-900"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                      )}
+                      {user?.role !== "operational" && (
+                        <button
+                          onClick={() => handleDeletePO(item)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -644,32 +662,55 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">No</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Description</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">QTY</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Unit</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Total</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">No. WBS</th>
-                        <th className="px-3 py-2 text-center text-xs font-medium text-gray-700">Aksi</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          No
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Description
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          QTY
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Unit
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          Harga Total
+                        </th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                          No. WBS
+                        </th>
+                        <th className="px-3 py-2 text-center text-xs font-medium text-gray-700">
+                          Aksi
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {serviceOrders.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="px-3 py-4 text-center text-sm text-gray-500">
+                          <td
+                            colSpan={7}
+                            className="px-3 py-4 text-center text-sm text-gray-500"
+                          >
                             Belum ada data. Klik "Tambah Baris" untuk menambah.
                           </td>
                         </tr>
                       ) : (
                         serviceOrders.map((order, index) => (
                           <tr key={order.id} className="hover:bg-gray-50">
-                            <td className="px-3 py-2 text-sm text-gray-900">{index + 1}</td>
+                            <td className="px-3 py-2 text-sm text-gray-900">
+                              {index + 1}
+                            </td>
                             <td className="px-3 py-2">
                               <input
                                 type="text"
                                 value={order.description}
                                 onChange={(e) =>
-                                  handleUpdateServiceOrder(order.id, "description", e.target.value)
+                                  handleUpdateServiceOrder(
+                                    order.id,
+                                    "description",
+                                    e.target.value
+                                  )
                                 }
                                 placeholder="Deskripsi"
                                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
@@ -722,7 +763,11 @@ const MonitoringNilaiPOPage: React.FC = () => {
                                 type="text"
                                 value={order.noWbs}
                                 onChange={(e) =>
-                                  handleUpdateServiceOrder(order.id, "noWbs", e.target.value)
+                                  handleUpdateServiceOrder(
+                                    order.id,
+                                    "noWbs",
+                                    e.target.value
+                                  )
                                 }
                                 placeholder="WBS"
                                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
@@ -731,7 +776,9 @@ const MonitoringNilaiPOPage: React.FC = () => {
                             <td className="px-3 py-2 text-center">
                               <button
                                 type="button"
-                                onClick={() => handleRemoveServiceOrder(order.id)}
+                                onClick={() =>
+                                  handleRemoveServiceOrder(order.id)
+                                }
                                 className="text-red-600 hover:text-red-800 transition-colors"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -845,7 +892,10 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   type="date"
                   value={currentPO.tanggalRelease || ""}
                   onChange={(e) =>
-                    setCurrentPO({ ...currentPO, tanggalRelease: e.target.value })
+                    setCurrentPO({
+                      ...currentPO,
+                      tanggalRelease: e.target.value,
+                    })
                   }
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 />
@@ -884,7 +934,10 @@ const MonitoringNilaiPOPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Jumlah Nilai SO <span className="text-xs text-gray-500">(Otomatis terisi)</span>
+                  Jumlah Nilai SO{" "}
+                  <span className="text-xs text-gray-500">
+                    (Otomatis terisi)
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -918,13 +971,13 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   readOnly
                 />
               </div>
-              
+
               {/* Upload PO Attachment */}
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Upload PO / Attachment
                 </label>
-                
+
                 {!uploadedFile && !currentPO.poAttachment ? (
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
                     <input
@@ -954,14 +1007,18 @@ const MonitoringNilaiPOPage: React.FC = () => {
                         <FileText className="h-8 w-8 text-blue-600" />
                         <div>
                           <p className="text-sm font-medium text-gray-900">
-                            {uploadedFile?.name || currentPO.poAttachment?.fileName}
+                            {uploadedFile?.name ||
+                              currentPO.poAttachment?.fileName}
                           </p>
                           <p className="text-xs text-gray-500">
                             {uploadedFile
                               ? `${(uploadedFile.size / 1024).toFixed(2)} KB`
                               : currentPO.poAttachment?.fileSize}
                             {currentPO.poAttachment?.uploadDate && (
-                              <span> • Uploaded: {currentPO.poAttachment.uploadDate}</span>
+                              <span>
+                                {" "}
+                                • Uploaded: {currentPO.poAttachment.uploadDate}
+                              </span>
                             )}
                           </p>
                         </div>

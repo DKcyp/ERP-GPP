@@ -153,6 +153,9 @@ interface ManpowerStandby {
 interface PendebetanItem {
   no: number;
   periode: string;
+  tanggalPayroll: string; // New field
+  tanggalApproveDirKeu: string; // New field
+  tanggalApproveDirUtama: string; // New field
   total: number;
   details: PendebetanDetail[];
 }
@@ -321,6 +324,9 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
     {
       no: 1,
       periode: "September 2025",
+      tanggalPayroll: "2025-09-25",
+      tanggalApproveDirKeu: "2025-09-28",
+      tanggalApproveDirUtama: "2025-09-30",
       total: 25500000,
       details: [
         {
@@ -368,6 +374,9 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
     {
       no: 2,
       periode: "Agustus 2025",
+      tanggalPayroll: "2025-08-25",
+      tanggalApproveDirKeu: "2025-08-28",
+      tanggalApproveDirUtama: "2025-08-30",
       total: 18300000,
       details: [
         {
@@ -894,6 +903,15 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
                       PERIODE
                     </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                      TANGGAL PAYROLL
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                      TGL. APPROVE DIR. KEU
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                      TGL. APPROVE DIR. UTAMA
+                    </th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">
                       TOTAL
                     </th>
@@ -924,13 +942,22 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
                         <td className="px-4 py-3 text-sm text-gray-900">
                           {item.periode}
                         </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.tanggalPayroll}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.tanggalApproveDirKeu}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.tanggalApproveDirUtama}
+                        </td>
                         <td className="px-4 py-3 text-sm text-right text-gray-900 font-bold">
                           {formatRupiah(item.total)}
                         </td>
                       </tr>
                       {expandedPendebetanRow === item.no && (
                         <tr>
-                          <td colSpan={3} className="p-0">
+                          <td colSpan={6} className="p-0">
                             <div className="bg-gray-100 p-4">
                               <h4 className="text-md font-semibold text-gray-800 mb-3">
                                 Detail Pendebetan {item.periode}
@@ -1000,7 +1027,7 @@ const HRDDashboard: React.FC<HRDDashboardProps> = ({ setCurrentPage }) => {
                 <tfoot className="bg-gray-100 border-t border-gray-200">
                   <tr>
                     <td
-                      colSpan={2}
+                      colSpan={5}
                       className="px-4 py-3 text-left text-base font-bold text-gray-900"
                     >
                       TOTAL:

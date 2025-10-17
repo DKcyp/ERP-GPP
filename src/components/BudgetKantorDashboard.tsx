@@ -25,6 +25,8 @@ interface BudgetItem {
   realisasiRp: number; // New field for 'Realisasi Rp'
   sisaMu: number; // New field for 'Sisa MU'
   sisaRp: number; // New field for 'Sisa Rp'
+  penyesuaianMu: number; // New field for 'Penyesuaian MU'
+  penyesuaianRp: number; // New field for 'Penyesuaian Rp'
   stat: string; // New field for 'Stat'
   nilaiBudget: number; // Existing field, will be used for one of the 'Subtotal' or 'Sisa' values if needed
   nilaiPemakaian: number; // Existing field
@@ -133,6 +135,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 50000000,
       nilaiPemakaian: 32500000,
@@ -152,6 +156,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 30000000,
       nilaiPemakaian: 22000000,
@@ -171,6 +177,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 75000000,
       nilaiPemakaian: 45000000,
@@ -190,6 +198,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 40000000,
       nilaiPemakaian: 28500000,
@@ -209,6 +219,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 60000000,
       nilaiPemakaian: 42000000,
@@ -228,6 +240,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 100000000,
       nilaiPemakaian: 65000000,
@@ -247,6 +261,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 80000000,
       nilaiPemakaian: 58000000,
@@ -266,6 +282,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0,
+      penyesuaianRp: 0,
       stat: "Terbuka",
       nilaiBudget: 25000000,
       nilaiPemakaian: 18500000,
@@ -294,6 +312,8 @@ const BudgetKantorDashboard: React.FC = () => {
     realisasiRp: 0,
     sisaMu: 0,
     sisaRp: 0,
+    penyesuaianMu: 0, // New field
+    penyesuaianRp: 0, // New field
     stat: "",
     nilaiBudget: 0,
     sumberPO: 0,
@@ -320,6 +340,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: 0,
       sisaMu: 0,
       sisaRp: 0,
+      penyesuaianMu: 0, // New field
+      penyesuaianRp: 0, // New field
       stat: "",
       nilaiBudget: 0,
       sumberPO: 0,
@@ -381,6 +403,8 @@ const BudgetKantorDashboard: React.FC = () => {
       realisasiRp: item.realisasiRp,
       sisaMu: item.sisaMu,
       sisaRp: item.sisaRp,
+      penyesuaianMu: item.penyesuaianMu, // New field
+      penyesuaianRp: item.penyesuaianRp, // New field
       stat: item.stat,
       nilaiBudget: item.nilaiBudget,
       sumberPO: item.sumberPO,
@@ -430,6 +454,8 @@ const BudgetKantorDashboard: React.FC = () => {
                 realisasiRp: formData.realisasiRp,
                 sisaMu: formData.sisaMu,
                 sisaRp: formData.sisaRp,
+                penyesuaianMu: formData.penyesuaianMu, // New field
+                penyesuaianRp: formData.penyesuaianRp, // New field
                 stat: formData.stat,
                 nilaiBudget: formData.nilaiBudget,
                 nilaiPemakaian,
@@ -454,6 +480,8 @@ const BudgetKantorDashboard: React.FC = () => {
         realisasiRp: formData.realisasiRp,
         sisaMu: formData.sisaMu,
         sisaRp: formData.sisaRp,
+        penyesuaianMu: formData.penyesuaianMu, // New field
+        penyesuaianRp: formData.penyesuaianRp, // New field
         stat: formData.stat,
         nilaiBudget: formData.nilaiBudget,
         nilaiPemakaian,
@@ -487,6 +515,14 @@ const BudgetKantorDashboard: React.FC = () => {
   );
   const totalSisaMu = budgetData.reduce((sum, item) => sum + item.sisaMu, 0);
   const totalSisaRp = budgetData.reduce((sum, item) => sum + item.sisaRp, 0);
+  const totalPenyesuaianMu = budgetData.reduce(
+    (sum, item) => sum + item.penyesuaianMu,
+    0
+  );
+  const totalPenyesuaianRp = budgetData.reduce(
+    (sum, item) => sum + item.penyesuaianRp,
+    0
+  );
 
   // These totals might need to be re-evaluated based on the new column meanings
   const totalBudget = totalSubtotalRp; // Using Subtotal Rp as the main budget total
@@ -656,6 +692,12 @@ const BudgetKantorDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Sisa Rp
                   </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Penyesuaian MU
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Penyesuaian Rp
+                  </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Stat
                   </th>
@@ -694,6 +736,12 @@ const BudgetKantorDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
                       {formatRupiah(item.sisaRp)}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                      {item.penyesuaianMu.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                      {formatRupiah(item.penyesuaianRp)}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -727,11 +775,12 @@ const BudgetKantorDashboard: React.FC = () => {
                 ))}
                 {/* Total Row */}
                 <tr className="bg-blue-50 font-bold">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td
+                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    colSpan={3}
+                  >
                     TOTAL
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"></td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
                     {totalSubtotalMu.toLocaleString("id-ID")}
                   </td>
@@ -749,6 +798,12 @@ const BudgetKantorDashboard: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
                     {formatRupiah(totalSisaRp)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                    {totalPenyesuaianMu.toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                    {formatRupiah(totalPenyesuaianRp)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center"></td>
                   <td className="px-6 py-4"></td>
@@ -921,6 +976,42 @@ const BudgetKantorDashboard: React.FC = () => {
                       setFormData({
                         ...formData,
                         sisaRp: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Penyesuaian MU
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.penyesuaianMu}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        penyesuaianMu: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Penyesuaian Rp
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.penyesuaianRp}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        penyesuaianRp: Number(e.target.value),
                       })
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

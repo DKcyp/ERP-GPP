@@ -23,9 +23,10 @@ import ConfirmationModal from "./ConfirmationModal"; // Import the new Confirmat
 interface DokumenInternal {
   id: number;
   no: number;
+  jenisPengajuan?: string; // New field
   namaDokumen: string;
   nomorDokumen: string;
-  jenisDokumen: "Kebijakan" | "SOP" | "IK" | "Formulir";
+  jenisDokumen: "Kebijakan" | "SOP" | "IK" | "Formulir" | "Prosedur" | ""; // Adjusted type to include empty string
   noRevisi: string;
   tanggalDibuat: string;
   tanggalBerlaku: string;
@@ -50,13 +51,14 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "5 tahun",
     uploadDokumen: "GBP-MR-FM-06_v02.pdf",
     status: "Aktif",
+    jenisPengajuan: "Pengajuan baru", // New field
   },
   {
     id: 2,
     no: 2,
     namaDokumen: "IM Mapping Pendapatan GBP,BHI,PPKM",
     nomorDokumen: "GBP-MR-FM-06",
-    jenisDokumen: "Formulir",
+    jenisDokumen: "IK", // Changed from Formulir to IK
     noRevisi: "02",
     tanggalDibuat: "2015-02-01",
     tanggalBerlaku: "2015-03-04",
@@ -64,13 +66,14 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "5 tahun",
     uploadDokumen: "GBP-MR-FM-06_mapping.pdf",
     status: "Aktif",
+    jenisPengajuan: "Revisi", // New field
   },
   {
     id: 3,
     no: 3,
     namaDokumen: "IM Nominal Asset Savagroup",
     nomorDokumen: "GBP-MR-FM-06",
-    jenisDokumen: "Formulir",
+    jenisDokumen: "SOP", // Changed from Formulir to SOP
     noRevisi: "02",
     tanggalDibuat: "2015-02-01",
     tanggalBerlaku: "2015-03-04",
@@ -78,6 +81,7 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "5 tahun",
     uploadDokumen: "GBP-MR-FM-06_asset.pdf",
     status: "Mendekati Expired",
+    jenisPengajuan: "Pemusnahan", // New field
   },
   {
     id: 4,
@@ -92,6 +96,7 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "3 tahun",
     uploadDokumen: "GBP-FA-FM-01-01_v0.pdf",
     status: "Aktif",
+    jenisPengajuan: "Pengajuan baru", // New field
   },
   {
     id: 5,
@@ -106,6 +111,7 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "Permanen",
     uploadDokumen: "GBP-FA-FM-01-02_v0.pdf",
     status: "Aktif",
+    jenisPengajuan: "Pengajuan baru", // New field
   },
   {
     id: 6,
@@ -121,6 +127,7 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "5 tahun",
     uploadDokumen: "GBP-FA-FM-01-03_v0.pdf",
     status: "Tidak Berlaku",
+    jenisPengajuan: "Revisi", // New field
   },
   {
     id: 7,
@@ -135,13 +142,14 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "5 tahun",
     uploadDokumen: "GBP-FA-FM-01-04_v0.pdf",
     status: "Aktif",
+    jenisPengajuan: "Pengajuan baru", // New field
   },
   {
     id: 8,
     no: 8,
     namaDokumen: "Prosedur Pengelolaan Keuangan",
     nomorDokumen: "GBP-FA-PR-01",
-    jenisDokumen: "SOP",
+    jenisDokumen: "Prosedur", // Changed from SOP to Prosedur
     noRevisi: "1",
     tanggalDibuat: "2023-05-01",
     tanggalBerlaku: "2023-06-01",
@@ -149,6 +157,7 @@ const sampleDokumenInternal: DokumenInternal[] = [
     lamaWaktuSimpan: "7 tahun",
     uploadDokumen: "GBP-FA-PR-01_v1.pdf",
     status: "Mendekati Expired",
+    jenisPengajuan: "Revisi", // New field
   },
 ];
 
@@ -178,6 +187,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
   const [formData, setFormData] = useState<Partial<DokumenInternal>>({
     namaDokumen: "",
     nomorDokumen: "",
+    jenisPengajuan: "Pengajuan baru", // New field
     jenisDokumen: "Formulir",
     noRevisi: "",
     tanggalDibuat: "",
@@ -323,6 +333,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
     setFormData({
       namaDokumen: "",
       nomorDokumen: "",
+      jenisPengajuan: "Pengajuan baru", // Initialize new field
       jenisDokumen: "Formulir",
       noRevisi: "",
       tanggalDibuat: "",
@@ -341,6 +352,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
     setFormData({
       namaDokumen: dokumen.namaDokumen,
       nomorDokumen: dokumen.nomorDokumen,
+      jenisPengajuan: dokumen.jenisPengajuan || "Pengajuan baru", // Initialize new field
       jenisDokumen: dokumen.jenisDokumen,
       noRevisi: dokumen.noRevisi,
       tanggalDibuat: dokumen.tanggalDibuat,
@@ -359,6 +371,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
     setFormData({
       namaDokumen: dokumen.namaDokumen,
       nomorDokumen: dokumen.nomorDokumen,
+      jenisPengajuan: dokumen.jenisPengajuan || "", // For view mode, no default is needed
       jenisDokumen: dokumen.jenisDokumen,
       noRevisi: dokumen.noRevisi,
       tanggalDibuat: dokumen.tanggalDibuat,
@@ -642,6 +655,20 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-gray-200"
+                    onClick={() => handleSort("jenisPengajuan")}
+                  >
+                    <div className="flex items-center gap-1">
+                      Jenis Pengajuan
+                      {sortField === "jenisPengajuan" &&
+                        (sortDirection === "asc" ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-gray-200"
                     onClick={() => handleSort("namaDokumen")}
                   >
                     <div className="flex items-center gap-1">
@@ -770,6 +797,9 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                   >
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {dokumen.no}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {dokumen.jenisPengajuan}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="truncate" title={dokumen.namaDokumen}>
@@ -986,6 +1016,64 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                 className="space-y-4"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Jenis Pengajuan */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Jenis Pengajuan *
+                    </label>
+                    <select
+                      value={formData.jenisPengajuan || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          jenisPengajuan: e.target.value,
+                          jenisDokumen: "", // Reset jenisDokumen when jenisPengajuan changes
+                        }))
+                      }
+                      disabled={modalMode === "view"}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                      required
+                    >
+                      <option value="">Pilih Jenis Pengajuan</option>
+                      <option value="Pengajuan baru">Pengajuan baru</option>
+                      <option value="Revisi">Revisi</option>
+                      <option value="Pemusnahan">Pemusnahan</option>
+                    </select>
+                  </div>
+
+                  {/* Jenis Dokumen (Conditional) */}
+                  {formData.jenisPengajuan && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Jenis Dokumen *
+                      </label>
+                      <select
+                        value={formData.jenisDokumen || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            jenisDokumen: e.target.value as
+                              | "Kebijakan"
+                              | "SOP"
+                              | "IK"
+                              | "Formulir"
+                              | "Prosedur", // Added Prosedur
+                          }))
+                        }
+                        disabled={modalMode === "view"}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
+                        required
+                      >
+                        <option value="">Pilih Jenis Dokumen</option>
+                        <option value="Prosedur">Prosedur</option>
+                        <option value="IK">IK</option>
+                        <option value="SOP">SOP</option>
+                        <option value="Formulir">Formulir</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Nama Dokumen */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nama Dokumen *
@@ -1002,6 +1090,7 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                     />
                   </div>
 
+                  {/* Nomor Dokumen */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nomor Dokumen *
@@ -1016,28 +1105,6 @@ const QHSEDaftarIndukDokumenInternalDashboard: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
                       required
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Jenis Dokumen *
-                    </label>
-                    <select
-                      value={formData.jenisDokumen || ""}
-                      onChange={(e) =>
-                        handleInputChange("jenisDokumen", e.target.value)
-                      }
-                      disabled={modalMode === "view"}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100"
-                      required
-                    >
-                      <option value="">Pilih Jenis Dokumen</option>
-                      <option value="Formulir">Formulir</option>
-                      <option value="Prosedur">Prosedur</option>
-                      <option value="Instruksi Kerja">Instruksi Kerja</option>
-                      <option value="SOP">SOP</option>
-                      <option value="Kebijakan">Kebijakan</option>
-                    </select>
                   </div>
 
                   <div>

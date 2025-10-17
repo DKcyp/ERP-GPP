@@ -1522,6 +1522,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     if (currentPage === "/operational3/sales-order/so-turunan") {
       return <SOTurunanDashboard role="operational3" />;
     }
+    if (currentPage === "/operational/monitoring/nilai-po") {
+      return <MonitoringNilaiPOPage role="operational" />;
+    }
     if (currentPage === "/operational/man-power/man-power") {
       return <ManPowerDashboard />;
     }

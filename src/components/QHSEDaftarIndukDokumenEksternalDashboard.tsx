@@ -26,6 +26,8 @@ import ConfirmationModal from "./ConfirmationModal"; // Import the new Confirmat
 interface DocumentRecord {
   id: string;
   no: number;
+  jenisPengajuan?: string; // New field
+  jenisDokumen?: string; // New field
   namaDokumen: string;
   nomorDokumen: string;
   departemen: string;
@@ -77,6 +79,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen masih berlaku dan sesuai regulasi terbaru",
     uploadDokumen: "PPH_PSL_23.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "Prosedur",
   },
   {
     id: "2",
@@ -92,6 +96,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Perlu update sesuai peraturan terbaru",
     uploadDokumen: "PPH_PASAL_4_AYAT_2.pdf",
     status: "Valid",
+    jenisPengajuan: "Revisi",
+    jenisDokumen: "IK",
   },
   {
     id: "3",
@@ -107,6 +113,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen valid dan dapat digunakan",
     uploadDokumen: "PPH_PASAL_26.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "SOP",
   },
   {
     id: "4",
@@ -122,6 +130,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen terbaru dan sesuai standar",
     uploadDokumen: "PPh_Psl_21_2022.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "Formulir",
   },
   {
     id: "5",
@@ -137,6 +147,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen sudah expired, perlu pembaruan",
     uploadDokumen: "UU_Keselamatan_Kerja_1970.pdf",
     status: "Expired",
+    jenisPengajuan: "Revisi",
+    jenisDokumen: "Prosedur",
   },
   {
     id: "6",
@@ -152,6 +164,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen masih berlaku untuk jaminan sosial",
     uploadDokumen: "UU_BPJS_2011.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "IK",
   },
   {
     id: "7",
@@ -167,6 +181,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Regulasi kesehatan masih berlaku",
     uploadDokumen: "UU_Kesehatan_2009.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "SOP",
   },
   {
     id: "8",
@@ -182,6 +198,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "UU Ketenagakerjaan masih berlaku",
     uploadDokumen: "UU_Ketenagakerjaan_2003.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "Formulir",
   },
   {
     id: "9",
@@ -197,6 +215,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen mendekati expired, perlu review",
     uploadDokumen: "UU_Jamsostek_1992.pdf",
     status: "Mendekati Expired",
+    jenisPengajuan: "Revisi",
+    jenisDokumen: "Prosedur",
   },
   {
     id: "10",
@@ -212,6 +232,8 @@ const initialDocumentData: DocumentRecord[] = [
     hasilReview: "Dokumen lalu lintas masih berlaku",
     uploadDokumen: "UU_Lalin_2009.pdf",
     status: "Valid",
+    jenisPengajuan: "Pengajuan baru",
+    jenisDokumen: "Prosedur",
   },
 ];
 
@@ -538,6 +560,24 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
                   </th>
                   <th
                     className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 text-center cursor-pointer hover:bg-green-200"
+                    onClick={() => handleSort("jenisPengajuan")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      Jenis Pengajuan
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 text-center cursor-pointer hover:bg-green-200"
+                    onClick={() => handleSort("jenisDokumen")}
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      Jenis Dokumen
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </th>
+                  <th
+                    className="border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 text-center cursor-pointer hover:bg-green-200"
                     onClick={() => handleSort("namaDokumen")}
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -606,8 +646,14 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
                     <td className="border border-gray-300 px-4 py-3 text-sm text-center">
                       {record.no}
                     </td>
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-center">
+                      {record.jenisPengajuan}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-3 text-sm text-center">
+                      {record.jenisDokumen}
+                    </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm">
-                      {record.namaDoumen}
+                      {record.namaDokumen}
                     </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm">
                       {record.nomorDokumen}
@@ -805,6 +851,56 @@ const QHSEDaftarIndukDokumenEksternalDashboard: React.FC = () => {
 
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Jenis Pengajuan */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jenis Pengajuan *
+                  </label>
+                  <select
+                    value={formData.jenisPengajuan || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        jenisPengajuan: e.target.value,
+                        jenisDokumen: "", // Reset jenisDokumen when jenisPengajuan changes
+                      }))
+                    }
+                    disabled={modalMode === "view"}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                  >
+                    <option value="">Pilih Jenis Pengajuan</option>
+                    <option value="Pengajuan baru">Pengajuan baru</option>
+                    <option value="Revisi">Revisi</option>
+                    <option value="Pemusnahan">Pemusnahan</option>
+                  </select>
+                </div>
+
+                {/* Jenis Dokumen (Conditional) */}
+                {formData.jenisPengajuan && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Jenis Dokumen *
+                    </label>
+                    <select
+                      value={formData.jenisDokumen || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          jenisDokumen: e.target.value,
+                        }))
+                      }
+                      disabled={modalMode === "view"}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                    >
+                      <option value="">Pilih Jenis Dokumen</option>
+                      <option value="Prosedur">Prosedur</option>
+                      <option value="IK">IK</option>
+                      <option value="SOP">SOP</option>
+                      <option value="Formulir">Formulir</option>
+                    </select>
+                  </div>
+                )}
+
                 {/* No Urut */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -801,7 +801,7 @@ export const operationalMenu: MenuSection[] = [
     title: "Monitoring Nilai PO",
     icon: "FileText",
     items: [],
-    directPath: "/marketing/monitoring/nilai-po",
+    directPath: "/operational/monitoring/nilai-po",
   },
   // {
   //   title: "PBG",
