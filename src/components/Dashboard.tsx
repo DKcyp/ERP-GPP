@@ -45,7 +45,6 @@ import MasterUMRDashboard from "./MasterUMRDashboard";
 import MasterKualifikasiDashboard from "./MasterKualifikasiDashboard";
 import DaftarGajiDashboard from "./DaftarGajiDashboard";
 import PotonganGajiDashboard from "./PotonganGajiDashboard";
-import PendebtanDashboard from "./PendebtanDashboard";
 import HistoryPeminjamanDashboard from "./HistoryPeminjamanDashboard";
 import DaftarPeminjamKaryawanDashboard from "./DaftarPeminjamKaryawanDashboard";
 import AbsensiTeknisiDashboard from "./AbsensiTeknisiDashboard";
@@ -402,19 +401,7 @@ import MasterAllowancePage from "../pages/hrd/MasterAllowancePage";
 import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
 import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
 import ApprovalBarangRusakPage from "./ApprovalBarangRusakPage";
-
-// Placeholder components for new operational master items
-const AlurDokumenDashboard: React.FC = () => (
-  <div className="p-4 text-center text-xl font-semibold">
-    Alur Dokumen Dashboard (Under Construction)
-  </div>
-);
-
-const StatusDokumenDashboard: React.FC = () => (
-  <div className="p-4 text-center text-xl font-semibold">
-    Status Dokumen Dashboard (Under Construction)
-  </div>
-);
+import MasterAlurDokumenDashboard from "./MasterAlurDokumenDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -1582,10 +1569,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     // NEW Operational Master Routes
     if (currentPage === "/operational/master/alur-dokumen") {
-      return <AlurDokumenDashboard />;
-    }
-    if (currentPage === "/operational/master/status-dokumen") {
-      return <StatusDokumenDashboard />;
+      return <MasterAlurDokumenDashboard />;
     }
     // Operational General Routes
     if (currentPage === "/operational/general/kpi/dashboard") {
