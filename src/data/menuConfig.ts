@@ -2420,6 +2420,12 @@ export const proconMenu: MenuSection[] = [
     items: [],
     directPath: "/procon/lrp",
   },
+  {
+    title: "Kontrak Expenditure",
+    icon: "FileText", // Placeholder icon
+    items: [],
+    directPath: "/procon/kontrak-expenditure/dashboard", // Placeholder path
+  },
   // New sections requested for Procon: Marketing, Operasional, Procurement, Finance
   {
     title: "Marketing",

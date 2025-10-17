@@ -3,6 +3,7 @@ import FinanceLaporanHutangDashboard from "./FinanceLaporanHutangDashboard";
 import FinancePengajuanDanaHutangDashboard from "./FinancePengajuanDanaHutangDashboard";
 import FinancePembayaranHutangDashboard from "./FinancePembayaranHutangDashboard";
 import React from "react";
+import KontrakExpenditureDashboard from "./KontrakExpenditureDashboard";
 import { useAuth } from "../context/AuthContext";
 import SuspectDashboard from "./SuspectDashboard";
 import ProspectDashboard from "./ProspectDashboard";
@@ -372,6 +373,7 @@ import GeneralBudgetPengajuanDashboard from "./GeneralBudgetPengajuanDashboard";
 import GeneralBudgetLaporanDashboard from "./GeneralBudgetLaporanDashboard";
 import GeneralPengajuanResignDashboard from "./GeneralPengajuanResignDashboard";
 import AuditTrailDashboard from "./AuditTrailDashboard"; // Import the new Audit Trail component
+ // Import KontrakExpenditureDashboard
 
 // General Kendaraan
 import GeneralKendaraanPengajuanDriver from "./GeneralKendaraanPengajuanDriver";
@@ -1162,11 +1164,11 @@ const Dashboard: React.FC<DashboardProps> = ({
     if (currentPage === "/procon/sales-order/dashboard") {
       return <ProconSalesOrderDashboard />;
     }
+    if (currentPage === "/procon/kontrak-expenditure/dashboard") {
+      return <KontrakExpenditureDashboard />;
+    }
     if (currentPage === "/procon/operation/produksi") {
       return <ProduksiDashboard />;
-    }
-    if (currentPage === "/procon/kontrak-expenditure") {
-      return <ProconKontrakExpenditureDashboard />;
     }
     if (currentPage === "/procon/proforma-invoice/dashboard") {
       return <ProconInvoiceDashboard />;
