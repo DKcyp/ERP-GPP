@@ -16,9 +16,13 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 interface BudgetItem {
   id: string;
+  tanggalBudget: string; // New field
+  noBudget: string; // New field
   kodeAkun: string; // New field for 'Kode Akun'
   namaAkun: string; // Renamed from 'kategori' to 'Nama Akun'
   mu: string; // New field for 'MU'
+  totalMu: number; // New field
+  totalRk: number; // New field
   subtotalMu: number; // New field for 'Subtotal MU'
   subtotalRp: number; // New field for 'Subtotal Rp'
   realisasiMu: number; // New field for 'Realisasi MU'
@@ -28,6 +32,7 @@ interface BudgetItem {
   penyesuaianMu: number; // New field for 'Penyesuaian MU'
   penyesuaianRp: number; // New field for 'Penyesuaian Rp'
   stat: string; // New field for 'Stat'
+  keterangan: string; // New field
   nilaiBudget: number; // Existing field, will be used for one of the 'Subtotal' or 'Sisa' values if needed
   nilaiPemakaian: number; // Existing field
   nilaiSisa: number; // Existing field
@@ -127,8 +132,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "1",
       kodeAkun: "1101",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-001",
       namaAkun: "Kas",
       mu: "Rp",
+      totalMu: 50000000,
+      totalRk: 50000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -138,6 +147,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Awal Tahun",
       nilaiBudget: 50000000,
       nilaiPemakaian: 32500000,
       nilaiSisa: 17500000,
@@ -148,8 +158,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "2",
       kodeAkun: "1102",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-002",
       namaAkun: "Piutang Usaha",
       mu: "Rp",
+      totalMu: 30000000,
+      totalRk: 30000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -159,6 +173,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Operasional",
       nilaiBudget: 30000000,
       nilaiPemakaian: 22000000,
       nilaiSisa: 8000000,
@@ -169,8 +184,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "3",
       kodeAkun: "1103",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-003",
       namaAkun: "Persediaan Barang",
       mu: "Rp",
+      totalMu: 75000000,
+      totalRk: 75000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -180,6 +199,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Pembelian",
       nilaiBudget: 75000000,
       nilaiPemakaian: 45000000,
       nilaiSisa: 30000000,
@@ -190,8 +210,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "4",
       kodeAkun: "1104",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-004",
       namaAkun: "Biaya Operasional",
       mu: "Rp",
+      totalMu: 40000000,
+      totalRk: 40000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -201,6 +225,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Rutin",
       nilaiBudget: 40000000,
       nilaiPemakaian: 28500000,
       nilaiSisa: 11500000,
@@ -211,8 +236,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "5",
       kodeAkun: "1105",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-005",
       namaAkun: "Biaya Utilitas",
       mu: "Rp",
+      totalMu: 60000000,
+      totalRk: 60000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -222,6 +251,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Listrik & Air",
       nilaiBudget: 60000000,
       nilaiPemakaian: 42000000,
       nilaiSisa: 18000000,
@@ -232,8 +262,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "6",
       kodeAkun: "1106",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-006",
       namaAkun: "Peralatan & Furniture",
       mu: "Rp",
+      totalMu: 100000000,
+      totalRk: 100000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -243,6 +277,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Investasi",
       nilaiBudget: 100000000,
       nilaiPemakaian: 65000000,
       nilaiSisa: 35000000,
@@ -253,8 +288,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "7",
       kodeAkun: "1107",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-007",
       namaAkun: "IT & Software",
       mu: "Rp",
+      totalMu: 80000000,
+      totalRk: 80000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -264,6 +303,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget IT",
       nilaiBudget: 80000000,
       nilaiPemakaian: 58000000,
       nilaiSisa: 22000000,
@@ -274,8 +314,12 @@ const BudgetKantorDashboard: React.FC = () => {
     {
       id: "8",
       kodeAkun: "1108",
+      tanggalBudget: "2025-01-01",
+      noBudget: "BGT-2025-008",
       namaAkun: "Kebersihan & Sanitasi",
       mu: "Rp",
+      totalMu: 25000000,
+      totalRk: 25000000,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -285,6 +329,7 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0,
       penyesuaianRp: 0,
       stat: "Terbuka",
+      keterangan: "Budget Kebersihan",
       nilaiBudget: 25000000,
       nilaiPemakaian: 18500000,
       nilaiSisa: 6500000,
@@ -303,9 +348,13 @@ const BudgetKantorDashboard: React.FC = () => {
 
   // Form States
   const [formData, setFormData] = useState({
+    tanggalBudget: "",
+    noBudget: "",
     kodeAkun: "",
     namaAkun: "",
     mu: "",
+    totalMu: 0,
+    totalRk: 0,
     subtotalMu: 0,
     subtotalRp: 0,
     realisasiMu: 0,
@@ -315,11 +364,10 @@ const BudgetKantorDashboard: React.FC = () => {
     penyesuaianMu: 0, // New field
     penyesuaianRp: 0, // New field
     stat: "",
+    keterangan: "",
     nilaiBudget: 0,
     sumberPO: 0,
     sumberVoucher: 0,
-    noPO: "",
-    noVoucher: "",
   });
 
   const formatRupiah = (value: number) => {
@@ -331,9 +379,13 @@ const BudgetKantorDashboard: React.FC = () => {
     setIsEditing(false);
     setCurrentItem(null);
     setFormData({
+      tanggalBudget: "",
+      noBudget: "",
       kodeAkun: "",
       namaAkun: "",
       mu: "",
+      totalMu: 0,
+      totalRk: 0,
       subtotalMu: 0,
       subtotalRp: 0,
       realisasiMu: 0,
@@ -343,11 +395,10 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: 0, // New field
       penyesuaianRp: 0, // New field
       stat: "",
+      keterangan: "",
       nilaiBudget: 0,
       sumberPO: 0,
       sumberVoucher: 0,
-      noPO: "",
-      noVoucher: "",
     });
     setShowModal(true);
   };
@@ -394,9 +445,13 @@ const BudgetKantorDashboard: React.FC = () => {
     setIsEditing(true);
     setCurrentItem(item);
     setFormData({
+      tanggalBudget: item.tanggalBudget,
+      noBudget: item.noBudget,
       kodeAkun: item.kodeAkun,
       namaAkun: item.namaAkun,
       mu: item.mu,
+      totalMu: item.totalMu,
+      totalRk: item.totalRk,
       subtotalMu: item.subtotalMu,
       subtotalRp: item.subtotalRp,
       realisasiMu: item.realisasiMu,
@@ -406,11 +461,10 @@ const BudgetKantorDashboard: React.FC = () => {
       penyesuaianMu: item.penyesuaianMu, // New field
       penyesuaianRp: item.penyesuaianRp, // New field
       stat: item.stat,
+      keterangan: item.keterangan,
       nilaiBudget: item.nilaiBudget,
       sumberPO: item.sumberPO,
       sumberVoucher: item.sumberVoucher,
-      noPO: item.noPO || "",
-      noVoucher: item.noVoucher || "",
     });
     setShowModal(true);
   };
@@ -445,9 +499,13 @@ const BudgetKantorDashboard: React.FC = () => {
           item.id === currentItem.id
             ? {
                 ...item,
+                tanggalBudget: formData.tanggalBudget,
+                noBudget: formData.noBudget,
                 kodeAkun: formData.kodeAkun,
                 namaAkun: formData.namaAkun,
                 mu: formData.mu,
+                totalMu: formData.totalMu,
+                totalRk: formData.totalRk,
                 subtotalMu: formData.subtotalMu,
                 subtotalRp: formData.subtotalRp,
                 realisasiMu: formData.realisasiMu,
@@ -457,6 +515,7 @@ const BudgetKantorDashboard: React.FC = () => {
                 penyesuaianMu: formData.penyesuaianMu, // New field
                 penyesuaianRp: formData.penyesuaianRp, // New field
                 stat: formData.stat,
+                keterangan: formData.keterangan,
                 nilaiBudget: formData.nilaiBudget,
                 nilaiPemakaian,
                 nilaiSisa,
@@ -471,9 +530,13 @@ const BudgetKantorDashboard: React.FC = () => {
       // Add new item
       const newItem: BudgetItem = {
         id: Date.now().toString(),
+        tanggalBudget: formData.tanggalBudget,
+        noBudget: formData.noBudget,
         kodeAkun: formData.kodeAkun,
         namaAkun: formData.namaAkun,
         mu: formData.mu,
+        totalMu: formData.totalMu,
+        totalRk: formData.totalRk,
         subtotalMu: formData.subtotalMu,
         subtotalRp: formData.subtotalRp,
         realisasiMu: formData.realisasiMu,
@@ -483,6 +546,7 @@ const BudgetKantorDashboard: React.FC = () => {
         penyesuaianMu: formData.penyesuaianMu, // New field
         penyesuaianRp: formData.penyesuaianRp, // New field
         stat: formData.stat,
+        keterangan: formData.keterangan,
         nilaiBudget: formData.nilaiBudget,
         nilaiPemakaian,
         nilaiSisa,
@@ -523,6 +587,8 @@ const BudgetKantorDashboard: React.FC = () => {
     (sum, item) => sum + item.penyesuaianRp,
     0
   );
+  const totalTotalMu = budgetData.reduce((sum, item) => sum + item.totalMu, 0);
+  const totalTotalRk = budgetData.reduce((sum, item) => sum + item.totalRk, 0);
 
   // These totals might need to be re-evaluated based on the new column meanings
   const totalBudget = totalSubtotalRp; // Using Subtotal Rp as the main budget total
@@ -666,6 +732,12 @@ const BudgetKantorDashboard: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tanggal Budget
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    No. Budget
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Kode Akun
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -673,6 +745,12 @@ const BudgetKantorDashboard: React.FC = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     MU
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total MU
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total RK
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Subtotal MU
@@ -710,6 +788,12 @@ const BudgetKantorDashboard: React.FC = () => {
                 {budgetData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {item.tanggalBudget}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {item.noBudget}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {item.kodeAkun}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -717,6 +801,12 @@ const BudgetKantorDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.mu}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                      {item.totalMu.toLocaleString("id-ID")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                      {item.totalRk.toLocaleString("id-ID")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
                       {item.subtotalMu.toLocaleString("id-ID")}
@@ -753,6 +843,9 @@ const BudgetKantorDashboard: React.FC = () => {
                         {item.stat}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.keterangan}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -777,9 +870,15 @@ const BudgetKantorDashboard: React.FC = () => {
                 <tr className="bg-blue-50 font-bold">
                   <td
                     className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                    colSpan={3}
+                    colSpan={5}
                   >
                     TOTAL
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                    {totalTotalMu.toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
+                    {totalTotalRk.toLocaleString("id-ID")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-semibold">
                     {totalSubtotalMu.toLocaleString("id-ID")}
@@ -807,6 +906,7 @@ const BudgetKantorDashboard: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center"></td>
                   <td className="px-6 py-4"></td>
+                  <td className="px-6 py-4"></td>
                 </tr>
               </tbody>
             </table>
@@ -830,6 +930,38 @@ const BudgetKantorDashboard: React.FC = () => {
               </div>
 
               <div className="px-6 py-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tanggal Budget <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.tanggalBudget}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        tanggalBudget: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    No Budget <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.noBudget}
+                    onChange={(e) =>
+                      setFormData({ ...formData, noBudget: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Contoh: BGT-2025-001"
+                  />
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Kode Akun <span className="text-red-500">*</span>
@@ -872,6 +1004,42 @@ const BudgetKantorDashboard: React.FC = () => {
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Contoh: Rp"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total MU <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.totalMu}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        totalMu: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Rk <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.totalRk}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        totalRk: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0"
                   />
                 </div>
 
@@ -1033,6 +1201,21 @@ const BudgetKantorDashboard: React.FC = () => {
                     <option value="">-- Pilih Stat --</option>
                     <option value="Terbuka">Terbuka</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Keterangan
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.keterangan}
+                    onChange={(e) =>
+                      setFormData({ ...formData, keterangan: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Contoh: Budget Awal Tahun"
+                  />
                 </div>
               </div>
 

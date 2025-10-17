@@ -83,8 +83,8 @@ interface ProconSalesOrder {
   remark: string;
   logDataPak: string;
   logMekanik: string;
-  tunjanganGaji?: string; // New field for tunjangan+gaji
-  prorateTeknisi?: string; // New field for prorate teknisi
+  tunjangan?: string; // Renamed from tunjanganGaji
+  gajiProrate?: string; // Renamed from prorateTeknisi
 }
 
 const ProconSalesOrderDashboard: React.FC = () => {
@@ -161,8 +161,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "CRITICAL - IMMEDIATE ACTION REQUIRED",
       logDataPak: "DELAYED",
       logMekanik: "DELAYED",
-      tunjanganGaji: "5,000,000", // Sample data
-      prorateTeknisi: "1,000,000", // Sample data
+      tunjangan: "5,000,000", // Sample data
+      gajiProrate: "1,000,000", // Sample data
     },
     {
       id: "2",
@@ -211,8 +211,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "URGENT - EQUIPMENT REQUIRED",
       logDataPak: "PENDING",
       logMekanik: "PENDING",
-      tunjanganGaji: "0", // Sample data
-      prorateTeknisi: "0", // Sample data
+      tunjangan: "0", // Sample data
+      gajiProrate: "0", // Sample data
     },
     // White/Light rows - Normal/Completed status
     {
@@ -262,8 +262,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "EXCELLENT PERFORMANCE",
       logDataPak: "COMPLETE",
       logMekanik: "COMPLETE",
-      tunjanganGaji: "10,000,000", // Sample data
-      prorateTeknisi: "2,000,000", // Sample data
+      tunjangan: "10,000,000", // Sample data
+      gajiProrate: "2,000,000", // Sample data
     },
     {
       id: "4",
@@ -312,8 +312,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "GOOD QUALITY WORK",
       logDataPak: "COMPLETE",
       logMekanik: "COMPLETE",
-      tunjanganGaji: "7,500,000", // Sample data
-      prorateTeknisi: "1,500,000", // Sample data
+      tunjangan: "7,500,000", // Sample data
+      gajiProrate: "1,500,000", // Sample data
     },
     // Pink/Salmon rows - Warning/Attention status
     {
@@ -364,8 +364,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "MINOR DELAYS - MONITORING REQUIRED",
       logDataPak: "PARTIAL",
       logMekanik: "PARTIAL",
-      tunjanganGaji: "6,000,000", // Sample data
-      prorateTeknisi: "1,200,000", // Sample data
+      tunjangan: "6,000,000", // Sample data
+      gajiProrate: "1,200,000", // Sample data
     },
     // Blue rows - In Progress status
     {
@@ -415,8 +415,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "WORK IN PROGRESS - ON SCHEDULE",
       logDataPak: "PROGRESS",
       logMekanik: "PROGRESS",
-      tunjanganGaji: "4,000,000", // Sample data
-      prorateTeknisi: "800,000", // Sample data
+      tunjangan: "4,000,000", // Sample data
+      gajiProrate: "800,000", // Sample data
     },
     // Green rows - Good/Excellent status
     {
@@ -467,8 +467,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
       remark: "EXCELLENT PERFORMANCE", // Added missing field
       logDataPak: "EXCELLENT",
       logMekanik: "EXCELLENT",
-      tunjanganGaji: "12,000,000", // Sample data
-      prorateTeknisi: "2,400,000", // Sample data
+      tunjangan: "12,000,000", // Sample data
+      gajiProrate: "2,400,000", // Sample data
     },
   ]);
 
@@ -785,8 +785,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
         month: "short",
         year: "2-digit",
       }),
-      tunjanganGaji: "0", // Initialize new field
-      prorateTeknisi: "0", // Initialize new field
+      tunjangan: "0", // Initialize new field
+      gajiProrate: "0", // Initialize new field
     });
   };
 
@@ -1267,13 +1267,13 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
-                    TUNJANGAN+GAJI
+                    TUNJANGAN
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[120px]"
                     rowSpan={2}
                   >
-                    PRORATE TEKNISI
+                    GAJI PRORATE
                   </th>
                   <th
                     className="px-2 py-3 text-center text-xs font-bold text-black border border-gray-300 min-w-[100px]"
@@ -1474,10 +1474,10 @@ const ProconSalesOrderDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
-                      {item.tunjanganGaji && `Rp ${item.tunjanganGaji}`}
+                      {item.tunjangan && `Rp ${item.tunjangan}`}
                     </td>
                     <td className="px-2 py-3 text-gray-900 text-xs border border-gray-300 font-bold text-right">
-                      {item.prorateTeknisi && `Rp ${item.prorateTeknisi}`}
+                      {item.gajiProrate && `Rp ${item.gajiProrate}`}
                     </td>
                     <td className="px-2 py-3 text-gray-600 text-xs border border-gray-300 text-center">
                       <div className="flex items-center justify-center space-x-1">
@@ -1743,6 +1743,32 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tunjangan
+                </label>
+                <input
+                  type="text"
+                  value={formData.tunjangan || ""}
+                  onChange={(e) =>
+                    handleInputChange("tunjangan", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gaji Prorate
+                </label>
+                <input
+                  type="text"
+                  value={formData.gajiProrate || ""}
+                  onChange={(e) =>
+                    handleInputChange("gajiProrate", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div className="flex justify-end space-x-2 mt-6">
               <button
@@ -1926,6 +1952,32 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                   rows={3}
                   placeholder="Enter project control remarks..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tunjangan
+                </label>
+                <input
+                  type="text"
+                  value={formData.tunjangan || ""}
+                  onChange={(e) =>
+                    handleInputChange("tunjangan", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gaji Prorate
+                </label>
+                <input
+                  type="text"
+                  value={formData.gajiProrate || ""}
+                  onChange={(e) =>
+                    handleInputChange("gajiProrate", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
