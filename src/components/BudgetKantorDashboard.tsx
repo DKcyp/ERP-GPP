@@ -929,7 +929,7 @@ const BudgetKantorDashboard: React.FC = () => {
         {/* Add/Edit Modal */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="text-xl font-bold text-gray-900">
                   {isEditing ? "Edit Budget" : "Tambah Budget Baru"}
@@ -942,7 +942,8 @@ const BudgetKantorDashboard: React.FC = () => {
                 </button>
               </div>
 
-              <div className="px-6 py-4 grid grid-cols-2 gap-4">
+              <div className="px-6 py-4 grid grid-cols-3 gap-6">
+                {/* First Column */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tanggal Budget <span className="text-red-500">*</span>
@@ -990,6 +991,7 @@ const BudgetKantorDashboard: React.FC = () => {
                   />
                 </div>
 
+                {/* Second Column */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Nama Akun <span className="text-red-500">*</span>
@@ -1038,6 +1040,7 @@ const BudgetKantorDashboard: React.FC = () => {
                   />
                 </div>
 
+                {/* Third Column */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Total Rk <span className="text-red-500">*</span>
@@ -1216,23 +1219,23 @@ const BudgetKantorDashboard: React.FC = () => {
                   </select>
                 </div>
 
-                <div>
+                <div className="col-span-3">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Keterangan
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={formData.keterangan}
                     onChange={(e) =>
                       setFormData({ ...formData, keterangan: e.target.value })
                     }
+                    rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Contoh: Budget Awal Tahun"
-                  />
+                  ></textarea>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 px-6 py-4 border-t border-gray-200">
+              <div className="grid grid-cols-2 gap-4 px-6 py-4 border-t border-gray-200 bg-gray-50">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <FileText className="inline h-4 w-4 text-purple-600 mr-1" />
