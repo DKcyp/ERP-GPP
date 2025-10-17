@@ -1,43 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './components/Login';
-import Navbar from './components/Navbar';
-import MenuBar from './components/MenuBar';
-import Dashboard from './components/Dashboard';
+import React, { useState, useEffect, useCallback } from "react";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
+import MenuBar from "./components/MenuBar";
+import Dashboard from "./components/Dashboard";
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
-  const [currentPage, setCurrentPage] = useState('');
+  const [currentPage, setCurrentPage] = useState("");
+
+  const navigate = useCallback((path: string) => {
+    window.history.pushState(null, "", path);
+    setCurrentPage(path);
+  }, []);
 
   useEffect(() => {
-    if (user) {
-      // Set a stable default page on first load based on role only.
-      if (user.role === 'operational') {
-        setCurrentPage('/operational/timesheet/dashboard');
+    if (!isAuthenticated) {
+      // If not authenticated, ensure we are on the login page
+      if (window.location.pathname !== "/login") {
+        navigate("/login");
       } else {
-        setCurrentPage(`/${user.role}/dashboard`);
+        setCurrentPage("/login");
+      }
+    } else if (isAuthenticated && user) {
+      // If authenticated and on the login page, redirect to default dashboard
+      if (window.location.pathname === "/login") {
+        const defaultPage =
+          user.role === "operational"
+            ? "/operational/timesheet/dashboard"
+            : `/${user.role}/dashboard`;
+        navigate(defaultPage);
+      } else if (!currentPage) {
+        // If authenticated but currentPage is empty (e.g., direct access to a dashboard route)
+        setCurrentPage(window.location.pathname);
       }
     }
-  }, [user]);
+  }, [isAuthenticated, user, currentPage, navigate]);
 
   // Listen to URL changes and sync to currentPage (so clicks that change URL also re-render)
   useEffect(() => {
     const syncFromLocation = () => {
-      const pathFromHash = window.location.hash?.slice(1) || '';
-      const pathFromPathname = window.location.pathname || '';
-      const next = pathFromHash || pathFromPathname;
-      if (next && next !== currentPage) {
-        setCurrentPage(next);
+      const path = window.location.pathname;
+      if (path && path !== currentPage) {
+        setCurrentPage(path);
       }
     };
 
-    window.addEventListener('popstate', syncFromLocation);
-    window.addEventListener('hashchange', syncFromLocation);
+    window.addEventListener("popstate", syncFromLocation);
+    window.addEventListener("hashchange", syncFromLocation); // hashchange is still relevant if old links use hashes
     return () => {
-      window.removeEventListener('popstate', syncFromLocation);
-      window.removeEventListener('hashchange', syncFromLocation);
+      window.removeEventListener("popstate", syncFromLocation);
+      window.removeEventListener("hashchange", syncFromLocation);
     };
-  }, []);
+  }, [currentPage]);
 
   if (!isAuthenticated) {
     return <Login />;

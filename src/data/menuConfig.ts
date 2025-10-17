@@ -889,7 +889,7 @@ export const hrdMenu: MenuSection[] = [
       {
         title: "Perjalanan Dinas",
         icon: "Plane",
-        path: "/hrd/allowance/perjalanan-dinas",
+        path: "/hrd/general/ticket/pengajuan",
       },
       {
         title: "Master Allowance",
@@ -2444,6 +2444,11 @@ export const proconMenu: MenuSection[] = [
         title: "Insentif Marketing",
         icon: "Award",
         path: "/marketing/insentif-marketing/dashboard",
+      },
+      {
+        title: "Monitoring Nilai PO",
+        icon: "FileText",
+        path: "/operational/monitoring/nilai-po",
       },
     ],
   },
