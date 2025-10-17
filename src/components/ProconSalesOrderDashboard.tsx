@@ -57,7 +57,23 @@ interface ProconSalesOrder {
   paidDate: string;
   delayPayment: string;
   remarkFinance: string;
-  status: string;
+  status:
+    | "Bar Review"
+    | "Cancel"
+    | "On Duty"
+    | "Paid"
+    | "Plan"
+    | "Prepare BAP"
+    | "Prepare PI"
+    | "Report GBP"
+    | "Report Review"
+    | "Revisi Report"
+    | "SO Cancel"
+    | "SO Minus"
+    | "Tambahan PI"
+    | "Waiting Payment"
+    | "Waiting Report"
+    | "Waiting SP3";
   lirAmount: string; // Changed from lir to lirAmount for nominal uang
   paymentStatus: string; // New field for Paid/Unpaid status
   yearSheet: string;
@@ -135,7 +151,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "",
       delayPayment: "25",
       remarkFinance: "OVERDUE PAYMENT",
-      status: "OVERDUE",
+      status: "Waiting Payment", // Updated status
       lirAmount: "0",
       paymentStatus: "Pending",
       yearSheet: "2025",
@@ -185,7 +201,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "",
       delayPayment: "0",
       remarkFinance: "NOT INVOICED",
-      status: "CRITICAL",
+      status: "Prepare PI", // Updated status
       lirAmount: "0",
       paymentStatus: "Unpaid",
       yearSheet: "2025",
@@ -236,7 +252,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "25-Feb-25",
       delayPayment: "0",
       remarkFinance: "PAID ON TIME",
-      status: "COMPLETED",
+      status: "Paid", // Updated status
       lirAmount: "22.000.000",
       paymentStatus: "Paid",
       yearSheet: "2025",
@@ -286,7 +302,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "20-Feb-25",
       delayPayment: "0",
       remarkFinance: "PAID",
-      status: "COMPLETED",
+      status: "Paid", // Updated status
       lirAmount: "22.000.000",
       paymentStatus: "Paid",
       yearSheet: "2025",
@@ -338,7 +354,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "",
       delayPayment: "5",
       remarkFinance: "PAYMENT PENDING",
-      status: "WARNING",
+      status: "Report Review", // Updated status
       lirAmount: "0", // Changed from "PARTIAL" to "0"
       paymentStatus: "Pending", // Added missing field
       yearSheet: "2025",
@@ -389,7 +405,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "",
       delayPayment: "0",
       remarkFinance: "AWAITING COMPLETION",
-      status: "IN PROGRESS",
+      status: "On Duty", // Updated status
       lirAmount: "0",
       paymentStatus: "Pending",
       yearSheet: "2025",
@@ -441,7 +457,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       paidDate: "25-Mar-25",
       delayPayment: "-6",
       remarkFinance: "EARLY PAYMENT",
-      status: "EXCELLENT",
+      status: "Paid", // Updated status
       lirAmount: "0", // Added missing field
       paymentStatus: "Paid", // Added missing field
       yearSheet: "2025", // Added missing field
@@ -583,23 +599,36 @@ const ProconSalesOrderDashboard: React.FC = () => {
 
     // Red rows - Critical/Overdue status
     if (
-      item.status === "OVERDUE" ||
-      item.status === "CRITICAL" ||
+      item.status === "Waiting Payment" ||
+      item.status === "Prepare PI" ||
+      item.status === "SO Minus" ||
+      item.status === "SO Cancel" ||
       item.keterangan === "OVERDUE" ||
       item.keterangan === "CRITICAL"
     ) {
       return "bg-red-100";
     }
     // Pink/Salmon rows - Warning/Attention status
-    if (item.status === "WARNING" || item.keterangan === "MINOR DELAY") {
+    if (
+      item.status === "Report Review" ||
+      item.status === "Revisi Report" ||
+      item.keterangan === "MINOR DELAY"
+    ) {
       return "bg-pink-100";
     }
     // Blue rows - In Progress status
-    if (item.status === "IN PROGRESS" || item.keterangan === "IN PROGRESS") {
+    if (
+      item.status === "On Duty" ||
+      item.status === "Plan" ||
+      item.status === "Prepare BAP" ||
+      item.status === "Waiting Report" ||
+      item.status === "Waiting SP3" ||
+      item.keterangan === "IN PROGRESS"
+    ) {
       return "bg-blue-100";
     }
     // Green rows - Excellent/Good status
-    if (item.status === "EXCELLENT" || item.keterangan === "EXCELLENT") {
+    if (item.status === "Paid" || item.keterangan === "EXCELLENT") {
       return "bg-green-100";
     }
     // White/Light rows - Normal/Completed status (default)
@@ -609,22 +638,38 @@ const ProconSalesOrderDashboard: React.FC = () => {
   // Helper function to get status badge color
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "COMPLETED":
+      case "Paid":
         return "bg-green-100 text-green-800 border-green-200";
-      case "IN PROGRESS":
+      case "On Duty":
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "PENDING":
+      case "Waiting Payment":
         return "bg-red-100 text-red-800 border-red-200";
-      case "INVOICED":
+      case "Prepare PI":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "Report Review":
         return "bg-pink-100 text-pink-800 border-pink-200";
-      case "OVERDUE":
+      case "Plan":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "Bar Review":
+        return "bg-indigo-100 text-indigo-800 border-indigo-200";
+      case "Cancel":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      case "Prepare BAP":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "Report GBP":
+        return "bg-teal-100 text-teal-800 border-teal-200";
+      case "Revisi Report":
+        return "bg-lime-100 text-lime-800 border-lime-200";
+      case "SO Cancel":
         return "bg-red-200 text-red-800 border-red-300";
-      case "CRITICAL":
+      case "SO Minus":
         return "bg-red-300 text-red-800 border-red-400";
-      case "WARNING":
-        return "bg-pink-200 text-pink-800 border-pink-300";
-      case "EXCELLENT":
-        return "bg-green-200 text-green-800 border-green-300";
+      case "Tambahan PI":
+        return "bg-orange-200 text-orange-800 border-orange-300";
+      case "Waiting Report":
+        return "bg-blue-200 text-blue-800 border-blue-300";
+      case "Waiting SP3":
+        return "bg-cyan-200 text-cyan-800 border-cyan-300";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -700,7 +745,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       }),
       contractNo: `KD-${String(nextNo).padStart(3, "0")}`,
       yearSheet: "2025",
-      status: "IN PROGRESS",
+      status: "Plan", // Updated default status
       keterangan: "IN PROGRESS",
       statusPekerjaan: "PROGRESS",
       statusAR: "NOT STARTED",
@@ -1851,9 +1896,22 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Status</option>
+                  <option value="Bar Review">Bar Review</option>
+                  <option value="Cancel">Cancel</option>
+                  <option value="On Duty">On Duty</option>
                   <option value="Paid">Paid</option>
-                  <option value="Unpaid">Unpaid</option>
-                  <option value="Pending">Pending</option>
+                  <option value="Plan">Plan</option>
+                  <option value="Prepare BAP">Prepare BAP</option>
+                  <option value="Prepare PI">Prepare PI</option>
+                  <option value="Report GBP">Report GBP</option>
+                  <option value="Report Review">Report Review</option>
+                  <option value="Revisi Report">Revisi Report</option>
+                  <option value="SO Cancel">SO Cancel</option>
+                  <option value="SO Minus">SO Minus</option>
+                  <option value="Tambahan PI">Tambahan PI</option>
+                  <option value="Waiting Payment">Waiting Payment</option>
+                  <option value="Waiting Report">Waiting Report</option>
+                  <option value="Waiting SP3">Waiting SP3</option>
                 </select>
               </div>
               <div className="col-span-2">
