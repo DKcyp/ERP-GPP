@@ -1236,95 +1236,95 @@ const BudgetKantorDashboard: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 px-6 py-4 border-t border-gray-200 bg-gray-50">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <FileText className="inline h-4 w-4 text-purple-600 mr-1" />
-                    No PO
-                  </label>
-                  <select
-                    value={formData.noPO}
-                    onChange={(e) => handlePOChange(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  >
-                    <option value="">-- Pilih No PO --</option>
-                    {masterPO.map((po) => (
-                      <option key={po.noPO} value={po.noPO}>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FileText className="inline h-4 w-4 text-purple-600 mr-1" />
+                      No PO
+                    </label>
+                    <select
+                      value={formData.noPO}
+                      onChange={(e) => handlePOChange(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    >
+                      <option value="">-- Pilih No PO --</option>
+                      {masterPO.map((po) => (
+                        <option key={po.noPO} value={po.noPO}>
                         {po.noPO} - {po.keterangan} ({formatRupiah(po.nominal)})
-                      </option>
-                    ))}
-                  </select>
-                  {formData.noPO && (
-                    <p className="mt-1 text-xs text-purple-600 font-medium">
-                      Nominal: {formatRupiah(formData.sumberPO)}
-                    </p>
-                  )}
-                </div>
+                        </option>
+                      ))}
+                    </select>
+                    {formData.noPO && (
+                      <p className="mt-1 text-xs text-purple-600 font-medium">
+                        Nominal: {formatRupiah(formData.sumberPO)}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Receipt className="inline h-4 w-4 text-orange-600 mr-1" />
-                    No Voucher
-                  </label>
-                  <select
-                    value={formData.noVoucher}
-                    onChange={(e) => handleVoucherChange(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  >
-                    <option value="">-- Pilih No Voucher --</option>
-                    {masterVoucher.map((voucher) => (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Receipt className="inline h-4 w-4 text-orange-600 mr-1" />
+                      No Voucher
+                    </label>
+                    <select
+                      value={formData.noVoucher}
+                      onChange={(e) => handleVoucherChange(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    >
+                      <option value="">-- Pilih No Voucher --</option>
+                      {masterVoucher.map((voucher) => (
                       <option key={voucher.noVoucher} value={voucher.noVoucher}>
-                        {voucher.noVoucher} - {voucher.keterangan} (
-                        {formatRupiah(voucher.nominal)})
-                      </option>
-                    ))}
-                  </select>
-                  {formData.noVoucher && (
-                    <p className="mt-1 text-xs text-orange-600 font-medium">
-                      Nominal: {formatRupiah(formData.sumberVoucher)}
-                    </p>
-                  )}
+                          {voucher.noVoucher} - {voucher.keterangan} (
+                          {formatRupiah(voucher.nominal)})
+                        </option>
+                      ))}
+                    </select>
+                    {formData.noVoucher && (
+                      <p className="mt-1 text-xs text-orange-600 font-medium">
+                        Nominal: {formatRupiah(formData.sumberVoucher)}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mx-6 mb-4">
-                <h4 className="text-sm font-semibold text-blue-900 mb-2">
-                  Ringkasan Perhitungan:
-                </h4>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nilai Budget:</span>
-                    <span className="font-semibold text-gray-900">
-                      {formatRupiah(formData.nilaiBudget)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nilai Pemakaian:</span>
-                    <span className="font-semibold text-red-600">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-2">
+                    Ringkasan Perhitungan:
+                  </h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Nilai Budget:</span>
+                      <span className="font-semibold text-gray-900">
+                        {formatRupiah(formData.nilaiBudget)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Nilai Pemakaian:</span>
+                      <span className="font-semibold text-red-600">
                       {formatRupiah(formData.sumberPO + formData.sumberVoucher)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Nilai Sisa:</span>
-                    <span className="font-semibold text-green-600">
-                      {formatRupiah(
-                        formData.nilaiBudget -
-                          (formData.sumberPO + formData.sumberVoucher)
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Persentase Sisa:</span>
-                    <span className="font-semibold text-blue-600">
-                      {formData.nilaiBudget > 0
-                        ? (
-                            ((formData.nilaiBudget -
-                              (formData.sumberPO + formData.sumberVoucher)) /
-                              formData.nilaiBudget) *
-                            100
-                          ).toFixed(2)
-                        : 0}
-                      %
-                    </span>
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Nilai Sisa:</span>
+                      <span className="font-semibold text-green-600">
+                        {formatRupiah(
+                          formData.nilaiBudget -
+                            (formData.sumberPO + formData.sumberVoucher)
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Persentase Sisa:</span>
+                      <span className="font-semibold text-blue-600">
+                        {formData.nilaiBudget > 0
+                          ? (
+                              ((formData.nilaiBudget -
+                                (formData.sumberPO + formData.sumberVoucher)) /
+                                formData.nilaiBudget) *
+                              100
+                            ).toFixed(2)
+                          : 0}
+                        %
+                      </span>
                   </div>
                 </div>
               </div>

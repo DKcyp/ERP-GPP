@@ -176,6 +176,7 @@ import GeneralPengajuanTicketDashboard from "./GeneralPengajuanTicketDashboard";
 import FinanceApprovalTicketDashboard from "./FinanceApprovalTicketDashboard"; // NEW: Finance Approval Ticket
 import HRDTrainingListDashboard from "./HRDTrainingListDashboard"; // NEW: HRD List Training
 import HRDTNADashboard from "./HRDTNADashboard"; // NEW: HRD TNA
+import PendebetanDashboard from "./PendebetanDashboard";
 import PayslipDashboard from "./PayslipDashboard";
 import MasterIncomeDashboard from "./MasterIncomeDashboard";
 import MasterDeductDashboard from "./MasterDeductDashboard";
@@ -402,7 +403,18 @@ import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
 import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
 import ApprovalBarangRusakPage from "./ApprovalBarangRusakPage";
 
-import MasterAlurDokumenDashboard from "./MasterAlurDokumenDashboard";
+// Placeholder components for new operational master items
+const AlurDokumenDashboard: React.FC = () => (
+  <div className="p-4 text-center text-xl font-semibold">
+    Alur Dokumen Dashboard (Under Construction)
+  </div>
+);
+
+const StatusDokumenDashboard: React.FC = () => (
+  <div className="p-4 text-center text-xl font-semibold">
+    Status Dokumen Dashboard (Under Construction)
+  </div>
+);
 
 interface DashboardProps {
   currentPage: string;
@@ -1524,7 +1536,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       return <SOTurunanDashboard role="operational3" />;
     }
     if (currentPage === "/operational/monitoring/nilai-po") {
-      return <MonitoringNilaiPOPage />;
+      return <MonitoringNilaiPOPage role="operational" />;
     }
     if (currentPage === "/operational/man-power/man-power") {
       return <ManPowerDashboard />;
@@ -1570,7 +1582,10 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     // NEW Operational Master Routes
     if (currentPage === "/operational/master/alur-dokumen") {
-      return <MasterAlurDokumenDashboard />;
+      return <AlurDokumenDashboard />;
+    }
+    if (currentPage === "/operational/master/status-dokumen") {
+      return <StatusDokumenDashboard />;
     }
     // Operational General Routes
     if (currentPage === "/operational/general/kpi/dashboard") {

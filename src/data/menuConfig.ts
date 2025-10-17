@@ -736,8 +736,8 @@ export const operationalMenu: MenuSection[] = [
     directPath: "/operational/dashboard",
   },
   {
-    title: "Master Alur Dokumen",
-    icon: "FileStack",
+    title: "Master",
+    icon: "Database",
     items: [],
     directPath: "/operational/master/alur-dokumen",
   },
