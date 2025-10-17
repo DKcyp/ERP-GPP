@@ -368,6 +368,8 @@ const BudgetKantorDashboard: React.FC = () => {
     nilaiBudget: 0,
     sumberPO: 0,
     sumberVoucher: 0,
+    noPO: "", // Re-added field
+    noVoucher: "", // Re-added field
   });
 
   const formatRupiah = (value: number) => {
@@ -399,6 +401,8 @@ const BudgetKantorDashboard: React.FC = () => {
       nilaiBudget: 0,
       sumberPO: 0,
       sumberVoucher: 0,
+      noPO: "", // Re-added field
+      noVoucher: "", // Re-added field
     });
     setShowModal(true);
   };
@@ -465,6 +469,8 @@ const BudgetKantorDashboard: React.FC = () => {
       nilaiBudget: item.nilaiBudget,
       sumberPO: item.sumberPO,
       sumberVoucher: item.sumberVoucher,
+      noPO: item.noPO || "", // Re-added field
+      noVoucher: item.noVoucher || "", // Re-added field
     });
     setShowModal(true);
   };
@@ -522,6 +528,8 @@ const BudgetKantorDashboard: React.FC = () => {
                 persentaseSisa,
                 sumberPO: formData.sumberPO,
                 sumberVoucher: formData.sumberVoucher,
+                noPO: formData.noPO, // Re-added field
+                noVoucher: formData.noVoucher, // Re-added field
               }
             : item
         )
@@ -553,6 +561,8 @@ const BudgetKantorDashboard: React.FC = () => {
         persentaseSisa,
         sumberPO: formData.sumberPO,
         sumberVoucher: formData.sumberVoucher,
+        noPO: formData.noPO, // Re-added field
+        noVoucher: formData.noVoucher, // Re-added field
       };
       setBudgetData([...budgetData, newItem]);
     }
@@ -780,6 +790,9 @@ const BudgetKantorDashboard: React.FC = () => {
                     Stat
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Keterangan
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aksi
                   </th>
                 </tr>
@@ -916,7 +929,7 @@ const BudgetKantorDashboard: React.FC = () => {
         {/* Add/Edit Modal */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="text-xl font-bold text-gray-900">
                   {isEditing ? "Edit Budget" : "Tambah Budget Baru"}
@@ -929,7 +942,7 @@ const BudgetKantorDashboard: React.FC = () => {
                 </button>
               </div>
 
-              <div className="px-6 py-4 space-y-4">
+              <div className="px-6 py-4 grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tanggal Budget <span className="text-red-500">*</span>
@@ -1219,7 +1232,7 @@ const BudgetKantorDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 px-6 py-4 border-t border-gray-200">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <FileText className="inline h-4 w-4 text-purple-600 mr-1" />
@@ -1270,7 +1283,7 @@ const BudgetKantorDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mx-6 mb-4">
                 <h4 className="text-sm font-semibold text-blue-900 mb-2">
                   Ringkasan Perhitungan:
                 </h4>
@@ -1312,21 +1325,21 @@ const BudgetKantorDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                {isEditing ? "Simpan Perubahan" : "Tambah Budget"}
-              </button>
+              <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {isEditing ? "Simpan Perubahan" : "Tambah Budget"}
+                </button>
+              </div>
             </div>
           </div>
         )}
