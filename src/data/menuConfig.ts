@@ -904,6 +904,11 @@ export const hrdMenu: MenuSection[] = [
     icon: "UserRound",
     items: [
       {
+        title: "Master Cuti",
+        icon: "CalendarDays",
+        path: "/hrd/master/master-cuti",
+      },
+      {
         title: "Daftar Pegawai",
         icon: "Users",
         path: "/hrd/pegawai/daftar",

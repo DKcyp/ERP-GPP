@@ -11,17 +11,33 @@ import {
   Plus,
   X,
 } from "lucide-react";
+import { initialLeaveQuotas, LeaveQuota } from "./MasterCutiDashboard"; // Corrected import
 
 interface CutiListRecord {
   id: string;
   nama: string;
   jabatan: string;
   departemen: string;
-  jenisCuti: "Tahunan" | "Sakit" | "Melahirkan" | "Izin" | "Lainnya";
+  jenisCuti:
+    | "Cuti tahunan"
+    | "Cuti potong"
+    | "Cuti Project"
+    | "Cuti Sakit"
+    | "Cuti istimewa"
+    | "Cuti Khusus";
   tanggalMulai: string; // ISO
   tanggalSelesai: string; // ISO
-  alasan: string;
+  keterangan: string;
+  attachment?: string; // Optional field for attachment (e.g., surat dokter)
   status: "Pending" | "Disetujui" | "Ditolak";
+}
+
+interface Employee {
+  nama: string;
+  jabatan: string;
+  departemen: string;
+  tanggalMulaiKerja: string; // YYYY-MM-DD
+  leaveQuotaId?: string; // Optional: Link to a LeaveQuota entry
 }
 
 const initialListData: CutiListRecord[] = [
@@ -30,10 +46,10 @@ const initialListData: CutiListRecord[] = [
     nama: "Budi Santoso",
     jabatan: "Staff HR",
     departemen: "HRD",
-    jenisCuti: "Tahunan",
+    jenisCuti: "Cuti tahunan",
     tanggalMulai: "2025-09-10",
     tanggalSelesai: "2025-09-12",
-    alasan: "Urusan keluarga",
+    keterangan: "Urusan keluarga",
     status: "Disetujui",
   },
   {
@@ -41,10 +57,11 @@ const initialListData: CutiListRecord[] = [
     nama: "Siti Mawar",
     jabatan: "Teknisi",
     departemen: "Operational",
-    jenisCuti: "Sakit",
+    jenisCuti: "Cuti Sakit",
     tanggalMulai: "2025-09-03",
     tanggalSelesai: "2025-09-04",
-    alasan: "Sakit demam",
+    keterangan: "Sakit demam dan butuh istirahat",
+    attachment: "surat_dokter_siti.pdf",
     status: "Pending",
   },
   // Extra dummy to trigger alert (exceed per-employee limit)
@@ -53,16 +70,63 @@ const initialListData: CutiListRecord[] = [
     nama: "Budi Santoso",
     jabatan: "Staff HR",
     departemen: "HRD",
-    jenisCuti: "Izin",
+    jenisCuti: "Cuti istimewa",
     tanggalMulai: "2025-09-20",
     tanggalSelesai: "2025-09-20",
-    alasan: "Keperluan pribadi",
+    keterangan: "Keperluan pribadi yang mendesak",
     status: "Pending",
+  },
+  {
+    id: "CUTI-REQ-024",
+    nama: "Agus Dharma",
+    jabatan: "Manager",
+    departemen: "Marketing",
+    jenisCuti: "Cuti Project",
+    tanggalMulai: "2025-10-01",
+    tanggalSelesai: "2025-10-05",
+    keterangan: "Menghadiri pameran dagang di Surabaya",
+    status: "Disetujui",
+  },
+  {
+    id: "CUTI-REQ-025",
+    nama: "Siti Mawar",
+    jabatan: "Teknisi",
+    departemen: "Operational",
+    jenisCuti: "Cuti Khusus",
+    tanggalMulai: "2025-10-15",
+    tanggalSelesai: "2025-10-15",
+    keterangan: "Pernikahan adik",
+    status: "Pending",
+  },
+];
+
+const initialEmployeeData: Employee[] = [
+  {
+    nama: "Budi Santoso",
+    jabatan: "Staff HR",
+    departemen: "HRD",
+    tanggalMulaiKerja: "2024-01-15", // More than 1 year
+    leaveQuotaId: "LQ-001",
+  },
+  {
+    nama: "Siti Mawar",
+    jabatan: "Teknisi",
+    departemen: "Operational",
+    tanggalMulaiKerja: "2025-03-01", // Less than 1 year
+    leaveQuotaId: "LQ-002",
+  },
+  {
+    nama: "Agus Dharma",
+    jabatan: "Manager",
+    departemen: "Marketing",
+    tanggalMulaiKerja: "2023-05-20", // More than 1 year
+    leaveQuotaId: "LQ-003",
   },
 ];
 
 const PegawaiListCutiDashboard: React.FC = () => {
   const [rows, setRows] = useState<CutiListRecord[]>(initialListData);
+  const [employees, setEmployees] = useState<Employee[]>(initialEmployeeData); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [showEntries, setShowEntries] = useState(10);
   const [filters, setFilters] = useState({
     nama: "",
@@ -80,7 +144,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
     jenisCuti: "" as CutiListRecord["jenisCuti"] | "",
     tanggalMulai: "",
     tanggalSelesai: "",
-    alasan: "",
+    keterangan: "", // Renamed from 'alasan'
+    attachment: "", // New field
   });
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -112,9 +177,20 @@ const PegawaiListCutiDashboard: React.FC = () => {
 
   // Group filtered data per employee (by name). If there might be duplicate names,
   // we could key by `${nama}|${departemen}` to be safer.
-  const CUTI_TAHUNAN_QUOTA = 12; // kuota tahunan (unit: pengajuan/bulan/hari tergantung kebijakan)
+  const ANNUAL_LEAVE_ENTITLEMENT = 12; // 12 days of annual leave after 1 year of service
+  const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000; // Rough calculation for 1 year
 
   const grouped = useMemo(() => {
+    const employeeMap = new Map<string, Employee>();
+    employees.forEach((emp) => {
+      employeeMap.set(`${emp.nama}|${emp.departemen}`, emp);
+    });
+
+    const leaveQuotaMap = new Map<string, LeaveQuota>();
+    initialLeaveQuotas.forEach((quota) => {
+      leaveQuotaMap.set(quota.id, quota);
+    });
+
     const map = new Map<
       string,
       {
@@ -123,62 +199,146 @@ const PegawaiListCutiDashboard: React.FC = () => {
         departemen: string;
         jabatan?: string;
         tahunan: number;
-        proyek: number;
-        lainnya: number;
+        potong: number; // New field for Cuti potong
+        project: number; // New field for Cuti Project
+        sakit: number; // New field for Cuti Sakit
+        istimewa: number; // New field for Cuti Istimewa
+        khusus: number; // New field for Cuti Khusus
         total: number;
         pending: number;
         disetujui: number;
         ditolak: number;
-        sisa: number;
+        sisa: number; // This will now represent sisa cuti tahunan (relative to limitTahunan)
         details: CutiListRecord[];
+        // New limit fields for display
+        limitTahunan: number;
+        limitPotong: number;
+        limitProject: number;
+        limitSakit: number;
+        limitIstimewa: number;
+        limitKhusus: number;
       }
     >();
+
+    // Initialize annual leave entitlement based on employment date AND master quota
+    employeeMap.forEach((emp, key) => {
+      const quota: LeaveQuota | undefined = emp.leaveQuotaId
+        ? leaveQuotaMap.get(emp.leaveQuotaId)
+        : undefined;
+
+      const startDate = new Date(emp.tanggalMulaiKerja);
+      const now = new Date();
+      const yearsOfService =
+        (now.getTime() - startDate.getTime()) / ONE_YEAR_IN_MS;
+
+      // Annual leave entitlement from master or calculated based on service
+      const initialAnnualLeaveLimit =
+        quota?.limitTahunan ??
+        (yearsOfService >= 1 ? ANNUAL_LEAVE_ENTITLEMENT : 0);
+
+      map.set(key, {
+        key,
+        nama: emp.nama,
+        departemen: emp.departemen,
+        jabatan: emp.jabatan,
+        tahunan: 0,
+        potong: 0,
+        project: 0,
+        sakit: 0,
+        istimewa: 0,
+        khusus: 0,
+        total: 0,
+        pending: 0,
+        disetujui: 0,
+        ditolak: 0,
+        sisa: initialAnnualLeaveLimit, // Initial sisa is the limit
+        details: [],
+        limitTahunan: initialAnnualLeaveLimit,
+        limitPotong: quota?.limitPotong ?? 0,
+        limitProject: quota?.limitProject ?? 0,
+        limitSakit: quota?.limitSakit ?? 0,
+        limitIstimewa: quota?.limitIstimewa ?? 0,
+        limitKhusus: quota?.limitKhusus ?? 0,
+      });
+    });
 
     for (const r of filtered) {
       const key = `${r.nama}|${r.departemen}`;
       if (!map.has(key)) {
+        // If a leave record exists for an employee not in initialEmployeeData, add them with default 0 limits
         map.set(key, {
           key,
           nama: r.nama,
           departemen: r.departemen,
           jabatan: r.jabatan,
           tahunan: 0,
-          proyek: 0,
-          lainnya: 0,
+          potong: 0,
+          project: 0,
+          sakit: 0,
+          istimewa: 0,
+          khusus: 0,
           total: 0,
           pending: 0,
           disetujui: 0,
           ditolak: 0,
-          sisa: CUTI_TAHUNAN_QUOTA,
+          sisa: 0, // No initial leave if not in employee list, and no master quota found
           details: [],
+          limitTahunan: 0,
+          limitPotong: 0,
+          limitProject: 0,
+          limitSakit: 0,
+          limitIstimewa: 0,
+          limitKhusus: 0,
         });
       }
       const g = map.get(key)!;
-      const isTahunan = r.jenisCuti === "Tahunan";
-      // Heuristik: deteksi 'proyek' di alasan untuk menghitung Cuti Proyek
-      const isProyek = /proyek/i.test(r.alasan);
-      if (isTahunan) g.tahunan += 1;
-      if (isProyek) g.proyek += 1;
-      // Cuti Lainnya: semua pengajuan yang bukan Tahunan dan bukan Proyek
-      if (!isTahunan && !isProyek) g.lainnya += 1;
+
+      // Only count approved leaves
+      if (r.status === "Disetujui") {
+        if (r.jenisCuti === "Cuti tahunan") {
+          g.tahunan += 1;
+          g.sisa -= 1; // Deduct approved annual leave from entitlement
+        } else if (r.jenisCuti === "Cuti potong") {
+          g.potong += 1;
+        } else if (r.jenisCuti === "Cuti Project") {
+          g.project += 1;
+        } else if (r.jenisCuti === "Cuti Sakit") {
+          g.sakit += 1;
+        } else if (r.jenisCuti === "Cuti istimewa") {
+          g.istimewa += 1;
+        } else if (r.jenisCuti === "Cuti Khusus") {
+          g.khusus += 1;
+        }
+      }
+
       g.total += 1;
       if (r.status === "Pending") g.pending += 1;
       else if (r.status === "Disetujui") g.disetujui += 1;
       else g.ditolak += 1;
       g.details.push(r);
     }
-    // Hitung sisa cuti (berdasarkan tahunan + proyek yang disetujui)
+
     const arr = Array.from(map.values());
+    // Ensure sisa doesn't go below 0 (for annual leave)
     for (const g of arr) {
-      const used = g.tahunan + g.proyek;
-      g.sisa = Math.max(0, CUTI_TAHUNAN_QUOTA - used);
+      g.sisa = Math.max(0, g.sisa);
     }
     return arr;
-  }, [filtered]);
+  }, [filtered, employees]);
 
-  const LIMIT_PER_EMPLOYEE = 1;
+  // No longer a single LIMIT_PER_EMPLOYEE, checking individual limits
   const exceededGroups = useMemo(
-    () => grouped.filter((g) => g.total > LIMIT_PER_EMPLOYEE),
+    () =>
+      grouped.filter((g) => {
+        return (
+          (g.tahunan > g.limitTahunan && g.limitTahunan > 0) ||
+          (g.potong > g.limitPotong && g.limitPotong > 0) ||
+          (g.project > g.limitProject && g.limitProject > 0) ||
+          (g.sakit > g.limitSakit && g.limitSakit > 0) ||
+          (g.istimewa > g.limitIstimewa && g.limitIstimewa > 0) ||
+          (g.khusus > g.limitKhusus && g.limitKhusus > 0)
+        );
+      }),
     [grouped]
   );
   const pagedGroups = useMemo(
@@ -218,15 +378,29 @@ const PegawaiListCutiDashboard: React.FC = () => {
       !form.tanggalSelesai
     )
       return;
+
+    let finalJenisCuti = form.jenisCuti;
+    let finalKeterangan = form.keterangan;
+    let finalAttachment = form.attachment;
+
+    // Logic for "Cuti Sakit" attachment
+    if (form.jenisCuti === "Cuti Sakit" && !form.attachment) {
+      finalJenisCuti = "Cuti tahunan"; // Default to Cuti tahunan if no attachment for Cuti Sakit
+      finalKeterangan =
+        "Cuti Sakit (tanpa surat dokter, dikonversi ke Cuti tahunan): " +
+        form.keterangan;
+    }
+
     const newItem: CutiListRecord = {
       id: `CUTI-REQ-${String(rows.length + 21).padStart(3, "0")}`,
       nama: form.nama,
       jabatan: form.jabatan,
       departemen: form.departemen,
-      jenisCuti: form.jenisCuti as CutiListRecord["jenisCuti"],
+      jenisCuti: finalJenisCuti as CutiListRecord["jenisCuti"],
       tanggalMulai: form.tanggalMulai,
       tanggalSelesai: form.tanggalSelesai,
-      alasan: form.alasan,
+      keterangan: finalKeterangan, // Renamed from 'alasan'
+      attachment: finalAttachment, // New field
       status: "Pending",
     };
     setRows((prev) => [newItem, ...prev]);
@@ -238,7 +412,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
       jenisCuti: "",
       tanggalMulai: "",
       tanggalSelesai: "",
-      alasan: "",
+      keterangan: "", // Renamed from 'alasan'
+      attachment: "", // New field
     });
   };
 
@@ -356,11 +531,12 @@ const PegawaiListCutiDashboard: React.FC = () => {
                         className="w-full px-3 py-2 border rounded-lg text-sm"
                       >
                         <option value="">Pilih jenis</option>
-                        <option value="Tahunan">Tahunan</option>
-                        <option value="Sakit">Sakit</option>
-                        <option value="Melahirkan">Melahirkan</option>
-                        <option value="Izin">Izin</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Cuti tahunan">Cuti tahunan</option>
+                        <option value="Cuti potong">Cuti potong</option>
+                        <option value="Cuti Project">Cuti Project</option>
+                        <option value="Cuti Sakit">Cuti Sakit</option>
+                        <option value="Cuti istimewa">Cuti istimewa</option>
+                        <option value="Cuti Khusus">Cuti Khusus</option>
                       </select>
                     </div>
                     <div>
@@ -389,23 +565,51 @@ const PegawaiListCutiDashboard: React.FC = () => {
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Alasan
+                        Keterangan
                       </label>
                       <textarea
-                        name="alasan"
-                        value={form.alasan}
+                        name="keterangan"
+                        value={form.keterangan}
                         onChange={handleFormChange}
                         className="w-full px-3 py-2 border rounded-lg text-sm"
                         rows={3}
-                        placeholder="Alasan cuti"
+                        placeholder="Keterangan cuti"
                       />
                     </div>
+                    {form.jenisCuti === "Cuti Sakit" && (
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Attachment (Surat Dokter)
+                        </label>
+                        <input
+                          type="file"
+                          name="attachment"
+                          onChange={(e) =>
+                            setForm((p) => ({
+                              ...p,
+                              attachment: e.target.files?.[0]?.name || "",
+                            }))
+                          }
+                          className="w-full px-3 py-2 border rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">
+                          Wajib diisi jika Jenis Cuti adalah 'Cuti Sakit', jika
+                          tidak akan terinput sebagai Cuti tahunan.
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="px-6 py-4 border-t flex justify-end gap-3">
-                    <button onClick={closeModal} className="px-4 py-2 border rounded-lg">
+                    <button
+                      onClick={closeModal}
+                      className="px-4 py-2 border rounded-lg"
+                    >
                       Batal
                     </button>
-                    <button onClick={saveForm} className="px-4 py-2 bg-primary text-white rounded-lg">
+                    <button
+                      onClick={saveForm}
+                      className="px-4 py-2 bg-primary text-white rounded-lg"
+                    >
                       Simpan
                     </button>
                   </div>
@@ -475,11 +679,12 @@ const PegawaiListCutiDashboard: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary text-sm"
               >
                 <option value="">Semua</option>
-                <option value="Tahunan">Tahunan</option>
-                <option value="Sakit">Sakit</option>
-                <option value="Melahirkan">Melahirkan</option>
-                <option value="Izin">Izin</option>
-                <option value="Lainnya">Lainnya</option>
+                <option value="Cuti tahunan">Cuti tahunan</option>
+                <option value="Cuti potong">Cuti potong</option>
+                <option value="Cuti Project">Cuti Project</option>
+                <option value="Cuti Sakit">Cuti Sakit</option>
+                <option value="Cuti istimewa">Cuti istimewa</option>
+                <option value="Cuti Khusus">Cuti Khusus</option>
               </select>
             </div>
             <div>
@@ -537,8 +742,8 @@ const PegawaiListCutiDashboard: React.FC = () => {
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
                   <span className="font-semibold">Peringatan:</span>
                   <span>
-                    Pegawai berikut melebihi batas pengajuan cuti (
-                    {LIMIT_PER_EMPLOYEE}): {exceededGroups.map((g) => g.nama).join(", ")}
+                    Pegawai berikut melebihi batas pengajuan cuti:{" "}
+                    {exceededGroups.map((g) => g.nama).join(", ")}
                   </span>
                 </div>
               </div>
@@ -582,10 +787,19 @@ const PegawaiListCutiDashboard: React.FC = () => {
                     Cuti Tahunan
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cuti Proyek
+                    Cuti Potong
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cuti Lainnya
+                    Cuti Project
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cuti Sakit
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cuti Istimewa
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cuti Khusus
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total Cuti
@@ -600,19 +814,18 @@ const PegawaiListCutiDashboard: React.FC = () => {
                     Ditolak
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Sisa Cuti
+                    Sisa Cuti Tahunan
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {pagedGroups.map((g) => {
                   const isOpen = !!expanded[g.key];
-                  const overLimit = g.total > LIMIT_PER_EMPLOYEE;
                   return (
                     <React.Fragment key={g.key}>
                       <tr
                         className={`transition-colors cursor-pointer ${
-                          overLimit ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"
+                          isOpen ? "bg-gray-50" : "hover:bg-gray-50"
                         }`}
                         onClick={() => toggleExpand(g.key)}
                       >
@@ -625,28 +838,38 @@ const PegawaiListCutiDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {g.nama}
-                          {overLimit && (
-                            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 align-middle">
-                              Limit terlampaui
-                            </span>
-                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                           {g.departemen}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                           <span className="px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
-                            {g.tahunan}
+                            {g.tahunan} / {g.limitTahunan}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold">
+                            {g.potong} / {g.limitPotong}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                           <span className="px-2 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold">
-                            {g.proyek}
+                            {g.project} / {g.limitProject}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                          <span className="px-2 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold">
-                            {g.lainnya}
+                          <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold">
+                            {g.sakit} / {g.limitSakit}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold">
+                            {g.istimewa} / {g.limitIstimewa}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                          <span className="px-2 py-1 rounded-full bg-teal-100 text-teal-700 text-xs font-semibold">
+                            {g.khusus} / {g.limitKhusus}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
@@ -671,13 +894,13 @@ const PegawaiListCutiDashboard: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                           <span className="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
-                            {g.sisa}
+                            {g.sisa} / {g.limitTahunan}
                           </span>
                         </td>
                       </tr>
                       {isOpen && (
                         <tr>
-                          <td colSpan={11} className="bg-gray-50">
+                          <td colSpan={15} className="bg-gray-50">
                             <div className="px-6 py-4">
                               <div className="text-xs text-gray-500 mb-2">
                                 Detail Cuti {g.nama}
@@ -696,7 +919,10 @@ const PegawaiListCutiDashboard: React.FC = () => {
                                         Periode
                                       </th>
                                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Alasan
+                                        Keterangan
+                                      </th>
+                                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Attachment
                                       </th>
                                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
@@ -718,9 +944,26 @@ const PegawaiListCutiDashboard: React.FC = () => {
                                         <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">{`${r.tanggalMulai} - ${r.tanggalSelesai}`}</td>
                                         <td
                                           className="px-4 py-2 text-sm text-gray-700 max-w-xs truncate"
-                                          title={r.alasan}
+                                          title={r.keterangan}
                                         >
-                                          {r.alasan || "-"}
+                                          {r.keterangan || "-"}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700">
+                                          {r.attachment ? (
+                                            <a
+                                              href={`/path/to/attachments/${r.attachment}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-blue-600 hover:underline"
+                                              onClick={(e) =>
+                                                e.stopPropagation()
+                                              }
+                                            >
+                                              View File
+                                            </a>
+                                          ) : (
+                                            "-"
+                                          )}
                                         </td>
                                         <td className="px-4 py-2 whitespace-nowrap text-sm">
                                           {statusBadge(r.status)}

@@ -402,6 +402,7 @@ import MasterTunjanganHRDDashboard from "./MasterTunjanganHRDDashboard";
 import ApprovalLemburDashboard from "./ApprovalLemburDashboard";
 import ApprovalBarangRusakPage from "./ApprovalBarangRusakPage";
 import MasterAlurDokumenDashboard from "./MasterAlurDokumenDashboard";
+import MasterCutiDashboard from "./MasterCutiDashboard";
 
 interface DashboardProps {
   currentPage: string;
@@ -958,6 +959,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     }
     if (currentPage === "/hrd/pegawai/list-cuti") {
       return <PegawaiListCutiDashboard />;
+    }
+    if (currentPage === "/hrd/master/master-cuti") {
+      return <MasterCutiDashboard />;
     }
     if (currentPage === "/hrd/training/list") {
       return <HRDTrainingListDashboard />;
