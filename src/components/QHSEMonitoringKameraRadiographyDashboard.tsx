@@ -41,7 +41,7 @@ interface MonitoringKameraData {
   serumberW3: number;
   serumberW4: number;
   lokasiPemanfaatan: string[];
-  posisiKamera: string;
+  posisiKamera: string[];
   posisiKameraCustom?: string;
   posisiColor: string;
   progress: ProgressDetail;
@@ -97,7 +97,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
         "Lemukutan, Medco E&P Tarakan, Medco",
         "E&P Sangatta, MEDCO Sanga Sanga"
       ],
-      posisiKamera: "PHE ONWJ",
+      posisiKamera: ["PHE ONWJ"],
       posisiColor: "bg-blue-600 text-white",
       progress: {
         mainStatus: "Pengajuan",
@@ -143,7 +143,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
         "E&P Sangatta, PHE ONWJ, Medco Suka",
         "Makmur E&P Saka, Asam-asam"
       ],
-      posisiKamera: "MEDCO EPG",
+      posisiKamera: ["MEDCO EPG"],
       posisiColor: "bg-green-600 text-white",
       progress: {
         mainStatus: "Pelimbahan",
@@ -220,7 +220,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
     serumberW3: 0,
     serumberW4: 0,
     lokasiPemanfaatan: [""],
-    posisiKamera: "",
+    posisiKamera: [],
     posisiKameraCustom: "",
     posisiColor: "bg-blue-600 text-white",
     progress: {
@@ -405,9 +405,18 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
             {/* Posisi Kamera - merged for all personnel with colored block */}
             {isFirstRow && (
               <td rowSpan={rowSpan} className="px-2 py-2 text-center border-r border-gray-300">
-                <span className={`px-2 py-1 rounded text-xs font-medium ${kamera.posisiColor}`}>
-                  {kamera.posisiKamera}
-                </span>
+                <div className="space-y-1">
+                  {kamera.posisiKamera.map((posisi, index) => (
+                    <span key={index} className={`px-2 py-1 rounded text-xs font-medium block ${kamera.posisiColor}`}>
+                      {posisi}
+                    </span>
+                  ))}
+                  {kamera.posisiKamera.length === 0 && (
+                    <span className="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-600">
+                      Tidak ada posisi
+                    </span>
+                  )}
+                </div>
               </td>
             )}
             
@@ -494,7 +503,7 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
       serumberW3: 0,
       serumberW4: 0,
       lokasiPemanfaatan: [""],
-      posisiKamera: "",
+      posisiKamera: [],
       posisiKameraCustom: "",
       posisiColor: "bg-blue-600 text-white",
       progress: {
@@ -560,6 +569,10 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
         ...formData,
         id: Date.now().toString(),
       };
+      // Handle the case where posisiKamera might be empty array - set default color
+      if (newData.posisiKamera.length === 0) {
+        newData.posisiColor = "bg-blue-600 text-white";
+      }
       setMonitoringData([...monitoringData, newData]);
     } else if (modalMode === 'edit') {
       setMonitoringData(monitoringData.map(item => 
@@ -996,39 +1009,101 @@ const QHSEMonitoringKameraRadiographyDashboard: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Posisi Kamera
                     </label>
-                    <select
-                      value={formData.posisiKamera}
-                      onChange={(e) => {
-                        const selectedValue = e.target.value;
-                        const colors: Record<string, string> = {
-                          "PHE ONWJ": "bg-blue-600 text-white",
-                          "MEDCO EPG": "bg-green-600 text-white",
-                          OFFICE: "bg-gray-600 text-white",
-                          PROJECT: "bg-purple-600 text-white",
-                          "Lain-lain": "bg-orange-600 text-white",
-                        };
-                        setFormData((prev) => ({
-                          ...prev,
-                          posisiKamera: selectedValue,
-                          posisiColor: colors[selectedValue] || "bg-blue-600 text-white",
-                          posisiKameraCustom:
-                            selectedValue !== "Lain-lain" ? "" : prev.posisiKameraCustom || "",
-                        }));
-                      }}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                    >
-                      <option value="">-- Pilih Posisi Kamera --</option>
-                      <option value="PHE ONWJ">PHE ONWJ</option>
-                      <option value="MEDCO EPG">MEDCO EPG</option>
-                      <option value="OFFICE">OFFICE</option>
-                      <option value="PROJECT">PROJECT</option>
-                      <option value="Lain-lain">Lain-lain</option>
-                    </select>
+                    <div className="space-y-3">
+                      <div className="border border-gray-300 rounded-md p-3 bg-gray-50">
+                        <div className="text-xs font-medium text-gray-600 mb-2">Pilih Posisi Kamera:</div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: "PHE ONWJ", label: "PHE ONWJ", color: "bg-blue-600 text-white" },
+                            { value: "MEDCO EPG", label: "MEDCO EPG", color: "bg-green-600 text-white" },
+                            { value: "OFFICE", label: "OFFICE", color: "bg-gray-600 text-white" },
+                            { value: "PROJECT", label: "PROJECT", color: "bg-purple-600 text-white" },
+                            { value: "CORRIDOR", label: "CORRIDOR", color: "bg-indigo-600 text-white" },
+                            { value: "FIELD SITE", label: "FIELD SITE", color: "bg-teal-600 text-white" },
+                            { value: "Lain-lain", label: "Lain-lain", color: "bg-orange-600 text-white" }
+                          ].map((option) => {
+                            const isChecked = formData.posisiKamera.includes(option.value);
+                            return (
+                              <label
+                                key={option.value}
+                                className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer transition-all duration-200 ${
+                                  isChecked 
+                                    ? 'bg-blue-50 border-blue-200 border-2' 
+                                    : 'bg-white border border-gray-200 hover:bg-gray-50'
+                                } ${modalMode === 'view' ? 'cursor-not-allowed opacity-50' : ''}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={(e) => {
+                                    if (modalMode === 'view') return;
+                                    
+                                    const colors: Record<string, string> = {
+                                      "PHE ONWJ": "bg-blue-600 text-white",
+                                      "MEDCO EPG": "bg-green-600 text-white",
+                                      "OFFICE": "bg-gray-600 text-white",
+                                      "PROJECT": "bg-purple-600 text-white",
+                                      "CORRIDOR": "bg-indigo-600 text-white",
+                                      "FIELD SITE": "bg-teal-600 text-white",
+                                      "Lain-lain": "bg-orange-600 text-white",
+                                    };
+                                    
+                                    let newSelectedValues: string[];
+                                    if (e.target.checked) {
+                                      newSelectedValues = [...formData.posisiKamera, option.value];
+                                    } else {
+                                      newSelectedValues = formData.posisiKamera.filter(v => v !== option.value);
+                                    }
+                                    
+                                    // Use the first selected value's color, or default if none selected
+                                    const firstValue = newSelectedValues[0];
+                                    
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      posisiKamera: newSelectedValues,
+                                      posisiColor: colors[firstValue] || "bg-blue-600 text-white",
+                                      posisiKameraCustom:
+                                        !newSelectedValues.includes("Lain-lain") ? "" : prev.posisiKameraCustom || "",
+                                    }));
+                                  }}
+                                  disabled={modalMode === 'view'}
+                                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">{option.label}</span>
+                                {isChecked && (
+                                  <span className={`ml-auto px-2 py-0.5 rounded text-xs font-medium ${option.color}`}>
+                                    ✓
+                                  </span>
+                                )}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded">
+                        {formData.posisiKamera.length > 0 
+                          ? (
+                            <div>
+                              <div className="font-medium text-blue-700 mb-1">
+                                {formData.posisiKamera.length} posisi dipilih:
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {formData.posisiKamera.map((pos, index) => (
+                                  <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                                    {pos}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                          : 'Belum ada posisi yang dipilih'}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Custom Posisi Input - shown when "Lain-lain" is selected */}
-                  {formData.posisiKamera === "Lain-lain" && (
+                  {formData.posisiKamera.includes("Lain-lain") && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Posisi Lainnya

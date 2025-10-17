@@ -35,7 +35,7 @@ type DetailRow = {
   w3: string;
   w4: string;
   lokasiPemanfaatan: string;
-  posisiKamera: string;
+  posisiKamera: string[];
 };
 
 const initialData: Kamera[] = [
@@ -131,7 +131,7 @@ const RadiographyMonitoringKameraDashboard: React.FC = () => {
       w3: "",
       w4: "",
       lokasiPemanfaatan: "",
-      posisiKamera: "",
+      posisiKamera: [],
     };
     setMonthRows(selected.id, activeMonth, [...rows, newRow]);
   };
@@ -139,7 +139,7 @@ const RadiographyMonitoringKameraDashboard: React.FC = () => {
   const updateDetailCell = (
     rowIndex: number,
     field: keyof DetailRow,
-    value: string
+    value: string | string[]
   ) => {
     if (!selected) return;
     const rows = getMonthRows(selected.id, activeMonth);
@@ -735,17 +735,31 @@ const RadiographyMonitoringKameraDashboard: React.FC = () => {
                             />
                           </td>
                           <td className="px-3 py-2">
-                            <input
-                              className="w-28 border rounded px-2 py-1 text-sm"
-                              value={r.posisiKamera}
-                              onChange={(e) =>
-                                updateDetailCell(
-                                  idx,
-                                  "posisiKamera",
-                                  e.target.value
-                                )
-                              }
-                            />
+                            <div className="relative">
+                              <select
+                                multiple
+                                className="w-48 border rounded px-2 py-1 text-sm h-20 focus:ring-blue-500 focus:border-blue-500"
+                                value={r.posisiKamera}
+                                onChange={(e) => {
+                                  const selectedValues = Array.from(e.target.selectedOptions, option => option.value);
+                                  updateDetailCell(
+                                    idx,
+                                    "posisiKamera",
+                                    selectedValues
+                                  );
+                                }}
+                              >
+                                <option value="PHE ONWJ">PHE ONWJ</option>
+                                <option value="MEDCO EPG">MEDCO EPG</option>
+                                <option value="OFFICE">OFFICE</option>
+                                <option value="PROJECT">PROJECT</option>
+                                <option value="CORRIDOR">CORRIDOR</option>
+                                <option value="FIELD SITE">FIELD SITE</option>
+                              </select>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {r.posisiKamera.length > 0 ? `${r.posisiKamera.length} dipilih` : 'Pilih posisi'}
+                              </div>
+                            </div>
                           </td>
                           <td className="px-3 py-2 text-right">
                             <button
