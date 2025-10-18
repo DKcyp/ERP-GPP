@@ -163,6 +163,10 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const [serviceOrders, setServiceOrders] = useState<ServiceOrderItem[]>([]);
   const [nextSOId, setNextSOId] = useState(1);
 
+  // Detail modal (for operational view-only detail)
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [detailPO, setDetailPO] = useState<POItem | null>(null);
+
   // Function to calculate Harga Total and Jumlah Nilai SO
   const calculateHargaTotal = (qty: number, hargaUnit: number): number => {
     return qty * hargaUnit;
@@ -278,6 +282,12 @@ const MonitoringNilaiPOPage: React.FC = () => {
   const handleDeletePO = (item: POItem) => {
     setPoToDelete(item);
     setShowDeleteConfirm(true);
+  };
+
+  // Open detail for operational role
+  const openDetailPO = (item: POItem) => {
+    setDetailPO(item);
+    setShowDetailModal(true);
   };
 
   const confirmDelete = () => {
@@ -568,6 +578,15 @@ const MonitoringNilaiPOPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex space-x-2">
+                      {user?.role === "operational" && (
+                        <button
+                          onClick={() => openDetailPO(item)}
+                          className="px-2 py-1 text-blue-600 hover:text-blue-800 underline-offset-2 hover:underline rounded text-xs font-medium"
+                          title="Detail"
+                        >
+                          Detail
+                        </button>
+                      )}
                       {user?.role !== "operational" && user?.role !== "procon" && (
                         <button
                           onClick={() => handleEditPO(item)}
@@ -1064,6 +1083,132 @@ const MonitoringNilaiPOPage: React.FC = () => {
           onConfirm={confirmDelete}
           itemName={poToDelete.poSap}
         />
+      )}
+
+      {/* Detail Modal for Operational */}
+      {showDetailModal && detailPO && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Detail PO</h2>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-500">Nomor SO</div>
+                <div className="font-medium text-gray-900">{detailPO.so}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Project</div>
+                <div className="font-medium text-gray-900">{detailPO.project}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Pekerjaan</div>
+                <div className="font-medium text-gray-900">{detailPO.pekerjaan}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">SITE/Lokasi</div>
+                <div className="font-medium text-gray-900">{detailPO.siteLokasi || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">No. WBS</div>
+                <div className="font-medium text-gray-900">{detailPO.noWbs || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">WO</div>
+                <div className="font-medium text-gray-900">{detailPO.wo || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">PR</div>
+                <div className="font-medium text-gray-900">{detailPO.pr || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">RO</div>
+                <div className="font-medium text-gray-900">{detailPO.ro || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">PO SAP</div>
+                <div className="font-medium text-gray-900">{detailPO.poSap}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">CRO</div>
+                <div className="font-medium text-gray-900">{detailPO.cro || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Tanggal Release</div>
+                <div className="font-medium text-gray-900">{detailPO.tanggalRelease || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Commencement Start</div>
+                <div className="font-medium text-gray-900">{detailPO.commencementStartDate || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Commencement Finish</div>
+                <div className="font-medium text-gray-900">{detailPO.commencementFinishDate || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Jumlah Nilai SO</div>
+                <div className="font-bold text-gray-900">{detailPO.jumlahNilaiSO || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">Absorv</div>
+                <div className="font-bold text-gray-900">{detailPO.absorv || '-'}</div>
+              </div>
+              <div className="col-span-2">
+                <div className="text-gray-500">Pengembalian Nilai Kontrak</div>
+                <div className="font-medium text-gray-900">{detailPO.pengembalianNilaiKontrak || '-'}</div>
+              </div>
+              {detailPO.poAttachment && (
+                <div className="col-span-2">
+                  <div className="text-gray-500 mb-1">PO Attachment</div>
+                  <div className="p-3 border rounded-md bg-gray-50 flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">{detailPO.poAttachment.fileName}</div>
+                      <div className="text-xs text-gray-500">{detailPO.poAttachment.fileSize} • Uploaded: {detailPO.poAttachment.uploadDate}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {detailPO.serviceOrders && detailPO.serviceOrders.length > 0 && (
+              <div className="mt-6">
+                <div className="text-sm font-semibold mb-2">Service Orders</div>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">No</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Description</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">QTY</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Unit</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">Harga Total</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-700">No. WBS</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {detailPO.serviceOrders.map((so, idx) => (
+                        <tr key={so.id}>
+                          <td className="px-3 py-2 text-sm">{idx + 1}</td>
+                          <td className="px-3 py-2 text-sm">{so.description}</td>
+                          <td className="px-3 py-2 text-sm">{so.qty}</td>
+                          <td className="px-3 py-2 text-sm">{formatRupiah(so.hargaUnit)}</td>
+                          <td className="px-3 py-2 text-sm font-semibold">{formatRupiah(so.hargaTotal)}</td>
+                          <td className="px-3 py-2 text-sm">{so.noWbs}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

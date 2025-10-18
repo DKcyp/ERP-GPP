@@ -1,7 +1,11 @@
-import React from 'react';
-import { Clock, FileText, BarChart2, ClipboardList, FileSpreadsheet, TrendingUp } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Clock, FileText, BarChart2, ClipboardList, FileSpreadsheet, TrendingUp, X } from 'lucide-react';
 
 const ProconOverviewDashboard: React.FC = () => {
+  const navigateToPembuatan = () => {
+    // Navigate to Pembuatan Proforma Invoice page
+    window.location.hash = '/procon/proforma-invoice/pembuatan';
+  };
   // Dashboard summary data
   const totalPIYear = 1250000000; // Total nilai PI 1 tahun (mock)
   const jumlahPI = 120; // Jumlah PI (mock)
@@ -23,6 +27,78 @@ const ProconOverviewDashboard: React.FC = () => {
     { month: 'May', amount: 160_000_000 },
     { month: 'Jun', amount: 200_000_000 },
   ];
+
+  // ===== Modal detail Proforma Invoice by month =====
+  type NormalizedPI = {
+    documentDate: string; // dd/MM/yyyy
+    soInduk: string;
+    soTurunan: string;
+    salesName: string;
+    taxType: string;
+    currency: string;
+    keterangan: string;
+    dueDate: string;
+    contractOrPO: string;
+    bankCode: string;
+    totalPI: number;
+  };
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalMonth, setModalMonth] = useState<string>('');
+  const [modalData, setModalData] = useState<NormalizedPI[]>([]);
+
+  const monthIndex = (label: string): number => {
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return Math.max(0, names.indexOf(label));
+  };
+
+  const parseMonth = (dateStr?: string): number | null => {
+    if (!dateStr) return null;
+    // Try dd/MM/yyyy
+    const dm = dateStr.match(/^([0-3]?\d)\/([0-1]?\d)\/(\d{4})$/);
+    if (dm) return parseInt(dm[2], 10) - 1;
+    // Try ISO yyyy-MM-dd
+    const iso = Date.parse(dateStr);
+    if (!isNaN(iso)) return new Date(dateStr).getMonth();
+    return null;
+  };
+
+  const formatRupiah = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
+
+  const loadModalDataForMonth = (mLabel: string) => {
+    try {
+      const raw = localStorage.getItem('procon_pi_entries');
+      const list: any[] = raw ? JSON.parse(raw) : [];
+      const normalized: NormalizedPI[] = (Array.isArray(list) ? list : []).map((r: any): NormalizedPI => ({
+        documentDate: r.documentDate || r.contractStart || '',
+        soInduk: r.soInduk || '',
+        soTurunan: r.soTurunan || '',
+        salesName: r.salesName || '',
+        taxType: r.taxType || r.pajak || '',
+        currency: r.currency || r.mataUang || 'Rp',
+        keterangan: r.keterangan || '',
+        dueDate: r.dueDate || '',
+        contractOrPO: r.contractOrPO || r.po || r.kontrak || '',
+        bankCode: r.bankCode || '',
+        totalPI: Number(r.totalPI || r.nilaiKontrak || 0),
+      }));
+
+      const mIdx = monthIndex(mLabel);
+      const filtered = normalized.filter((n) => {
+        const mi = parseMonth(n.documentDate);
+        return mi !== null && mi === mIdx;
+      });
+      setModalData(filtered);
+      setModalMonth(mLabel);
+      setShowModal(true);
+    } catch (e) {
+      setModalData([]);
+      setModalMonth(mLabel);
+      setShowModal(true);
+    }
+  };
+
+  const closeModal = () => setShowModal(false);
 
   // Mock data adapted to requested columns for Project Performance Overview
   const projectPerformanceData = [
@@ -73,8 +149,6 @@ const ProconOverviewDashboard: React.FC = () => {
     },
   ];
 
-  const formatRupiah = (n: number) => `Rp ${n.toLocaleString('id-ID')}`;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header Section */}
@@ -103,7 +177,7 @@ const ProconOverviewDashboard: React.FC = () => {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Proforma Invoice */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer" onClick={navigateToPembuatan} title="Klik untuk Pembuatan Proforma Invoice">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-blue-100 rounded-xl">
                 <FileText className="h-8 w-8 text-blue-600" />
@@ -168,9 +242,10 @@ const ProconOverviewDashboard: React.FC = () => {
             {proformaInvoiceMonthly.map((item) => (
               <div key={item.month} className="flex flex-col items-center space-y-2">
                 <div
-                  className={`w-12 bg-blue-500 rounded-t-lg transition-all duration-700 ease-out hover:opacity-80`}
+                  className={`w-12 bg-blue-500 rounded-t-lg transition-all duration-700 ease-out hover:opacity-80 cursor-pointer`}
                   style={{ height: `${(item.amount / 1_000_000) * 0.8}px` }}
-                  title={`Rp ${item.amount.toLocaleString('id-ID')}`}
+                  title={`Rp ${item.amount.toLocaleString('id-ID')} — klik untuk lihat detail`}
+                  onClick={() => loadModalDataForMonth(item.month)}
                 ></div>
                 <span className="text-xs text-gray-500">Rp {(item.amount/1_000_000).toFixed(0)} jt</span>
                 <span className="text-sm text-gray-700 font-medium">{item.month}</span>
@@ -283,6 +358,61 @@ const ProconOverviewDashboard: React.FC = () => {
             </table>
           </div>
         </div>
+        {/* Modal Detail Proforma Invoice */}
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white w-full max-w-6xl max-h-[85vh] overflow-auto rounded-2xl shadow-2xl border border-gray-200">
+              <div className="flex items-center justify-between px-6 py-4 border-b">
+                <h4 className="text-lg font-semibold text-gray-900">Detail Proforma Invoice - {modalMonth}</h4>
+                <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-6">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tanggal Dokumen</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">No. SO / SO Turunan</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Nama Sales</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Pajak</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Mata Uang</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Keterangan</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Due Pembayaran</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">No. Kontrak / PO</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600">Kode Bank</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-600">Total PI</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {modalData.length === 0 ? (
+                        <tr>
+                          <td className="px-4 py-6 text-center text-sm text-gray-500" colSpan={10}>Tidak ada data untuk bulan ini.</td>
+                        </tr>
+                      ) : (
+                        modalData.map((r, idx) => (
+                          <tr key={idx} className="hover:bg-gray-50">
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.documentDate}</td>
+                            <td className="px-4 py-2 text-sm text-gray-900 font-medium">{r.soInduk} / {r.soTurunan}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.salesName || '-'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.taxType || '-'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.currency || 'Rp'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.keterangan || '-'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.dueDate || '-'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.contractOrPO || '-'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{r.bankCode || '-'}</td>
+                            <td className="px-4 py-2 text-sm text-gray-900 font-bold text-right">{formatRupiah(r.totalPI || 0)}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
