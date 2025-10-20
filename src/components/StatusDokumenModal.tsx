@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { X, CheckCircle } from "lucide-react";
-import { StatusHistoryItem } from "./ProsesProduksiDashboard"; // Import StatusHistoryItem
+
+export interface StatusHistoryItem {
+  status: string;
+  timestamp: string;
+  changedBy: string;
+}
 
 interface StatusDokumenModalProps {
   isOpen: boolean;
@@ -8,7 +13,8 @@ interface StatusDokumenModalProps {
   onSave: (status: string) => void;
   alurDokumen: string;
   currentStatus: string;
-  history: StatusHistoryItem[]; // New prop for status history
+  history: StatusHistoryItem[];
+  customOptions?: string[]; // Optional custom status list
 }
 
 // Define status options for each alur dokumen
@@ -54,6 +60,7 @@ const StatusDokumenModal: React.FC<StatusDokumenModalProps> = ({
   alurDokumen,
   currentStatus,
   history,
+  customOptions,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState(currentStatus);
 
@@ -68,7 +75,9 @@ const StatusDokumenModal: React.FC<StatusDokumenModalProps> = ({
     onClose();
   };
 
-  const availableStatuses = statusOptions[alurDokumen] || [];
+  const availableStatuses = (customOptions && customOptions.length > 0)
+    ? customOptions
+    : (statusOptions[alurDokumen] || []);
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">

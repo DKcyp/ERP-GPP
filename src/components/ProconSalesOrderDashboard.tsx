@@ -18,7 +18,9 @@ import {
   Trash2,
   X,
   Save,
+  RefreshCw,
 } from "lucide-react";
+import StatusDokumenModal, { StatusHistoryItem as SOStatusHistoryItem } from "./StatusDokumenModal";
 
 interface ProconSalesOrder {
   id: string;
@@ -85,6 +87,9 @@ interface ProconSalesOrder {
   logMekanik: string;
   tunjangan?: string; // Renamed from tunjanganGaji
   gajiProrate?: string; // Renamed from prorateTeknisi
+  // Optional: status update context
+  alurDokumen?: string;
+  statusHistory?: SOStatusHistoryItem[];
 }
 
 const ProconSalesOrderDashboard: React.FC = () => {
@@ -109,6 +114,27 @@ const ProconSalesOrderDashboard: React.FC = () => {
     null
   );
   const [formData, setFormData] = useState<Partial<ProconSalesOrder>>({});
+  // Status modal state
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [statusTarget, setStatusTarget] = useState<ProconSalesOrder | null>(null);
+  const soStatusOptions: ProconSalesOrder["status"][] = [
+    "Bar Review",
+    "Cancel",
+    "On Duty",
+    "Paid",
+    "Plan",
+    "Prepare BAP",
+    "Prepare PI",
+    "Report GBP",
+    "Report Review",
+    "Revisi Report",
+    "SO Cancel",
+    "SO Minus",
+    "Tambahan PI",
+    "Waiting Payment",
+    "Waiting Report",
+    "Waiting SP3",
+  ];
 
   // Sample data matching the Excel structure
   const [salesOrders, setSalesOrders] = useState<ProconSalesOrder[]>([
@@ -806,6 +832,25 @@ const ProconSalesOrderDashboard: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
 
+  const openStatusModal = (item: ProconSalesOrder) => {
+    setStatusTarget(item);
+    setStatusModalOpen(true);
+  };
+
+  const handleSaveStatus = (newStatus: string) => {
+    if (!statusTarget) return;
+    setSalesOrders(prev => prev.map(it => {
+      if (it.id !== statusTarget.id) return it;
+      const history = it.statusHistory ? [...it.statusHistory] : [];
+      history.push({
+        status: newStatus,
+        timestamp: new Date().toISOString().replace('T',' ').slice(0,16),
+        changedBy: 'User',
+      });
+      return { ...it, status: newStatus as ProconSalesOrder["status"], statusHistory: history };
+    }));
+  };
+
   const handleSave = () => {
     if (isAddModalOpen) {
       const newId = (salesOrders.length + 1).toString();
@@ -1416,9 +1461,11 @@ const ProconSalesOrderDashboard: React.FC = () => {
                     </td>
                     <td className="px-2 py-3 text-xs border border-gray-300 text-center">
                       <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border ${getStatusColor(
+                        onClick={() => openStatusModal(item)}
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold border cursor-pointer hover:shadow ${getStatusColor(
                           item.keterangan
                         )}`}
+                        title="Update Status Dokumen"
                       >
                         {item.keterangan}
                       </span>
@@ -1494,6 +1541,14 @@ const ProconSalesOrderDashboard: React.FC = () => {
                           title="Edit"
                         >
                           <Edit className="h-3 w-3" />
+                        </button>
+                        <button
+                          onClick={() => openStatusModal(item)}
+                          className="px-2 py-1 bg-indigo-600 text-white rounded-md text-xs inline-flex items-center gap-1"
+                          title="Update Status"
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                          <span>Status</span>
                         </button>
                         <button
                           onClick={() => handleDelete(item)}
@@ -1912,34 +1967,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={formData.status || ""}
-                  onChange={(e) => handleInputChange("status", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Status</option>
-                  <option value="Bar Review">Bar Review</option>
-                  <option value="Cancel">Cancel</option>
-                  <option value="On Duty">On Duty</option>
-                  <option value="Paid">Paid</option>
-                  <option value="Plan">Plan</option>
-                  <option value="Prepare BAP">Prepare BAP</option>
-                  <option value="Prepare PI">Prepare PI</option>
-                  <option value="Report GBP">Report GBP</option>
-                  <option value="Report Review">Report Review</option>
-                  <option value="Revisi Report">Revisi Report</option>
-                  <option value="SO Cancel">SO Cancel</option>
-                  <option value="SO Minus">SO Minus</option>
-                  <option value="Tambahan PI">Tambahan PI</option>
-                  <option value="Waiting Payment">Waiting Payment</option>
-                  <option value="Waiting Report">Waiting Report</option>
-                  <option value="Waiting SP3">Waiting SP3</option>
-                </select>
-              </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Remarks Project Control
@@ -2108,6 +2135,20 @@ const ProconSalesOrderDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Update Status Modal */}
+      <StatusDokumenModal
+        isOpen={statusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        onSave={handleSaveStatus}
+        alurDokumen={statusTarget?.alurDokumen || "Project PHE ONWJ"}
+        currentStatus={statusTarget?.status || ""}
+        history={statusTarget?.statusHistory || [
+          { status: "Dibuat", timestamp: "2025-01-30 10:00", changedBy: "Admin" },
+          { status: statusTarget?.status || "", timestamp: new Date().toISOString().replace('T',' ').slice(0,16), changedBy: "User" }
+        ]}
+        customOptions={soStatusOptions as string[]}
+      />
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && selectedItem && (
