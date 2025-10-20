@@ -10,8 +10,11 @@ import {
   Plus,
   Minus,
   Printer,
+  Check,
+  X,
 } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { useAuth } from "../context/AuthContext";
 
 interface PassengerData {
   no: number;
@@ -106,6 +109,9 @@ interface TicketRow {
 
 const GeneralPengajuanTicketDashboard: React.FC = () => {
   const today = new Date();
+  const auth = useAuth() as any;
+  const user = auth?.user as { role?: string } | undefined;
+  const isHRD = /HRD/i.test(user?.role || "");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("Tambah Pengajuan Ticket");
@@ -489,6 +495,37 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       setIsConfirmOpen(false);
       setRowToDelete(null);
     }
+  };
+
+  // Approve/Reject modal state
+  const [decisionOpen, setDecisionOpen] = useState(false);
+  const [decisionType, setDecisionType] = useState<"approve" | "reject" | null>(null);
+  const [decisionRow, setDecisionRow] = useState<TicketRow | null>(null);
+  const [rejectNote, setRejectNote] = useState("");
+
+  const openApprove = (row: TicketRow) => {
+    setDecisionType("approve");
+    setDecisionRow(row);
+    setRejectNote("");
+    setDecisionOpen(true);
+  };
+  const openReject = (row: TicketRow) => {
+    setDecisionType("reject");
+    setDecisionRow(row);
+    setRejectNote("");
+    setDecisionOpen(true);
+  };
+  const confirmDecision = () => {
+    if (!decisionRow || !decisionType) return;
+    setRows(prev => prev.map(r => r.id === decisionRow.id ? {
+      ...r,
+      status: decisionType === "approve" ? "Approved" : "Rejected",
+      deskripsi: decisionType === "reject" && rejectNote ? `${r.deskripsi}\nAlasan reject: ${rejectNote}` : r.deskripsi,
+    } : r));
+    setDecisionOpen(false);
+    setDecisionRow(null);
+    setDecisionType(null);
+    setRejectNote("");
   };
 
   const filtered = useMemo(() => {
@@ -1168,6 +1205,24 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <div className="flex items-center justify-center space-x-2">
+                          {isHRD && (
+                            <>
+                              <button
+                                onClick={() => openApprove(row)}
+                                className="text-green-600 hover:text-green-900 p-1 rounded-md hover:bg-green-50"
+                                title="Approve"
+                              >
+                                <Check className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => openReject(row)}
+                                className="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50"
+                                title="Reject"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
                           <button
                             onClick={() => handleEdit(row)}
                             className="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50"
@@ -2242,6 +2297,30 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
         itemName={rowToDelete?.noTicket}
         message="Apakah Anda yakin ingin menghapus Pengajuan Ticket ini?"
       />
+      {/* Approve/Reject Modal (HRD) */}
+      {decisionOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-white flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">{decisionType === 'approve' ? 'Konfirmasi Approve' : 'Konfirmasi Reject'}</h3>
+              <button className="text-gray-500" onClick={() => setDecisionOpen(false)}>Tutup</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-gray-700">Anda yakin ingin {decisionType === 'approve' ? 'menyetujui' : 'menolak'} ticket {decisionRow?.noTicket} - {decisionRow?.pemohon}?</p>
+              {decisionType === 'reject' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                  <textarea value={rejectNote} onChange={(e)=>setRejectNote(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" rows={3} placeholder="Alasan penolakan" />
+                </div>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-end gap-2">
+              <button onClick={() => setDecisionOpen(false)} className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">Batal</button>
+              <button onClick={confirmDecision} className={`px-4 py-2 text-white rounded-lg text-sm ${decisionType==='approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}>{decisionType==='approve' ? 'Approve' : 'Reject'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
