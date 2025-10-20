@@ -373,7 +373,7 @@ import GeneralBudgetPengajuanDashboard from "./GeneralBudgetPengajuanDashboard";
 import GeneralBudgetLaporanDashboard from "./GeneralBudgetLaporanDashboard";
 import GeneralPengajuanResignDashboard from "./GeneralPengajuanResignDashboard";
 import AuditTrailDashboard from "./AuditTrailDashboard"; // Import the new Audit Trail component
- // Import KontrakExpenditureDashboard
+// Import KontrakExpenditureDashboard
 
 // General Kendaraan
 import GeneralKendaraanPengajuanDriver from "./GeneralKendaraanPengajuanDriver";

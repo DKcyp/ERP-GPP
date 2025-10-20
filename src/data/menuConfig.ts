@@ -797,12 +797,12 @@ export const operationalMenu: MenuSection[] = [
     items: [],
     directPath: "/operational/timesheet/barang-pegawai",
   },
-  {
-    title: "Dashboard TimeSheet",
-    icon: "Clock",
-    items: [],
-    directPath: "/operational/timesheet/dashboard",
-  },
+  // {
+  //   title: "Dashboard TimeSheet",
+  //   icon: "Clock",
+  //   items: [],
+  //   directPath: "/operational/timesheet/dashboard",
+  // },
   {
     title: "Produksi",
     icon: "Factory",
