@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Calendar, FileDown, Eye, X, Edit, Printer, MessageSquare, Settings } from 'lucide-react';
 import FollowUpModal from './FollowUpModal';
+import StatusDokumenModal, { StatusHistoryItem } from './StatusDokumenModal';
 
 interface FollowUp {
   tanggal: string;
@@ -16,7 +17,9 @@ interface InvoiceRow {
   noSO: string;
   nilai: string; // formatted currency
   status: 'Draft' | 'Dikirim' | 'Diterima' | 'Ditolak';
-  productionStatus: string; // Status dokumen produksi
+  productionStatus: string; // Status dokumen berdasarkan alur dokumen
+  alurDokumen: string; // Nama alur (Project PHE ONWJ, dst.)
+  statusHistory: StatusHistoryItem[]; // Riwayat status
   ppnType?: 'Wapu' | 'Non Wapu'; // PPN Wapu atau Non Wapu
   ppnDibebaskan?: boolean; // PPN dibebaskan
   tanggalDikirim?: string; // yyyy-mm-dd
@@ -26,9 +29,9 @@ interface InvoiceRow {
 }
 
 const initialData: InvoiceRow[] = [
-  { id: 1, noInvoice: 'INV-001', noPI: 'PI-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', productionStatus: 'open GBP', ppnType: 'Wapu', ppnDibebaskan: false, followUps: [] },
-  { id: 2, noInvoice: 'INV-002', noPI: 'PI-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', productionStatus: 'Verifikasi Report BA IRVANI', ppnType: 'Non Wapu', ppnDibebaskan: false, tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
-  { id: 3, noInvoice: 'INV-003', noPI: 'PI-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', productionStatus: 'REVIEW REPORT', ppnType: 'Wapu', ppnDibebaskan: true, tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
+  { id: 1, noInvoice: 'INV-001', noPI: 'PI-001', tanggal: '01-09-2025', customer: 'PT. Alpha', noSO: 'SO-1001', nilai: 'Rp 12.500.000', status: 'Draft', productionStatus: 'open GBP', alurDokumen: 'Project PHE ONWJ', statusHistory: [ { status: 'Dibuat', timestamp: '2025-01-30 10:00', changedBy: 'Admin' }, { status: 'open GBP', timestamp: '2025-02-01 11:30', changedBy: 'User1' } ], ppnType: 'Wapu', ppnDibebaskan: false, followUps: [] },
+  { id: 2, noInvoice: 'INV-002', noPI: 'PI-002', tanggal: '03-09-2025', customer: 'CV. Beta', noSO: 'SO-1002', nilai: 'Rp 7.250.000', status: 'Dikirim', productionStatus: 'Verifikasi Report BA (EWAN)', alurDokumen: 'Project Medco Gresik', statusHistory: [ { status: 'Dibuat', timestamp: '2025-02-04 09:00', changedBy: 'Admin' }, { status: 'Verifikasi Report BA (EWAN)', timestamp: '2025-02-05 10:45', changedBy: 'User2' } ], ppnType: 'Non Wapu', ppnDibebaskan: false, tanggalDikirim: '2025-09-04', followUps: [{tanggal: '2025-09-05', status: 'Follow up via phone'}] },
+  { id: 3, noInvoice: 'INV-003', noPI: 'PI-003', tanggal: '05-09-2025', customer: 'PT. Gamma', noSO: 'SO-1003', nilai: 'Rp 4.800.000', status: 'Diterima', productionStatus: 'REVIEW REPORT', alurDokumen: 'Pertamina Hulu Mahakam', statusHistory: [ { status: 'Dibuat', timestamp: '2025-02-09 14:00', changedBy: 'Admin' }, { status: 'REVIEW REPORT', timestamp: '2025-03-02 09:30', changedBy: 'User3' } ], ppnType: 'Wapu', ppnDibebaskan: true, tanggalDikirim: '2025-09-06', tanggalDiterima: '2025-09-07', followUps: [] },
 ];
 
 const FinanceARInvoiceDashboard: React.FC = () => {
@@ -268,6 +271,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                   <th className="px-6 py-3">No SO</th>
                   <th className="px-6 py-3">Nilai</th>
                   <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Alur Dokumen</th>
                   <th className="px-6 py-3">Status Dokumen</th>
                   <th className="px-6 py-3">Aksi</th>
                 </tr>
@@ -292,6 +296,7 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                         {r.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4">{r.alurDokumen}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getProductionStatusStyle(r.productionStatus)}`}>
                         {r.productionStatus}
@@ -409,6 +414,10 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                     </span>
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Alur Dokumen</label>
+                    <p className="mt-1 text-sm text-gray-900 font-semibold">{selectedInvoice.alurDokumen}</p>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-600">Status Dokumen</label>
                     <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${getProductionStatusStyle(selectedInvoice.productionStatus)}`}>
@@ -609,6 +618,18 @@ const FinanceARInvoiceDashboard: React.FC = () => {
                   </div>
 
                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Alur Dokumen</label>
+                    <select
+                      value={editFormData.alurDokumen}
+                      onChange={(e) => handleEditInputChange('alurDokumen', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="Project PHE ONWJ">Project PHE ONWJ</option>
+                      <option value="Project Medco Gresik">Project Medco Gresik</option>
+                      <option value="Pertamina Hulu Mahakam">Pertamina Hulu Mahakam</option>
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Status Dokumen</label>
                     <input
                       type="text"
@@ -721,122 +742,23 @@ const FinanceARInvoiceDashboard: React.FC = () => {
         />
       )}
 
-      {/* Status Dokumen Modal */}
-      {showStatusModal && selectedInvoice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex justify-between items-center p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-t-lg">
-              <h2 className="text-lg font-semibold">Update Status Dokumen</h2>
-              <button
-                onClick={() => setShowStatusModal(false)}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-4">
-              {/* Document Info */}
-              <div className="bg-gray-50 p-3 rounded-lg mb-4">
-                <div className="text-sm">
-                  <span className="font-medium text-gray-600">Alur Dokumen:</span>
-                  <span className="ml-2 font-semibold text-blue-600">{selectedInvoice.noPI}</span>
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Status Saat Ini: 
-                  <span className={`ml-1 px-2 py-1 text-xs font-semibold rounded-full ${getProductionStatusStyle(selectedInvoice.productionStatus)}`}>
-                    {selectedInvoice.productionStatus}
-                  </span>
-                </div>
-              </div>
-
-              {/* Status History */}
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Riwayat Status</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="font-medium text-gray-600">STATUS</span>
-                    <span className="font-medium text-gray-600">WAKTU</span>
-                    <span className="font-medium text-gray-600">OLEH</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm py-1">
-                    <span className="text-gray-700">Dibuat</span>
-                    <span className="text-gray-500">2025-01-30 10:00</span>
-                    <span className="text-gray-500">Admin</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm py-1">
-                    <span className="text-blue-600 font-medium">{selectedInvoice.productionStatus}</span>
-                    <span className="text-gray-500">2025-02-01 11:30</span>
-                    <span className="text-gray-500">User1</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* New Status Selection */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Pilih Status Dokumen Baru</h3>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {[
-                    'open GBP',
-                    'Review Report PHE',
-                    'Revisi Report GBP',
-                    'Upload AWPI & TIDMS',
-                    'Prepare BAP GBP',
-                    'Pengurusan BAP PHE',
-                    'Prepare PI GBP',
-                    'Verifikasi Report BA IRVANI',
-                    'REVIEW REPORT'
-                  ].map((status, index) => (
-                    <label key={index} className="flex items-center p-2 hover:bg-gray-50 rounded-md cursor-pointer">
-                      <input
-                        type="radio"
-                        name="newStatus"
-                        value={status}
-                        defaultChecked={status === selectedInvoice.productionStatus}
-                        className="mr-3 text-blue-600 focus:ring-blue-500"
-                      />
-                      <div className="flex items-center">
-                        <span className="text-sm mr-2">{index + 1}</span>
-                        <span className="text-sm text-gray-700">{status}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="flex justify-end gap-3 p-4 border-t border-gray-200">
-              <button
-                onClick={() => setShowStatusModal(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={() => {
-                  // Handle status update here
-                  const newStatus = document.querySelector('input[name="newStatus"]:checked') as HTMLInputElement;
-                  if (newStatus && selectedInvoice) {
-                    setRows(prevRows => 
-                      prevRows.map(row => 
-                        row.id === selectedInvoice.id ? { ...row, productionStatus: newStatus.value } : row
-                      )
-                    );
-                    setShowStatusModal(false);
-                    alert(`Status dokumen berhasil diupdate ke: ${newStatus.value}`);
-                  }
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-              >
-                Update Status
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Status Dokumen Modal (shared with Operasional) */}
+      <StatusDokumenModal
+        isOpen={showStatusModal && !!selectedInvoice}
+        onClose={() => setShowStatusModal(false)}
+        onSave={(newStatus) => {
+          if (!selectedInvoice) return;
+          setRows(prev => prev.map(r => {
+            if (r.id !== selectedInvoice.id) return r;
+            const newHistory = [...(r.statusHistory || [])];
+            newHistory.push({ status: newStatus, timestamp: new Date().toISOString().replace('T',' ').slice(0,16), changedBy: 'Finance' });
+            return { ...r, productionStatus: newStatus, statusHistory: newHistory };
+          }));
+        }}
+        alurDokumen={selectedInvoice?.alurDokumen || 'Project PHE ONWJ'}
+        currentStatus={selectedInvoice?.productionStatus || ''}
+        history={selectedInvoice?.statusHistory || []}
+      />
 
     </div>
   );

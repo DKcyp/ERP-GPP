@@ -2479,11 +2479,11 @@ export const proconMenu: MenuSection[] = [
       },
     ],
   },
-  {
-    title: "Produksi",
-    icon: "Factory",
-    items: [],
-    directPath: "/procon/produksi/proses",
-  },
+  // {
+  //   title: "Produksi",
+  //   icon: "Factory",
+  //   items: [],
+  //   directPath: "/procon/produksi/proses",
+  // },
   createGeneralMenu("procon"),
 ];
