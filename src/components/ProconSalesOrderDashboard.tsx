@@ -106,7 +106,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [goToPageInput, setGoToPageInput] = useState<string>("");
   // CRUD Modal States
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -114,6 +113,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
     null
   );
   const [formData, setFormData] = useState<Partial<ProconSalesOrder>>({});
+  const [editMode, setEditMode] = useState<'add' | 'edit'>('edit');
   // Status modal state
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [statusTarget, setStatusTarget] = useState<ProconSalesOrder | null>(null);
@@ -763,6 +763,8 @@ const ProconSalesOrderDashboard: React.FC = () => {
   // CRUD Functions
   const handleAdd = () => {
     const nextNo = salesOrders.length + 1;
+    setEditMode('add');
+    setSelectedItem(null);
     setFormData({
       date: new Date().toLocaleDateString("en-GB", {
         day: "2-digit",
@@ -771,7 +773,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       }),
       contractNo: `KD-${String(nextNo).padStart(3, "0")}`,
       yearSheet: "2025",
-      status: "Plan", // Updated default status
+      status: "Plan",
       keterangan: "IN PROGRESS",
       statusPekerjaan: "PROGRESS",
       statusAR: "NOT STARTED",
@@ -811,14 +813,16 @@ const ProconSalesOrderDashboard: React.FC = () => {
         month: "short",
         year: "2-digit",
       }),
-      tunjangan: "0", // Initialize new field
-      gajiProrate: "0", // Initialize new field
+      tunjangan: "0",
+      gajiProrate: "0",
     });
+    setIsEditModalOpen(true);
   };
 
   const handleEdit = (item: ProconSalesOrder) => {
     setSelectedItem(item);
     setFormData({ ...item });
+    setEditMode('edit');
     setIsEditModalOpen(true);
   };
 
@@ -852,7 +856,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
   };
 
   const handleSave = () => {
-    if (isAddModalOpen) {
+    if (editMode === 'add') {
       const newId = (salesOrders.length + 1).toString();
       const newNo = salesOrders.length + 1;
       const newSoNo = `SO-2025-${String(newNo).padStart(3, "0")}`;
@@ -872,7 +876,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
       };
 
       setSalesOrders((prev) => [newItem, ...prev]);
-      setIsAddModalOpen(false);
+      setIsEditModalOpen(false);
     } else if (isEditModalOpen && selectedItem) {
       setSalesOrders((prev) =>
         prev.map((item) =>
@@ -892,6 +896,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
     }
     setFormData({});
     setSelectedItem(null);
+    setEditMode('edit');
   };
 
   const handleConfirmDelete = () => {
@@ -1675,174 +1680,6 @@ const ProconSalesOrderDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Add Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">
-                Add New Sales Order
-              </h2>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.date || ""}
-                  onChange={(e) => handleInputChange("date", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Client
-                </label>
-                <input
-                  type="text"
-                  value={formData.client || ""}
-                  onChange={(e) => handleInputChange("client", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Equipment Scope Location
-                </label>
-                <select
-                  value={formData.equipmentScopeLocation || ""}
-                  onChange={(e) =>
-                    handleInputChange("equipmentScopeLocation", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Location</option>
-                  <option value="ONSHORE">ONSHORE</option>
-                  <option value="OFFSHORE">OFFSHORE</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Equipment Received
-                </label>
-                <select
-                  value={formData.equipmentReceived || ""}
-                  onChange={(e) =>
-                    handleInputChange("equipmentReceived", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Status</option>
-                  <option value="COMPLETE">COMPLETE</option>
-                  <option value="PARTIAL">PARTIAL</option>
-                  <option value="PENDING">PENDING</option>
-                </select>
-              </div>
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Scope of Work
-                </label>
-                <textarea
-                  value={formData.scopeOfWork || ""}
-                  onChange={(e) =>
-                    handleInputChange("scopeOfWork", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Man Power
-                </label>
-                <input
-                  type="text"
-                  value={formData.manPower || ""}
-                  onChange={(e) =>
-                    handleInputChange("manPower", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  value={formData.location || ""}
-                  onChange={(e) =>
-                    handleInputChange("location", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  PO/Kontrak Received
-                </label>
-                <input
-                  type="date"
-                  value={formData.poKontrakReceived || ""}
-                  onChange={(e) =>
-                    handleInputChange("poKontrakReceived", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tunjangan
-                </label>
-                <input
-                  type="text"
-                  value={formData.tunjangan || ""}
-                  onChange={(e) =>
-                    handleInputChange("tunjangan", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Gaji Prorate
-                </label>
-                <input
-                  type="text"
-                  value={formData.gajiProrate || ""}
-                  onChange={(e) =>
-                    handleInputChange("gajiProrate", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2 mt-6">
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
-              >
-                <Save className="h-4 w-4" />
-                <span>Save</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && (
@@ -1850,7 +1687,7 @@ const ProconSalesOrderDashboard: React.FC = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900">
-                Edit Sales Order
+                {editMode === 'add' ? 'Add New Sales Order' : 'Edit Sales Order'}
               </h2>
               <button
                 onClick={() => setIsEditModalOpen(false)}

@@ -16,10 +16,13 @@ interface TripItem {
   id: string;
   no: number;
   namaPegawai: string;
+  jabatan: string; // baru
   tujuan: string;
   tanggalBerangkat: string; // ISO date
   tanggalPulang: string; // ISO date
   biaya: number;
+  estimasiPerjalanan?: number; // baru
+  realisasiPerjalanan?: number; // baru
   keterangan?: string;
   attachmentName?: string;
   attachmentUrl?: string;
@@ -31,10 +34,13 @@ const PerjalananDinasDashboard: React.FC = () => {
       id: "1",
       no: 1,
       namaPegawai: "Budi Santoso",
+      jabatan: "Supervisor",
       tujuan: "Surabaya",
       tanggalBerangkat: "2025-03-05",
       tanggalPulang: "2025-03-07",
       biaya: 2500000,
+      estimasiPerjalanan: 3000000,
+      realisasiPerjalanan: 2450000,
       keterangan: "Kunjungan klien",
       attachmentName: "SPD_Budi.pdf",
       attachmentUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
@@ -43,10 +49,13 @@ const PerjalananDinasDashboard: React.FC = () => {
       id: "2",
       no: 2,
       namaPegawai: "Siti Aminah",
+      jabatan: "Staff",
       tujuan: "Bandung",
       tanggalBerangkat: "2025-03-10",
       tanggalPulang: "2025-03-12",
       biaya: 1800000,
+      estimasiPerjalanan: 2000000,
+      realisasiPerjalanan: 1825000,
       keterangan: "Survey lokasi",
       attachmentName: "RAB_Siti.xlsx",
       attachmentUrl: "https://file-examples.com/storage/fe1d6b1a0ec/example.xlsx",
@@ -69,10 +78,13 @@ const PerjalananDinasDashboard: React.FC = () => {
   const [editingItem, setEditingItem] = useState<TripItem | null>(null);
   const [form, setForm] = useState<Omit<TripItem, "id" | "no">>({
     namaPegawai: "",
+    jabatan: "",
     tujuan: "",
     tanggalBerangkat: "",
     tanggalPulang: "",
     biaya: 0,
+    estimasiPerjalanan: 0,
+    realisasiPerjalanan: 0,
     keterangan: "",
   });
 
@@ -120,10 +132,13 @@ const PerjalananDinasDashboard: React.FC = () => {
     setEditingItem(null);
     setForm({
       namaPegawai: "",
+      jabatan: "",
       tujuan: "",
       tanggalBerangkat: "",
       tanggalPulang: "",
       biaya: 0,
+      estimasiPerjalanan: 0,
+      realisasiPerjalanan: 0,
       keterangan: "",
     });
     setShowFormModal(true);
@@ -133,10 +148,13 @@ const PerjalananDinasDashboard: React.FC = () => {
     setEditingItem(item);
     setForm({
       namaPegawai: item.namaPegawai,
+      jabatan: item.jabatan,
       tujuan: item.tujuan,
       tanggalBerangkat: item.tanggalBerangkat,
       tanggalPulang: item.tanggalPulang,
       biaya: item.biaya,
+      estimasiPerjalanan: item.estimasiPerjalanan || 0,
+      realisasiPerjalanan: item.realisasiPerjalanan || 0,
       keterangan: item.keterangan || "",
     });
     setShowFormModal(true);
@@ -198,6 +216,15 @@ const PerjalananDinasDashboard: React.FC = () => {
   };
 
   const handleExport = (type: string) => alert(`Export ${type}`);
+
+  const calcDurasi = (start: string, end: string) => {
+    if (!start || !end) return 0;
+    const s = new Date(start);
+    const e = new Date(end);
+    const ms = e.getTime() - s.getTime();
+    if (isNaN(ms)) return 0;
+    return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)) + 1);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -322,6 +349,9 @@ const PerjalananDinasDashboard: React.FC = () => {
                     Nama Pegawai
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Jabatan
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Tujuan
                   </th>
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
@@ -330,8 +360,17 @@ const PerjalananDinasDashboard: React.FC = () => {
                   <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
                     Pulang
                   </th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">
+                    Durasi (hari)
+                  </th>
                   <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
                     Biaya
+                  </th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                    Estimasi Perjalanan
+                  </th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                    Realisasi Perjalanan
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Attachment
@@ -367,6 +406,9 @@ const PerjalananDinasDashboard: React.FC = () => {
                       {item.namaPegawai}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
+                      {item.jabatan}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">
                       {item.tujuan}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 text-center">
@@ -389,11 +431,20 @@ const PerjalananDinasDashboard: React.FC = () => {
                         </span>
                       </div>
                     </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-center">
+                      {calcDurasi(item.tanggalBerangkat, item.tanggalPulang)}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900 text-right">
                       <div className="inline-flex items-center justify-end gap-1 whitespace-nowrap">
                         <DollarSign className="h-3.5 w-3.5 text-gray-400" />
                         <span>{formatIDR(item.biaya)}</span>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-right">
+                      {item.estimasiPerjalanan ? formatIDR(item.estimasiPerjalanan) : '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 text-right">
+                      {item.realisasiPerjalanan ? formatIDR(item.realisasiPerjalanan) : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {item.attachmentName && item.attachmentUrl ? (
@@ -513,6 +564,17 @@ const PerjalananDinasDashboard: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Jabatan
+                  </label>
+                  <input
+                    value={form.jabatan}
+                    onChange={(e) => setForm((f) => ({ ...f, jabatan: e.target.value }))}
+                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    placeholder="Contoh: Supervisor"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tujuan
                   </label>
                   <input
@@ -572,6 +634,34 @@ const PerjalananDinasDashboard: React.FC = () => {
                     className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                     placeholder="0"
                   />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Estimasi Perjalanan
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={form.estimasiPerjalanan}
+                      onChange={(e) => setForm((f) => ({ ...f, estimasiPerjalanan: Number(e.target.value) }))}
+                      className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Realisasi Perjalanan
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={form.realisasiPerjalanan}
+                      onChange={(e) => setForm((f) => ({ ...f, realisasiPerjalanan: Number(e.target.value) }))}
+                      className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      placeholder="0"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

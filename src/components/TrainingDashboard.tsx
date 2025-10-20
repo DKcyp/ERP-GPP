@@ -24,11 +24,14 @@ interface TrainingData {
   no: number;
   noTraining: string;
   noSO: string;
+  noPR: string; // new PR number
   soTurunan: string;
   namaProyek: string;
   jenisTraining: 'New Training' | 'Re-Training';
   tanggalPelatihan: string;
   tanggalExpired: string;
+  pidStartDate?: string; // new
+  pidEndDate?: string;   // new
   statusDokumen: 'Open' | 'Closed';
   statusPembayaran: 'Paid' | 'Unpaid';
 }
@@ -63,11 +66,14 @@ const TrainingDashboard: React.FC = () => {
       no: 1,
       noTraining: 'TRNG001',
       noSO: 'SO001',
+      noPR: 'PR-001',
       soTurunan: 'SO001.12',
       namaProyek: 'Project A',
       jenisTraining: 'New Training',
       tanggalPelatihan: '12-01-2025 - 16-01-2025',
       tanggalExpired: '01-08-2025',
+      pidStartDate: '05-08-2025',
+      pidEndDate: '10-08-2025',
       statusDokumen: 'Open',
       statusPembayaran: 'Paid'
     },
@@ -76,11 +82,14 @@ const TrainingDashboard: React.FC = () => {
       no: 2,
       noTraining: 'TRNG002',
       noSO: 'SO002',
+      noPR: 'PR-002',
       soTurunan: 'SO002.2',
       namaProyek: 'Project B',
       jenisTraining: 'Re-Training',
       tanggalPelatihan: '15-03-2025 - 19-03-2025',
       tanggalExpired: '15-09-2025',
+      pidStartDate: '20-09-2025',
+      pidEndDate: '25-09-2025',
       statusDokumen: 'Closed',
       statusPembayaran: 'Unpaid'
     },
@@ -89,11 +98,14 @@ const TrainingDashboard: React.FC = () => {
       no: 3,
       noTraining: 'TRNG003',
       noSO: 'SO003',
+      noPR: 'PR-003',
       soTurunan: 'SO003.34',
       namaProyek: 'Project C',
       jenisTraining: 'New Training',
       tanggalPelatihan: '10-05-2025 - 14-05-2025',
       tanggalExpired: '10-11-2025',
+      pidStartDate: '15-11-2025',
+      pidEndDate: '20-11-2025',
       statusDokumen: 'Open',
       statusPembayaran: 'Unpaid'
     },
@@ -102,11 +114,14 @@ const TrainingDashboard: React.FC = () => {
       no: 4,
       noTraining: 'TRNG004',
       noSO: 'SO004',
+      noPR: 'PR-004',
       soTurunan: 'SO004.25',
       namaProyek: 'Project D',
       jenisTraining: 'Re-Training',
       tanggalPelatihan: '20-06-2025 - 24-06-2025',
       tanggalExpired: '20-12-2025',
+      pidStartDate: '22-12-2025',
+      pidEndDate: '26-12-2025',
       statusDokumen: 'Closed',
       statusPembayaran: 'Paid'
     },
@@ -115,11 +130,14 @@ const TrainingDashboard: React.FC = () => {
       no: 5,
       noTraining: 'TRNG005',
       noSO: 'SO005',
+      noPR: 'PR-005',
       soTurunan: 'SO005.12',
       namaProyek: 'Project E',
       jenisTraining: 'New Training',
       tanggalPelatihan: '05-07-2025 - 09-07-2025',
       tanggalExpired: '05-01-2026',
+      pidStartDate: '10-01-2026',
+      pidEndDate: '15-01-2026',
       statusDokumen: 'Open',
       statusPembayaran: 'Paid'
     }
@@ -621,11 +639,14 @@ const TrainingDashboard: React.FC = () => {
                           )}
                         </div>
                       </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">No PR</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">SO Turunan</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama Proyek</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Jenis Training</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Pelatihan</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal Expired</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">PID Start Date</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">PID End Date</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Dokumen</th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status Pembayaran</th>
                     </tr>
@@ -645,11 +666,14 @@ const TrainingDashboard: React.FC = () => {
                         <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
                         <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.noTraining}</td>
                         <td className="px-4 py-3 text-sm text-gray-900">{item.noSO}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">{item.noPR}</td>
                         <td className="px-4 py-3 text-sm text-gray-900">{item.soTurunan}</td>
                         <td className="px-4 py-3 text-sm text-gray-900">{item.namaProyek}</td>
                         <td className="px-4 py-3 text-sm text-gray-600">{item.jenisTraining}</td>
                         <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalPelatihan}</td>
                         <td className="px-4 py-3 text-sm text-gray-600">{item.tanggalExpired}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{item.pidStartDate || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{item.pidEndDate || '-'}</td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getStatusDokumenColor(item.statusDokumen)}`}>
                             {item.statusDokumen}

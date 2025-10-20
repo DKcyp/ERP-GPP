@@ -18,11 +18,13 @@ import {
   ArrowUp
 } from 'lucide-react';
 
+interface RateHistory { effectiveDate: string; amount: number; }
 interface TunjanganData {
   id: string;
   namaTunjangan: string;
   kualifikasi: string;
-  nominalTunjangan: string;
+  nominalTunjangan: number; // latest
+  histories: RateHistory[];
   satuan: 'Hari';
 }
 
@@ -42,9 +44,17 @@ const TunjanganDashboard: React.FC = () => {
 
   // Sample data matching the image
   const [tunjanganData, setTunjanganData] = useState<TunjanganData[]>([
-    { id: '1', namaTunjangan: 'Tunjangan Makan', kualifikasi: 'Teknisi Junior', nominalTunjangan: 'Rp 50.000', satuan: 'Hari' },
-    { id: '2', namaTunjangan: 'Tunjangan Transport', kualifikasi: 'Teknisi Senior', nominalTunjangan: 'Rp 75.000', satuan: 'Hari' },
-    { id: '3', namaTunjangan: 'Tunjangan Lembur', kualifikasi: 'Supervisor', nominalTunjangan: 'Rp 100.000', satuan: 'Hari' },
+    { id: '1', namaTunjangan: 'Tunjangan Makan', kualifikasi: 'Teknisi Junior', nominalTunjangan: 60000, histories: [
+      { effectiveDate: '2024-01-01', amount: 50000 },
+      { effectiveDate: '2025-02-01', amount: 60000 },
+    ], satuan: 'Hari' },
+    { id: '2', namaTunjangan: 'Tunjangan Transport', kualifikasi: 'Teknisi Senior', nominalTunjangan: 80000, histories: [
+      { effectiveDate: '2024-06-01', amount: 75000 },
+      { effectiveDate: '2025-01-10', amount: 80000 },
+    ], satuan: 'Hari' },
+    { id: '3', namaTunjangan: 'Tunjangan Lembur', kualifikasi: 'Supervisor', nominalTunjangan: 100000, histories: [
+      { effectiveDate: '2025-03-01', amount: 100000 },
+    ], satuan: 'Hari' },
   ]);
 
   useEffect(() => {
@@ -110,17 +120,24 @@ const TunjanganDashboard: React.FC = () => {
   };
 
   const handleAddTunjanganPegawai = (formData: TunjanganPegawaiFormData) => {
+    const amount = Number(String(formData.nominalTunjangan).replace(/[^0-9]/g, '')) || 0;
     setTunjanganData(prev => [
       {
         id: (prev.length + 1).toString(),
         namaTunjangan: formData.namaTunjangan,
         kualifikasi: formData.kualifikasi,
-        nominalTunjangan: formData.nominalTunjangan,
+        nominalTunjangan: amount,
+        histories: [{ effectiveDate: new Date().toISOString().slice(0,10), amount }],
         satuan: 'Hari',
       },
       ...prev,
     ]);
   };
+
+  const formatRupiah = (n: number) => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyItem, setHistoryItem] = useState<TunjanganData | null>(null);
+  const openHistory = (item: TunjanganData) => { setHistoryItem(item); setHistoryOpen(true); };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -291,7 +308,9 @@ const TunjanganDashboard: React.FC = () => {
                   >
                     <td className="px-4 py-3 text-sm text-gray-900">{item.namaTunjangan}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.kualifikasi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.nominalTunjangan}</td>
+                    <td className="px-4 py-3 text-sm text-blue-700 underline cursor-pointer" onClick={() => openHistory(item)}>
+                      {formatRupiah(item.nominalTunjangan)}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.satuan}</td>
                   </tr>
                 ))}
@@ -344,6 +363,39 @@ const TunjanganDashboard: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddTunjanganPegawai}
       />
+
+      {/* History Modal */}
+      {historyOpen && historyItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-white flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Riwayat Tunjangan - {historyItem.namaTunjangan}</h3>
+              <button className="text-gray-500" onClick={() => { setHistoryOpen(false); setHistoryItem(null); }}>Tutup</button>
+            </div>
+            <div className="p-6">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-600">
+                    <th className="py-2">Efektif</th>
+                    <th className="py-2">Nominal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historyItem.histories
+                    .slice()
+                    .sort((a,b) => a.effectiveDate < b.effectiveDate ? 1 : -1)
+                    .map((h, idx) => (
+                      <tr key={idx} className="border-t">
+                        <td className="py-2">{new Date(h.effectiveDate).toLocaleDateString('id-ID')}</td>
+                        <td className="py-2">{formatRupiah(h.amount)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal

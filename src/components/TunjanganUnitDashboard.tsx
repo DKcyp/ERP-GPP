@@ -18,12 +18,18 @@ import {
   ArrowUp
 } from 'lucide-react';
 
+interface RateHistory {
+  effectiveDate: string; // ISO yyyy-mm-dd
+  amount: number;
+}
+
 interface TunjanganUnitData {
   id: string;
   no: number;
   namaTunjangan: string;
   kualifikasi: string;
-  nominalTunjangan: number;
+  nominalTunjangan: number; // latest amount (derived from histories)
+  histories: RateHistory[]; // all rates history (includes latest)
   satuan: 'Unit';
 }
 
@@ -46,11 +52,26 @@ const TunjanganUnitDashboard: React.FC = () => {
 
   // Sample data
   const [tunjanganUnitData, setTunjanganUnitData] = useState<TunjanganUnitData[]>([
-    { id: '1', no: 1, namaTunjangan: 'Tunjangan Unit A', kualifikasi: 'Teknisi A', nominalTunjangan: 250000, satuan: 'Unit' },
-    { id: '2', no: 2, namaTunjangan: 'Tunjangan Unit B', kualifikasi: 'Teknisi B', nominalTunjangan: 150000, satuan: 'Unit' },
-    { id: '3', no: 3, namaTunjangan: 'Tunjangan Unit C', kualifikasi: 'Teknisi C', nominalTunjangan: 300000, satuan: 'Unit' },
-    { id: '4', no: 4, namaTunjangan: 'Tunjangan Unit D', kualifikasi: 'Teknisi D', nominalTunjangan: 200000, satuan: 'Unit' },
-    { id: '5', no: 5, namaTunjangan: 'Tunjangan Unit E', kualifikasi: 'Teknisi E', nominalTunjangan: 225000, satuan: 'Unit' },
+    { id: '1', no: 1, namaTunjangan: 'Tunjangan Unit A', kualifikasi: 'Teknisi A', nominalTunjangan: 300000, histories: [
+      { effectiveDate: '2024-01-01', amount: 220000 },
+      { effectiveDate: '2024-08-01', amount: 250000 },
+      { effectiveDate: '2025-02-01', amount: 300000 },
+    ], satuan: 'Unit' },
+    { id: '2', no: 2, namaTunjangan: 'Tunjangan Unit B', kualifikasi: 'Teknisi B', nominalTunjangan: 180000, histories: [
+      { effectiveDate: '2024-03-01', amount: 120000 },
+      { effectiveDate: '2024-10-01', amount: 150000 },
+      { effectiveDate: '2025-01-15', amount: 180000 },
+    ], satuan: 'Unit' },
+    { id: '3', no: 3, namaTunjangan: 'Tunjangan Unit C', kualifikasi: 'Teknisi C', nominalTunjangan: 300000, histories: [
+      { effectiveDate: '2025-01-01', amount: 300000 },
+    ], satuan: 'Unit' },
+    { id: '4', no: 4, namaTunjangan: 'Tunjangan Unit D', kualifikasi: 'Teknisi D', nominalTunjangan: 210000, histories: [
+      { effectiveDate: '2024-05-01', amount: 180000 },
+      { effectiveDate: '2025-03-01', amount: 210000 },
+    ], satuan: 'Unit' },
+    { id: '5', no: 5, namaTunjangan: 'Tunjangan Unit E', kualifikasi: 'Teknisi E', nominalTunjangan: 225000, histories: [
+      { effectiveDate: '2025-02-10', amount: 225000 },
+    ], satuan: 'Unit' },
   ]);
 
   useEffect(() => {
@@ -115,16 +136,26 @@ const TunjanganUnitDashboard: React.FC = () => {
   };
 
   const handleAddTunjanganUnit = (formData: TunjanganUnitFormData) => {
+    const amount = Number(String(formData.nominalTunjangan).replace(/[^0-9]/g, '')) || 0;
     const newTunjanganUnit: TunjanganUnitData = {
       id: (tunjanganUnitData.length + 1).toString(),
       no: tunjanganUnitData.length + 1,
       namaTunjangan: formData.namaTunjangan,
       kualifikasi: formData.kualifikasi,
-      nominalTunjangan: Number(String(formData.nominalTunjangan).replace(/[^0-9]/g, '')) || 0,
+      nominalTunjangan: amount,
+      histories: [{ effectiveDate: new Date().toISOString().slice(0,10), amount }],
       satuan: 'Unit',
     };
 
     setTunjanganUnitData(prev => [newTunjanganUnit, ...prev.map(t => ({ ...t, no: t.no + 1 }))]);
+  };
+
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyItem, setHistoryItem] = useState<TunjanganUnitData | null>(null);
+
+  const openHistory = (item: TunjanganUnitData) => {
+    setHistoryItem(item);
+    setHistoryOpen(true);
   };
 
   return (
@@ -311,7 +342,9 @@ const TunjanganUnitDashboard: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-gray-900">{item.no}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.namaTunjangan}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.kualifikasi}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{formatRupiah(item.nominalTunjangan)}</td>
+                    <td className="px-4 py-3 text-sm text-blue-700 underline cursor-pointer" onClick={() => openHistory(item)} title="Lihat histori tunjangan">
+                      {formatRupiah(item.nominalTunjangan)}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.satuan}</td>
                   </tr>
                 ))}
@@ -364,6 +397,39 @@ const TunjanganUnitDashboard: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddTunjanganUnit}
       />
+
+      {/* History Modal */}
+      {historyOpen && historyItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-white flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Riwayat Tunjangan - {historyItem.namaTunjangan}</h3>
+              <button className="text-gray-500" onClick={() => { setHistoryOpen(false); setHistoryItem(null); }}>Tutup</button>
+            </div>
+            <div className="p-6">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-600">
+                    <th className="py-2">Efektif</th>
+                    <th className="py-2">Nominal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historyItem.histories
+                    .slice()
+                    .sort((a,b) => a.effectiveDate < b.effectiveDate ? 1 : -1)
+                    .map((h, idx) => (
+                      <tr key={idx} className="border-t">
+                        <td className="py-2">{new Date(h.effectiveDate).toLocaleDateString('id-ID')}</td>
+                        <td className="py-2">{formatRupiah(h.amount)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal

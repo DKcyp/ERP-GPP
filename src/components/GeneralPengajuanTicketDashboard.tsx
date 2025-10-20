@@ -24,6 +24,7 @@ interface TicketRow {
   noTicket: string;
   divisi: string;
   pemohon: string;
+  jabatan?: string; // baru
   kategori: ("Hotel" | "Travel" | "Pesawat")[];
   prioritas: "Low" | "Medium" | "High" | "Urgent";
   judul: string;
@@ -90,6 +91,10 @@ interface TicketRow {
   jumlahHari?: number;
   hargaTotalHotel?: number;
 
+  // Perjalanan summary (baru)
+  estimasiPerjalanan?: number;
+  realisasiPerjalanan?: number;
+
   // Billing Section
   ditagihkanKe?: "Client" | "Perusahaan" | "";
 
@@ -140,6 +145,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       .padStart(2, "0")}-001`,
     divisi: "",
     pemohon: "",
+    jabatan: "",
     kategori: [],
     prioritas: "Medium",
     judul: "",
@@ -200,6 +206,10 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
     jumlahHari: 0,
     hargaTotalHotel: 0,
 
+    // Perjalanan summary
+    estimasiPerjalanan: 0,
+    realisasiPerjalanan: 0,
+
     // Billing Section
     ditagihkanKe: "",
 
@@ -216,6 +226,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-001",
       divisi: "IT",
       pemohon: "Andi Pratama",
+      jabatan: "Supervisor",
       kategori: ["Pesawat"],
       prioritas: "High",
       judul: "Pemesanan Tiket Dinas ke Jakarta",
@@ -242,6 +253,8 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       namaHotel: "Hotel Santika",
       jumlahHari: 2,
       hargaTotalHotel: 800000,
+      estimasiPerjalanan: 4500000,
+      realisasiPerjalanan: 4200000,
       ditagihkanKe: "Client",
     },
     {
@@ -250,6 +263,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-002",
       divisi: "GA",
       pemohon: "Siti Nurhaliza",
+      jabatan: "Staff",
       kategori: ["Hotel"],
       prioritas: "Medium",
       judul: "Perjalanan Dinas ke Bali",
@@ -279,6 +293,8 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       namaHotel: "Grand Inna Bali Beach",
       jumlahHari: 3,
       hargaTotalHotel: 1500000,
+      estimasiPerjalanan: 7000000,
+      realisasiPerjalanan: 6800000,
       ditagihkanKe: "Perusahaan",
     },
     {
@@ -287,6 +303,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-003",
       divisi: "Finance",
       pemohon: "Rudi Hermawan",
+      jabatan: "Manager",
       kategori: ["Travel"],
       prioritas: "Urgent",
       judul: "Meeting Budget Q4 di Bandung",
@@ -314,6 +331,8 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       namaHotel: "Hotel Savoy Homann",
       jumlahHari: 1,
       hargaTotalHotel: 500000,
+      estimasiPerjalanan: 3000000,
+      realisasiPerjalanan: 2950000,
       ditagihkanKe: "Client",
     },
     {
@@ -322,6 +341,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       noTicket: "TKT-2025-09-004",
       divisi: "Marketing",
       pemohon: "Budi Santoso",
+      jabatan: "Marketing Lead",
       kategori: ["Hotel", "Pesawat"],
       prioritas: "Medium",
       judul: "Perjalanan Bisnis ke Singapore",
@@ -348,6 +368,8 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
       namaHotel: "Marina Bay Sands",
       jumlahHari: 4,
       hargaTotalHotel: 5000000,
+      estimasiPerjalanan: 10500000,
+      realisasiPerjalanan: 10250000,
       ditagihkanKe: "Perusahaan",
     },
   ]);
@@ -858,6 +880,16 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
     }
   };
 
+  const formatIDR = (n: number) => `Rp ${Number(n||0).toLocaleString('id-ID')}`;
+  const calcDurasi = (row: TicketRow) => {
+    const range = (a?: string, b?: string) => (a && b ? Math.max(1, Math.ceil((new Date(b).getTime()-new Date(a).getTime())/(1000*60*60*24))+1) : 0);
+    return (
+      range(row.tanggalBerangkat, row.tanggalPulang) ||
+      range(row.tanggalBerangkatTravel, row.tanggalPulangTravel) ||
+      (row.jumlahHari || 0)
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-blue-50 to-white border-b border-gray-100">
@@ -1048,15 +1080,19 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Divisi
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jabatan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Tujuan
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Kategori
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durasi (hari)</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
                     Nominal
                   </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Estimasi Perjalanan</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Realisasi Perjalanan</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Keterangan
                   </th>
@@ -1103,6 +1139,7 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {row.divisi}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.jabatan || '-'}</td>
                       <td
                         className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
                         title={tujuan}
@@ -1112,9 +1149,10 @@ const GeneralPengajuanTicketDashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {row.kategori.join(", ")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">{`Rp ${nominal.toLocaleString(
-                        "id-ID"
-                      )}`}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{calcDurasi(row)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">{formatIDR(nominal)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{row.estimasiPerjalanan ? formatIDR(row.estimasiPerjalanan) : '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">{row.realisasiPerjalanan ? formatIDR(row.realisasiPerjalanan) : '-'}</td>
                       <td
                         className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
                         title={row.deskripsi}
