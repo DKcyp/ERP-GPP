@@ -798,6 +798,12 @@ export const operationalMenu: MenuSection[] = [
     directPath: "/operational/timesheet/barang-pegawai",
   },
   {
+    title: "Dashboard TimeSheet",
+    icon: "Clock",
+    items: [],
+    directPath: "/operational/timesheet/dashboard",
+  },
+  {
     title: "Produksi",
     icon: "Factory",
     items: [],
