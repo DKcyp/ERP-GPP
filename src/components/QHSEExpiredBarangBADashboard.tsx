@@ -56,6 +56,18 @@ const QHSEExpiredBarangBADashboard: React.FC = () => {
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedItem, setSelectedItem] = useState<BAExpiredItem | null>(null);
 
+  const emptyForm = {
+    nomorBA: '',
+    tanggalBA: '',
+    kodeBarang: '',
+    namaBarang: '',
+    jumlahExpired: 0,
+    alasanExpired: '',
+    tindakan: '',
+    penanggungJawab: ''
+  };
+  const [form, setForm] = useState<typeof emptyForm>(emptyForm);
+
   const getStatusBadge = (status: string) => {
     const baseClass = "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium";
     switch (status) {
@@ -69,18 +81,39 @@ const QHSEExpiredBarangBADashboard: React.FC = () => {
   const handleTambah = () => {
     setModalMode('create');
     setSelectedItem(null);
+    setForm(emptyForm);
     setIsModalOpen(true);
   };
 
   const handleEdit = (item: BAExpiredItem) => {
     setModalMode('edit');
     setSelectedItem(item);
+    setForm({
+      nomorBA: item.nomorBA,
+      tanggalBA: item.tanggalBA,
+      kodeBarang: item.kodeBarang,
+      namaBarang: item.namaBarang,
+      jumlahExpired: item.jumlahExpired,
+      alasanExpired: item.alasanExpired || '',
+      tindakan: item.tindakan,
+      penanggungJawab: item.penanggungJawab,
+    });
     setIsModalOpen(true);
   };
 
   const handleView = (item: BAExpiredItem) => {
     setModalMode('view');
     setSelectedItem(item);
+    setForm({
+      nomorBA: item.nomorBA,
+      tanggalBA: item.tanggalBA,
+      kodeBarang: item.kodeBarang,
+      namaBarang: item.namaBarang,
+      jumlahExpired: item.jumlahExpired,
+      alasanExpired: item.alasanExpired || '',
+      tindakan: item.tindakan,
+      penanggungJawab: item.penanggungJawab,
+    });
     setIsModalOpen(true);
   };
 
@@ -212,20 +245,153 @@ const QHSEExpiredBarangBADashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal placeholder */}
+      {/* Modal Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold mb-4">
-              {modalMode === 'create' ? 'Buat BA Baru' : modalMode === 'edit' ? 'Edit BA' : 'Detail BA'}
-            </h3>
-            <p className="text-gray-600 mb-4">Modal form akan diimplementasi di sini</p>
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Tutup
-            </button>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b bg-gray-50">
+              <h3 className="text-lg font-semibold">
+                {modalMode === 'create' ? 'Buat BA Baru' : modalMode === 'edit' ? 'Edit BA' : 'Detail BA'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">×</button>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nomor BA</label>
+                  <input
+                    type="text"
+                    value={form.nomorBA}
+                    onChange={(e) => setForm(f => ({ ...f, nomorBA: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="BA-EXP-001/2025"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal BA</label>
+                  <input
+                    type="date"
+                    value={form.tanggalBA}
+                    onChange={(e) => setForm(f => ({ ...f, tanggalBA: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Kode Barang</label>
+                  <input
+                    type="text"
+                    value={form.kodeBarang}
+                    onChange={(e) => setForm(f => ({ ...f, kodeBarang: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="BRG-001"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nama Barang</label>
+                  <input
+                    type="text"
+                    value={form.namaBarang}
+                    onChange={(e) => setForm(f => ({ ...f, namaBarang: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="Nama Barang"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah Expired</label>
+                  <input
+                    type="number"
+                    value={form.jumlahExpired}
+                    onChange={(e) => setForm(f => ({ ...f, jumlahExpired: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    min={0}
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Penanggung Jawab</label>
+                  <input
+                    type="text"
+                    value={form.penanggungJawab}
+                    onChange={(e) => setForm(f => ({ ...f, penanggungJawab: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="Tim QHSE / Nama PIC"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tindakan</label>
+                  <input
+                    type="text"
+                    value={form.tindakan}
+                    onChange={(e) => setForm(f => ({ ...f, tindakan: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    placeholder="Pemusnahan / Pengembalian / Lainnya"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Alasan Expired</label>
+                  <textarea
+                    value={form.alasanExpired}
+                    onChange={(e) => setForm(f => ({ ...f, alasanExpired: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    rows={3}
+                    placeholder="Melewati tanggal kadaluarsa / Kualitas menurun / dll"
+                    disabled={modalMode === 'view'}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
+              {modalMode !== 'view' && (
+                <>
+                  <button
+                    onClick={() => {
+                      if (!form.nomorBA || !form.tanggalBA || !form.kodeBarang || !form.namaBarang || !form.tindakan) return;
+                      if (modalMode === 'create') {
+                        const newItem: BAExpiredItem = {
+                          id: Date.now().toString(),
+                          nomorBA: form.nomorBA,
+                          tanggalBA: form.tanggalBA,
+                          kodeBarang: form.kodeBarang,
+                          namaBarang: form.namaBarang,
+                          jumlahExpired: form.jumlahExpired,
+                          alasanExpired: form.alasanExpired,
+                          tindakan: form.tindakan,
+                          penanggungJawab: form.penanggungJawab || 'Tim QHSE',
+                          status: 'Draft',
+                          createdBy: 'QHSE Officer'
+                        };
+                        setData(prev => [newItem, ...prev]);
+                      } else if (modalMode === 'edit' && selectedItem) {
+                        setData(prev => prev.map(ba => ba.id === selectedItem.id ? {
+                          ...ba,
+                          nomorBA: form.nomorBA,
+                          tanggalBA: form.tanggalBA,
+                          kodeBarang: form.kodeBarang,
+                          namaBarang: form.namaBarang,
+                          jumlahExpired: form.jumlahExpired,
+                          alasanExpired: form.alasanExpired,
+                          tindakan: form.tindakan,
+                          penanggungJawab: form.penanggungJawab,
+                        } : ba));
+                      }
+                      setIsModalOpen(false);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Simpan
+                  </button>
+                </>
+              )}
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Tutup</button>
+            </div>
           </div>
         </div>
       )}
