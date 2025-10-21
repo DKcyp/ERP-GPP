@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Calendar, ChevronDown, Search, FileText, FileDown, Printer, Plus, Edit, Trash2 } from "lucide-react";
+import { Calendar, ChevronDown, Search, FileText, FileDown, Printer, Plus, Edit, Trash2, CheckCircle, XCircle } from "lucide-react";
 import PendebetanModal, { PendebetanFormData } from "./PendebetanModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ConfirmationModal from "./ConfirmationModal";
+import { useAuth } from "../context/AuthContext";
 
 interface PendebetanEntry {
   id: string;
@@ -14,7 +16,13 @@ interface PendebetanEntry {
   nominal: string; // Rp formatted
 }
 
-const PendebetanDashboard: React.FC = () => {
+interface PendebetanDashboardProps {
+  role?: string;
+}
+
+const PendebetanDashboard: React.FC<PendebetanDashboardProps> = ({ role }) => {
+  const { user } = useAuth();
+  const isManagement = role === "management" || user?.role === "management";
   const [tanggalAwal, setTanggalAwal] = useState("");
   const [tanggalAkhir, setTanggalAkhir] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -26,6 +34,10 @@ const PendebetanDashboard: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<PendebetanEntry | null>(null);
   const [kodePegawai, setKodePegawai] = useState("");
   const [namaPegawai, setNamaPegawai] = useState("");
+  // Approve/Reject state for management
+  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
+  const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
+  const [selectedForAction, setSelectedForAction] = useState<PendebetanEntry | null>(null);
 
   const kodePegawaiOptions = ["EMP001", "EMP002", "EMP003", "EMP004", "EMP005"];
 
@@ -220,8 +232,17 @@ const PendebetanDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.nominal}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button onClick={() => handleOpenEdit(row)} className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Edit"><Edit className="h-4 w-4" /></button>
-                        <button onClick={() => requestDelete(row)} className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Delete"><Trash2 className="h-4 w-4" /></button>
+                        {isManagement ? (
+                          <>
+                            <button onClick={() => { setSelectedForAction(row); setConfirmApproveOpen(true); }} className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="Approve"><CheckCircle className="h-4 w-4" /></button>
+                            <button onClick={() => { setSelectedForAction(row); setConfirmRejectOpen(true); }} className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Reject"><XCircle className="h-4 w-4" /></button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleOpenEdit(row)} className="p-2 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors" title="Edit"><Edit className="h-4 w-4" /></button>
+                            <button onClick={() => requestDelete(row)} className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors" title="Delete"><Trash2 className="h-4 w-4" /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -245,6 +266,38 @@ const PendebetanDashboard: React.FC = () => {
       {/* Modals */}
       <PendebetanModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditing(null); }} onSave={handleSave} initialData={editing ? { id: editing.id, kodePegawai: editing.kodePegawai, namaPegawai: editing.namaPegawai, jenisPegawai: editing.jenisPegawai, tanggal: editing.tanggal, deskripsi: editing.deskripsi, nominal: editing.nominal } : null} />
       <ConfirmDeleteModal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} onConfirm={confirmDelete} itemName={itemToDelete?.deskripsi} />
+
+      {/* Approve/Reject Confirmation Modals for Management */}
+      <ConfirmationModal
+        isOpen={confirmApproveOpen}
+        onClose={() => setConfirmApproveOpen(false)}
+        onConfirm={() => {
+          if (selectedForAction) {
+            alert(`Pendebetan ${selectedForAction.deskripsi} telah di-approve`);
+          }
+        }}
+        title="Konfirmasi Approve"
+        message={`Yakin ingin approve pendebetan \"${selectedForAction?.deskripsi || ""}\"?`}
+        confirmText="Approve"
+        cancelText="Batal"
+        isReject={false}
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+      />
+      <ConfirmationModal
+        isOpen={confirmRejectOpen}
+        onClose={() => setConfirmRejectOpen(false)}
+        onConfirm={(reason) => {
+          if (selectedForAction) {
+            alert(`Pendebetan ${selectedForAction.deskripsi} ditolak. Alasan: ${reason || "-"}`);
+          }
+        }}
+        title="Konfirmasi Reject"
+        message={`Yakin ingin reject pendebetan \"${selectedForAction?.deskripsi || ""}\"?`}
+        confirmText="Reject"
+        cancelText="Batal"
+        isReject={true}
+        confirmButtonColor="bg-red-600 hover:bg-red-700"
+      />
     </div>
   );
 };

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import KontrakKerjaModal, { KontrakKerjaFormData } from "./KontrakKerjaModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ConfirmationModal from "./ConfirmationModal";
 import { KontrakKerjaData } from "../types";
+import { useAuth } from "../context/AuthContext";
 import {
   Search,
   Plus,
@@ -19,6 +21,7 @@ import {
   ArrowUp,
   CheckCircle, // New icon for Approve
   Printer, // New icon for Print
+  XCircle,
 } from "lucide-react";
 
 interface KontrakKerjaDashboardProps {
@@ -28,6 +31,8 @@ interface KontrakKerjaDashboardProps {
 const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
   role,
 }) => {
+  const { user } = useAuth();
+  const isManagement = role === "management" || user?.role === "management";
   const [searchNoKontrak, setSearchNoKontrak] = useState("");
   const [searchPenerimaKontrak, setSearchPenerimaKontrak] = useState("");
   const [dateFrom, setDateFrom] = useState("03/03/2025");
@@ -44,6 +49,10 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
     null
   );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  // Approve/Reject modal state for management actions
+  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
+  const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
+  const [selectedForAction, setSelectedForAction] = useState<KontrakKerjaData | null>(null);
 
   // Sample data matching the image
   const [kontrakKerjaData, setKontrakKerjaData] = useState<KontrakKerjaData[]>([
@@ -480,14 +489,21 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center space-x-1">
-                        {role === "management" ? (
+                        {isManagement ? (
                           <>
                             <button
-                              onClick={() => setIsModalOpen(true)}
+                              onClick={() => { setSelectedForAction(item); setConfirmApproveOpen(true); }}
                               className="p-2 text-green-600 hover:bg-green-50 rounded transition-all duration-200 hover:scale-110"
                               title="Approve"
                             >
                               <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => { setSelectedForAction(item); setConfirmRejectOpen(true); }}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
+                              title="Reject"
+                            >
+                              <XCircle className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handlePrintContract(item.jenisKontrak, item.penerimaKontrak)}
@@ -584,6 +600,38 @@ const KontrakKerjaDashboard: React.FC<KontrakKerjaDashboardProps> = ({
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         itemName={itemToDelete?.penerimaKontrak}
+      />
+
+      {/* Approve/Reject Confirmation Modals */}
+      <ConfirmationModal
+        isOpen={confirmApproveOpen}
+        onClose={() => setConfirmApproveOpen(false)}
+        onConfirm={() => {
+          if (selectedForAction) {
+            alert(`Kontrak ${selectedForAction.noKontrak} telah di-approve`);
+          }
+        }}
+        title="Konfirmasi Approve"
+        message={`Yakin ingin menyetujui kontrak ${selectedForAction?.noKontrak || ""}?`}
+        confirmText="Approve"
+        cancelText="Batal"
+        isReject={false}
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+      />
+      <ConfirmationModal
+        isOpen={confirmRejectOpen}
+        onClose={() => setConfirmRejectOpen(false)}
+        onConfirm={(reason) => {
+          if (selectedForAction) {
+            alert(`Kontrak ${selectedForAction.noKontrak} ditolak. Alasan: ${reason || "-"}`);
+          }
+        }}
+        title="Konfirmasi Reject"
+        message={`Yakin ingin menolak kontrak ${selectedForAction?.noKontrak || ""} ?`}
+        confirmText="Reject"
+        cancelText="Batal"
+        isReject={true}
+        confirmButtonColor="bg-red-600 hover:bg-red-700"
       />
     </div>
   );

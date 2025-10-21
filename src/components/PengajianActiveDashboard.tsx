@@ -12,10 +12,13 @@ import {
   Edit,
   Trash2,
   CheckCircle,
+  XCircle,
 } from "lucide-react";
 import PengajianEntryModal, {
   PengajianEntryFormData,
 } from "./PengajianEntryModal";
+import ConfirmationModal from "./ConfirmationModal";
+import { useAuth } from "../context/AuthContext";
 
 interface PenggajianEntry {
   no: number;
@@ -42,9 +45,15 @@ interface PengajianActiveDashboardProps {
 const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
   role,
 }) => {
+  const { user } = useAuth();
+  const isManagement = role === "management" || user?.role === "management";
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+  // Approve/Reject state for management confirmation modals
+  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
+  const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
+  const [selectedForAction, setSelectedForAction] = useState<PenggajianEntry | null>(null);
 
   const [penggajianData, setPenggajianData] = useState<PenggajianEntry[]>([
     {
@@ -497,14 +506,23 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        {role === "management" ? (
-                          <button
-                            onClick={handleOpenEntryModal}
-                            className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
-                            title="Approve"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </button>
+                        {isManagement ? (
+                          <>
+                            <button
+                              onClick={() => { setSelectedForAction(entry); setConfirmApproveOpen(true); }}
+                              className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+                              title="Approve"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => { setSelectedForAction(entry); setConfirmRejectOpen(true); }}
+                              className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                              title="Reject"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </>
                         ) : (
                           <>
                             {/* Removed Eye and Printer buttons as requested */}
@@ -560,6 +578,38 @@ const PengajianActiveDashboard: React.FC<PengajianActiveDashboardProps> = ({
         isOpen={isEntryModalOpen}
         onClose={handleCloseEntryModal}
         onSave={handleSaveEntry}
+      />
+
+      {/* Approve/Reject Confirmation Modals for Management */}
+      <ConfirmationModal
+        isOpen={confirmApproveOpen}
+        onClose={() => setConfirmApproveOpen(false)}
+        onConfirm={() => {
+          if (selectedForAction) {
+            alert(`Penggajian untuk ${selectedForAction.namaPegawai} telah di-approve`);
+          }
+        }}
+        title="Konfirmasi Approve"
+        message={`Yakin ingin approve penggajian ${selectedForAction?.namaPegawai || ""}?`}
+        confirmText="Approve"
+        cancelText="Batal"
+        isReject={false}
+        confirmButtonColor="bg-green-600 hover:bg-green-700"
+      />
+      <ConfirmationModal
+        isOpen={confirmRejectOpen}
+        onClose={() => setConfirmRejectOpen(false)}
+        onConfirm={(reason) => {
+          if (selectedForAction) {
+            alert(`Penggajian untuk ${selectedForAction.namaPegawai} ditolak. Alasan: ${reason || "-"}`);
+          }
+        }}
+        title="Konfirmasi Reject"
+        message={`Yakin ingin reject penggajian ${selectedForAction?.namaPegawai || ""}?`}
+        confirmText="Reject"
+        cancelText="Batal"
+        isReject={true}
+        confirmButtonColor="bg-red-600 hover:bg-red-700"
       />
     </div>
   );

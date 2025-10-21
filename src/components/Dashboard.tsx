@@ -991,7 +991,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       return <PotonganLainDashboard />;
     }
     if (currentPage === "/hrd/gaji/pendebetan") {
-      return <PendebtanDashboard />;
+      return <PendebetanDashboard />;
     }
     if (currentPage === "/hrd/gaji/payslip") {
       return <PayslipDashboard />;
@@ -1836,7 +1836,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       return <PengajianActiveDashboard role="management" />;
     }
     if (currentPage === "/management/approval-pendebetan") {
-      return <PendebtanDashboard />;
+      return <PendebetanDashboard role="management" />;
     }
     if (currentPage === "/management/training") {
       return <ProsesPengajuanTrainingDashboard role="management" />;
